@@ -8,11 +8,13 @@ export default {
     extend: {
       colors: {
         brand: {
-          DEFAULT: "#49e3b3",       // Verde agua del logo
-          dark: "#1e1e1e",          // Fondo oscuro general
+          DEFAULT: "#4ADE80",       // Soft green (accent)
+          dark: "#0F172A",          // Navy Blue (header/footer)
           light: "#ffffff",         // Texto claro / botones
-          muted: "#d1f7ec",         // Hover / cards suaves
-          accent: "#006f5f",        // Para CTA o enlaces importantes
+          muted: "#F8FAFC",         // Fondo general claro
+          accent: "#059669",        // Verde más oscuro para hover
+          background: "#F8FAFC",    // Fondo general
+          text: "#0F172A",          // Texto oscuro
         },
       },
       fontFamily: {

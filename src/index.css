@@ -14,7 +14,7 @@
   }
 
   body {
-    @apply bg-brand text-brand-light font-sans;
+    @apply bg-brand-background text-brand-text font-sans;
     margin: 0;
     min-width: 320px;
     min-height: 100vh;
@@ -23,14 +23,14 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-brand text-brand-dark hover:bg-brand-muted font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+    @apply bg-brand text-brand-light hover:bg-brand-accent font-medium py-2 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg;
   }
   
   .btn-secondary {
-    @apply border border-brand text-brand hover:bg-brand hover:text-brand-dark font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+    @apply border border-brand text-brand hover:bg-brand hover:text-brand-light font-medium py-2 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg;
   }
   
   .card {
-    @apply bg-brand-light text-brand-dark rounded-lg shadow-md p-6 border border-brand-muted;
+    @apply bg-brand-light text-brand-text rounded-lg shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-all duration-300;
   }
 }
