@@ -2,14 +2,14 @@ import { Link } from 'react-router-dom';
 
 const Header = () => {
   return (
-    <header className="bg-brand-light shadow-sm border-b border-brand-muted">
+    <header className="bg-brand shadow-sm border-b border-brand-accent">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-3">
               <img 
-                src="/aiquaa-logo.png" 
+                src="/transparente (2).png" 
                 alt="AIQUAA Logo" 
                 className="h-10 w-auto"
               />
@@ -20,25 +20,25 @@ const Header = () => {
           <nav className="hidden md:flex space-x-8">
             <Link
               to="/"
-              className="text-brand-dark hover:text-brand px-3 py-2 text-sm font-medium transition-colors duration-200"
+              className="text-brand-light hover:text-brand-muted px-3 py-2 text-sm font-medium transition-colors duration-200"
             >
               Inicio
             </Link>
             <Link
               to="/blog"
-              className="text-brand-dark hover:text-brand px-3 py-2 text-sm font-medium transition-colors duration-200"
+              className="text-brand-light hover:text-brand-muted px-3 py-2 text-sm font-medium transition-colors duration-200"
             >
               Blog
             </Link>
             <Link
               to="/about"
-              className="text-brand-dark hover:text-brand px-3 py-2 text-sm font-medium transition-colors duration-200"
+              className="text-brand-light hover:text-brand-muted px-3 py-2 text-sm font-medium transition-colors duration-200"
             >
               Acerca de
             </Link>
             <Link
               to="/contact"
-              className="text-brand-dark hover:text-brand px-3 py-2 text-sm font-medium transition-colors duration-200"
+              className="text-brand-light hover:text-brand-muted px-3 py-2 text-sm font-medium transition-colors duration-200"
             >
               Contacto
             </Link>
@@ -48,7 +48,7 @@ const Header = () => {
           <div className="md:hidden">
             <button
               type="button"
-              className="text-brand-dark hover:text-brand p-2"
+              className="text-brand-light hover:text-brand-muted p-2"
               aria-label="Toggle menu"
             >
               <svg

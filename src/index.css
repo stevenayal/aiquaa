@@ -14,7 +14,7 @@
   }
 
   body {
-    @apply bg-brand-dark text-brand-light font-sans;
+    @apply bg-brand text-brand-light font-sans;
     margin: 0;
     min-width: 320px;
     min-height: 100vh;

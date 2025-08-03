@@ -7,16 +7,16 @@ const Home = () => {
   return (
     <div>
       {/* Hero Section */}
-      <section className="bg-brand text-brand-dark">
+      <section className="bg-brand text-brand-light">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           <div className="text-center">
-            <div className="flex justify-center mb-6">
-              <img 
-                src="/aiquaa-logo.png" 
-                alt="AIQUAA Logo" 
-                className="h-20 md:h-24 w-auto"
-              />
-            </div>
+                         <div className="flex justify-center mb-6">
+               <img 
+                 src="/transparente (2).png" 
+                 alt="AIQUAA Logo" 
+                 className="h-20 md:h-24 w-auto"
+               />
+             </div>
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
               AIQUAA Blog
             </h1>
@@ -42,7 +42,7 @@ const Home = () => {
       </section>
 
       {/* Presentación Institucional */}
-      <section className="bg-brand-muted py-16 px-6 text-center">
+      <section className="bg-brand-light py-16 px-6 text-center">
         <h2 className="text-3xl font-bold text-brand-accent mb-4">¿Qué es AIQUAA?</h2>
         <p className="text-lg max-w-3xl mx-auto text-brand-dark">
           AIQUAA es una iniciativa paraguaya que fusiona conocimiento local con innovación global en testing de software. 
@@ -59,7 +59,7 @@ const Home = () => {
             <h2 className="text-3xl font-bold text-brand-light mb-4">
               Artículos Destacados
             </h2>
-            <p className="text-lg text-brand-muted">
+            <p className="text-lg text-brand-light">
               Descubre nuestros artículos más populares sobre testing y QA
             </p>
           </div>
@@ -124,7 +124,7 @@ const Home = () => {
       </section>
 
       {/* Features Section */}
-      <section className="bg-brand-muted py-16">
+      <section className="bg-brand-light py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-brand-dark mb-4">
