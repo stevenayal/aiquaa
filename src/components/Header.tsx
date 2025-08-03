@@ -7,13 +7,12 @@ const Header = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link to="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">A</span>
-              </div>
-              <span className="text-xl font-bold text-gray-900 dark:text-white">
-                AIQUAA
-              </span>
+            <Link to="/" className="flex items-center space-x-3">
+              <img 
+                src="/aiquaa-logo.png" 
+                alt="AIQUAA Logo" 
+                className="h-10 w-auto"
+              />
             </Link>
           </div>
 

@@ -7,11 +7,12 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">A</span>
-              </div>
-              <span className="text-xl font-bold">AIQUAA</span>
+            <div className="flex items-center space-x-3 mb-4">
+              <img 
+                src="/aiquaa-logo.png" 
+                alt="AIQUAA Logo" 
+                className="h-8 w-auto"
+              />
             </div>
             <p className="text-gray-400 mb-4 max-w-md">
               AIQUAA: Saber es Calidad. Inspirados por el conocimiento, impulsados por la comunidad.
