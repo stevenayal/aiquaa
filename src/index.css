@@ -1,10 +1,14 @@
+@import "@fontsource/sora/400.css";
+@import "@fontsource/sora/600.css";
+@import "@fontsource/sora/700.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    font-family: Poppins, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    font-family: Sora, system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
     font-weight: 400;
     font-synthesis: none;
@@ -14,7 +18,7 @@
   }
 
   body {
-    @apply bg-brand-background text-brand-text font-sans;
+    @apply bg-primary text-neutral font-sans;
     margin: 0;
     min-width: 320px;
     min-height: 100vh;
@@ -23,14 +27,14 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-brand text-brand-light hover:bg-brand-accent font-medium py-2 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg;
+    @apply bg-accent text-dark hover:bg-accent/90 font-medium py-2 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg;
   }
   
   .btn-secondary {
-    @apply border border-brand text-brand hover:bg-brand hover:text-brand-light font-medium py-2 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg;
+    @apply border border-accent text-accent hover:bg-accent hover:text-dark font-medium py-2 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg;
   }
   
   .card {
-    @apply bg-brand-light text-brand-text rounded-lg shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-all duration-300;
+    @apply bg-neutral text-primary rounded-lg shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-all duration-300;
   }
 }

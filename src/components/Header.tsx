@@ -9,9 +9,9 @@ const Header = () => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-4 mr-8">
               <img 
-                src="/aiquaa-logo-white.png" 
+                src="/logo1.png" 
                 alt="AIQUAA Logo" 
-                className="h-14 w-auto"
+                className="h-20 w-auto"
               />
             </Link>
           </div>

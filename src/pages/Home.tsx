@@ -12,7 +12,7 @@ const Home = () => {
           <div className="text-center">
                          <div className="flex justify-center mb-6">
                <img 
-                 src="/aiquaa-logo-white.png" 
+                 src="/logo1.png" 
                  alt="AIQUAA Logo" 
                  className="h-24 md:h-32 w-auto"
                />
