@@ -13,7 +13,7 @@ const Article = () => {
   const formatContent = (content: string) => {
     return content
       .split('\n')
-      .map((line, index) => {
+      .map((line, _index) => {
         if (line.startsWith('## ')) {
           return `<h2 class="text-2xl font-bold text-gray-900 dark:text-white mt-8 mb-4">${line.substring(3)}</h2>`;
         }
