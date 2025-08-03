@@ -7,7 +7,7 @@ const Home = () => {
   return (
     <div>
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-600 to-blue-800 text-white">
+      <section className="bg-brand text-brand-dark">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           <div className="text-center">
             <div className="flex justify-center mb-6">
@@ -26,13 +26,13 @@ const Home = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 to="/blog"
-                className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-3 rounded-lg font-semibold transition-colors duration-200"
+                className="bg-brand-light text-brand-dark hover:bg-brand-muted px-8 py-3 rounded-lg font-semibold transition-colors duration-200"
               >
                 Explorar Artículos
               </Link>
               <Link
                 to="/about"
-                className="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-3 rounded-lg font-semibold transition-colors duration-200"
+                className="border-2 border-brand-light text-brand-light hover:bg-brand-light hover:text-brand-dark px-8 py-3 rounded-lg font-semibold transition-colors duration-200"
               >
                 Conoce Más
               </Link>
@@ -42,9 +42,9 @@ const Home = () => {
       </section>
 
       {/* Presentación Institucional */}
-      <section className="bg-gray-100 dark:bg-gray-900 py-16 px-6 text-center">
-        <h2 className="text-3xl font-bold text-blue-700 mb-4">¿Qué es AIQUAA?</h2>
-        <p className="text-lg max-w-3xl mx-auto text-gray-700 dark:text-gray-300">
+      <section className="bg-brand-muted py-16 px-6 text-center">
+        <h2 className="text-3xl font-bold text-brand-accent mb-4">¿Qué es AIQUAA?</h2>
+        <p className="text-lg max-w-3xl mx-auto text-brand-dark">
           AIQUAA es una iniciativa paraguaya que fusiona conocimiento local con innovación global en testing de software. 
           Inspirada en el término guaraní "aikuaa" —que significa saber o conocer—, nuestra misión es construir una comunidad 
           comprometida con la calidad, la capacitación constante y la excelencia profesional. Combinamos inteligencia artificial (AI) 
@@ -56,10 +56,10 @@ const Home = () => {
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-3xl font-bold text-brand-light mb-4">
               Artículos Destacados
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300">
+            <p className="text-lg text-brand-muted">
               Descubre nuestros artículos más populares sobre testing y QA
             </p>
           </div>
@@ -68,7 +68,7 @@ const Home = () => {
             {featuredArticles.map((article) => (
               <article
                 key={article.id}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                className="bg-brand-light rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
               >
                 <img
                   src={article.image}
@@ -80,20 +80,20 @@ const Home = () => {
                     {article.tags.slice(0, 2).map((tag) => (
                       <span
                         key={tag}
-                        className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs px-2 py-1 rounded-full"
+                        className="bg-brand-muted text-brand-accent text-xs px-2 py-1 rounded-full"
                       >
                         {tag}
                       </span>
                     ))}
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3 line-clamp-2">
+                  <h3 className="text-xl font-semibold text-brand-dark mb-3 line-clamp-2">
                     {article.title}
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">
+                  <p className="text-brand-dark mb-4 line-clamp-3">
                     {article.excerpt}
                   </p>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                    <span className="text-sm text-brand-muted">
                       {new Date(article.publishedAt).toLocaleDateString('es-ES', {
                         year: 'numeric',
                         month: 'long',
@@ -102,7 +102,7 @@ const Home = () => {
                     </span>
                     <Link
                       to={`/article/${article.slug}`}
-                      className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium"
+                      className="text-brand hover:text-brand-accent font-medium"
                     >
                       Leer más →
                     </Link>
@@ -124,56 +124,56 @@ const Home = () => {
       </section>
 
       {/* Features Section */}
-      <section className="bg-gray-100 dark:bg-gray-800 py-16">
+      <section className="bg-brand-muted py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-3xl font-bold text-brand-dark mb-4">
               ¿Por qué AIQUAA?
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300">
+            <p className="text-lg text-brand-dark">
               Nuestro compromiso con la excelencia en testing de software
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="bg-blue-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="bg-brand w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-brand-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              <h3 className="text-xl font-semibold text-brand-dark mb-2">
                 Experiencia Comprobada
               </h3>
-              <p className="text-gray-600 dark:text-gray-300">
+              <p className="text-brand-dark">
                 Más de 10 años de experiencia en testing de software y automatización
               </p>
             </div>
 
             <div className="text-center">
-              <div className="bg-blue-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="bg-brand w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-brand-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              <h3 className="text-xl font-semibold text-brand-dark mb-2">
                 Contenido Actualizado
               </h3>
-              <p className="text-gray-600 dark:text-gray-300">
+              <p className="text-brand-dark">
                 Artículos y tutoriales con las últimas tendencias y herramientas
               </p>
             </div>
 
             <div className="text-center">
-              <div className="bg-blue-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="bg-brand w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-brand-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              <h3 className="text-xl font-semibold text-brand-dark mb-2">
                 Comunidad Activa
               </h3>
-              <p className="text-gray-600 dark:text-gray-300">
+              <p className="text-brand-dark">
                 Únete a nuestra comunidad de profesionales de QA
               </p>
             </div>

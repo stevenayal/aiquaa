@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-white">
+    <footer className="bg-brand-dark text-brand-light">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
@@ -14,13 +14,13 @@ const Footer = () => {
                 className="h-8 w-auto"
               />
             </div>
-            <p className="text-gray-400 mb-4 max-w-md">
+            <p className="text-brand-muted mb-4 max-w-md">
               AIQUAA: Saber es Calidad. Inspirados por el conocimiento, impulsados por la comunidad.
             </p>
             <div className="flex space-x-4">
               <a
                 href="https://twitter.com/aiquaa"
-                className="text-gray-400 hover:text-blue-400 transition-colors duration-200"
+                className="text-brand-muted hover:text-brand transition-colors duration-200"
                 aria-label="Twitter"
               >
                 <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
@@ -29,7 +29,7 @@ const Footer = () => {
               </a>
               <a
                 href="https://linkedin.com/company/aiquaa"
-                className="text-gray-400 hover:text-blue-400 transition-colors duration-200"
+                className="text-brand-muted hover:text-brand transition-colors duration-200"
                 aria-label="LinkedIn"
               >
                 <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
@@ -38,7 +38,7 @@ const Footer = () => {
               </a>
               <a
                 href="https://github.com/aiquaa"
-                className="text-gray-400 hover:text-blue-400 transition-colors duration-200"
+                className="text-brand-muted hover:text-brand transition-colors duration-200"
                 aria-label="GitHub"
               >
                 <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
@@ -55,7 +55,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/"
-                  className="text-gray-400 hover:text-white transition-colors duration-200"
+                  className="text-brand-muted hover:text-brand-light transition-colors duration-200"
                 >
                   Inicio
                 </Link>
@@ -63,7 +63,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/blog"
-                  className="text-gray-400 hover:text-white transition-colors duration-200"
+                  className="text-brand-muted hover:text-brand-light transition-colors duration-200"
                 >
                   Blog
                 </Link>
@@ -71,7 +71,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/about"
-                  className="text-gray-400 hover:text-white transition-colors duration-200"
+                  className="text-brand-muted hover:text-brand-light transition-colors duration-200"
                 >
                   Acerca de
                 </Link>
@@ -79,7 +79,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/contact"
-                  className="text-gray-400 hover:text-white transition-colors duration-200"
+                  className="text-brand-muted hover:text-brand-light transition-colors duration-200"
                 >
                   Contacto
                 </Link>
@@ -94,7 +94,7 @@ const Footer = () => {
               <li>
                 <a
                   href="/blog?tag=QA"
-                  className="text-gray-400 hover:text-white transition-colors duration-200"
+                  className="text-brand-muted hover:text-brand-light transition-colors duration-200"
                 >
                   QA & Testing
                 </a>
@@ -102,7 +102,7 @@ const Footer = () => {
               <li>
                 <a
                   href="/blog?tag=Automatización"
-                  className="text-gray-400 hover:text-white transition-colors duration-200"
+                  className="text-brand-muted hover:text-brand-light transition-colors duration-200"
                 >
                   Automatización
                 </a>
@@ -110,7 +110,7 @@ const Footer = () => {
               <li>
                 <a
                   href="/blog?tag=APIs"
-                  className="text-gray-400 hover:text-white transition-colors duration-200"
+                  className="text-brand-muted hover:text-brand-light transition-colors duration-200"
                 >
                   Testing de APIs
                 </a>
@@ -118,7 +118,7 @@ const Footer = () => {
               <li>
                 <a
                   href="/blog?tag=Seguridad"
-                  className="text-gray-400 hover:text-white transition-colors duration-200"
+                  className="text-brand-muted hover:text-brand-light transition-colors duration-200"
                 >
                   Seguridad
                 </a>
@@ -128,21 +128,21 @@ const Footer = () => {
         </div>
 
         {/* Bottom */}
-        <div className="border-t border-gray-800 mt-8 pt-8">
+        <div className="border-t border-brand-accent mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 text-sm">
+            <p className="text-brand-muted text-sm">
               © 2024 AIQUAA. Todos los derechos reservados.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <a
                 href="/privacy"
-                className="text-gray-400 hover:text-white text-sm transition-colors duration-200"
+                className="text-brand-muted hover:text-brand-light text-sm transition-colors duration-200"
               >
                 Privacidad
               </a>
               <a
                 href="/terms"
-                className="text-gray-400 hover:text-white text-sm transition-colors duration-200"
+                className="text-brand-muted hover:text-brand-light text-sm transition-colors duration-200"
               >
                 Términos
               </a>
