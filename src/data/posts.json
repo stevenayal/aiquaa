@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "title": "Introducción a la Automatización de Testing con IA",
+    "slug": "introduccion-automatizacion-testing-ia",
+    "excerpt": "Descubre cómo la inteligencia artificial está revolucionando el mundo de las pruebas de software",
+    "content": "La automatización de testing ha evolucionado significativamente en los últimos años...",
+    "author": "Equipo AIQUAA",
+    "publishedAt": "2024-01-15",
+    "tags": ["automatización", "IA", "testing"],
+    "image": "/public/logo1.png",
+    "readTime": "5 min"
+  },
+  {
+    "id": 2,
+    "title": "QA en la Era de la Inteligencia Artificial",
+    "slug": "qa-era-inteligencia-artificial",
+    "excerpt": "Cómo los profesionales de QA pueden adaptarse y aprovechar las nuevas tecnologías",
+    "content": "El rol del QA está experimentando una transformación fundamental...",
+    "author": "Equipo AIQUAA",
+    "publishedAt": "2024-01-20",
+    "tags": ["QA", "IA", "carrera"],
+    "image": "/public/logo1.png",
+    "readTime": "7 min"
+  },
+  {
+    "id": 3,
+    "title": "Herramientas de Testing Automatizado que Debes Conocer",
+    "slug": "herramientas-testing-automatizado",
+    "excerpt": "Un análisis completo de las mejores herramientas disponibles en el mercado",
+    "content": "La elección de las herramientas correctas es crucial para el éxito...",
+    "author": "Equipo AIQUAA",
+    "publishedAt": "2024-01-25",
+    "tags": ["automatización", "herramientas", "testing"],
+    "image": "/public/logo1.png",
+    "readTime": "8 min"
+  },
+  {
+    "id": 4,
+    "title": "Machine Learning en Testing: Casos de Uso Prácticos",
+    "slug": "machine-learning-testing-casos-uso",
+    "excerpt": "Ejemplos reales de cómo aplicar ML en tus procesos de testing",
+    "content": "El machine learning está abriendo nuevas posibilidades...",
+    "author": "Equipo AIQUAA",
+    "publishedAt": "2024-01-30",
+    "tags": ["IA", "ML", "testing", "casos-uso"],
+    "image": "/public/logo1.png",
+    "readTime": "10 min"
+  },
+  {
+    "id": 5,
+    "title": "El Futuro del Testing: Predicciones para 2025",
+    "slug": "futuro-testing-predicciones-2025",
+    "excerpt": "Tendencias y tecnologías que definirán el testing en los próximos años",
+    "content": "El panorama del testing está en constante evolución...",
+    "author": "Equipo AIQUAA",
+    "publishedAt": "2024-02-05",
+    "tags": ["futuro", "tendencias", "testing", "IA"],
+    "image": "/public/logo1.png",
+    "readTime": "6 min"
+  }
+] 

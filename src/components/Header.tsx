@@ -37,12 +37,29 @@ const Header = () => {
               Acerca de
             </Link>
             <Link
+              to="/unite"
+              className="text-brand-light hover:text-brand-muted px-3 py-2 text-sm font-medium transition-colors duration-200"
+            >
+              Unite
+            </Link>
+            <Link
               to="/contact"
               className="text-brand-light hover:text-brand-muted px-3 py-2 text-sm font-medium transition-colors duration-200"
             >
               Contacto
             </Link>
           </nav>
+
+          {/* Login Button */}
+          <div className="hidden md:flex items-center">
+            <button
+              className="bg-brand text-brand-light hover:bg-brand-accent px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 opacity-50 cursor-not-allowed"
+              disabled
+              title="Funcionalidad en desarrollo"
+            >
+              Ingresar
+            </button>
+          </div>
 
           {/* Mobile menu button */}
           <div className="md:hidden">

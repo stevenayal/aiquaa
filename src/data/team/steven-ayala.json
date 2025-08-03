@@ -1,0 +1,15 @@
+{
+  "name": "Steven Ayala",
+  "role": "Quality Assurance Manager",
+  "company": "Banco Continental SAECA",
+  "location": "Paraguay",
+  "description": "Tester certificado ISTQB con más de 6 años de experiencia en QA, automatización, soporte a usuarios y marketing digital. Estudiante de la carrera de Análisis de Sistemas, apasionado por la excelencia en calidad de software.",
+  "skills": [
+    "QA Manual y Automatizado",
+    "Selenium / Postman / REST Assured",
+    "CI/CD Pipelines",
+    "Liderazgo de equipos",
+    "Capacitación en testing"
+  ],
+  "profileLink": "https://www.linkedin.com/in/stevenayal/"
+} 

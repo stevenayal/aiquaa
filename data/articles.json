@@ -64,5 +64,16 @@
     "publishedAt": "2024-02-05",
     "tags": ["Seguridad", "OWASP", "Vulnerabilidades", "Testing"],
     "image": "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&h=400&fit=crop"
+  },
+  {
+    "id": 8,
+    "title": "Estrategia de implementación de herramientas para pruebas de software QA",
+    "slug": "estrategia-qa-implementacion-herramientas",
+    "excerpt": "Guía práctica para implementar herramientas de testing en proyectos QA paso a paso.",
+    "content": "### Introducción\n\nEn este artículo, exploro cómo diseñar e implementar una estrategia efectiva para incorporar herramientas de testing automatizado en el ciclo de calidad de software.\n\n### 1. Evaluación Inicial\n\n- Realizá un diagnóstico del estado actual de QA: procesos manuales, herramientas usadas, cobertura de pruebas, velocidad de feedback.\n- Definí objetivos claros: ¿Qué querés lograr con automatización? (eficiencia, calidad, trazabilidad ¿)\n\n### 2. Selección de herramientas\n\nEvaluá opciones según el tipo de pruebas:\n- **UI:** Selenium, Playwright\n- **API:** Postman, REST Assured\n- **Integración continua:** GitHub Actions, Jenkins\n\nTené en cuenta soporte multiplataforma, comunidad, facilidad de configuración y compatibilidad.\n\n### 3. Pilotaje\n\n- Elegí un proyecto representativo (micro-servicio o módulo).\n- Implementá pruebas básicas y documentá resultados: tiempo de ejecución, cobertura, defectos detectados.\n\n### 4. Capacitación del equipo\n\n- Realizá talleres prácticos para desarrollar pruebas automatizadas.\n- Establecé convenciones (nomenclatura, organización, reporting).\n- Usá BDD/TDD para mejorar legibilidad y colaboración (ej: Given‑When‑Then).\n\n### 5. Integración con CI/CD\n\n- Automatizá la ejecución de pruebas en cada push o PR.\n- Configurá pipelines en GitHub Actions, Bitbucket Pipelines o GitLab CI.\n- Publicá resultados y reportes de cobertura automáticamente.\n\n### 6. Escalado\n\n- Extendé el framework de tests a otras secciones de la app.\n- Agregá tipos de pruebas: performance, seguridad, exploratorias.\n- Monitoreá métricas clave: cobertura, tasa de fallos, tiempo de ejecución.\n\n### Conclusión\n\nUna estrategia escalonada permite reducir errores tempranamente, fomentar buenas prácticas de QA y mejorar la calidad general del software.",
+    "author": "Equipo AIQUAA",
+    "publishedAt": "2025-08-03",
+    "tags": ["Estrategia", "Herramientas", "QA", "Automatización", "Implementación"],
+    "image": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop"
   }
 ] 
