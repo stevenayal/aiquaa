@@ -11,6 +11,8 @@ import Labs from './pages/Labs';
 import JsonValidator from './components/Labs/JsonValidator';
 import DataGenerator from './components/Labs/DataGenerator';
 import Checklist from './components/Labs/Checklist';
+import Base64Converter from './components/Labs/Base64Converter';
+import JwtDecoder from './components/Labs/JwtDecoder';
 
 function App() {
   return (
@@ -28,6 +30,8 @@ function App() {
             <Route path="/labs/json-validator" element={<JsonValidator />} />
             <Route path="/labs/data-generator" element={<DataGenerator />} />
             <Route path="/labs/checklist" element={<Checklist />} />
+            <Route path="/labs/base64-decoder" element={<Base64Converter />} />
+            <Route path="/labs/jwt-decoder" element={<JwtDecoder />} />
           </Routes>
         </Layout>
       </Router>

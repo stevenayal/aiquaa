@@ -10,10 +10,10 @@ const Home = () => {
   return (
     <>
       <Helmet>
-        <title>AIQUAA - Comunidad de Testing, Automatización e IA</title>
-        <meta name="description" content="AIQUAA es una comunidad paraguaya que une testing, innovación y aprendizaje constante. Inspirados en 'aikuaa', creamos conocimiento y lo compartimos." />
-        <meta property="og:title" content="AIQUAA - Comunidad de Testing, Automatización e IA" />
-        <meta property="og:description" content="AIQUAA es una comunidad paraguaya que une testing, innovación y aprendizaje constante. Inspirados en 'aikuaa', creamos conocimiento y lo compartimos." />
+        <title>AIQUAA - Herramientas Gratuitas para Testers</title>
+        <meta name="description" content="AIQUAA ofrece herramientas gratuitas para testers funcionales, automatizadores y QA manual. Validador de JSON, generador de datos, checklist de pruebas y más." />
+        <meta property="og:title" content="AIQUAA - Herramientas Gratuitas para Testers" />
+        <meta property="og:description" content="AIQUAA ofrece herramientas gratuitas para testers funcionales, automatizadores y QA manual. Validador de JSON, generador de datos, checklist de pruebas y más." />
         <meta property="og:type" content="website" />
       </Helmet>
       
@@ -30,23 +30,24 @@ const Home = () => {
                 />
               </div>
               <h1 className="text-4xl md:text-6xl font-bold mb-6">
-                AIQUAA Blog
+                💡 Herramientas Gratuitas para Testers
               </h1>
               <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
-                Una comunidad paraguaya que une testing, innovación y aprendizaje constante. Inspirados en 'aikuaa', creamos conocimiento y lo compartimos.
+                Explorá nuestras utilidades web para testers funcionales, automatizadores y QA manual. 
+                Una comunidad paraguaya que une testing, innovación y aprendizaje constante.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
-                  to="/blog"
+                  to="/labs"
                   className="bg-brand text-brand-light hover:bg-brand-accent px-8 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg"
                 >
-                  Explorar Artículos
+                  Explorar Herramientas
                 </Link>
                 <Link
-                  to="/about"
+                  to="/blog"
                   className="border-2 border-brand-light text-brand-light hover:bg-brand-light hover:text-brand-dark px-8 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg"
                 >
-                  Conoce Más
+                  Ver Blog
                 </Link>
               </div>
             </div>
@@ -64,7 +65,146 @@ const Home = () => {
           </p>
         </section>
 
-        {/* Featured Articles */}
+        {/* Herramientas Labs Section */}
+        <section className="py-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-brand-text mb-4">
+                💡 Herramientas Gratuitas para Testers
+              </h2>
+              <p className="text-lg text-brand-text">
+                Explorá nuestras utilidades web para testers funcionales, automatizadores y QA manual
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {/* Validador de JSON */}
+              <div className="bg-brand-light rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-6 text-white">
+                  <div className="text-3xl mb-2">🔍</div>
+                  <h3 className="text-xl font-semibold mb-2">Validador de JSON</h3>
+                  <p className="text-blue-100">Valida y formatea archivos JSON para testing de APIs</p>
+                </div>
+                <div className="p-6">
+                  <p className="text-brand-text mb-4">
+                    Herramienta esencial para validar respuestas de APIs, configuraciones y datos de prueba. 
+                    Formatea automáticamente y detecta errores de sintaxis.
+                  </p>
+                  <Link
+                    to="/labs/json-validator"
+                    className="inline-flex items-center justify-center w-full bg-brand text-brand-light hover:bg-brand-accent px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg"
+                  >
+                    Usar ahora →
+                  </Link>
+                </div>
+              </div>
+
+              {/* Generador de Datos */}
+              <div className="bg-brand-light rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="bg-gradient-to-r from-green-500 to-green-600 p-6 text-white">
+                  <div className="text-3xl mb-2">🎲</div>
+                  <h3 className="text-xl font-semibold mb-2">Generador de Datos</h3>
+                  <p className="text-green-100">Genera datos de prueba personalizados para tus tests</p>
+                </div>
+                <div className="p-6">
+                  <p className="text-brand-text mb-4">
+                    Crea datos de prueba realistas para diferentes escenarios. 
+                    Genera nombres, emails, fechas, números y más para automatizar tus pruebas.
+                  </p>
+                  <Link
+                    to="/labs/data-generator"
+                    className="inline-flex items-center justify-center w-full bg-brand text-brand-light hover:bg-brand-accent px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg"
+                  >
+                    Usar ahora →
+                  </Link>
+                </div>
+              </div>
+
+              {/* Checklist de Pruebas */}
+              <div className="bg-brand-light rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="bg-gradient-to-r from-purple-500 to-purple-600 p-6 text-white">
+                  <div className="text-3xl mb-2">✅</div>
+                  <h3 className="text-xl font-semibold mb-2">Checklist de Pruebas</h3>
+                  <p className="text-purple-100">Organiza y gestiona tus casos de prueba</p>
+                </div>
+                <div className="p-6">
+                  <p className="text-brand-text mb-4">
+                    Crea y gestiona checklists de pruebas personalizados. 
+                    Organiza tus casos de prueba por funcionalidad y prioridad.
+                  </p>
+                  <Link
+                    to="/labs/checklist"
+                    className="inline-flex items-center justify-center w-full bg-brand text-brand-light hover:bg-brand-accent px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg"
+                  >
+                    Usar ahora →
+                  </Link>
+                </div>
+              </div>
+
+              {/* Decodificador Base64 */}
+              <div className="bg-brand-light rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-6 text-white">
+                  <div className="text-3xl mb-2">🔓</div>
+                  <h3 className="text-xl font-semibold mb-2">Decodificador Base64</h3>
+                  <p className="text-orange-100">Codifica y decodifica texto en Base64</p>
+                </div>
+                <div className="p-6">
+                  <p className="text-brand-text mb-4">
+                    Herramienta útil para trabajar con datos codificados en Base64. 
+                    Ideal para testing de APIs y análisis de datos.
+                  </p>
+                  <Link
+                    to="/labs/base64-decoder"
+                    className="inline-flex items-center justify-center w-full bg-brand text-brand-light hover:bg-brand-accent px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg"
+                  >
+                    Usar ahora →
+                  </Link>
+                </div>
+              </div>
+
+              {/* Decodificador JWT */}
+              <div className="bg-brand-light rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="bg-gradient-to-r from-red-500 to-red-600 p-6 text-white">
+                  <div className="text-3xl mb-2">🔐</div>
+                  <h3 className="text-xl font-semibold mb-2">Decodificador JWT</h3>
+                  <p className="text-red-100">Decodifica y analiza tokens JWT</p>
+                </div>
+                <div className="p-6">
+                  <p className="text-brand-text mb-4">
+                    Analiza tokens JWT para debugging y testing de autenticación. 
+                    Visualiza headers, payload y verifica la firma.
+                  </p>
+                  <Link
+                    to="/labs/jwt-decoder"
+                    className="inline-flex items-center justify-center w-full bg-brand text-brand-light hover:bg-brand-accent px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg"
+                  >
+                    Usar ahora →
+                  </Link>
+                </div>
+              </div>
+
+              {/* Ver Todas las Herramientas */}
+              <div className="bg-gradient-to-br from-brand to-brand-accent rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="p-6 text-center text-brand-light">
+                  <div className="text-4xl mb-4">🚀</div>
+                  <h3 className="text-xl font-semibold mb-2">Más Herramientas</h3>
+                  <p className="text-brand-light/90 mb-6">
+                    Descubrí todas nuestras herramientas y recursos para testers
+                  </p>
+                  <Link
+                    to="/labs"
+                    className="inline-flex items-center justify-center w-full bg-brand-light text-brand-dark hover:bg-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg"
+                  >
+                    Ver Todas →
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Featured Articles - TEMPORARILY HIDDEN */}
+        {/* 
         <section className="py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
@@ -134,6 +274,7 @@ const Home = () => {
             </div>
           </div>
         </section>
+        */}
 
         {/* Newsletter Section */}
         <section className="py-16 bg-gray-50">
@@ -165,7 +306,7 @@ const Home = () => {
                   Experiencia Comprobada
                 </h3>
                 <p className="text-brand-text">
-                  Más de 10 años de experiencia en testing de software y automatización
+                  Más de 6 años de experiencia en testing de software y automatización
                 </p>
               </div>
 
@@ -176,10 +317,10 @@ const Home = () => {
                   </svg>
                 </div>
                 <h3 className="text-xl font-semibold text-brand-text mb-2">
-                  Contenido Actualizado
+                  Herramientas Gratuitas
                 </h3>
                 <p className="text-brand-text">
-                  Artículos y tutoriales con las últimas tendencias y herramientas
+                  Utilidades web diseñadas específicamente para la comunidad QA
                 </p>
               </div>
 
@@ -193,7 +334,7 @@ const Home = () => {
                   Comunidad Activa
                 </h3>
                 <p className="text-brand-text">
-                  Únete a nuestra comunidad de profesionales de QA
+                  Únete a nuestra comunidad de profesionales de QA en Paraguay y Latinoamérica
                 </p>
               </div>
             </div>

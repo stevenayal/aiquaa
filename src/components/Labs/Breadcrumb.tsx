@@ -39,6 +39,9 @@ const Breadcrumb = () => {
         case 'checklist':
           label = 'Checklist';
           break;
+        case 'jwt-decoder':
+          label = 'Decodificador JWT';
+          break;
         default:
           label = segment.charAt(0).toUpperCase() + segment.slice(1);
       }

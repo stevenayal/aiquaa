@@ -1,9 +1,9 @@
 {
   "name": "Steven Ayala",
-  "role": "Quality Assurance Manager",
-  "company": "Banco Continental SAECA",
+  "role": "Fundador de AIQUAA",
+  "company": "Especialista en Calidad de Software",
   "location": "Paraguay",
-  "description": "Tester certificado ISTQB con más de 6 años de experiencia en QA, automatización, soporte a usuarios y marketing digital. Estudiante de la carrera de Análisis de Sistemas, apasionado por la excelencia en calidad de software.",
+  "description": "Tester certificado ISTQB con más de 6 años de experiencia en QA, automatización y mejora continua del software. Apasionado por la formación, automatización y la innovación tecnológica. Enfocado en construir herramientas que empoderen a la comunidad QA de Paraguay y Latinoamérica.",
   "skills": [
     "QA Manual y Automatizado",
     "Selenium / Postman / REST Assured",

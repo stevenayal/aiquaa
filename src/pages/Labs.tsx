@@ -23,6 +23,20 @@ const Labs = () => {
       path: '/labs/checklist',
       icon: '✅',
       color: 'bg-purple-500'
+    },
+    {
+      title: 'Decodificador Base64',
+      description: 'Convierte cadenas codificadas en Base64 a texto plano',
+      path: '/labs/base64-decoder',
+      icon: '🔓',
+      color: 'bg-orange-500'
+    },
+    {
+      title: 'Decodificador JWT',
+      description: 'Decodifica y analiza tokens JWT de forma visual',
+      path: '/labs/jwt-decoder',
+      icon: '🔐',
+      color: 'bg-indigo-500'
     }
   ];
 
@@ -95,6 +109,7 @@ const Labs = () => {
                   <li>• Validador de JSON para casos de prueba</li>
                   <li>• Generador de datos de prueba aleatorios</li>
                   <li>• Checklist interactiva para procesos QA</li>
+                  <li>• Decodificador Base64 para análisis de datos</li>
                 </ul>
               </div>
               <div>
