@@ -82,7 +82,7 @@ Edita `data/articles.json` para agregar más contenido:
   "excerpt": "Descripción corta",
   "content": "Contenido completo...",
   "author": "Autor",
-  "publishedAt": "2024-02-10",
+  "publishedAt": "2025-08-03",
   "tags": ["Tag1", "Tag2"],
   "image": "https://images.unsplash.com/..."
 }

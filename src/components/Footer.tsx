@@ -9,7 +9,7 @@ const Footer = () => {
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-3 mb-4">
               <img 
-                src="/logo1.png" 
+                src="/images/logo1.png" 
                 alt="AIQUAA Logo" 
                 className="h-10 w-auto"
               />
@@ -131,7 +131,7 @@ const Footer = () => {
         <div className="border-t border-brand-accent mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-brand-muted text-sm">
-              © 2024 AIQUAA. Todos los derechos reservados.
+              © 2025 AIQUAA. Todos los derechos reservados.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <a
