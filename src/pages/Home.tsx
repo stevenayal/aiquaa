@@ -1,11 +1,9 @@
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
-import posts from '../data/posts.json';
 import FeaturedMember from '../components/Team/FeaturedMember';
 import NewsletterSignup from '../components/NewsletterSignup';
 
 const Home = () => {
-  const featuredPosts = posts.slice(0, 3);
 
   return (
     <>
