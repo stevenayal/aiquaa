@@ -48,6 +48,12 @@ const Header = () => {
             >
               Contacto
             </Link>
+            <Link
+              to="/labs"
+              className="text-brand-light hover:text-brand-muted px-3 py-2 text-sm font-medium transition-colors duration-200"
+            >
+              Labs
+            </Link>
           </nav>
 
           {/* Login Button */}

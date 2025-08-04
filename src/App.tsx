@@ -7,6 +7,10 @@ import Article from './pages/Article';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Unite from './pages/Unite';
+import Labs from './pages/Labs';
+import JsonValidator from './components/Labs/JsonValidator';
+import DataGenerator from './components/Labs/DataGenerator';
+import Checklist from './components/Labs/Checklist';
 
 function App() {
   return (
@@ -20,6 +24,10 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/unite" element={<Unite />} />
+            <Route path="/labs" element={<Labs />} />
+            <Route path="/labs/json-validator" element={<JsonValidator />} />
+            <Route path="/labs/data-generator" element={<DataGenerator />} />
+            <Route path="/labs/checklist" element={<Checklist />} />
           </Routes>
         </Layout>
       </Router>
