@@ -198,7 +198,7 @@ const FeedbackForm: React.FC = () => {
                 onChange={() => handleCheckboxChange('temasQA', option.value)}
                 className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
               />
-              <span className="text-sm">{option.label}</span>
+              <span className="text-sm text-gray-800 font-medium">{option.label}</span>
             </label>
           ))}
         </div>
@@ -229,7 +229,7 @@ const FeedbackForm: React.FC = () => {
                 onChange={() => handleCheckboxChange('herramientas', option.value)}
                 className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
               />
-              <span className="text-sm">{option.label}</span>
+              <span className="text-sm text-gray-800 font-medium">{option.label}</span>
             </label>
           ))}
         </div>
