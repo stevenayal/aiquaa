@@ -41,12 +41,14 @@ const Home = () => {
                 >
                   Explorar Herramientas
                 </Link>
+                {/* Blog temporarily hidden until content is ready
                 <Link
                   to="/blog"
                   className="border-2 border-brand-light text-brand-light hover:bg-brand-light hover:text-brand-dark px-8 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg"
                 >
                   Ver Blog
                 </Link>
+                */}
               </div>
             </div>
           </div>

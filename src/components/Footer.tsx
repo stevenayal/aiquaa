@@ -66,6 +66,7 @@ const Footer = () => {
                   Inicio
                 </Link>
               </li>
+              {/* Blog temporarily hidden until content is ready
               <li>
                 <Link
                   to="/blog"
@@ -74,6 +75,7 @@ const Footer = () => {
                   Blog
                 </Link>
               </li>
+              */}
               <li>
                 <Link
                   to="/about"
@@ -93,7 +95,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Categories */}
+          {/* Categories - temporarily hidden until blog is ready
           <div>
             <h3 className="text-lg font-semibold mb-4">Categorías</h3>
             <ul className="space-y-2">
@@ -131,6 +133,7 @@ const Footer = () => {
               </li>
             </ul>
           </div>
+          */}
         </div>
 
         {/* Bottom */}

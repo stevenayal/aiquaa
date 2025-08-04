@@ -24,12 +24,14 @@ const Header = () => {
             >
               Inicio
             </Link>
+            {/* Blog temporarily hidden until content is ready
             <Link
               to="/blog"
               className="text-brand-light hover:text-brand-muted px-3 py-2 text-sm font-medium transition-colors duration-200"
             >
               Blog
             </Link>
+            */}
             <Link
               to="/about"
               className="text-brand-light hover:text-brand-muted px-3 py-2 text-sm font-medium transition-colors duration-200"
