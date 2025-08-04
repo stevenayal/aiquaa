@@ -10,6 +10,8 @@ import Unite from './pages/Unite';
 import Labs from './pages/Labs';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
+import Feedback from './pages/Feedback';
+import FeedbackAdmin from './pages/FeedbackAdmin';
 import JsonValidator from './components/Labs/JsonValidator';
 import DataGenerator from './components/Labs/DataGenerator';
 import Checklist from './components/Labs/Checklist';
@@ -33,6 +35,8 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/unite" element={<Unite />} />
             <Route path="/labs" element={<Labs />} />
+            <Route path="/feedback" element={<Feedback />} />
+            <Route path="/feedback/admin" element={<FeedbackAdmin />} />
             <Route path="/privacidad" element={<Privacy />} />
             <Route path="/terminos" element={<Terms />} />
             <Route path="/labs/json-validator" element={<JsonValidator />} />

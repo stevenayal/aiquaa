@@ -4,23 +4,23 @@ const Header = () => {
   return (
     <header className="bg-brand-dark shadow-sm border-b border-brand-accent">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-16 md:h-20">
           {/* Logo */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-4 mr-8">
               <img 
                 src="/images/logo1.png" 
                 alt="AIQUAA Logo" 
-                className="h-20 w-auto"
+                className="h-24 md:h-28 w-auto"
               />
             </Link>
           </div>
 
           {/* Navigation */}
-          <nav className="hidden md:flex space-x-8">
+          <nav className="hidden md:flex space-x-6 lg:space-x-8">
             <Link
               to="/"
-              className="text-brand-light hover:text-brand-muted px-3 py-2 text-sm font-medium transition-colors duration-200"
+              className="text-brand-light hover:text-brand-muted px-2 lg:px-3 py-2 text-sm lg:text-base font-medium transition-colors duration-200"
             >
               Inicio
             </Link>
@@ -34,25 +34,25 @@ const Header = () => {
             */}
             <Link
               to="/about"
-              className="text-brand-light hover:text-brand-muted px-3 py-2 text-sm font-medium transition-colors duration-200"
+              className="text-brand-light hover:text-brand-muted px-2 lg:px-3 py-2 text-sm lg:text-base font-medium transition-colors duration-200"
             >
               Acerca de
             </Link>
             <Link
               to="/unite"
-              className="text-brand-light hover:text-brand-muted px-3 py-2 text-sm font-medium transition-colors duration-200"
+              className="text-brand-light hover:text-brand-muted px-2 lg:px-3 py-2 text-sm lg:text-base font-medium transition-colors duration-200"
             >
               Unite
             </Link>
             <Link
               to="/contact"
-              className="text-brand-light hover:text-brand-muted px-3 py-2 text-sm font-medium transition-colors duration-200"
+              className="text-brand-light hover:text-brand-muted px-2 lg:px-3 py-2 text-sm lg:text-base font-medium transition-colors duration-200"
             >
               Contacto
             </Link>
             <Link
               to="/labs"
-              className="text-brand-light hover:text-brand-muted px-3 py-2 text-sm font-medium transition-colors duration-200"
+              className="text-brand-light hover:text-brand-muted px-2 lg:px-3 py-2 text-sm lg:text-base font-medium transition-colors duration-200"
             >
               Labs
             </Link>
