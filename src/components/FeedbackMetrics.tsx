@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { feedbackService, type FeedbackMetrics } from '../services/feedbackService';
+import { feedbackService, type FeedbackMetrics as FeedbackMetricsType } from '../services/feedbackService';
 
 const FeedbackMetrics: React.FC = () => {
-  const [metrics, setMetrics] = useState<FeedbackMetrics | null>(null);
+  const [metrics, setMetrics] = useState<FeedbackMetricsType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -111,7 +111,7 @@ const FeedbackMetrics: React.FC = () => {
           <h3 className="text-lg font-semibold text-gray-800 mb-4">🎯 Temas de QA Más Populares</h3>
           {metrics.topTemasQA.length > 0 ? (
             <div className="space-y-3">
-              {metrics.topTemasQA.map((item, index) => (
+              {metrics.topTemasQA.map((item) => (
                 <div key={item.tema} className="flex items-center justify-between">
                   <span className="text-sm font-medium text-gray-700">{item.tema}</span>
                   <div className="flex items-center space-x-2">
@@ -138,7 +138,7 @@ const FeedbackMetrics: React.FC = () => {
           <h3 className="text-lg font-semibold text-gray-800 mb-4">🛠️ Herramientas Más Populares</h3>
           {metrics.topHerramientas.length > 0 ? (
             <div className="space-y-3">
-              {metrics.topHerramientas.map((item, index) => (
+              {metrics.topHerramientas.map((item) => (
                 <div key={item.herramienta} className="flex items-center justify-between">
                   <span className="text-sm font-medium text-gray-700">{item.herramienta}</span>
                   <div className="flex items-center space-x-2">
@@ -165,7 +165,7 @@ const FeedbackMetrics: React.FC = () => {
           <h3 className="text-lg font-semibold text-gray-800 mb-4">👥 Tipos de Participación</h3>
           {metrics.topParticipacion.length > 0 ? (
             <div className="space-y-3">
-              {metrics.topParticipacion.map((item, index) => (
+              {metrics.topParticipacion.map((item) => (
                 <div key={item.tipo} className="flex items-center justify-between">
                   <span className="text-sm font-medium text-gray-700">{item.tipo}</span>
                   <div className="flex items-center space-x-2">
@@ -192,7 +192,7 @@ const FeedbackMetrics: React.FC = () => {
           <h3 className="text-lg font-semibold text-gray-800 mb-4">📱 Formatos Preferidos</h3>
           {metrics.topFormatos.length > 0 ? (
             <div className="space-y-3">
-              {metrics.topFormatos.map((item, index) => (
+              {metrics.topFormatos.map((item) => (
                 <div key={item.formato} className="flex items-center justify-between">
                   <span className="text-sm font-medium text-gray-700">{item.formato}</span>
                   <div className="flex items-center space-x-2">

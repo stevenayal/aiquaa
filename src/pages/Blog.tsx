@@ -124,7 +124,7 @@ const Blog = () => {
 
           {/* Results count */}
           <section className="mb-6">
-            <p className="text-gray-600 dark:text-gray-300">
+            <p className="text-sm md:text-base text-gray-600 dark:text-gray-300">
               {filteredPosts.length} artículo{filteredPosts.length !== 1 ? 's' : ''} encontrado{filteredPosts.length !== 1 ? 's' : ''}
             </p>
           </section>
