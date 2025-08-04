@@ -58,11 +58,11 @@ const ContactForm: React.FC = () => {
     setStatus('loading');
     
     try {
-      // Simular envío - aquí se conectaría con EmailJS, Netlify Forms o similar
+      // Simular envío - preparado para integración con Formspree, Getform o similar
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       setStatus('success');
-      setMessage('¡Mensaje enviado con éxito! Te responderemos pronto.');
+      setMessage('¡Mensaje enviado con éxito! Te responderemos pronto. (Formulario en modo demo - próximamente conectado a backend)');
       
       // Limpiar formulario
       setFormData({
