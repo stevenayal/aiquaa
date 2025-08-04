@@ -8,6 +8,8 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import Unite from './pages/Unite';
 import Labs from './pages/Labs';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
 import JsonValidator from './components/Labs/JsonValidator';
 import DataGenerator from './components/Labs/DataGenerator';
 import Checklist from './components/Labs/Checklist';
@@ -31,6 +33,8 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/unite" element={<Unite />} />
             <Route path="/labs" element={<Labs />} />
+            <Route path="/privacidad" element={<Privacy />} />
+            <Route path="/terminos" element={<Terms />} />
             <Route path="/labs/json-validator" element={<JsonValidator />} />
             <Route path="/labs/data-generator" element={<DataGenerator />} />
             <Route path="/labs/checklist" element={<Checklist />} />

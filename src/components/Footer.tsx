@@ -139,22 +139,35 @@ const Footer = () => {
         {/* Bottom */}
         <div className="border-t border-brand-accent mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-brand-muted text-sm">
-              © 2025 AIQUAA. Todos los derechos reservados.
-            </p>
+            <div className="text-center md:text-left">
+              <p className="text-brand-muted text-sm">
+                © 2025 AIQUAA. Todos los derechos reservados.
+              </p>
+              <p className="text-sm text-brand-muted mt-2">
+                El contenido de AIQUAA está licenciado bajo{' '}
+                <a 
+                  href="https://creativecommons.org/licenses/by-nc-sa/4.0/" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="underline hover:text-brand-light transition-colors duration-200"
+                >
+                  CC BY-NC-SA 4.0
+                </a>.
+              </p>
+            </div>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <a
-                href="/privacy"
+              <Link
+                to="/privacidad"
                 className="text-brand-muted hover:text-brand-light text-sm transition-colors duration-200"
               >
                 Privacidad
-              </a>
-              <a
-                href="/terms"
+              </Link>
+              <Link
+                to="/terminos"
                 className="text-brand-muted hover:text-brand-light text-sm transition-colors duration-200"
               >
                 Términos
-              </a>
+              </Link>
             </div>
           </div>
         </div>
