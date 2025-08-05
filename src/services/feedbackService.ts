@@ -28,9 +28,27 @@ export interface FeedbackMetrics {
 }
 
 // Backend API configuration
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://your-backend-url.com' 
-  : 'http://localhost:3001';
+const getApiBaseUrl = () => {
+  // Check for Vite environment variable first
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+  
+  // Fallback based on environment
+  if (import.meta.env.MODE === 'production') {
+    return 'https://your-backend-url.com'; // Update this with your actual production URL
+  }
+  
+  return 'http://localhost:3001';
+};
+
+const API_BASE_URL = getApiBaseUrl();
+
+// Debug logging (only in development)
+if (import.meta.env.MODE === 'development') {
+  console.log('🔧 API Base URL:', API_BASE_URL);
+  console.log('🔧 Environment:', import.meta.env.MODE);
+}
 
 class FeedbackService {
   private readonly STORAGE_KEY = 'aiquaa_feedback';
