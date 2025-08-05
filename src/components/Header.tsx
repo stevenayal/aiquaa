@@ -48,16 +48,22 @@ const Header = () => {
               Unite
             </Link>
             <Link
+              to="/labs"
+              className="text-brand-light hover:text-brand-muted px-2 lg:px-3 py-2 text-sm lg:text-base font-medium transition-colors duration-200"
+            >
+              Herramientas
+            </Link>
+            <Link
+              to="/comunidad"
+              className="text-brand-light hover:text-brand-muted px-2 lg:px-3 py-2 text-sm lg:text-base font-medium transition-colors duration-200"
+            >
+              Comunidad
+            </Link>
+            <Link
               to="/contact"
               className="text-brand-light hover:text-brand-muted px-2 lg:px-3 py-2 text-sm lg:text-base font-medium transition-colors duration-200"
             >
               Contacto
-            </Link>
-            <Link
-              to="/labs"
-              className="text-brand-light hover:text-brand-muted px-2 lg:px-3 py-2 text-sm lg:text-base font-medium transition-colors duration-200"
-            >
-              Labs
             </Link>
           </nav>
 
@@ -133,18 +139,25 @@ const Header = () => {
               Unite
             </Link>
             <Link
+              to="/labs"
+              className="block text-brand-light hover:text-brand-muted px-4 py-3 text-base font-medium transition-colors duration-200 rounded-lg hover:bg-brand-accent/10"
+              onClick={closeMobileMenu}
+            >
+              Herramientas
+            </Link>
+            <Link
+              to="/comunidad"
+              className="block text-brand-light hover:text-brand-muted px-4 py-3 text-base font-medium transition-colors duration-200 rounded-lg hover:bg-brand-accent/10"
+              onClick={closeMobileMenu}
+            >
+              Comunidad
+            </Link>
+            <Link
               to="/contact"
               className="block text-brand-light hover:text-brand-muted px-4 py-3 text-base font-medium transition-colors duration-200 rounded-lg hover:bg-brand-accent/10"
               onClick={closeMobileMenu}
             >
               Contacto
-            </Link>
-            <Link
-              to="/labs"
-              className="block text-brand-light hover:text-brand-muted px-4 py-3 text-base font-medium transition-colors duration-200 rounded-lg hover:bg-brand-accent/10"
-              onClick={closeMobileMenu}
-            >
-              Labs
             </Link>
             <div className="px-4 py-3">
               <button

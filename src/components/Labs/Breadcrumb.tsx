@@ -30,6 +30,15 @@ const Breadcrumb = () => {
         case 'labs':
           label = 'Labs';
           break;
+        case 'yaml-validator':
+          label = 'Validador YAML';
+          break;
+        case 'crontab-validator':
+          label = 'Validador CronTab';
+          break;
+        case 'sql-generator':
+          label = 'Generador SQL';
+          break;
         case 'json-validator':
           label = 'Validador JSON';
           break;
@@ -41,6 +50,9 @@ const Breadcrumb = () => {
           break;
         case 'jwt-decoder':
           label = 'Decodificador JWT';
+          break;
+        case 'base64-decoder':
+          label = 'Decodificador Base64';
           break;
         default:
           label = segment.charAt(0).toUpperCase() + segment.slice(1);

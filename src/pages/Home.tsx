@@ -279,6 +279,142 @@ const Home = () => {
         </section>
         */}
 
+        {/* Nuevas Funcionalidades Section */}
+        <section className="py-12 md:py-16 bg-gradient-to-r from-blue-50 to-purple-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-8 md:mb-12">
+              <h2 className="text-2xl md:text-3xl font-bold text-brand-text mb-4">
+                🚀 Nuevas Funcionalidades
+              </h2>
+              <p className="text-base md:text-lg text-brand-text px-4">
+                Descubre las últimas herramientas y funcionalidades para potenciar tu carrera en QA
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              {/* Ruta de Aprendizaje */}
+              <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="bg-gradient-to-r from-green-500 to-green-600 p-4 md:p-6 text-white">
+                  <div className="text-2xl md:text-3xl mb-2">🎯</div>
+                  <h3 className="text-lg md:text-xl font-semibold mb-2">Ruta de Aprendizaje QA</h3>
+                  <p className="text-sm md:text-base text-green-100">Ruta interactiva organizada por niveles</p>
+                </div>
+                <div className="p-4 md:p-6">
+                  <p className="text-sm md:text-base text-brand-text mb-4">
+                    Sigue una ruta estructurada desde principiante hasta avanzado. Marca tu progreso y accede a recursos exclusivos.
+                  </p>
+                  <Link
+                    to="/ruta-qa"
+                    className="inline-flex items-center justify-center w-full bg-green-600 text-white hover:bg-green-700 px-4 md:px-6 py-2 md:py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg text-sm md:text-base"
+                  >
+                    Comenzar ruta →
+                  </Link>
+                </div>
+              </div>
+
+              {/* Recomendador de Herramientas */}
+              <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="bg-gradient-to-r from-purple-500 to-purple-600 p-4 md:p-6 text-white">
+                  <div className="text-2xl md:text-3xl mb-2">🛠️</div>
+                  <h3 className="text-lg md:text-xl font-semibold mb-2">Recomendador de Herramientas</h3>
+                  <p className="text-sm md:text-base text-purple-100">Encuentra la herramienta perfecta</p>
+                </div>
+                <div className="p-4 md:p-6">
+                  <p className="text-sm md:text-base text-brand-text mb-4">
+                    Responde un cuestionario y obtén recomendaciones personalizadas de herramientas de testing según tu experiencia y necesidades.
+                  </p>
+                  <Link
+                    to="/herramientas-recomendadas"
+                    className="inline-flex items-center justify-center w-full bg-purple-600 text-white hover:bg-purple-700 px-4 md:px-6 py-2 md:py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg text-sm md:text-base"
+                  >
+                    Obtener recomendación →
+                  </Link>
+                </div>
+              </div>
+
+              {/* Comunidad */}
+              <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-4 md:p-6 text-white">
+                  <div className="text-2xl md:text-3xl mb-2">💬</div>
+                  <h3 className="text-lg md:text-xl font-semibold mb-2">Comunidad de Testers</h3>
+                  <p className="text-sm md:text-base text-orange-100">Conecta y comparte experiencias</p>
+                </div>
+                <div className="p-4 md:p-6">
+                  <p className="text-sm md:text-base text-brand-text mb-4">
+                    Únete a nuestra comunidad activa. Comparte experiencias, haz preguntas y aprende de otros profesionales.
+                  </p>
+                  <Link
+                    to="/comunidad"
+                    className="inline-flex items-center justify-center w-full bg-orange-600 text-white hover:bg-orange-700 px-4 md:px-6 py-2 md:py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg text-sm md:text-base"
+                  >
+                    Unirse a la comunidad →
+                  </Link>
+                </div>
+              </div>
+
+              {/* Estadísticas */}
+              <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-4 md:p-6 text-white">
+                  <div className="text-2xl md:text-3xl mb-2">📊</div>
+                  <h3 className="text-lg md:text-xl font-semibold mb-2">Estadísticas de Comunidad</h3>
+                  <p className="text-sm md:text-base text-blue-100">Métricas y tendencias</p>
+                </div>
+                <div className="p-4 md:p-6">
+                  <p className="text-sm md:text-base text-brand-text mb-4">
+                    Explora las estadísticas de nuestra comunidad, herramientas más populares y tendencias del mercado QA.
+                  </p>
+                  <Link
+                    to="/stats"
+                    className="inline-flex items-center justify-center w-full bg-blue-600 text-white hover:bg-blue-700 px-4 md:px-6 py-2 md:py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg text-sm md:text-base"
+                  >
+                    Ver estadísticas →
+                  </Link>
+                </div>
+              </div>
+
+              {/* Herramientas Utiles */}
+              <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 p-4 md:p-6 text-white">
+                  <div className="text-2xl md:text-3xl mb-2">⚡</div>
+                  <h3 className="text-lg md:text-xl font-semibold mb-2">Herramientas Útiles</h3>
+                  <p className="text-sm md:text-base text-indigo-100">Validador YAML y Base64</p>
+                </div>
+                <div className="p-4 md:p-6">
+                  <p className="text-sm md:text-base text-brand-text mb-4">
+                    Validador de YAML y encodeador/decodificador Base64. Herramientas prácticas para tu trabajo diario.
+                  </p>
+                  <Link
+                    to="/herramientas"
+                    className="inline-flex items-center justify-center w-full bg-indigo-600 text-white hover:bg-indigo-700 px-4 md:px-6 py-2 md:py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg text-sm md:text-base"
+                  >
+                    Usar herramientas →
+                  </Link>
+                </div>
+              </div>
+
+              {/* Zona Tester */}
+              <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="bg-gradient-to-r from-red-500 to-red-600 p-4 md:p-6 text-white">
+                  <div className="text-2xl md:text-3xl mb-2">🔒</div>
+                  <h3 className="text-lg md:text-xl font-semibold mb-2">Zona Tester</h3>
+                  <p className="text-sm md:text-base text-red-100">Contenido exclusivo para miembros</p>
+                </div>
+                <div className="p-4 md:p-6">
+                  <p className="text-sm md:text-base text-brand-text mb-4">
+                    Accede a contenido exclusivo, plantillas premium, descuentos y recursos avanzados solo para testers registrados.
+                  </p>
+                  <Link
+                    to="/zona-tester"
+                    className="inline-flex items-center justify-center w-full bg-red-600 text-white hover:bg-red-700 px-4 md:px-6 py-2 md:py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg text-sm md:text-base"
+                  >
+                    Acceder a zona exclusiva →
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Newsletter Section */}
         <section className="py-12 md:py-16 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

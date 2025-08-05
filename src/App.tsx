@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import Layout from './components/Layout';
 import Home from './pages/Home';
@@ -17,6 +17,14 @@ import DataGenerator from './components/Labs/DataGenerator';
 import Checklist from './components/Labs/Checklist';
 import Base64Converter from './components/Labs/Base64Converter';
 import JwtDecoder from './components/Labs/JwtDecoder';
+import YamlValidator from './components/Labs/YamlValidator';
+import CronTabValidator from './components/Labs/CronTabValidator';
+import SqlObjectGenerator from './components/Labs/SqlObjectGenerator';
+import QARoute from './pages/QARoute';
+import Stats from './pages/Stats';
+import ToolRecommender from './pages/ToolRecommender';
+import TesterZone from './pages/TesterZone';
+import Community from './pages/Community';
 
 function App() {
   return (
@@ -39,11 +47,20 @@ function App() {
             <Route path="/feedback/admin" element={<FeedbackAdmin />} />
             <Route path="/privacidad" element={<Privacy />} />
             <Route path="/terminos" element={<Terms />} />
+            <Route path="/labs/yaml-validator" element={<YamlValidator />} />
+            <Route path="/labs/crontab-validator" element={<CronTabValidator />} />
+            <Route path="/labs/sql-generator" element={<SqlObjectGenerator />} />
             <Route path="/labs/json-validator" element={<JsonValidator />} />
             <Route path="/labs/data-generator" element={<DataGenerator />} />
             <Route path="/labs/checklist" element={<Checklist />} />
             <Route path="/labs/base64-decoder" element={<Base64Converter />} />
             <Route path="/labs/jwt-decoder" element={<JwtDecoder />} />
+            <Route path="/ruta-qa" element={<QARoute />} />
+            <Route path="/stats" element={<Stats />} />
+            <Route path="/herramientas-recomendadas" element={<ToolRecommender />} />
+            <Route path="/zona-tester" element={<TesterZone />} />
+            <Route path="/comunidad" element={<Community />} />
+            <Route path="/herramientas" element={<Navigate to="/labs" replace />} />
           </Routes>
         </Layout>
       </Router>
