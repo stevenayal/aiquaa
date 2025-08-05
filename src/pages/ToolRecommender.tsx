@@ -291,7 +291,7 @@ const ToolRecommender: React.FC = () => {
               </div>
 
               <div className="space-y-6">
-                {recommendedTools.map((tool, index) => (
+                {recommendedTools.map((tool) => (
                   <div key={tool.name} className="border rounded-lg p-6 hover:shadow-md transition-shadow">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center space-x-3">

@@ -16,39 +16,51 @@ const Home = () => {
       </Helmet>
       
       <div>
-        {/* Hero Section */}
-        <section className="bg-brand-dark text-brand-light">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-            <div className="text-center">
-              <div className="flex justify-center mb-6">
-                <img 
-                  src="/images/logo1.png" 
-                  alt="AIQUAA Logo" 
-                  className="h-28 md:h-36 w-auto"
-                />
+        {/* Hero Section - Redesigned */}
+        <section className="py-20 bg-gradient-to-b from-slate-900 to-slate-950 text-white text-center">
+          <div className="max-w-4xl mx-auto px-6">
+            <h1 className="text-4xl md:text-5xl font-extrabold leading-tight">
+              🔧 Herramientas que Resuelven el Trabajo Real del Tester Paraguayo
+            </h1>
+            <p className="mt-4 text-lg md:text-xl text-gray-300">
+              Desde validadores de JSON hasta generadores de datos: todo lo que necesitás para automatizar, validar y crecer como QA. Gratis, en español y hecho por testers locales para testers locales.
+            </p>
+
+            <div className="mt-6 flex flex-col sm:flex-row justify-center gap-4">
+              <Link
+                to="/labs"
+                className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition"
+              >
+                🚀 Empezar a Usar Herramientas
+              </Link>
+              <a href="#testimonios" className="text-indigo-400 hover:underline mt-2 sm:mt-0">
+                Ver qué dicen otros testers →
+              </a>
+            </div>
+
+            <div className="mt-8 text-sm text-green-400">
+              ✅ Ya usamos estas herramientas en +20 proyectos reales en Paraguay
+            </div>
+          </div>
+        </section>
+
+        {/* Urgency Message */}
+        <div className="bg-yellow-300 text-black py-2 px-4 text-center text-sm font-semibold">
+          📢 ¡Estamos en fase piloto! Usá las herramientas, compartí feedback y ayudanos a construir la comunidad de QA más fuerte de Paraguay.
+        </div>
+
+        {/* Testimonials Section */}
+        <section id="testimonios" className="bg-slate-800 text-white py-10">
+          <div className="max-w-4xl mx-auto px-4">
+            <h2 className="text-2xl font-bold mb-4 text-center">Lo que dicen quienes ya usan AIQUAA:</h2>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="bg-slate-700 p-4 rounded-lg">
+                <p>"Me ahorró horas validando respuestas de API. Todo en español y sin pagar nada."</p>
+                <span className="block mt-2 text-sm text-gray-300">— Ana, QA Manual</span>
               </div>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6">
-                💡 Herramientas Gratuitas para Testers
-              </h1>
-              <p className="text-lg sm:text-xl md:text-2xl mb-6 md:mb-8 max-w-3xl mx-auto px-4">
-                Explorá nuestras utilidades web para testers funcionales, automatizadores y QA manual. 
-                Una comunidad paraguaya que une testing, innovación y aprendizaje constante.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center px-4">
-                <Link
-                  to="/labs"
-                  className="bg-brand text-brand-light hover:bg-brand-accent px-6 md:px-8 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg text-sm md:text-base"
-                >
-                  Explorar Herramientas
-                </Link>
-                {/* Blog temporarily hidden until content is ready
-                <Link
-                  to="/blog"
-                  className="border-2 border-brand-light text-brand-light hover:bg-brand-light hover:text-brand-dark px-8 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg"
-                >
-                  Ver Blog
-                </Link>
-                */}
+              <div className="bg-slate-700 p-4 rounded-lg">
+                <p>"Usé el generador de datos para una demo y funcionó al toque. Muy útil."</p>
+                <span className="block mt-2 text-sm text-gray-300">— Luis, Automatizador</span>
               </div>
             </div>
           </div>
