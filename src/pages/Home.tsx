@@ -24,7 +24,7 @@ const Home = () => {
               Herramientas para QA en Paraguay - AIQUAA
             </h1>
             <p className="mt-4 text-lg md:text-xl text-gray-300">
-              Desde validadores de JSON hasta generadores de datos: todo lo que necesitás para automatizar, validar y crecer como QA. Gratis, en español y hecho por testers locales para testers locales.
+              Desde validadores de JSON hasta generadores de datos: todo lo que necesitás para automatizar, validar y crecer como QA. Gratis, en español y hecho por testers locales para testers arriero porte.
             </p>
 
             <div className="mt-6 flex flex-col sm:flex-row justify-center gap-4">
