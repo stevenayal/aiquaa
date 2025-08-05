@@ -84,8 +84,8 @@ const ContactForm: React.FC = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="max-w-2xl mx-auto px-4 sm:px-0">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
         <div>
           <label htmlFor="nombre" className="block text-sm font-medium text-gray-700 mb-2">
             Nombre *
@@ -96,7 +96,7 @@ const ContactForm: React.FC = () => {
             name="nombre"
             value={formData.nombre}
             onChange={handleChange}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
             placeholder="Tu nombre completo"
             disabled={status === 'loading'}
           />
@@ -112,7 +112,7 @@ const ContactForm: React.FC = () => {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
             placeholder="tu@email.com"
             disabled={status === 'loading'}
           />
@@ -127,8 +127,8 @@ const ContactForm: React.FC = () => {
             name="mensaje"
             value={formData.mensaje}
             onChange={handleChange}
-            rows={6}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical"
+            rows={5}
+            className="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical text-sm sm:text-base"
             placeholder="Cuéntanos sobre tu proyecto, consulta o cómo podemos ayudarte..."
             disabled={status === 'loading'}
           />
@@ -137,13 +137,13 @@ const ContactForm: React.FC = () => {
         <button
           type="submit"
           disabled={status === 'loading'}
-          className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-blue-600 text-white py-3 px-4 sm:px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
         >
           {status === 'loading' ? 'Enviando...' : 'Enviar Mensaje'}
         </button>
 
         {message && (
-          <div className={`p-4 rounded-lg ${
+          <div className={`p-3 sm:p-4 rounded-lg text-sm sm:text-base ${
             status === 'success' 
               ? 'bg-green-100 text-green-800 border border-green-200' 
               : 'bg-red-100 text-red-800 border border-red-200'

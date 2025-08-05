@@ -134,18 +134,18 @@ const FeedbackForm: React.FC = () => {
 
   if (isSubmitted) {
     return (
-      <div className="max-w-xl mx-auto p-6 bg-white shadow-lg rounded-xl text-center">
-        <div className="text-6xl mb-4">🎉</div>
-        <h2 className="text-2xl font-bold text-green-600 mb-4">¡Gracias por colaborar con Aiquaa!</h2>
-        <p className="text-gray-600 mb-4">
+      <div className="max-w-xl mx-auto p-4 sm:p-6 bg-white shadow-lg rounded-xl text-center">
+        <div className="text-4xl sm:text-6xl mb-4">🎉</div>
+        <h2 className="text-xl sm:text-2xl font-bold text-green-600 mb-4">¡Gracias por colaborar con Aiquaa!</h2>
+        <p className="text-sm sm:text-base text-gray-600 mb-4">
           Tu feedback es invaluable para construir la mejor comunidad de QA en Paraguay.
         </p>
-        <p className="text-sm text-gray-500 mb-6">
+        <p className="text-xs sm:text-sm text-gray-500 mb-6">
           Te mantendremos informado sobre las novedades y contenido que más te interesa.
         </p>
         <button
           onClick={() => setIsSubmitted(false)}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-xl transition-all"
+          className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-xl transition-all text-sm sm:text-base"
         >
           Enviar otro feedback
         </button>
@@ -157,18 +157,18 @@ const FeedbackForm: React.FC = () => {
     <form 
       id="form-feedback-qa" 
       onSubmit={handleSubmit}
-      className="max-w-xl mx-auto p-6 bg-white shadow-lg rounded-xl space-y-6"
+      className="max-w-xl mx-auto p-4 sm:p-6 bg-white shadow-lg rounded-xl space-y-4 sm:space-y-6"
     >
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-800">🎯 ¡Ayudanos a construir Aiquaa!</h2>
-        <p className="text-gray-600 mt-2">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800">🎯 ¡Ayudanos a construir Aiquaa!</h2>
+        <p className="text-sm sm:text-base text-gray-600 mt-2">
           Queremos saber qué temas, herramientas y formatos te interesan.
         </p>
       </div>
 
       {/* Nombre */}
       <div>
-        <label htmlFor="nombre" className="block font-semibold text-gray-700 mb-2">
+        <label htmlFor="nombre" className="block font-semibold text-gray-700 mb-2 text-sm sm:text-base">
           Tu nombre (opcional)
         </label>
         <input
@@ -177,19 +177,19 @@ const FeedbackForm: React.FC = () => {
           type="text"
           value={formData.nombre}
           onChange={(e) => handleInputChange('nombre', e.target.value)}
-          className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm sm:text-base"
           placeholder="¿Cómo te llamas?"
         />
       </div>
 
       {/* Temas QA */}
       <div>
-        <label className="block font-semibold text-gray-700 mb-2">
+        <label className="block font-semibold text-gray-700 mb-2 text-sm sm:text-base">
           ¿Qué temas de QA te interesan? *
         </label>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
           {temasQAOptions.map((option) => (
-            <label key={option.value} className="flex items-center space-x-2 cursor-pointer">
+            <label key={option.value} className="flex items-center space-x-2 cursor-pointer p-2 rounded-lg hover:bg-gray-50">
               <input
                 type="checkbox"
                 name="temasQA"
@@ -198,29 +198,29 @@ const FeedbackForm: React.FC = () => {
                 onChange={() => handleCheckboxChange('temasQA', option.value)}
                 className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
               />
-              <span className="text-sm text-gray-800 font-medium">{option.label}</span>
+              <span className="text-xs sm:text-sm text-gray-800 font-medium">{option.label}</span>
             </label>
           ))}
         </div>
         {errors.temasQA && (
-          <p className="text-red-500 text-sm mt-1">{errors.temasQA}</p>
+          <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.temasQA}</p>
         )}
         <input
           type="text"
           name="otros-temas"
           placeholder="Otros temas..."
-          className="w-full border border-gray-300 rounded-lg p-3 mt-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          className="w-full border border-gray-300 rounded-lg p-3 mt-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm sm:text-base"
         />
       </div>
 
       {/* Herramientas */}
       <div>
-        <label className="block font-semibold text-gray-700 mb-2">
+        <label className="block font-semibold text-gray-700 mb-2 text-sm sm:text-base">
           ¿Qué herramientas te interesan? *
         </label>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
           {herramientasOptions.map((option) => (
-            <label key={option.value} className="flex items-center space-x-2 cursor-pointer">
+            <label key={option.value} className="flex items-center space-x-2 cursor-pointer p-2 rounded-lg hover:bg-gray-50">
               <input
                 type="checkbox"
                 name="herramientas"
@@ -229,24 +229,24 @@ const FeedbackForm: React.FC = () => {
                 onChange={() => handleCheckboxChange('herramientas', option.value)}
                 className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
               />
-              <span className="text-sm text-gray-800 font-medium">{option.label}</span>
+              <span className="text-xs sm:text-sm text-gray-800 font-medium">{option.label}</span>
             </label>
           ))}
         </div>
         {errors.herramientas && (
-          <p className="text-red-500 text-sm mt-1">{errors.herramientas}</p>
+          <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.herramientas}</p>
         )}
         <input
           type="text"
           name="otras-herramientas"
           placeholder="Otras herramientas..."
-          className="w-full border border-gray-300 rounded-lg p-3 mt-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          className="w-full border border-gray-300 rounded-lg p-3 mt-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm sm:text-base"
         />
       </div>
 
       {/* Participación */}
       <div>
-        <label htmlFor="participacion" className="block font-semibold text-gray-700 mb-2">
+        <label htmlFor="participacion" className="block font-semibold text-gray-700 mb-2 text-sm sm:text-base">
           ¿En qué te gustaría participar?
         </label>
         <select
@@ -254,7 +254,7 @@ const FeedbackForm: React.FC = () => {
           id="participacion"
           value={formData.participacion}
           onChange={(e) => handleInputChange('participacion', e.target.value)}
-          className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm sm:text-base"
         >
           <option value="">Seleccioná una opción</option>
           {participacionOptions.map((option) => (
@@ -267,7 +267,7 @@ const FeedbackForm: React.FC = () => {
 
       {/* Formato */}
       <div>
-        <label htmlFor="formato" className="block font-semibold text-gray-700 mb-2">
+        <label htmlFor="formato" className="block font-semibold text-gray-700 mb-2 text-sm sm:text-base">
           ¿Qué formato de contenido preferís?
         </label>
         <select
@@ -275,7 +275,7 @@ const FeedbackForm: React.FC = () => {
           id="formato"
           value={formData.formato}
           onChange={(e) => handleInputChange('formato', e.target.value)}
-          className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm sm:text-base"
         >
           <option value="">Seleccioná uno</option>
           {formatoOptions.map((option) => (
@@ -288,7 +288,7 @@ const FeedbackForm: React.FC = () => {
 
       {/* Sugerencias */}
       <div>
-        <label htmlFor="sugerencias" className="block font-semibold text-gray-700 mb-2">
+        <label htmlFor="sugerencias" className="block font-semibold text-gray-700 mb-2 text-sm sm:text-base">
           ¿Alguna idea loca o sugerencia? 🚀
         </label>
         <textarea
@@ -297,7 +297,7 @@ const FeedbackForm: React.FC = () => {
           rows={4}
           value={formData.sugerencias}
           onChange={(e) => handleInputChange('sugerencias', e.target.value)}
-          className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm sm:text-base"
           placeholder="Queremos escucharte..."
         />
       </div>
@@ -305,7 +305,7 @@ const FeedbackForm: React.FC = () => {
       {/* Error message */}
       {errors.submit && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-          <p className="text-red-600 text-sm">{errors.submit}</p>
+          <p className="text-red-600 text-xs sm:text-sm">{errors.submit}</p>
         </div>
       )}
 
@@ -313,7 +313,7 @@ const FeedbackForm: React.FC = () => {
       <button
         type="submit"
         disabled={isLoading}
-        className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-bold py-3 px-6 rounded-xl w-full transition-all duration-200 transform hover:scale-105 disabled:transform-none"
+        className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-bold py-3 px-6 rounded-xl w-full transition-all duration-200 transform hover:scale-105 disabled:transform-none text-sm sm:text-base"
       >
         {isLoading ? (
           <span className="flex items-center justify-center">

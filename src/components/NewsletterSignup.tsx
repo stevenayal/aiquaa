@@ -44,35 +44,35 @@ const NewsletterSignup: React.FC = () => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-8 rounded-lg shadow-lg">
+    <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 sm:p-6 lg:p-8 rounded-lg shadow-lg">
       <div className="max-w-2xl mx-auto text-center">
-        <h3 className="text-2xl font-bold mb-4">
+        <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">
           ¡Mantente actualizado con AIQUAA!
         </h3>
-        <p className="text-lg mb-6 opacity-90">
+        <p className="text-sm sm:text-base lg:text-lg mb-4 sm:mb-6 opacity-90">
           Recibe artículos exclusivos, recursos y las últimas novedades sobre automatización, IA y testing.
         </p>
         
-        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 sm:gap-4 max-w-md mx-auto">
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Ingresá tu correo para recibir artículos y recursos"
-            className="flex-1 px-4 py-3 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white"
+            className="flex-1 px-3 sm:px-4 py-3 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white text-sm sm:text-base"
             disabled={status === 'loading'}
           />
           <button
             type="submit"
             disabled={status === 'loading'}
-            className="px-6 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 sm:px-6 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
           >
             {status === 'loading' ? 'Enviando...' : 'Suscribirse'}
           </button>
         </form>
         
         {message && (
-          <div className={`mt-4 p-3 rounded-lg ${
+          <div className={`mt-3 sm:mt-4 p-3 rounded-lg text-sm sm:text-base ${
             status === 'success' 
               ? 'bg-green-500 text-white' 
               : 'bg-red-500 text-white'

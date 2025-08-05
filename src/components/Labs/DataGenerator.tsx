@@ -157,45 +157,45 @@ const DataGenerator = () => {
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid lg:grid-cols-2 gap-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+          <div className="grid lg:grid-cols-2 gap-6 sm:gap-8">
             {/* Configuration Section */}
-            <div className="space-y-6">
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="space-y-4 sm:space-y-6">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
                   Tipos de Datos
                 </h3>
                 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                   {dataTypes.map((type) => (
                     <button
                       key={type.id}
                       onClick={() => handleTypeToggle(type.id)}
-                      className={`p-4 rounded-lg border-2 transition-all duration-200 ${
+                      className={`p-3 sm:p-4 rounded-lg border-2 transition-all duration-200 ${
                         selectedTypes.includes(type.id)
                           ? 'border-green-500 bg-green-50 text-green-700'
                           : 'border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300'
                       }`}
                     >
-                      <div className="text-2xl mb-2">{type.icon}</div>
-                      <div className="font-medium">{type.label}</div>
+                      <div className="text-xl sm:text-2xl mb-1 sm:mb-2">{type.icon}</div>
+                      <div className="font-medium text-sm sm:text-base">{type.label}</div>
                     </button>
                   ))}
                 </div>
 
-                <div className="mt-6">
+                <div className="mt-4 sm:mt-6">
                   <button
                     onClick={handleGenerate}
                     disabled={isGenerating || selectedTypes.length === 0}
-                    className="w-full bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+                    className="w-full bg-green-600 text-white px-4 sm:px-6 py-3 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium text-sm sm:text-base"
                   >
                     {isGenerating ? 'Generando...' : 'Generar Datos'}
                   </button>
                 </div>
 
                 {selectedTypes.length > 0 && (
-                  <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                    <p className="text-sm text-blue-700">
+                  <div className="mt-3 sm:mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-xs sm:text-sm text-blue-700">
                       <strong>Tipos seleccionados:</strong> {selectedTypes.length}
                     </p>
                   </div>
@@ -204,15 +204,15 @@ const DataGenerator = () => {
 
               {/* Export Options */}
               {generatedData.length > 0 && (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
                     Exportar Datos
                   </h3>
                   
-                  <div className="space-y-3">
+                  <div className="space-y-2 sm:space-y-3">
                     <button
                       onClick={handleCopyToClipboard}
-                      className="w-full flex items-center justify-center px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
+                      className="w-full flex items-center justify-center px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm sm:text-base"
                     >
                       <span className="mr-2">📋</span>
                       {copySuccess ? '¡Copiado!' : 'Copiar al Portapapeles'}
@@ -220,7 +220,7 @@ const DataGenerator = () => {
                     
                     <button
                       onClick={handleExportJSON}
-                      className="w-full flex items-center justify-center px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors"
+                      className="w-full flex items-center justify-center px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-sm sm:text-base"
                     >
                       <span className="mr-2">💾</span>
                       Exportar como JSON
@@ -231,32 +231,32 @@ const DataGenerator = () => {
             </div>
 
             {/* Results Section */}
-            <div className="space-y-6">
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">
+            <div className="space-y-4 sm:space-y-6">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+                <div className="flex items-center justify-between mb-3 sm:mb-4">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900">
                     Datos Generados
                   </h3>
                   {generatedData.length > 0 && (
-                    <span className="text-sm text-gray-500">
+                    <span className="text-xs sm:text-sm text-gray-500">
                       {generatedData.length} registro{generatedData.length !== 1 ? 's' : ''}
                     </span>
                   )}
                 </div>
 
                 {generatedData.length === 0 ? (
-                  <div className="text-center py-12">
-                    <div className="text-gray-400 text-4xl mb-4">🎲</div>
-                    <p className="text-gray-600">
+                  <div className="text-center py-8 sm:py-12">
+                    <div className="text-gray-400 text-2xl sm:text-4xl mb-3 sm:mb-4">🎲</div>
+                    <p className="text-gray-600 text-sm sm:text-base">
                       Selecciona tipos de datos y haz clic en "Generar Datos"
                     </p>
                   </div>
                 ) : (
-                  <div className="space-y-4 max-h-96 overflow-y-auto">
+                  <div className="space-y-3 sm:space-y-4 max-h-64 sm:max-h-96 overflow-y-auto scrollbar-thin">
                     {generatedData.map((data, index) => (
-                      <div key={index} className="border border-gray-200 rounded-lg p-4">
+                      <div key={index} className="border border-gray-200 rounded-lg p-3 sm:p-4">
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-medium text-gray-900">
+                          <h4 className="font-medium text-gray-900 text-sm sm:text-base">
                             Registro {index + 1}
                           </h4>
                           <span className="text-xs text-gray-500">
@@ -264,13 +264,13 @@ const DataGenerator = () => {
                           </span>
                         </div>
                         
-                        <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-2 text-xs sm:text-sm">
                           {Object.entries(data).map(([key, value]) => (
                             <div key={key} className="flex justify-between">
                               <span className="text-gray-600 capitalize">
                                 {key}:
                               </span>
-                              <span className="font-mono text-gray-900">
+                              <span className="font-mono text-gray-900 break-all">
                                 {value}
                               </span>
                             </div>
@@ -283,9 +283,9 @@ const DataGenerator = () => {
               </div>
 
               {/* Info Section */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h4 className="font-semibold text-blue-800 mb-3">Tipos de Datos Disponibles:</h4>
-                <div className="text-sm text-blue-700 space-y-2">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4">
+                <h4 className="font-semibold text-blue-800 mb-2 sm:mb-3 text-sm sm:text-base">Tipos de Datos Disponibles:</h4>
+                <div className="text-xs sm:text-sm text-blue-700 space-y-1 sm:space-y-2">
                   <div><strong>Nombre:</strong> Nombres y apellidos aleatorios</div>
                   <div><strong>Email:</strong> Direcciones de email válidas</div>
                   <div><strong>Teléfono:</strong> Números con código de país</div>

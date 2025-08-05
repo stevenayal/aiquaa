@@ -27,40 +27,119 @@ export interface FeedbackMetrics {
   commonSuggestions: string[];
 }
 
+// Backend API configuration
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://your-backend-url.com' 
+  : 'http://localhost:3001';
+
 class FeedbackService {
   private readonly STORAGE_KEY = 'aiquaa_feedback';
   private readonly SESSION_KEY = 'aiquaa_session_id';
 
-  // Simulate API call to Firebase/Google Sheets
+  // Submit feedback to backend API
   async submitFeedback(data: Omit<FeedbackData, 'id' | 'fecha' | 'sessionId'>): Promise<FeedbackData> {
-    const feedbackData: FeedbackData = {
+    const feedbackData = {
       ...data,
-      id: uuidv4(),
-      fecha: new Date().toISOString(),
       sessionId: this.getSessionId(),
       userAgent: navigator.userAgent
     };
 
-    // Store in localStorage for now
-    // In production, this would be sent to Firebase or Google Sheets
-    const existingFeedback = this.getStoredFeedback();
-    existingFeedback.push(feedbackData);
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(existingFeedback));
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/feedback`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(feedbackData),
+      });
 
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-    console.log('Feedback submitted:', feedbackData);
-    return feedbackData;
+      const result = await response.json();
+      
+      // Also store in localStorage as backup
+      const existingFeedback = this.getStoredFeedback();
+      existingFeedback.push({
+        ...result,
+        id: result.id.toString(),
+        fecha: new Date(result.creadoEn).toISOString()
+      });
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(existingFeedback));
+
+      return {
+        ...result,
+        id: result.id.toString(),
+        fecha: new Date(result.creadoEn).toISOString()
+      };
+    } catch (error) {
+      console.error('Error submitting feedback to API:', error);
+      
+      // Fallback to localStorage if API fails
+      const fallbackData: FeedbackData = {
+        ...feedbackData,
+        id: uuidv4(),
+        fecha: new Date().toISOString(),
+        sessionId: this.getSessionId(),
+        userAgent: navigator.userAgent
+      };
+
+      const existingFeedback = this.getStoredFeedback();
+      existingFeedback.push(fallbackData);
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(existingFeedback));
+
+      return fallbackData;
+    }
   }
 
-  // Get stored feedback from localStorage
+  // Get stored feedback from localStorage (fallback)
   getStoredFeedback(): FeedbackData[] {
     try {
       return JSON.parse(localStorage.getItem(this.STORAGE_KEY) || '[]');
     } catch (error) {
       console.error('Error parsing stored feedback:', error);
       return [];
+    }
+  }
+
+  // Get feedback from backend API
+  async getFeedback(): Promise<FeedbackData[]> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/feedback`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      
+      return result.map((item: any) => ({
+        ...item,
+        id: item.id.toString(),
+        fecha: new Date(item.creadoEn).toISOString()
+      }));
+    } catch (error) {
+      console.error('Error fetching feedback from API:', error);
+      // Fallback to localStorage
+      return this.getStoredFeedback();
+    }
+  }
+
+  // Get metrics from backend API
+  async getMetrics(): Promise<FeedbackMetrics> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/feedback/metrics`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching metrics from API:', error);
+      // Fallback to local calculation
+      return this.calculateMetrics();
     }
   }
 
@@ -74,7 +153,7 @@ class FeedbackService {
     return sessionId;
   }
 
-  // Calculate metrics from stored feedback
+  // Calculate metrics from stored feedback (fallback)
   calculateMetrics(): FeedbackMetrics {
     const feedback = this.getStoredFeedback();
     

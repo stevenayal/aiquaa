@@ -6,10 +6,18 @@ const FeedbackMetrics: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const loadMetrics = () => {
-      const calculatedMetrics = feedbackService.calculateMetrics();
-      setMetrics(calculatedMetrics);
-      setIsLoading(false);
+    const loadMetrics = async () => {
+      try {
+        const calculatedMetrics = await feedbackService.getMetrics();
+        setMetrics(calculatedMetrics);
+      } catch (error) {
+        console.error('Error loading metrics:', error);
+        // Fallback to local calculation
+        const localMetrics = feedbackService.calculateMetrics();
+        setMetrics(localMetrics);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     loadMetrics();

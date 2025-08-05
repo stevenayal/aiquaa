@@ -204,10 +204,10 @@ const JsonValidator = () => {
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid lg:grid-cols-2 gap-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+          <div className="grid lg:grid-cols-2 gap-6 sm:gap-8">
             {/* Input Section */}
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               <div>
                 <label htmlFor="json-input" className="block text-sm font-medium text-gray-700 mb-2">
                   JSON del Caso de Prueba
@@ -217,55 +217,55 @@ const JsonValidator = () => {
                   value={jsonInput}
                   onChange={(e) => setJsonInput(e.target.value)}
                   placeholder="Pega aquí tu JSON..."
-                  className="w-full h-96 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm resize-none"
+                  className="w-full h-64 sm:h-80 lg:h-96 p-3 sm:p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-xs sm:text-sm resize-none"
                 />
               </div>
 
-              <div className="flex space-x-3">
+              <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
                 <button
                   onClick={handleValidate}
                   disabled={isValidating}
-                  className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+                  className="flex-1 bg-blue-600 text-white px-4 sm:px-6 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium text-sm sm:text-base"
                 >
                   {isValidating ? 'Validando...' : 'Validar JSON'}
                 </button>
                 <button
                   onClick={handleCopyToClipboard}
                   disabled={!jsonInput.trim()}
-                  className="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm sm:text-base"
                   title="Copiar al portapapeles"
                 >
-                  📋
+                  📋 Copiar
                 </button>
               </div>
             </div>
 
             {/* Results Section */}
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
                   Resultado de la Validación
                 </h3>
                 
                 {validationResult && (
-                  <div className="space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                     {/* Status */}
-                    <div className={`p-4 rounded-lg border ${
+                    <div className={`p-3 sm:p-4 rounded-lg border ${
                       validationResult.isValid 
                         ? 'bg-green-50 border-green-200' 
                         : 'bg-red-50 border-red-200'
                     }`}>
-                      <div className="flex items-center">
-                        <span className="text-2xl mr-3">
+                      <div className="flex items-start sm:items-center">
+                        <span className="text-xl sm:text-2xl mr-2 sm:mr-3 mt-1 sm:mt-0">
                           {validationResult.isValid ? '✅' : '❌'}
                         </span>
                         <div>
-                          <h4 className={`font-semibold ${
+                          <h4 className={`font-semibold text-sm sm:text-base ${
                             validationResult.isValid ? 'text-green-800' : 'text-red-800'
                           }`}>
                             {validationResult.isValid ? 'JSON Válido' : 'JSON Inválido'}
                           </h4>
-                          <p className={`text-sm ${
+                          <p className={`text-xs sm:text-sm ${
                             validationResult.isValid ? 'text-green-700' : 'text-red-700'
                           }`}>
                             {validationResult.isValid 
@@ -279,13 +279,13 @@ const JsonValidator = () => {
 
                     {/* Errors */}
                     {validationResult.errors.length > 0 && (
-                      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                        <h4 className="font-semibold text-red-800 mb-3">Errores encontrados:</h4>
-                        <ul className="space-y-2">
+                      <div className="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4">
+                        <h4 className="font-semibold text-red-800 mb-2 sm:mb-3 text-sm sm:text-base">Errores encontrados:</h4>
+                        <ul className="space-y-1 sm:space-y-2">
                           {validationResult.errors.map((error, index) => (
-                            <li key={index} className="text-red-700 text-sm flex items-start">
-                              <span className="mr-2">•</span>
-                              {error}
+                            <li key={index} className="text-red-700 text-xs sm:text-sm flex items-start">
+                              <span className="mr-2 mt-1">•</span>
+                              <span className="flex-1">{error}</span>
                             </li>
                           ))}
                         </ul>
@@ -294,13 +294,13 @@ const JsonValidator = () => {
 
                     {/* Warnings */}
                     {validationResult.warnings.length > 0 && (
-                      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                        <h4 className="font-semibold text-yellow-800 mb-3">Advertencias:</h4>
-                        <ul className="space-y-2">
+                      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 sm:p-4">
+                        <h4 className="font-semibold text-yellow-800 mb-2 sm:mb-3 text-sm sm:text-base">Advertencias:</h4>
+                        <ul className="space-y-1 sm:space-y-2">
                           {validationResult.warnings.map((warning, index) => (
-                            <li key={index} className="text-yellow-700 text-sm flex items-start">
-                              <span className="mr-2">⚠️</span>
-                              {warning}
+                            <li key={index} className="text-yellow-700 text-xs sm:text-sm flex items-start">
+                              <span className="mr-2 mt-1">⚠️</span>
+                              <span className="flex-1">{warning}</span>
                             </li>
                           ))}
                         </ul>
@@ -310,9 +310,9 @@ const JsonValidator = () => {
                 )}
 
                 {!validationResult && (
-                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
-                    <div className="text-gray-400 text-4xl mb-4">🔍</div>
-                    <p className="text-gray-600">
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 sm:p-6 text-center">
+                    <div className="text-gray-400 text-2xl sm:text-4xl mb-3 sm:mb-4">🔍</div>
+                    <p className="text-gray-600 text-sm sm:text-base">
                       Ingresa un JSON y haz clic en "Validar JSON" para comenzar
                     </p>
                   </div>
@@ -320,9 +320,9 @@ const JsonValidator = () => {
               </div>
 
               {/* Structure Guide */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h4 className="font-semibold text-blue-800 mb-3">Estructura Requerida:</h4>
-                <div className="text-sm text-blue-700 space-y-2">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4">
+                <h4 className="font-semibold text-blue-800 mb-2 sm:mb-3 text-sm sm:text-base">Estructura Requerida:</h4>
+                <div className="text-xs sm:text-sm text-blue-700 space-y-1 sm:space-y-2">
                   <div><strong>casoPrueba:</strong> Identificador único del caso</div>
                   <div><strong>descripcion:</strong> Descripción detallada del caso</div>
                   <div><strong>pasos:</strong> Array con los pasos a seguir</div>
