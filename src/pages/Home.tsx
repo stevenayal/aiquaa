@@ -1,26 +1,27 @@
-import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import SEO from '../components/SEO';
+import { getPageSEO } from '../config/seo';
 import FeaturedMember from '../components/Team/FeaturedMember';
 import NewsletterSignup from '../components/NewsletterSignup';
+import FAQSection from '../components/FAQSection';
 
 const Home = () => {
+  const seoData = getPageSEO('home');
 
   return (
     <>
-      <Helmet>
-        <title>AIQUAA - Herramientas Gratuitas para Testers</title>
-        <meta name="description" content="AIQUAA ofrece herramientas gratuitas para testers funcionales, automatizadores y QA manual. Validador de JSON, generador de datos, checklist de pruebas y más." />
-        <meta property="og:title" content="AIQUAA - Herramientas Gratuitas para Testers" />
-        <meta property="og:description" content="AIQUAA ofrece herramientas gratuitas para testers funcionales, automatizadores y QA manual. Validador de JSON, generador de datos, checklist de pruebas y más." />
-        <meta property="og:type" content="website" />
-      </Helmet>
+      <SEO 
+        title={seoData.title}
+        description={seoData.description}
+        keywords={seoData.keywords}
+      />
       
       <div>
         {/* Hero Section - Redesigned */}
         <section className="py-20 bg-gradient-to-b from-slate-900 to-slate-950 text-white text-center">
           <div className="max-w-4xl mx-auto px-6">
             <h1 className="text-4xl md:text-5xl font-extrabold leading-tight">
-              🔧 Herramientas que Resuelven el Trabajo Real del Tester Paraguayo
+              Herramientas para QA en Paraguay - AIQUAA
             </h1>
             <p className="mt-4 text-lg md:text-xl text-gray-300">
               Desde validadores de JSON hasta generadores de datos: todo lo que necesitás para automatizar, validar y crecer como QA. Gratis, en español y hecho por testers locales para testers locales.
@@ -491,6 +492,9 @@ const Home = () => {
             </div>
           </div>
         </section>
+
+        {/* FAQ Section */}
+        <FAQSection />
 
         {/* Featured Member Section */}
         <FeaturedMember />

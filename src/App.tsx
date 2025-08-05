@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import Layout from './components/Layout';
+import GoogleAnalytics from './components/GoogleAnalytics';
 import Home from './pages/Home';
 // import Blog from './pages/Blog';
 // import Article from './pages/Article';
@@ -30,6 +31,7 @@ function App() {
   return (
     <HelmetProvider>
       <Router>
+        <GoogleAnalytics />
         <Layout>
           <Routes>
             <Route path="/" element={<Home />} />

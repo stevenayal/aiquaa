@@ -10,7 +10,7 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="min-h-screen flex flex-col bg-brand-background overflow-x-hidden">
       <Header />
-      <main className="flex-1 w-full">
+      <main className="flex-1 w-full" role="main">
         {children}
       </main>
       <Footer />
