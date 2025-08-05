@@ -41,17 +41,13 @@ const Header = () => {
             >
               Acerca de
             </Link>
-            <Link
-              to="/unite"
-              className="text-brand-light hover:text-brand-muted px-2 lg:px-3 py-2 text-sm lg:text-base font-medium transition-colors duration-200"
-            >
-              Unite
-            </Link>
+
             <Link
               to="/labs"
-              className="text-brand-light hover:text-brand-muted px-2 lg:px-3 py-2 text-sm lg:text-base font-medium transition-colors duration-200"
+              className="text-brand-light hover:text-brand-muted px-2 lg:px-3 py-2 text-sm lg:text-base font-medium transition-colors duration-200 flex items-center"
             >
-              Herramientas
+              <span className="mr-1">🧪</span>
+              Labs
             </Link>
             <Link
               to="/comunidad"
@@ -59,12 +55,7 @@ const Header = () => {
             >
               Comunidad
             </Link>
-            <Link
-              to="/contact"
-              className="text-brand-light hover:text-brand-muted px-2 lg:px-3 py-2 text-sm lg:text-base font-medium transition-colors duration-200"
-            >
-              Contacto
-            </Link>
+
           </nav>
 
           {/* Desktop Login Button */}
@@ -131,19 +122,14 @@ const Header = () => {
             >
               Acerca de
             </Link>
-            <Link
-              to="/unite"
-              className="block text-brand-light hover:text-brand-muted px-4 py-3 text-base font-medium transition-colors duration-200 rounded-lg hover:bg-brand-accent/10"
-              onClick={closeMobileMenu}
-            >
-              Unite
-            </Link>
+
             <Link
               to="/labs"
               className="block text-brand-light hover:text-brand-muted px-4 py-3 text-base font-medium transition-colors duration-200 rounded-lg hover:bg-brand-accent/10"
               onClick={closeMobileMenu}
             >
-              Herramientas
+              <span className="mr-2">🧪</span>
+              Labs
             </Link>
             <Link
               to="/comunidad"
@@ -152,13 +138,7 @@ const Header = () => {
             >
               Comunidad
             </Link>
-            <Link
-              to="/contact"
-              className="block text-brand-light hover:text-brand-muted px-4 py-3 text-base font-medium transition-colors duration-200 rounded-lg hover:bg-brand-accent/10"
-              onClick={closeMobileMenu}
-            >
-              Contacto
-            </Link>
+
             <div className="px-4 py-3">
               <button
                 className="w-full bg-brand text-brand-light hover:bg-brand-accent px-4 py-3 rounded-lg text-base font-medium transition-colors duration-200 opacity-50 cursor-not-allowed"

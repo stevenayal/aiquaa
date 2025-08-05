@@ -64,8 +64,8 @@ const Labs = () => {
   return (
     <>
       <Helmet>
-        <title>Herramientas para Testers | AIQUAA</title>
-        <meta name="description" content="Herramientas útiles para testers y automatizadores. Validador de JSON, YAML, generador de datos, checklist de pruebas y más." />
+        <title>Labs - Herramientas para Testers | AIQUAA</title>
+        <meta name="description" content="Labs de AIQUAA: Colección de herramientas útiles para testers y automatizadores. Validador de JSON, YAML, generador de datos, checklist de pruebas y más." />
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -74,10 +74,10 @@ const Labs = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div className="text-center">
               <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                🛠️ Herramientas para Testers
+                🧪 AIQUAA Labs
               </h1>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Colección completa de herramientas útiles para testers, desarrolladores y DBA. 
+                Laboratorio de herramientas útiles para testers, desarrolladores y DBA. 
                 Valida YAML, JSON, cron expressions, genera datos de prueba y más.
               </p>
             </div>
@@ -119,7 +119,7 @@ const Labs = () => {
           {/* Info Section */}
           <div className="mt-16 bg-white rounded-xl shadow-sm border border-gray-200 p-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              ¿Qué encontrarás aquí?
+              🧪 ¿Qué encontrarás en nuestros Labs?
             </h2>
             <div className="grid md:grid-cols-2 gap-8">
               <div>
@@ -156,7 +156,7 @@ const Labs = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              🚀 Herramientas Básicas
+              🧪 Herramientas del Laboratorio
             </h2>
             <p className="text-gray-600 mb-8">
               Utilidades rápidas para tareas comunes de testing y desarrollo.

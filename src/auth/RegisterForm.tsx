@@ -1,5 +1,3 @@
-import React from 'react';
-
 const RegisterForm: React.FC = () => {
   return (
     <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
