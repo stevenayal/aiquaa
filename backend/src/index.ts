@@ -94,23 +94,7 @@ const swaggerOptions = {
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
-app.use(cors({
-  origin: [
-    'http://localhost:5173', // Frontend en desarrollo
-    'http://localhost:3000', // Frontend en desarrollo (alternativo)
-    'http://localhost:4173', // Frontend en preview
-    'https://aiquaa.com', // Frontend en producción
-    'https://www.aiquaa.com', // Frontend en producción con www
-    'https://aiquaa.vercel.app', // Frontend en Vercel
-    'https://aiquaa-backend.vercel.app' // Backend en Vercel
-  ],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'User-Agent', 'Origin', 'Accept', 'X-Requested-With']
-}));
-
-// Middleware para manejar preflight requests
-app.options('*', cors());
+app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -133,12 +117,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
  *             example: "API Aiquaa funcionando 🚀"
  */
 // Health check endpoint
-app.get('/', (_, res) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, User-Agent, Origin, Accept, X-Requested-With');
-  res.send('API Aiquaa funcionando 🚀');
-});
+app.get('/', (_, res) => res.send('API Aiquaa funcionando 🚀'));
 
 // Create user
 app.post('/api/usuarios', async (req, res) => {
@@ -481,25 +460,6 @@ app.get('/api/comments', async (req, res) => {
     console.error('❌ Error fetching comments:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
-});
-
-// Middleware para rutas no encontradas
-app.use((req, res) => {
-  console.log(`❌ Ruta no encontrada: ${req.method} ${req.originalUrl}`);
-  res.status(404).json({ 
-    error: 'Ruta no encontrada',
-    path: req.originalUrl,
-    method: req.method
-  });
-});
-
-// Middleware de manejo de errores
-app.use((error: any, req: any, res: any, next: any) => {
-  console.error('❌ Error no manejado:', error);
-  res.status(500).json({ 
-    error: 'Error interno del servidor',
-    message: process.env.NODE_ENV === 'development' ? error.message : 'Algo salió mal'
-  });
 });
 
 const PORT = process.env.PORT || 3001;
