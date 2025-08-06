@@ -98,14 +98,20 @@ app.use(cors({
   origin: [
     'http://localhost:5173', // Frontend en desarrollo
     'http://localhost:3000', // Frontend en desarrollo (alternativo)
+    'http://localhost:4173', // Frontend en preview
     'https://aiquaa.com', // Frontend en producción
     'https://www.aiquaa.com', // Frontend en producción con www
-    'https://aiquaa.vercel.app' // Frontend en Vercel
+    'https://aiquaa.vercel.app', // Frontend en Vercel
+    'https://aiquaa-backend.vercel.app' // Backend en Vercel
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'User-Agent']
+  allowedHeaders: ['Content-Type', 'Authorization', 'User-Agent', 'Origin', 'Accept', 'X-Requested-With']
 }));
+
+// Middleware para manejar preflight requests
+app.options('*', cors());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -127,7 +133,12 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
  *             example: "API Aiquaa funcionando 🚀"
  */
 // Health check endpoint
-app.get('/', (_, res) => res.send('API Aiquaa funcionando 🚀'));
+app.get('/', (_, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, User-Agent, Origin, Accept, X-Requested-With');
+  res.send('API Aiquaa funcionando 🚀');
+});
 
 // Create user
 app.post('/api/usuarios', async (req, res) => {
