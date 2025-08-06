@@ -94,7 +94,22 @@ const swaggerOptions = {
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
-app.use(cors());
+// CORS configuration
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:4173',
+    'https://aiquaa.com',
+    'https://www.aiquaa.com',
+    'https://aiquaa.vercel.app'
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
+
+// Handle preflight requests
+app.options('*', cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -445,8 +460,18 @@ app.post('/api/comments', async (req, res) => {
  */
 app.get('/api/comments', async (req, res) => {
   console.log('📝 GET /api/comments - Request received');
+  console.log('🔧 Environment variables check:', {
+    NODE_ENV: process.env.NODE_ENV,
+    SUPABASE_URL: process.env.SUPABASE_URL ? 'Set' : 'Not set',
+    POSTGRES_URL: process.env.POSTGRES_URL ? 'Set' : 'Not set',
+    POSTGRES_PRISMA_URL: process.env.POSTGRES_PRISMA_URL ? 'Set' : 'Not set'
+  });
   
   try {
+    // Test database connection first
+    await prisma.$connect();
+    console.log('✅ Database connection successful');
+    
     const comments = await prisma.comment.findMany({
       orderBy: {
         createdAt: 'desc'
@@ -456,9 +481,19 @@ app.get('/api/comments', async (req, res) => {
     
     console.log(`✅ Retrieved ${comments.length} comments successfully`);
     res.json(comments);
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Error fetching comments:', error);
-    res.status(500).json({ error: 'Error interno del servidor' });
+    
+    // More detailed error response
+    if (error.code === 'P1001') {
+      res.status(401).json({ error: 'Error de conexión a la base de datos - verificar variables de entorno' });
+    } else if (error.code === 'P2002') {
+      res.status(400).json({ error: 'Error de validación de datos' });
+    } else {
+      res.status(500).json({ error: 'Error interno del servidor', details: error.message });
+    }
+  } finally {
+    await prisma.$disconnect();
   }
 });
 
