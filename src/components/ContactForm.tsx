@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useTheme } from '../contexts/ThemeContext';
 
 const ContactForm: React.FC = () => {
+  const { isDarkMode } = useTheme();
   const [formData, setFormData] = useState({
     nombre: '',
     email: '',
@@ -87,7 +89,9 @@ const ContactForm: React.FC = () => {
     <div className="max-w-2xl mx-auto px-4 sm:px-0">
       <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
         <div>
-          <label htmlFor="nombre" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="nombre" className={`block text-sm font-medium mb-2 ${
+            isDarkMode ? 'text-dark-text' : 'text-gray-700'
+          }`}>
             Nombre *
           </label>
           <input
@@ -96,14 +100,20 @@ const ContactForm: React.FC = () => {
             name="nombre"
             value={formData.nombre}
             onChange={handleChange}
-            className="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+            className={`w-full px-3 sm:px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base ${
+              isDarkMode 
+                ? 'border-dark-secondary bg-dark-primary text-dark-text placeholder-dark-muted' 
+                : 'border-gray-300 text-gray-900 placeholder-gray-500'
+            }`}
             placeholder="Tu nombre completo"
             disabled={status === 'loading'}
           />
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="email" className={`block text-sm font-medium mb-2 ${
+            isDarkMode ? 'text-dark-text' : 'text-gray-700'
+          }`}>
             Correo Electrónico *
           </label>
           <input
@@ -112,14 +122,20 @@ const ContactForm: React.FC = () => {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+            className={`w-full px-3 sm:px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base ${
+              isDarkMode 
+                ? 'border-dark-secondary bg-dark-primary text-dark-text placeholder-dark-muted' 
+                : 'border-gray-300 text-gray-900 placeholder-gray-500'
+            }`}
             placeholder="tu@email.com"
             disabled={status === 'loading'}
           />
         </div>
 
         <div>
-          <label htmlFor="mensaje" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="mensaje" className={`block text-sm font-medium mb-2 ${
+            isDarkMode ? 'text-dark-text' : 'text-gray-700'
+          }`}>
             Mensaje *
           </label>
           <textarea
@@ -128,7 +144,11 @@ const ContactForm: React.FC = () => {
             value={formData.mensaje}
             onChange={handleChange}
             rows={5}
-            className="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical text-sm sm:text-base"
+            className={`w-full px-3 sm:px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical text-sm sm:text-base ${
+              isDarkMode 
+                ? 'border-dark-secondary bg-dark-primary text-dark-text placeholder-dark-muted' 
+                : 'border-gray-300 text-gray-900 placeholder-gray-500'
+            }`}
             placeholder="Cuéntanos sobre tu proyecto, consulta o cómo podemos ayudarte..."
             disabled={status === 'loading'}
           />
@@ -145,8 +165,12 @@ const ContactForm: React.FC = () => {
         {message && (
           <div className={`p-3 sm:p-4 rounded-lg text-sm sm:text-base ${
             status === 'success' 
-              ? 'bg-green-100 text-green-800 border border-green-200' 
-              : 'bg-red-100 text-red-800 border border-red-200'
+              ? isDarkMode
+                ? 'bg-green-900/20 text-green-400 border border-green-800'
+                : 'bg-green-100 text-green-800 border border-green-200'
+              : isDarkMode
+                ? 'bg-red-900/20 text-red-400 border border-red-800'
+                : 'bg-red-100 text-red-800 border border-red-200'
           }`}>
             {message}
           </div>

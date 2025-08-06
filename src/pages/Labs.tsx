@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { useTheme } from '../contexts/ThemeContext';
 
 const Labs = () => {
+  const { isDarkMode } = useTheme();
   const tools = [
     {
       title: 'Validador de YAML',
@@ -68,15 +70,25 @@ const Labs = () => {
         <meta name="description" content="Labs de AIQUAA: Colección de herramientas útiles para testers y automatizadores. Validador de JSON, YAML, generador de datos, checklist de pruebas y más." />
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className={`min-h-screen ${
+        isDarkMode 
+          ? 'bg-gradient-to-br from-dark-background to-dark-primary' 
+          : 'bg-gradient-to-br from-gray-50 to-gray-100'
+      }`}>
         {/* Hero Section */}
-        <div className="bg-white shadow-sm border-b">
+        <div className={`shadow-sm border-b ${
+          isDarkMode ? 'bg-dark-primary border-dark-secondary' : 'bg-white'
+        }`}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div className="text-center">
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              <h1 className={`text-4xl font-bold mb-4 ${
+                isDarkMode ? 'text-dark-text' : 'text-gray-900'
+              }`}>
                 🧪 AIQUAA Labs
               </h1>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className={`text-xl max-w-3xl mx-auto ${
+                isDarkMode ? 'text-dark-muted' : 'text-gray-600'
+              }`}>
                 Laboratorio de herramientas útiles para testers, desarrolladores y DBA. 
                 Valida YAML, JSON, cron expressions, genera datos de prueba y más.
               </p>
@@ -93,7 +105,11 @@ const Labs = () => {
                 to={tool.path}
                 className="group block"
               >
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-all duration-200 hover:border-gray-300">
+                <div className={`rounded-xl shadow-sm border p-6 hover:shadow-lg transition-all duration-200 ${
+                  isDarkMode 
+                    ? 'bg-dark-primary border-dark-secondary hover:border-dark-accent' 
+                    : 'bg-white border-gray-200 hover:border-gray-300'
+                }`}>
                   <div className="flex items-center mb-4">
                     <div className={`${tool.color} text-white p-3 rounded-lg text-2xl mr-4`}>
                       {tool.icon}

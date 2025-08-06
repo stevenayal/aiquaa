@@ -27,6 +27,17 @@ export interface FeedbackMetrics {
   commonSuggestions: string[];
 }
 
+export interface Comment {
+  id: number;
+  name: string;
+  message: string;
+  isAnonymous: boolean;
+  userAgent?: string;
+  ip?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Backend API configuration
 const getApiBaseUrl = () => {
   // Check for Vite environment variable first
@@ -284,6 +295,54 @@ class FeedbackService {
     });
 
     return wordCount;
+  }
+
+  // Community comments methods
+  async submitComment(data: { name: string; message: string; isAnonymous: boolean }): Promise<Comment> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/comments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      return {
+        ...result,
+        createdAt: new Date(result.createdAt).toISOString(),
+        updatedAt: new Date(result.updatedAt).toISOString()
+      };
+    } catch (error) {
+      console.error('Error submitting comment to API:', error);
+      throw error;
+    }
+  }
+
+  async getComments(): Promise<Comment[]> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/comments`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      
+      return result.map((item: any) => ({
+        ...item,
+        createdAt: new Date(item.createdAt).toISOString(),
+        updatedAt: new Date(item.updatedAt).toISOString()
+      }));
+    } catch (error) {
+      console.error('Error fetching comments from API:', error);
+      throw error;
+    }
   }
 }
 

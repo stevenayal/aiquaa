@@ -307,7 +307,7 @@ END ${obj.name};`;
                       value={newObject.name}
                       onChange={(e) => setNewObject({...newObject, name: e.target.value})}
                       placeholder="Ej: users, get_user_data"
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
                     />
                   </div>
 
@@ -318,7 +318,7 @@ END ${obj.name};`;
                     <select
                       value={newObject.type}
                       onChange={(e) => setNewObject({...newObject, type: e.target.value})}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
                     >
                       <option value="">Seleccionar tipo</option>
                       {objectTypes.map(type => (
@@ -341,7 +341,7 @@ END ${obj.name};`;
                         dependencies: e.target.value.split(',').map(d => d.trim()).filter(d => d)
                       })}
                       placeholder="Ej: users, user_profiles"
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
                     />
                   </div>
 
@@ -354,7 +354,7 @@ END ${obj.name};`;
                       onChange={(e) => setNewObject({...newObject, description: e.target.value})}
                       placeholder="Descripción del objeto..."
                       rows={3}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
                     />
                   </div>
 

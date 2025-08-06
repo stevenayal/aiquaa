@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-
-interface Comment {
-  id: string;
-  name: string;
-  message: string;
-  timestamp: Date;
-  isAnonymous: boolean;
-}
+import { feedbackService, type Comment } from '../services/feedbackService';
 
 const Community: React.FC = () => {
   const [comments, setComments] = useState<Comment[]>([]);
@@ -17,22 +10,26 @@ const Community: React.FC = () => {
     isAnonymous: false
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Cargar comentarios desde localStorage (en producción sería desde backend)
+  // Cargar comentarios desde el backend
   useEffect(() => {
-    const savedComments = localStorage.getItem('community-comments');
-    if (savedComments) {
-      const parsedComments = JSON.parse(savedComments).map((comment: any) => ({
-        ...comment,
-        timestamp: new Date(comment.timestamp)
-      }));
-      setComments(parsedComments);
-    }
+    loadComments();
   }, []);
 
-  // Guardar comentarios en localStorage
-  const saveComments = (commentsToSave: Comment[]) => {
-    localStorage.setItem('community-comments', JSON.stringify(commentsToSave));
+  const loadComments = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const fetchedComments = await feedbackService.getComments();
+      setComments(fetchedComments);
+    } catch (error) {
+      console.error('Error loading comments:', error);
+      setError('Error al cargar los comentarios. Inténtalo de nuevo.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -41,22 +38,18 @@ const Community: React.FC = () => {
     if (!newComment.message.trim()) return;
 
     setIsSubmitting(true);
+    setError(null);
 
     try {
-      // Simular envío al backend
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      const comment: Comment = {
-        id: Date.now().toString(),
-        name: newComment.isAnonymous ? 'Anónimo' : newComment.name || 'Usuario',
+      // Enviar comentario al backend
+      const comment = await feedbackService.submitComment({
+        name: newComment.name,
         message: newComment.message.trim(),
-        timestamp: new Date(),
         isAnonymous: newComment.isAnonymous
-      };
+      });
 
-      const updatedComments = [comment, ...comments].slice(0, 20); // Mantener solo los últimos 20
-      setComments(updatedComments);
-      saveComments(updatedComments);
+      // Agregar el nuevo comentario al inicio de la lista
+      setComments(prev => [comment, ...prev]);
 
       // Resetear formulario
       setNewComment({
@@ -69,15 +62,16 @@ const Community: React.FC = () => {
       alert('¡Comentario publicado exitosamente!');
     } catch (error) {
       console.error('Error al publicar comentario:', error);
-      alert('Error al publicar el comentario. Inténtalo de nuevo.');
+      setError('Error al publicar el comentario. Inténtalo de nuevo.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const formatTimeAgo = (timestamp: Date) => {
+  const formatTimeAgo = (timestamp: string) => {
     const now = new Date();
-    const diffInSeconds = Math.floor((now.getTime() - timestamp.getTime()) / 1000);
+    const commentDate = new Date(timestamp);
+    const diffInSeconds = Math.floor((now.getTime() - commentDate.getTime()) / 1000);
 
     if (diffInSeconds < 60) {
       return 'hace un momento';
@@ -134,7 +128,7 @@ const Community: React.FC = () => {
                   value={newComment.name}
                   onChange={(e) => setNewComment(prev => ({ ...prev, name: e.target.value }))}
                   disabled={newComment.isAnonymous}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-gray-900"
                   placeholder="Tu nombre o apodo"
                 />
               </div>
@@ -166,7 +160,7 @@ const Community: React.FC = () => {
                 value={newComment.message}
                 onChange={(e) => setNewComment(prev => ({ ...prev, message: e.target.value }))}
                 rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 placeholder="Comparte tu experiencia, pregunta o consejo..."
                 required
               />
@@ -185,15 +179,36 @@ const Community: React.FC = () => {
               </button>
             </div>
           </form>
+
+          {/* Error message */}
+          {error && (
+            <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-3">
+              <p className="text-red-600 text-sm">{error}</p>
+            </div>
+          )}
         </div>
 
         {/* Lista de comentarios */}
         <div className="bg-white rounded-lg shadow-lg p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-6">
-            💭 Comentarios Recientes ({comments.length})
-          </h2>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-semibold text-gray-800">
+              💭 Comentarios Recientes ({comments.length})
+            </h2>
+            <button
+              onClick={loadComments}
+              disabled={isLoading}
+              className="text-sm text-blue-600 hover:text-blue-700 disabled:text-gray-400"
+            >
+              {isLoading ? 'Cargando...' : '🔄 Actualizar'}
+            </button>
+          </div>
 
-          {comments.length === 0 ? (
+          {isLoading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Cargando comentarios...</p>
+            </div>
+          ) : comments.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-4xl mb-4">💭</div>
               <h3 className="text-lg font-medium text-gray-800 mb-2">
@@ -223,7 +238,7 @@ const Community: React.FC = () => {
                           </span>
                         )}
                         <span className="text-sm text-gray-500">
-                          {formatTimeAgo(comment.timestamp)}
+                          {formatTimeAgo(comment.createdAt)}
                         </span>
                       </div>
                       
@@ -274,7 +289,7 @@ const Community: React.FC = () => {
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-orange-600">
-                {comments.length > 0 ? formatTimeAgo(comments[comments.length - 1].timestamp) : 'N/A'}
+                {comments.length > 0 ? formatTimeAgo(comments[0].createdAt) : 'N/A'}
               </div>
               <div className="text-sm text-gray-600">Último comentario</div>
             </div>

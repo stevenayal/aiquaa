@@ -169,7 +169,7 @@ const Base64Converter = () => {
                     value={base64Input}
                     onChange={(e) => setBase64Input(e.target.value)}
                     placeholder="Pega aquí tu cadena Base64..."
-                    className="w-full h-64 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm resize-none"
+                    className="w-full h-64 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm resize-none text-gray-900 bg-white"
                   />
                 </div>
 

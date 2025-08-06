@@ -124,7 +124,7 @@ spec:
                   value={yamlInput}
                   onChange={(e) => setYamlInput(e.target.value)}
                   placeholder="Pega tu código YAML aquí..."
-                  className="w-full h-96 p-4 border border-gray-300 rounded-lg font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                  className="w-full h-96 p-4 border border-gray-300 rounded-lg font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-gray-900 bg-white"
                   spellCheck="false"
                 />
                 

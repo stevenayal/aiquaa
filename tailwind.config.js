@@ -4,6 +4,7 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       fontFamily: {
@@ -21,7 +22,14 @@ export default {
         'brand-accent': '#4ADE80', // same as accent
         'brand-text': '#0F172A',   // same as primary
         'brand-muted': '#64748B',  // muted text color
-        'brand-background': '#0F172A' // same as primary
+        'brand-background': '#0F172A', // same as primary
+        // Dark mode colors
+        'dark-primary': '#1E293B',
+        'dark-secondary': '#334155',
+        'dark-accent': '#10B981',
+        'dark-text': '#F1F5F9',
+        'dark-muted': '#94A3B8',
+        'dark-background': '#0F172A'
       }
     },
   },

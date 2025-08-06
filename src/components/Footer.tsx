@@ -1,8 +1,15 @@
 import { Link } from 'react-router-dom';
+import { useTheme } from '../contexts/ThemeContext';
 
 const Footer = () => {
+  const { isDarkMode } = useTheme();
+  
   return (
-    <footer className="bg-brand-dark text-brand-light" role="contentinfo">
+    <footer className={`${
+      isDarkMode 
+        ? 'bg-dark-background text-dark-text border-t border-dark-secondary' 
+        : 'bg-brand-dark text-brand-light'
+    }`} role="contentinfo">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
@@ -14,13 +21,19 @@ const Footer = () => {
                 className="h-10 w-auto"
               />
             </div>
-            <p className="text-brand-muted mb-4 max-w-md">
+            <p className={`mb-4 max-w-md ${
+              isDarkMode ? 'text-dark-muted' : 'text-brand-muted'
+            }`}>
               AIQUAA: Saber es Calidad. Inspirados por el conocimiento, impulsados por la comunidad.
             </p>
             <div className="flex space-x-4">
               <a
                 href="https://x.com/stevenayaal"
-                className="text-brand-muted hover:text-brand transition-colors duration-200"
+                className={`transition-colors duration-200 ${
+                  isDarkMode 
+                    ? 'text-dark-muted hover:text-dark-accent' 
+                    : 'text-brand-muted hover:text-brand'
+                }`}
                 aria-label="X (Twitter)"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -31,7 +44,11 @@ const Footer = () => {
               </a>
               <a
                 href="https://www.linkedin.com/in/stevenayal/"
-                className="text-brand-muted hover:text-brand transition-colors duration-200"
+                className={`transition-colors duration-200 ${
+                  isDarkMode 
+                    ? 'text-dark-muted hover:text-dark-accent' 
+                    : 'text-brand-muted hover:text-brand'
+                }`}
                 aria-label="LinkedIn"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -42,7 +59,11 @@ const Footer = () => {
               </a>
               <a
                 href="https://github.com/stevenayal"
-                className="text-brand-muted hover:text-brand transition-colors duration-200"
+                className={`transition-colors duration-200 ${
+                  isDarkMode 
+                    ? 'text-dark-muted hover:text-dark-accent' 
+                    : 'text-brand-muted hover:text-brand'
+                }`}
                 aria-label="GitHub"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -56,12 +77,18 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Enlaces Rápidos</h3>
+            <h3 className={`text-lg font-semibold mb-4 ${
+              isDarkMode ? 'text-dark-text' : 'text-brand-light'
+            }`}>Enlaces Rápidos</h3>
             <ul className="space-y-2">
               <li>
                 <Link
                   to="/"
-                  className="text-brand-muted hover:text-brand-light transition-colors duration-200"
+                  className={`transition-colors duration-200 ${
+                    isDarkMode 
+                      ? 'text-dark-muted hover:text-dark-text' 
+                      : 'text-brand-muted hover:text-brand-light'
+                  }`}
                 >
                   Inicio
                 </Link>
@@ -79,7 +106,11 @@ const Footer = () => {
               <li>
                 <Link
                   to="/about"
-                  className="text-brand-muted hover:text-brand-light transition-colors duration-200"
+                  className={`transition-colors duration-200 ${
+                    isDarkMode 
+                      ? 'text-dark-muted hover:text-dark-text' 
+                      : 'text-brand-muted hover:text-brand-light'
+                  }`}
                 >
                   Acerca de
                 </Link>
@@ -87,7 +118,11 @@ const Footer = () => {
               <li>
                 <Link
                   to="/contact"
-                  className="text-brand-muted hover:text-brand-light transition-colors duration-200"
+                  className={`transition-colors duration-200 ${
+                    isDarkMode 
+                      ? 'text-dark-muted hover:text-dark-text' 
+                      : 'text-brand-muted hover:text-brand-light'
+                  }`}
                 >
                   Contacto
                 </Link>
@@ -137,19 +172,29 @@ const Footer = () => {
         </div>
 
         {/* Bottom */}
-        <div className="border-t border-brand-accent mt-8 pt-8">
+        <div className={`border-t mt-8 pt-8 ${
+          isDarkMode ? 'border-dark-secondary' : 'border-brand-accent'
+        }`}>
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-center md:text-left">
-              <p className="text-brand-muted text-sm">
+              <p className={`text-sm ${
+                isDarkMode ? 'text-dark-muted' : 'text-brand-muted'
+              }`}>
                 © 2025 AIQUAA. Todos los derechos reservados.
               </p>
-              <p className="text-sm text-brand-muted mt-2">
+              <p className={`text-sm mt-2 ${
+                isDarkMode ? 'text-dark-muted' : 'text-brand-muted'
+              }`}>
                 El contenido de AIQUAA está licenciado bajo{' '}
                 <a 
                   href="https://creativecommons.org/licenses/by-nc-sa/4.0/" 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="underline hover:text-brand-light transition-colors duration-200"
+                  className={`underline transition-colors duration-200 ${
+                    isDarkMode 
+                      ? 'hover:text-dark-text' 
+                      : 'hover:text-brand-light'
+                  }`}
                 >
                   CC BY-NC-SA 4.0
                 </a>.
@@ -158,13 +203,21 @@ const Footer = () => {
             <div className="flex space-x-6 mt-4 md:mt-0">
               <Link
                 to="/privacidad"
-                className="text-brand-muted hover:text-brand-light text-sm transition-colors duration-200"
+                className={`text-sm transition-colors duration-200 ${
+                  isDarkMode 
+                    ? 'text-dark-muted hover:text-dark-text' 
+                    : 'text-brand-muted hover:text-brand-light'
+                }`}
               >
                 Privacidad
               </Link>
               <Link
                 to="/terminos"
-                className="text-brand-muted hover:text-brand-light text-sm transition-colors duration-200"
+                className={`text-sm transition-colors duration-200 ${
+                  isDarkMode 
+                    ? 'text-dark-muted hover:text-dark-text' 
+                    : 'text-brand-muted hover:text-brand-light'
+                }`}
               >
                 Términos
               </Link>

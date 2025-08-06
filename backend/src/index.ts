@@ -73,8 +73,8 @@ app.post('/api/feedback', async (req, res) => {
     const feedback = await prisma.feedback.create({
       data: {
         usuarioId: usuarioId || null,
-        temasQA,
-        herramientas,
+        temasQA: Array.isArray(temasQA) ? JSON.stringify(temasQA) : temasQA,
+        herramientas: Array.isArray(herramientas) ? JSON.stringify(herramientas) : herramientas,
         participacion,
         formato,
         sugerencias,
@@ -126,17 +126,33 @@ app.get('/api/feedback/metrics', async (req, res) => {
     // Count topics
     const temasCount: Record<string, number> = {};
     allFeedback.forEach(item => {
-      item.temasQA.forEach(tema => {
-        temasCount[tema] = (temasCount[tema] || 0) + 1;
-      });
+      try {
+        const temas = JSON.parse(item.temasQA);
+        if (Array.isArray(temas)) {
+          temas.forEach(tema => {
+            temasCount[tema] = (temasCount[tema] || 0) + 1;
+          });
+        }
+      } catch (e) {
+        // If it's not JSON, treat as single string
+        temasCount[item.temasQA] = (temasCount[item.temasQA] || 0) + 1;
+      }
     });
 
     // Count tools
     const herramientasCount: Record<string, number> = {};
     allFeedback.forEach(item => {
-      item.herramientas.forEach(herramienta => {
-        herramientasCount[herramienta] = (herramientasCount[herramienta] || 0) + 1;
-      });
+      try {
+        const herramientas = JSON.parse(item.herramientas);
+        if (Array.isArray(herramientas)) {
+          herramientas.forEach(herramienta => {
+            herramientasCount[herramienta] = (herramientasCount[herramienta] || 0) + 1;
+          });
+        }
+      } catch (e) {
+        // If it's not JSON, treat as single string
+        herramientasCount[item.herramientas] = (herramientasCount[item.herramientas] || 0) + 1;
+      }
     });
 
     // Count participation types
@@ -190,6 +206,47 @@ app.get('/api/feedback/metrics', async (req, res) => {
     res.json(metrics);
   } catch (error) {
     console.error('Error calculating metrics:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// Community comments endpoints
+app.post('/api/comments', async (req, res) => {
+  try {
+    const { name, message, isAnonymous } = req.body;
+    
+    if (!message || !message.trim()) {
+      return res.status(400).json({ error: 'El mensaje es requerido' });
+    }
+
+    const comment = await prisma.comment.create({
+      data: {
+        name: isAnonymous ? 'Anónimo' : (name || 'Usuario'),
+        message: message.trim(),
+        isAnonymous: isAnonymous || false,
+        userAgent: req.headers['user-agent'] || '',
+        ip: req.ip || req.connection.remoteAddress || ''
+      }
+    });
+    
+    res.json(comment);
+  } catch (error) {
+    console.error('Error creating comment:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+app.get('/api/comments', async (req, res) => {
+  try {
+    const comments = await prisma.comment.findMany({
+      orderBy: {
+        createdAt: 'desc'
+      },
+      take: 50 // Limit to last 50 comments
+    });
+    res.json(comments);
+  } catch (error) {
+    console.error('Error fetching comments:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
