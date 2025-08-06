@@ -9,7 +9,7 @@ export const API_CONFIG = {
     
     // Fallback based on environment
     if (import.meta.env.MODE === 'production') {
-      return 'https://api.aiquaa.com'; // URL del backend en producción
+      return 'https://aiquaa-backend.vercel.app'; // URL del backend en producción (Vercel)
     }
     
     // Force localhost for development

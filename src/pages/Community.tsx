@@ -22,11 +22,15 @@ const Community: React.FC = () => {
     try {
       setIsLoading(true);
       setError(null);
+      console.log('🔧 Loading comments...');
       const fetchedComments = await feedbackService.getComments();
+      console.log('🔧 Comments loaded:', fetchedComments.length);
       setComments(fetchedComments);
     } catch (error) {
       console.error('Error loading comments:', error);
       setError('Error al cargar los comentarios. Inténtalo de nuevo.');
+      // Set empty array to show empty state
+      setComments([]);
     } finally {
       setIsLoading(false);
     }
@@ -41,12 +45,15 @@ const Community: React.FC = () => {
     setError(null);
 
     try {
+      console.log('🔧 Submitting comment...');
       // Enviar comentario al backend
       const comment = await feedbackService.submitComment({
         name: newComment.name,
         message: newComment.message.trim(),
         isAnonymous: newComment.isAnonymous
       });
+
+      console.log('🔧 Comment submitted successfully:', comment);
 
       // Agregar el nuevo comentario al inicio de la lista
       setComments(prev => [comment, ...prev]);

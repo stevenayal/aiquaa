@@ -281,6 +281,9 @@ class FeedbackService {
   // Community comments methods
   async submitComment(data: { name: string; message: string; isAnonymous: boolean }): Promise<Comment> {
     try {
+      console.log('🔧 Submitting comment to:', `${API_BASE_URL}/api/comments`);
+      console.log('🔧 Comment data:', data);
+      
       const response = await fetch(`${API_BASE_URL}/api/comments`, {
         method: 'POST',
         headers: {
@@ -289,11 +292,18 @@ class FeedbackService {
         body: JSON.stringify(data),
       });
 
+      console.log('🔧 Response status:', response.status);
+      console.log('🔧 Response ok:', response.ok);
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error('🔧 Error response:', errorText);
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
       }
 
       const result = await response.json();
+      console.log('🔧 Success response:', result);
+      
       return {
         ...result,
         createdAt: new Date(result.createdAt).toISOString(),
@@ -301,19 +311,27 @@ class FeedbackService {
       };
     } catch (error) {
       console.error('Error submitting comment to API:', error);
+      console.error('🔧 API Base URL was:', API_BASE_URL);
       throw error;
     }
   }
 
   async getComments(): Promise<Comment[]> {
     try {
+      console.log('🔧 Fetching comments from:', `${API_BASE_URL}/api/comments`);
       const response = await fetch(`${API_BASE_URL}/api/comments`);
       
+      console.log('🔧 Response status:', response.status);
+      console.log('🔧 Response ok:', response.ok);
+      
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error('🔧 Error response:', errorText);
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
       }
 
       const result = await response.json();
+      console.log('🔧 Success response:', result);
       
       return result.map((item: any) => ({
         ...item,
@@ -322,6 +340,7 @@ class FeedbackService {
       }));
     } catch (error) {
       console.error('Error fetching comments from API:', error);
+      console.error('🔧 API Base URL was:', API_BASE_URL);
       throw error;
     }
   }
