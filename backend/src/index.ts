@@ -94,22 +94,8 @@ const swaggerOptions = {
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
-// CORS configuration
-app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'http://localhost:4173',
-    'https://aiquaa.com',
-    'https://www.aiquaa.com',
-    'https://aiquaa.vercel.app'
-  ],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-}));
-
-// Handle preflight requests
-app.options('*', cors());
+// CORS configuration - Simplified for debugging
+app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -133,6 +119,20 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
  */
 // Health check endpoint
 app.get('/', (_, res) => res.send('API Aiquaa funcionando 🚀'));
+
+// Test endpoint for debugging
+app.get('/api/test', (_, res) => {
+  res.json({
+    message: 'Backend funcionando correctamente',
+    timestamp: new Date().toISOString(),
+    env: process.env.NODE_ENV,
+    hasDbVars: {
+      SUPABASE_URL: !!process.env.SUPABASE_URL,
+      POSTGRES_URL: !!process.env.POSTGRES_URL,
+      POSTGRES_PRISMA_URL: !!process.env.POSTGRES_PRISMA_URL
+    }
+  });
+});
 
 // Create user
 app.post('/api/usuarios', async (req, res) => {
