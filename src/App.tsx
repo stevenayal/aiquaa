@@ -27,6 +27,7 @@ import Stats from './pages/Stats';
 import ToolRecommender from './pages/ToolRecommender';
 // import TesterZone from './pages/TesterZone';
 import Community from './pages/Community';
+import ApiTest from './pages/ApiTest';
 
 function App() {
   return (
@@ -66,6 +67,7 @@ function App() {
               <Route path="/zona-tester" element={<TesterZone />} />
               */}
               <Route path="/comunidad" element={<Community />} />
+              <Route path="/api-test" element={<ApiTest />} />
               <Route path="/herramientas" element={<Navigate to="/labs" replace />} />
             </Routes>
           </Layout>
