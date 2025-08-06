@@ -473,7 +473,7 @@ app.get('/api/comments', async (req, res) => {
 });
 
 // Middleware para rutas no encontradas
-app.use('*', (req, res) => {
+app.use((req, res) => {
   console.log(`❌ Ruta no encontrada: ${req.method} ${req.originalUrl}`);
   res.status(404).json({ 
     error: 'Ruta no encontrada',
