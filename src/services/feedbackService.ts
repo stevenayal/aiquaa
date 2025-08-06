@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { API_CONFIG } from '../config/api';
 
 export interface FeedbackData {
   id: string;
@@ -39,27 +40,7 @@ export interface Comment {
 }
 
 // Backend API configuration
-const getApiBaseUrl = () => {
-  // Check for Vite environment variable first
-  if (import.meta.env.VITE_API_BASE_URL) {
-    return import.meta.env.VITE_API_BASE_URL;
-  }
-  
-  // Fallback based on environment
-  if (import.meta.env.MODE === 'production') {
-    return 'https://api.aiquaa.com'; // URL del backend en producción
-  }
-  
-  return 'http://localhost:3001';
-};
-
-const API_BASE_URL = getApiBaseUrl();
-
-// Debug logging (only in development)
-if (import.meta.env.MODE === 'development') {
-  console.log('🔧 API Base URL:', API_BASE_URL);
-  console.log('🔧 Environment:', import.meta.env.MODE);
-}
+const API_BASE_URL = API_CONFIG.getApiBaseUrl();
 
 class FeedbackService {
   private readonly STORAGE_KEY = 'aiquaa_feedback';
