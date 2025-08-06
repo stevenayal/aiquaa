@@ -95,7 +95,13 @@ const swaggerOptions = {
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
 app.use(cors({
-  origin: true, // Allow all origins in development
+  origin: [
+    'http://localhost:5173', // Frontend en desarrollo
+    'http://localhost:3000', // Frontend en desarrollo (alternativo)
+    'https://aiquaa.com', // Frontend en producción
+    'https://www.aiquaa.com', // Frontend en producción con www
+    'https://aiquaa.vercel.app' // Frontend en Vercel
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'User-Agent']

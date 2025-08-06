@@ -47,7 +47,7 @@ const getApiBaseUrl = () => {
   
   // Fallback based on environment
   if (import.meta.env.MODE === 'production') {
-    return 'https://your-backend-url.com'; // Update this with your actual production URL
+    return 'https://api.aiquaa.com'; // URL del backend en producción
   }
   
   return 'http://localhost:3001';
