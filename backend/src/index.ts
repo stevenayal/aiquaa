@@ -2,14 +2,123 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
+import swaggerUi from 'swagger-ui-express';
+import swaggerJsdoc from 'swagger-jsdoc';
 
 dotenv.config();
 const app = express();
 const prisma = new PrismaClient();
 
-app.use(cors());
+// Swagger configuration
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'API de Comunidad Aiquaa',
+      version: '1.0.0',
+      description: 'Documentación de endpoints para la API de Aiquaa, incluyendo comentarios de la comunidad',
+      contact: {
+        name: 'Equipo Aiquaa',
+        url: 'https://aiquaa.com'
+      }
+    },
+    servers: [
+      {
+        url: 'http://localhost:3001',
+        description: 'Servidor de desarrollo'
+      }
+    ],
+    components: {
+      schemas: {
+        Comment: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+              format: 'uuid',
+              description: 'ID único del comentario'
+            },
+            name: {
+              type: 'string',
+              nullable: true,
+              description: 'Nombre del autor del comentario (null si es anónimo)'
+            },
+            message: {
+              type: 'string',
+              description: 'Contenido del mensaje'
+            },
+            isAnonymous: {
+              type: 'boolean',
+              description: 'Indica si el comentario es anónimo'
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Fecha y hora de creación del comentario'
+            }
+          },
+          required: ['id', 'message', 'isAnonymous', 'createdAt']
+        },
+        CommentRequest: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              description: 'Nombre del autor (opcional si isAnonymous es true)'
+            },
+            message: {
+              type: 'string',
+              description: 'Contenido del mensaje (requerido)'
+            },
+            isAnonymous: {
+              type: 'boolean',
+              description: 'Permite publicar sin nombre'
+            }
+          },
+          required: ['message']
+        },
+        Error: {
+          type: 'object',
+          properties: {
+            error: {
+              type: 'string',
+              description: 'Mensaje de error'
+            }
+          }
+        }
+      }
+    }
+  },
+  apis: ['./src/index.ts'] // Archivo donde están definidos los endpoints
+};
+
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+
+app.use(cors({
+  origin: true, // Allow all origins in development
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'User-Agent']
+}));
 app.use(express.json());
 
+// Swagger UI route
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+/**
+ * @swagger
+ * /:
+ *   get:
+ *     summary: Health check
+ *     description: Endpoint para verificar que la API está funcionando correctamente
+ *     tags: [Sistema]
+ *     responses:
+ *       200:
+ *         description: API funcionando correctamente
+ *         content:
+ *           text/plain:
+ *             example: "API Aiquaa funcionando 🚀"
+ */
 // Health check endpoint
 app.get('/', (_, res) => res.send('API Aiquaa funcionando 🚀'));
 
@@ -210,33 +319,136 @@ app.get('/api/feedback/metrics', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/comments:
+ *   post:
+ *     summary: Crear un nuevo comentario
+ *     description: Permite crear un comentario en la comunidad. El mensaje es obligatorio y se puede publicar de forma anónima.
+ *     tags: [Comentarios]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CommentRequest'
+ *           examples:
+ *             comentario_normal:
+ *               summary: Comentario con nombre
+ *               value:
+ *                 name: "Juan Pérez"
+ *                 message: "¡Excelente iniciativa! Me encanta la comunidad."
+ *                 isAnonymous: false
+ *             comentario_anonimo:
+ *               summary: Comentario anónimo
+ *               value:
+ *                 message: "Muy buena plataforma para aprender QA."
+ *                 isAnonymous: true
+ *     responses:
+ *       201:
+ *         description: Comentario creado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Comment'
+ *             example:
+ *               id: "123e4567-e89b-12d3-a456-426614174000"
+ *               name: "Juan Pérez"
+ *               message: "¡Excelente iniciativa! Me encanta la comunidad."
+ *               isAnonymous: false
+ *               createdAt: "2024-01-15T10:30:00.000Z"
+ *       400:
+ *         description: Datos inválidos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: "El mensaje es requerido"
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // Community comments endpoints
 app.post('/api/comments', async (req, res) => {
+  console.log('📝 POST /api/comments - Request received:', {
+    body: req.body,
+    headers: req.headers,
+    ip: req.ip
+  });
+  
   try {
     const { name, message, isAnonymous } = req.body;
     
+    console.log('📝 Processing comment data:', { name, message: message?.substring(0, 50) + '...', isAnonymous });
+    
     if (!message || !message.trim()) {
+      console.log('❌ Validation failed: message is required');
       return res.status(400).json({ error: 'El mensaje es requerido' });
     }
 
+    const commentData = {
+      name: isAnonymous ? 'Anónimo' : (name || 'Usuario'),
+      message: message.trim(),
+      isAnonymous: isAnonymous || false,
+      userAgent: req.headers['user-agent'] || '',
+      ip: req.ip || req.connection.remoteAddress || ''
+    };
+
+    console.log('📝 Creating comment with data:', commentData);
+
     const comment = await prisma.comment.create({
-      data: {
-        name: isAnonymous ? 'Anónimo' : (name || 'Usuario'),
-        message: message.trim(),
-        isAnonymous: isAnonymous || false,
-        userAgent: req.headers['user-agent'] || '',
-        ip: req.ip || req.connection.remoteAddress || ''
-      }
+      data: commentData
     });
     
-    res.json(comment);
+    console.log('✅ Comment created successfully:', comment);
+    res.status(201).json(comment);
   } catch (error) {
-    console.error('Error creating comment:', error);
+    console.error('❌ Error creating comment:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 
+/**
+ * @swagger
+ * /api/comments:
+ *   get:
+ *     summary: Obtener comentarios de la comunidad
+ *     description: Devuelve los últimos 50 comentarios ordenados por fecha de creación (más recientes primero)
+ *     tags: [Comentarios]
+ *     responses:
+ *       200:
+ *         description: Lista de comentarios obtenida exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Comment'
+ *             example:
+ *               - id: "123e4567-e89b-12d3-a456-426614174000"
+ *                 name: "María García"
+ *                 message: "¡Excelente iniciativa! Me encanta la comunidad."
+ *                 isAnonymous: false
+ *                 createdAt: "2024-01-15T10:30:00.000Z"
+ *               - id: "123e4567-e89b-12d3-a456-426614174001"
+ *                 name: null
+ *                 message: "Muy buena plataforma para aprender QA."
+ *                 isAnonymous: true
+ *                 createdAt: "2024-01-15T09:15:00.000Z"
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 app.get('/api/comments', async (req, res) => {
+  console.log('📝 GET /api/comments - Request received');
+  
   try {
     const comments = await prisma.comment.findMany({
       orderBy: {
@@ -244,9 +456,11 @@ app.get('/api/comments', async (req, res) => {
       },
       take: 50 // Limit to last 50 comments
     });
+    
+    console.log(`✅ Retrieved ${comments.length} comments successfully`);
     res.json(comments);
   } catch (error) {
-    console.error('Error fetching comments:', error);
+    console.error('❌ Error fetching comments:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });

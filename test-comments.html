@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Comments API</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        pre { background-color: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Comments API</h1>
+    
+    <div class="test-section">
+        <h3>GET Comments</h3>
+        <button onclick="getComments()">Get Comments</button>
+        <div id="getResult"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>POST Comment</h3>
+        <button onclick="postComment()">Post Test Comment</button>
+        <div id="postResult"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>POST Anonymous Comment</h3>
+        <button onclick="postAnonymousComment()">Post Anonymous Comment</button>
+        <div id="anonymousResult"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3001';
+        
+        async function getComments() {
+            const resultDiv = document.getElementById('getResult');
+            resultDiv.innerHTML = 'Loading...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/comments`);
+                const data = await response.json();
+                
+                resultDiv.className = 'test-section success';
+                resultDiv.innerHTML = `
+                    <h4>✅ Success!</h4>
+                    <p>Found ${data.length} comments</p>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                resultDiv.className = 'test-section error';
+                resultDiv.innerHTML = `
+                    <h4>❌ Error</h4>
+                    <p>${error.message}</p>
+                `;
+            }
+        }
+        
+        async function postComment() {
+            const resultDiv = document.getElementById('postResult');
+            resultDiv.innerHTML = 'Loading...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/comments`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: 'Test User',
+                        message: 'This is a test comment from the browser',
+                        isAnonymous: false
+                    })
+                });
+                
+                const data = await response.json();
+                
+                resultDiv.className = 'test-section success';
+                resultDiv.innerHTML = `
+                    <h4>✅ Success!</h4>
+                    <p>Comment created with ID: ${data.id}</p>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                resultDiv.className = 'test-section error';
+                resultDiv.innerHTML = `
+                    <h4>❌ Error</h4>
+                    <p>${error.message}</p>
+                `;
+            }
+        }
+        
+        async function postAnonymousComment() {
+            const resultDiv = document.getElementById('anonymousResult');
+            resultDiv.innerHTML = 'Loading...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/comments`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: '',
+                        message: 'This is an anonymous test comment',
+                        isAnonymous: true
+                    })
+                });
+                
+                const data = await response.json();
+                
+                resultDiv.className = 'test-section success';
+                resultDiv.innerHTML = `
+                    <h4>✅ Success!</h4>
+                    <p>Anonymous comment created with ID: ${data.id}</p>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                resultDiv.className = 'test-section error';
+                resultDiv.innerHTML = `
+                    <h4>❌ Error</h4>
+                    <p>${error.message}</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html> 
