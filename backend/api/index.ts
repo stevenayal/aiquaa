@@ -98,10 +98,4 @@ app.get('/api/comments', async (req, res) => {
 });
 
 // Export for Vercel
-export default app;
-
-// For local development
-if (process.env.NODE_ENV !== 'production') {
-  const PORT = process.env.PORT || 3001;
-  app.listen(PORT, () => console.log(`🚀 Backend corriendo en http://localhost:${PORT}`));
-} 
+export default app; 

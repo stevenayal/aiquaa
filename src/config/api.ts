@@ -9,7 +9,7 @@ export const API_CONFIG = {
     
     // Fallback based on environment
     if (import.meta.env.MODE === 'production') {
-      return 'https://aiquaa-qfyd99acy-stevenayals-projects.vercel.app'; // URL del backend en producción (Vercel)
+      return 'https://aiquaa-bufd3eugk-stevenayals-projects.vercel.app'; // URL del backend en producción (Vercel)
     }
     
     // Force localhost for development
