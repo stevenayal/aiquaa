@@ -107,6 +107,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'User-Agent']
 }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Swagger UI route
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -469,6 +470,25 @@ app.get('/api/comments', async (req, res) => {
     console.error('❌ Error fetching comments:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
+});
+
+// Middleware para rutas no encontradas
+app.use('*', (req, res) => {
+  console.log(`❌ Ruta no encontrada: ${req.method} ${req.originalUrl}`);
+  res.status(404).json({ 
+    error: 'Ruta no encontrada',
+    path: req.originalUrl,
+    method: req.method
+  });
+});
+
+// Middleware de manejo de errores
+app.use((error: any, req: any, res: any, next: any) => {
+  console.error('❌ Error no manejado:', error);
+  res.status(500).json({ 
+    error: 'Error interno del servidor',
+    message: process.env.NODE_ENV === 'development' ? error.message : 'Algo salió mal'
+  });
 });
 
 const PORT = process.env.PORT || 3001;

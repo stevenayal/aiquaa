@@ -103,12 +103,12 @@ router.get('/stats/feedback', async (req, res) => {
 
     stats.forEach(feedback => {
       // Contar temas QA
-      feedback.temas_qa?.split(', ').forEach(tema => {
+      feedback.temas_qa?.split(', ').forEach((tema: string) => {
         processedStats.temasQA[tema] = (processedStats.temasQA[tema] || 0) + 1
       })
 
       // Contar herramientas
-      feedback.herramientas?.split(', ').forEach(herramienta => {
+      feedback.herramientas?.split(', ').forEach((herramienta: string) => {
         processedStats.herramientas[herramienta] = (processedStats.herramientas[herramienta] || 0) + 1
       })
 
