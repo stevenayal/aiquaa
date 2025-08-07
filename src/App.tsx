@@ -26,7 +26,7 @@ import QARoute from './pages/QARoute';
 import Stats from './pages/Stats';
 import ToolRecommender from './pages/ToolRecommender';
 // import TesterZone from './pages/TesterZone';
-import Community from './pages/Community';
+// import Community from './pages/Community';
 import ApiTest from './pages/ApiTest';
 
 function App() {
