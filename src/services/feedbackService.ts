@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
-import { API_CONFIG } from '../config/api';
+import { API_URL, apiRequest } from '../config/apiConfig';
 
+// Este servicio está conectado al backend desplegado en https://api.aiquaa.com
 export interface FeedbackData {
   id: string;
   nombre: string;
@@ -40,7 +41,7 @@ export interface Comment {
 }
 
 // Backend API configuration
-const API_BASE_URL = API_CONFIG.getApiBaseUrl();
+// Este endpoint está conectado al backend desplegado en https://api.aiquaa.com
 
 class FeedbackService {
   private readonly STORAGE_KEY = 'aiquaa_feedback';
@@ -55,11 +56,8 @@ class FeedbackService {
     };
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/feedback`, {
+      const response = await apiRequest('/api/feedback', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify(feedbackData),
       });
 
@@ -116,11 +114,7 @@ class FeedbackService {
   // Get feedback from backend API
   async getFeedback(): Promise<FeedbackData[]> {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/feedback`);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      const response = await apiRequest('/api/feedback');
 
       const result = await response.json();
       
@@ -139,11 +133,7 @@ class FeedbackService {
   // Get metrics from backend API
   async getMetrics(): Promise<FeedbackMetrics> {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/feedback/metrics`);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      const response = await apiRequest('/api/feedback/metrics');
 
       return await response.json();
     } catch (error) {
@@ -281,14 +271,11 @@ class FeedbackService {
   // Community comments methods
   async submitComment(data: { name: string; message: string; isAnonymous: boolean }): Promise<Comment> {
     try {
-      console.log('🔧 Submitting comment to:', `${API_BASE_URL}/api/comments`);
+      console.log('🔧 Submitting comment to:', `${API_URL}/api/comments`);
       console.log('🔧 Comment data:', data);
       
-      const response = await fetch(`${API_BASE_URL}/api/comments`, {
+      const response = await apiRequest('/api/comments', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify(data),
       });
 
@@ -311,24 +298,18 @@ class FeedbackService {
       };
     } catch (error) {
       console.error('Error submitting comment to API:', error);
-      console.error('🔧 API Base URL was:', API_BASE_URL);
+      console.error('🔧 API URL was:', API_URL);
       throw error;
     }
   }
 
   async getComments(): Promise<Comment[]> {
     try {
-      console.log('🔧 Fetching comments from:', `${API_BASE_URL}/api/comments`);
-      const response = await fetch(`${API_BASE_URL}/api/comments`);
+      console.log('🔧 Fetching comments from:', `${API_URL}/api/comments`);
+      const response = await apiRequest('/api/comments');
       
       console.log('🔧 Response status:', response.status);
       console.log('🔧 Response ok:', response.ok);
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('🔧 Error response:', errorText);
-        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-      }
 
       const result = await response.json();
       console.log('🔧 Success response:', result);
@@ -340,7 +321,7 @@ class FeedbackService {
       }));
     } catch (error) {
       console.error('Error fetching comments from API:', error);
-      console.error('🔧 API Base URL was:', API_BASE_URL);
+      console.error('🔧 API URL was:', API_URL);
       throw error;
     }
   }
