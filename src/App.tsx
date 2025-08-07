@@ -62,7 +62,9 @@ function App() {
               {/* TesterZone temporarily hidden until functionality is complete
               <Route path="/zona-tester" element={<TesterZone />} />
               */}
+              {/* Comunidad temporarily hidden until backend integration is improved
               <Route path="/comunidad" element={<Community />} />
+              */}
               <Route path="/api-test" element={<ApiTest />} />
               <Route path="/herramientas" element={<Navigate to="/labs" replace />} />
             </Routes>

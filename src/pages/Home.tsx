@@ -345,7 +345,7 @@ const Home = () => {
                 </div>
               </div>
 
-              {/* Comunidad */}
+              {/* Comunidad temporarily hidden until backend integration is improved
               <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                 <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-4 md:p-6 text-white">
                   <div className="text-2xl md:text-3xl mb-2">💬</div>
@@ -364,6 +364,7 @@ const Home = () => {
                   </Link>
                 </div>
               </div>
+              */}
 
               {/* Estadísticas */}
               <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
