@@ -1,10 +1,9 @@
 {
   "name": "aiquaa-monorepo",
   "private": true,
-  "packageManager": "pnpm@9",
+  "packageManager": "pnpm@8",
   "workspaces": ["apps/*", "packages/*"],
   "scripts": {
-    "postinstall": "pnpm -r install",
     "build": "pnpm -r build",
     "dev": "concurrently -n FRONT,BACK -c auto \"pnpm --filter @aiquaa/frontend dev\" \"pnpm --filter @aiquaa/backend start:dev\"",
     "dev:front": "pnpm --filter @aiquaa/frontend dev",
@@ -19,12 +18,19 @@
     "e2e:report": "pnpm --filter @aiquaa/frontend e2e:report",
     "perf:forum": "k6 run perf/k6/forum-smoke.js",
     "adr:new": "node tools/adr-new.mjs",
-    "adr:list": "ls -1 docs/adr | sort"
+    "adr:list": "ls -1 docs/adr | sort",
+    "prepare": "husky install",
+    "commit": "git-cz",
+    "lint-staged": "lint-staged"
   },
   "devDependencies": {
     "concurrently": "^9.0.0",
     "prettier": "^3.0.0",
     "eslint-config-prettier": "^9.0.0",
-    "coverage-badges": "^1.1.0"
+    "coverage-badges": "^1.0.7",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.0",
+    "@commitlint/cli": "^18.4.3",
+    "@commitlint/config-conventional": "^18.4.3"
   }
 }
