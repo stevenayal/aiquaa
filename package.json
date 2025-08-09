@@ -17,7 +17,9 @@
     "test:contract": "pnpm --filter @aiquaa/backend test:contract",
     "e2e": "pnpm --filter @aiquaa/frontend e2e",
     "e2e:report": "pnpm --filter @aiquaa/frontend e2e:report",
-    "perf:forum": "k6 run perf/k6/forum-smoke.js"
+    "perf:forum": "k6 run perf/k6/forum-smoke.js",
+    "adr:new": "node tools/adr-new.mjs",
+    "adr:list": "ls -1 docs/adr | sort"
   },
   "devDependencies": {
     "concurrently": "^9.0.0",

@@ -1,38 +1,53 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
+import { CacheService } from '../cache/cache.service';
 
 @Injectable()
 export class ForumService {
-  private prisma: PrismaClient;
-
-  constructor() {
-    this.prisma = new PrismaClient();
-  }
+  constructor(
+    private prisma: PrismaService,
+    private cacheService: CacheService,
+  ) {}
 
   async createCategory(createCategoryDto: any) {
-    return this.prisma.category.create({
+    const category = await this.prisma.category.create({
       data: createCategoryDto,
     });
+    
+    // Invalidate cache
+    await this.cacheService.invalidateThreads();
+    
+    return category;
   }
 
   async createThread(createThreadDto: any) {
-    return this.prisma.thread.create({
+    const thread = await this.prisma.thread.create({
       data: createThreadDto,
       include: {
         author: true,
         category: true,
       },
     });
+    
+    // Invalidate cache
+    await this.cacheService.invalidateThreads();
+    
+    return thread;
   }
 
   async createPost(createPostDto: any) {
-    return this.prisma.post.create({
+    const post = await this.prisma.post.create({
       data: createPostDto,
       include: {
         author: true,
         thread: true,
       },
     });
+    
+    // Invalidate cache for posts of this thread
+    await this.cacheService.invalidatePosts(createPostDto.threadId);
+    
+    return post;
   }
 
   async getThreads(query: { 
@@ -44,58 +59,63 @@ export class ForumService {
     const { page = 1, limit = 10, search, categoryId } = query;
     const skip = (page - 1) * limit;
 
-    // Construir condiciones de búsqueda
-    const where: any = {};
-    
-    if (search) {
-      where.OR = [
-        {
-          title: {
-            contains: search,
-            mode: 'insensitive' as const,
+    // Create cache key
+    const cacheKey = `threads:${JSON.stringify({ page, limit, search, categoryId })}`;
+
+    return this.cacheService.getOrSet(cacheKey, async () => {
+      // Construir condiciones de búsqueda
+      const where: any = {};
+      
+      if (search) {
+        where.OR = [
+          {
+            title: {
+              contains: search,
+              mode: 'insensitive' as const,
+            },
+          },
+          {
+            content: {
+              contains: search,
+              mode: 'insensitive' as const,
+            },
+          },
+        ];
+      }
+
+      if (categoryId) {
+        where.categoryId = categoryId;
+      }
+
+      // Obtener el total de hilos para la paginación
+      const total = await this.prisma.thread.count({ where });
+
+      const threads = await this.prisma.thread.findMany({
+        where,
+        skip,
+        take: limit,
+        include: {
+          author: true,
+          category: true,
+          _count: {
+            select: { posts: true },
           },
         },
-        {
-          content: {
-            contains: search,
-            mode: 'insensitive' as const,
-          },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      return {
+        data: threads,
+        meta: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+          hasNextPage: page < Math.ceil(total / limit),
+          hasPreviousPage: page > 1,
         },
-      ];
-    }
-
-    if (categoryId) {
-      where.categoryId = categoryId;
-    }
-
-    // Obtener el total de hilos para la paginación
-    const total = await this.prisma.thread.count({ where });
-
-    const threads = await this.prisma.thread.findMany({
-      where,
-      skip,
-      take: limit,
-      include: {
-        author: true,
-        category: true,
-        _count: {
-          select: { posts: true },
-        },
-      },
-      orderBy: { createdAt: 'desc' },
-    });
-
-    return {
-      data: threads,
-      meta: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit),
-        hasNextPage: page < Math.ceil(total / limit),
-        hasPreviousPage: page > 1,
-      },
-    };
+      };
+    }, 60); // Cache for 60 seconds
   }
 
   async getPosts(query: {

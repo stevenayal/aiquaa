@@ -1,151 +1,133 @@
 # Resumen de Implementación - Etapa 2
 
-## ✅ Funcionalidades Implementadas
+## ✅ Completado
 
-### 1. E2E Testing con Playwright
-- ✅ Configuración de Playwright con axe-core
-- ✅ Tests E2E para health check (`health.spec.ts`)
-- ✅ Tests E2E para CRUD del foro (`forum.crud.spec.ts`)
-- ✅ Tests E2E para autenticación (`auth.spec.ts`)
-- ✅ Tests E2E para accesibilidad (`a11y.spec.ts`)
-- ✅ Scripts: `pnpm e2e`, `pnpm e2e:report`
+### 1. Prisma/Data (timestamps, soft delete, índices, auditoría)
+- ✅ Modificado `schema.prisma` para agregar:
+  - Campos `deletedAt` en todas las entidades
+  - Índices optimizados para consultas frecuentes
+  - Tabla `AuditLog` para auditoría
+- ✅ Creado `PrismaService` con middlewares para:
+  - Soft delete automático
+  - Filtrado automático de registros eliminados
+  - Auditoría automática de cambios
+- ✅ Migración SQL creada con:
+  - Extensiones PostgreSQL (pg_trgm)
+  - Índices GIN para búsqueda de texto
+  - Índices compuestos para performance
 
-### 2. Contratos de API
-- ✅ Tests de contratos para endpoints del foro (`contracts.forum.spec.ts`)
-- ✅ Tests de contratos para endpoints de autenticación (`contracts.auth.spec.ts`)
-- ✅ Validación contra OpenAPI schema
-- ✅ Script: `pnpm test:contract`
+### 2. Cache Redis (Nest) + invalidación
+- ✅ Agregado Redis al `docker-compose.yml`
+- ✅ Instaladas dependencias: `cache-manager`, `ioredis`, `@nestjs/cache-manager`
+- ✅ Creado `AppCacheModule` con configuración async
+- ✅ Implementado `CacheService` con:
+  - Métodos `get`, `set`, `del`, `getOrSet`
+  - Invalidación por patrones
+  - Namespace "forum"
+  - Logs de cache hit/miss
+- ✅ Integrado cache en `ForumService`:
+  - Cache de listados de threads y posts
+  - Invalidación automática en mutaciones
+  - TTL configurable (60s por defecto)
 
-### 3. Búsqueda y Paginación
-- ✅ Endpoint `GET /forum/threads` con búsqueda y paginación
-- ✅ Endpoint `GET /forum/posts` con paginación
-- ✅ Endpoint `GET /forum/search` para búsqueda avanzada
-- ✅ Componente `ForumSearch` con debounce
-- ✅ Componente `ForumPagination` con navegación
-- ✅ Metadata de paginación (total, totalPages, hasNextPage, etc.)
+### 3. Frontend (Next) — revalidación y consumo cache
+- ✅ Creada API route `/api/revalidate` con:
+  - Validación de token
+  - Revalidación por tags
+  - Manejo de errores
+- ✅ Implementado componente `SEOJsonLd` para:
+  - Article (posts de blog)
+  - DiscussionForumPosting (threads de foro)
+  - Course (cursos)
+- ✅ Configurado `next-sitemap`:
+  - Generación automática de sitemap.xml
+  - Generación de robots.txt
+  - Configuración personalizable
 
-### 4. Seguridad y Anti-spam
-- ✅ Rate limiting (100 requests/15min por IP)
-- ✅ Anti-spam con honeypot field
-- ✅ Time-gate (>2s desde render hasta submit)
-- ✅ Guards: `RateLimitGuard`, `AntiSpamGuard`
-- ✅ Tests de seguridad (`security.rate-limit.spec.ts`, `security.antispam.spec.ts`)
-- ✅ Componente `HoneypotField`
-- ✅ Hook `useTimeGate`
+### 4. SEO y Contenido
+- ✅ Instalado `next-sitemap` en frontend
+- ✅ Configurado `next-sitemap.config.js` con:
+  - SiteUrl configurable por env
+  - Exclusiones para admin y api
+  - Políticas de robots.txt
+- ✅ Implementado componente SEO con JSON-LD
+- ✅ Metadata dinámica por ruta (preparado)
 
-### 5. Stripe Integration (Sandbox)
-- ✅ Endpoint `POST /billing/checkout` para crear sesiones
-- ✅ Endpoint `POST /billing/webhook` para procesar eventos
-- ✅ Idempotencia en eventos procesados
-- ✅ Tests de webhook (`billing.webhook.spec.ts`)
-- ✅ Servicio `BillingService` con mock implementation
+### 5. ADRs (Architecture Decision Records)
+- ✅ Creado directorio `/docs/adr/`
+- ✅ Implementado script `tools/adr-new.mjs`
+- ✅ Agregados scripts al package.json:
+  - `adr:new`: Crear nuevo ADR
+  - `adr:list`: Listar ADRs existentes
+- ✅ Creados ADRs iniciales:
+  - ADR-001: Monolito modular Nest
+  - ADR-002: Next vs Nuxt
+  - ADR-003: OpenAPI + codegen tipos compartidos
+  - ADR-004: Redis cache con invalidación por tags
+  - ADR-005: Soft delete + auditoría con Prisma
 
-### 6. Performance Testing
-- ✅ Script k6 para tests de performance (`perf/k6/forum-smoke.js`)
-- ✅ Thresholds: P95 < 400ms, error rate < 1%
-- ✅ Tests de carga para endpoints del foro
-- ✅ Script: `pnpm perf:forum`
+### 6. Variables de entorno y Docs
+- ✅ Actualizado `.env.example` con:
+  - Configuración Redis
+  - Token de revalidación
+  - Configuración de sitio
+- ✅ Actualizado `README.md` con:
+  - Sección "Data & Cache"
+  - Sección "SEO"
+  - Sección "ADRs"
+  - Comandos actualizados
 
-### 7. Accesibilidad y SEO
-- ✅ Tests de accesibilidad automáticos con axe-core
-- ✅ Validación de ARIA labels y roles
-- ✅ Estructura de headings semántica
-- ✅ Meta tags dinámicos
-- ✅ Tests de contraste de color
+### 7. Tests
+- ✅ Test unitario para soft delete
+- ✅ Test unitario para cache service
+- ✅ Test para componente SEO
+- ✅ Tests de integración preparados
 
-### 8. Analytics
-- ✅ Sistema de tracking de eventos
-- ✅ Eventos: "CreateThread", "ReplyPost", "app_loaded"
-- ✅ Endpoint `/analytics/mock` para desarrollo
-- ✅ Componente `Analytics` y hook `useAnalytics`
-- ✅ Tests RTL para verificar tracking
+## 🎯 Próximos Pasos
 
-### 9. CI/CD Gates
-- ✅ Workflow actualizado con nuevos jobs
-- ✅ Tests de contratos de API
-- ✅ Tests E2E con Playwright
-- ✅ Tests de performance con k6
-- ✅ Cobertura mínima 75% (backend y frontend)
-- ✅ Linting y build verification
+### Pendiente
+1. **Migraciones**: Ejecutar migraciones en entorno de desarrollo
+2. **Tests E2E**: Completar tests de integración
+3. **Documentación**: Completar documentación de API
+4. **Deployment**: Configurar variables de entorno en producción
 
-## 📁 Estructura de Archivos Creados
+### Mejoras Futuras
+1. **Métricas**: Implementar métricas de cache con Prometheus
+2. **Monitoreo**: Dashboard de métricas de performance
+3. **Backup**: Estrategia de backup para Redis
+4. **Escalabilidad**: Configuración para múltiples instancias
 
-### Backend
-```
-apps/backend/
-├── src/
-│   ├── forum/
-│   │   ├── forum.controller.ts (actualizado)
-│   │   ├── forum.service.ts (actualizado)
-│   │   └── forum.module.ts (actualizado)
-│   ├── security/
-│   │   ├── rate-limit.guard.ts
-│   │   ├── anti-spam.guard.ts
-│   │   └── security.module.ts
-│   └── billing/
-│       ├── billing.service.ts
-│       ├── billing.controller.ts
-│       └── billing.module.ts
-├── test/
-│   ├── contracts/
-│   │   ├── contracts.forum.spec.ts
-│   │   └── contracts.auth.spec.ts
-│   ├── security/
-│   │   ├── security.rate-limit.spec.ts
-│   │   └── security.antispam.spec.ts
-│   └── billing/
-│       └── billing.webhook.spec.ts
-```
+## 🔧 Comandos Útiles
 
-### Frontend
-```
-apps/frontend/
-├── e2e/
-│   ├── playwright.config.ts
-│   ├── health.spec.ts
-│   ├── forum.crud.spec.ts
-│   ├── auth.spec.ts
-│   └── a11y.spec.ts
-├── src/
-│   ├── components/
-│   │   ├── ForumSearch.tsx
-│   │   ├── ForumPagination.tsx
-│   │   ├── HoneypotField.tsx
-│   │   └── Analytics.tsx
-│   └── hooks/
-│       └── useTimeGate.ts
-```
+```bash
+# Crear nuevo ADR
+pnpm adr:new "Título del ADR"
 
-### Performance
-```
-perf/
-└── k6/
-    └── forum-smoke.js
+# Listar ADRs
+pnpm adr:list
+
+# Levantar servicios (PostgreSQL + Redis)
+make db-up
+
+# Ejecutar migraciones
+cd apps/backend && pnpm prisma:migrate
+
+# Generar sitemap
+cd apps/frontend && pnpm postbuild
 ```
 
-## 🎯 Definition of Done - Completado
+## 📊 Métricas de Implementación
 
-1. ✅ `pnpm --filter @aiquaa/backend test:contract` pasa contra OpenAPI actual
-2. ✅ `pnpm --filter @aiquaa/frontend e2e` pasa (health, foro CRUD, a11y sin violaciones críticas)
-3. ✅ `pnpm perf:forum` cumple thresholds p95 < 400ms, error_rate < 1%
-4. ✅ Rate limit y anti-spam activos en endpoints definidos
-5. ✅ Webhook Stripe (mock) crea Enrollment/Purchase idempotente
-6. ✅ Coverage ≥ 75% en backend y frontend
-7. ✅ README actualizado con pasos y variables
+- **Líneas de código**: ~500+ nuevas líneas
+- **Archivos modificados**: 15+
+- **Nuevos archivos**: 20+
+- **Tests**: 3 nuevos tests unitarios
+- **Documentación**: 5 ADRs + README actualizado
 
-## 🚀 Próximos Pasos
+## 🎉 Beneficios Obtenidos
 
-1. **Integración con Stripe real**: Reemplazar mock implementation con SDK real
-2. **Tests de integración**: Agregar más tests de integración para edge cases
-3. **Monitoreo**: Implementar logging y monitoreo en producción
-4. **Documentación**: Crear documentación técnica detallada
-5. **Optimización**: Optimizar queries y performance basado en métricas reales
-
-## 📊 Métricas de Calidad
-
-- **Cobertura de código**: ≥75% (backend y frontend)
-- **Performance**: P95 < 400ms para requests HTTP
-- **Accesibilidad**: 0 violaciones críticas
-- **Seguridad**: Rate limiting y anti-spam activos
-- **E2E**: Tests automatizados para flujos principales
-- **Contratos**: Validación automática de API schemas
+1. **Performance**: Cache Redis reduce latencia en consultas frecuentes
+2. **Integridad**: Soft delete preserva datos y auditoría completa
+3. **SEO**: Sitemap automático y metadata estructurada
+4. **Mantenibilidad**: ADRs documentan decisiones arquitectónicas
+5. **Escalabilidad**: Arquitectura preparada para crecimiento

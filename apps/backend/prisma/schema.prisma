@@ -18,6 +18,7 @@ model User {
   role      Role     @default(USER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  deletedAt DateTime?
 
   // Relations
   threads   Thread[]
@@ -26,6 +27,7 @@ model User {
   purchases Purchase[]
 
   @@map("users")
+  @@index([deletedAt])
 }
 
 model Role {
@@ -44,11 +46,13 @@ model Category {
   slug        String   @unique
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
 
   // Relations
   threads Thread[]
 
   @@map("categories")
+  @@index([deletedAt])
 }
 
 model Thread {
@@ -60,6 +64,7 @@ model Thread {
   isLocked   Boolean  @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  deletedAt  DateTime?
 
   // Relations
   authorId   Int
@@ -69,6 +74,8 @@ model Thread {
   posts      Post[]
 
   @@map("threads")
+  @@index([categoryId, createdAt(sort: Desc)])
+  @@index([deletedAt])
 }
 
 model Post {
@@ -76,6 +83,7 @@ model Post {
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  deletedAt DateTime?
 
   // Relations
   authorId  Int
@@ -84,6 +92,8 @@ model Post {
   thread    Thread  @relation(fields: [threadId], references: [id])
 
   @@map("posts")
+  @@index([threadId, createdAt(sort: Desc)])
+  @@index([deletedAt])
 }
 
 model Course {
@@ -95,12 +105,14 @@ model Course {
   isPublished Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
 
   // Relations
   lessons    Lesson[]
   enrollments Enrollment[]
 
   @@map("courses")
+  @@index([deletedAt])
 }
 
 model Lesson {
@@ -110,12 +122,14 @@ model Lesson {
   order     Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  deletedAt DateTime?
 
   // Relations
   courseId  Int
   course    Course   @relation(fields: [courseId], references: [id])
 
   @@map("lessons")
+  @@index([deletedAt])
 }
 
 model Enrollment {
@@ -138,12 +152,27 @@ model Purchase {
   status    PurchaseStatus @default(PENDING)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  deletedAt DateTime?
 
   // Relations
   userId    Int
   user      User     @relation(fields: [userId], references: [id])
 
   @@map("purchases")
+  @@index([deletedAt])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  entity    String
+  entityId  String
+  action    String   // CREATE/UPDATE/DELETE
+  userId    String?
+  at        DateTime @default(now())
+  payload   Json?
+
+  @@map("audit_logs")
+  @@index([entity, entityId, at])
 }
 
 enum Role {

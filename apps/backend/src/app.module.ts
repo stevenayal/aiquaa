@@ -6,6 +6,8 @@ import { UsersModule } from './users/users.module';
 import { ForumModule } from './forum/forum.module';
 import { ContentModule } from './content/content.module';
 import { BillingModule } from './billing/billing.module';
+import { PrismaModule } from './prisma/prisma.module';
+import { AppCacheModule } from './cache/cache.module';
 
 @Module({
   imports: [
@@ -13,6 +15,8 @@ import { BillingModule } from './billing/billing.module';
       isGlobal: true,
       envFilePath: ['.env.local', '.env'],
     }),
+    PrismaModule,
+    AppCacheModule,
     HealthModule,
     AuthModule,
     UsersModule,

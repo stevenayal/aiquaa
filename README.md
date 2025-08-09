@@ -11,7 +11,9 @@ aiquaa/
 │   └── backend/           # NestJS API
 ├── packages/
 │   └── shared/            # Tipos y utilidades compartidas
-├── docker-compose.yml     # PostgreSQL
+├── docs/
+│   └── adr/              # Architecture Decision Records
+├── docker-compose.yml     # PostgreSQL + Redis
 ├── Makefile              # Comandos útiles
 └── package.json          # Workspace root
 ```
@@ -22,6 +24,7 @@ aiquaa/
 - pnpm 9+
 - Docker & Docker Compose
 - PostgreSQL 16
+- Redis 7
 
 ## 🛠️ Instalación
 
@@ -43,7 +46,7 @@ aiquaa/
    cp apps/frontend/env.local.example apps/frontend/.env.local
    ```
 
-4. **Levantar base de datos**
+4. **Levantar servicios**
    ```bash
    make db-up
    ```
@@ -69,10 +72,10 @@ make dev-back
 
 ### Base de Datos
 ```bash
-# Levantar PostgreSQL
+# Levantar PostgreSQL y Redis
 make db-up
 
-# Detener PostgreSQL
+# Detener servicios
 make db-down
 
 # Migraciones y seed
@@ -87,6 +90,70 @@ make build
 # Limpiar artifacts
 make clean
 ```
+
+## 🗄️ Data & Cache
+
+### Redis Cache
+El proyecto utiliza Redis para cachear consultas frecuentes y mejorar el rendimiento.
+
+#### Configuración
+```bash
+# Variables de entorno
+REDIS_URL=redis://localhost:6379
+CACHE_TTL=60
+CACHE_MAX_ITEMS=100
+```
+
+#### Invalidación
+- **Threads**: Se invalida automáticamente al crear/editar/eliminar threads
+- **Posts**: Se invalida automáticamente al crear/editar/eliminar posts
+- **Patrones**: Soporte para invalidación por patrones (ej: `forum:threads:*`)
+
+#### Monitoreo
+- Logs de cache hit/miss disponibles
+- Métricas de performance en desarrollo
+
+### Soft Delete & Auditoría
+- **Soft Delete**: Los registros se marcan como eliminados (`deletedAt`) en lugar de eliminarse físicamente
+- **Auditoría**: Todos los cambios se registran automáticamente en `audit_logs`
+- **Índices**: Optimizados para consultas frecuentes y búsquedas
+
+## 🔍 SEO
+
+### Sitemap y Robots
+- **Generación automática**: `next-sitemap` genera `/sitemap.xml` y `/robots.txt`
+- **Configuración**: `apps/frontend/next-sitemap.config.js`
+- **Build**: Se ejecuta automáticamente después del build
+
+### Metadata
+- **Dinámica**: Metadata generada dinámicamente por ruta
+- **Open Graph**: Soporte completo para redes sociales
+- **JSON-LD**: Schema.org para mejor SEO
+
+### Revalidación
+- **API Route**: `/api/revalidate` para invalidar cache
+- **Tokens**: Seguridad con `REVALIDATE_TOKEN`
+- **Tags**: Revalidación granular por tags
+
+## 📋 ADRs (Architecture Decision Records)
+
+Los ADRs documentan decisiones arquitectónicas importantes del proyecto.
+
+### Comandos
+```bash
+# Crear nuevo ADR
+pnpm adr:new "Título del ADR"
+
+# Listar ADRs existentes
+pnpm adr:list
+```
+
+### ADRs Existentes
+- [ADR-001: Monolito modular Nest](./docs/adr/ADR-001-monolito-modular-nest.md)
+- [ADR-002: Next vs Nuxt](./docs/adr/ADR-002-next-vs-nuxt.md)
+- [ADR-003: OpenAPI + codegen tipos compartidos](./docs/adr/ADR-003-openapi-codegen-tipos-compartidos.md)
+- [ADR-004: Redis cache con invalidación por tags](./docs/adr/ADR-004-redis-cache-invalidacion-tags.md)
+- [ADR-005: Soft delete + auditoría con Prisma](./docs/adr/ADR-005-soft-delete-auditoria-prisma.md)
 
 ## 🧪 Pruebas y Cobertura
 
