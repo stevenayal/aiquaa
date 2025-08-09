@@ -1,0 +1,58 @@
+import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+
+  // Global prefix
+  app.setGlobalPrefix('api/v1');
+
+  // CORS configuration
+  app.enableCors({
+    origin: [
+      'http://localhost:3001',
+      'http://localhost:3000',
+      'https://aiquaa.vercel.app',
+      'https://aiquaa-frontend.vercel.app',
+    ],
+    credentials: true,
+  });
+
+  // Validation pipe
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
+
+  // Swagger documentation
+  const config = new DocumentBuilder()
+    .setTitle('AIQUAA API')
+    .setDescription('API para la plataforma AIQUAA - Herramientas de QA')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/v1/docs', app, document);
+
+  // Health check endpoint
+  app.get('/api/v1/health', (req, res) => {
+    res.json({
+      status: 'ok',
+      time: new Date().toISOString(),
+      version: '1.0.0',
+    });
+  });
+
+  const port = process.env.BACKEND_PORT || 3000;
+  await app.listen(port);
+  console.log(`🚀 AIQUAA Backend running on http://localhost:${port}`);
+  console.log(`📚 API Documentation available at http://localhost:${port}/api/v1/docs`);
+}
+
+bootstrap();

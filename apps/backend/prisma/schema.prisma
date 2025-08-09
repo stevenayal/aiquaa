@@ -1,0 +1,160 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  threads   Thread[]
+  posts     Post[]
+  enrollments Enrollment[]
+  purchases Purchase[]
+
+  @@map("users")
+}
+
+model Role {
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+  description String?
+  users       User[]
+
+  @@map("roles")
+}
+
+model Category {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  slug        String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  threads Thread[]
+
+  @@map("categories")
+}
+
+model Thread {
+  id         Int      @id @default(autoincrement())
+  title      String
+  content    String
+  slug       String   @unique
+  isSticky   Boolean  @default(false)
+  isLocked   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  authorId   Int
+  author     User       @relation(fields: [authorId], references: [id])
+  categoryId Int
+  category   Category   @relation(fields: [categoryId], references: [id])
+  posts      Post[]
+
+  @@map("threads")
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  authorId  Int
+  author    User    @relation(fields: [authorId], references: [id])
+  threadId  Int
+  thread    Thread  @relation(fields: [threadId], references: [id])
+
+  @@map("posts")
+}
+
+model Course {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  slug        String   @unique
+  price       Decimal  @default(0)
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  lessons    Lesson[]
+  enrollments Enrollment[]
+
+  @@map("courses")
+}
+
+model Lesson {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String?
+  order     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  courseId  Int
+  course    Course   @relation(fields: [courseId], references: [id])
+
+  @@map("lessons")
+}
+
+model Enrollment {
+  id        Int      @id @default(autoincrement())
+  enrolledAt DateTime @default(now())
+
+  // Relations
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  courseId  Int
+  course    Course   @relation(fields: [courseId], references: [id])
+
+  @@unique([userId, courseId])
+  @@map("enrollments")
+}
+
+model Purchase {
+  id        Int      @id @default(autoincrement())
+  amount    Decimal
+  status    PurchaseStatus @default(PENDING)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@map("purchases")
+}
+
+enum Role {
+  USER
+  ADMIN
+  MODERATOR
+}
+
+enum PurchaseStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+}

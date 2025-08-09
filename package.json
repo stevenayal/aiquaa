@@ -1,42 +1,20 @@
 {
-  "name": "aiquaa-blog",
+  "name": "aiquaa-monorepo",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "packageManager": "pnpm@9",
+  "workspaces": ["apps/*", "packages/*"],
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@fontsource/sora": "^5.2.6",
-    "@supabase/supabase-js": "^2.53.0",
-    "@types/js-yaml": "^4.0.9",
-    "@types/uuid": "^10.0.0",
-    "chart.js": "^4.5.0",
-    "js-yaml": "^4.1.0",
-    "react": "^18.2.0",
-    "react-chartjs-2": "^5.3.0",
-    "react-dom": "^18.2.0",
-    "react-helmet-async": "^2.0.5",
-    "react-router-dom": "^6.8.0",
-    "recharts": "^3.1.1",
-    "uuid": "^11.1.0"
+    "postinstall": "pnpm -r install",
+    "build": "pnpm -r build",
+    "dev": "concurrently -n FRONT,BACK -c auto \"pnpm --filter @aiquaa/frontend dev\" \"pnpm --filter @aiquaa/backend start:dev\"",
+    "dev:front": "pnpm --filter @aiquaa/frontend dev",
+    "dev:back": "pnpm --filter @aiquaa/backend start:dev",
+    "lint": "pnpm -r lint",
+    "verify": "node scripts/verify-setup.js"
   },
   "devDependencies": {
-    "@types/react": "^18.2.43",
-    "@types/react-dom": "^18.2.17",
-    "@typescript-eslint/eslint-plugin": "^6.14.0",
-    "@typescript-eslint/parser": "^6.14.0",
-    "@vitejs/plugin-react": "^4.2.1",
-    "autoprefixer": "^10.4.16",
-    "eslint": "^8.56.0",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.5",
-    "postcss": "^8.4.32",
-    "tailwindcss": "^3.3.6",
-    "typescript": "~5.3.3",
-    "vite": "^4.5.0"
+    "concurrently": "^9.0.0",
+    "prettier": "^3.0.0",
+    "eslint-config-prettier": "^9.0.0"
   }
 }

@@ -1,176 +1,218 @@
-# AIQUAA Blog
+# AIQUAA Monorepo
 
-Un blog moderno enfocado en QA y tecnología, construido con React, TypeScript, TailwindCSS y React Router. **Frontend independiente** con funcionalidades completas de blog.
+Plataforma de inteligencia artificial y desarrollo con herramientas, laboratorios y comunidad para QA en Paraguay.
 
-## 🚀 Características
-
-- **React 18** con TypeScript
-- **TailwindCSS** para estilos modernos y responsive
-- **React Router** para navegación SPA
-- **Vite** como bundler rápido
-- **Diseño responsive** para móviles y desktop
-- **Búsqueda y filtrado** de artículos
-- **5 artículos de ejemplo** sobre QA y tecnología
-- **Formulario de contacto** funcional
-- **Sistema de feedback** integrado
-- **Modo oscuro** implementado
-- **Sección Labs** con herramientas de desarrollo
-- **Configuración lista para deployment** (Vercel, Netlify, GitHub Pages)
-
-## 📋 Requisitos
-
-- **Node.js**: v16.18.0 o superior (probado con v16.18.0)
-- **npm**: v8.19.2 o superior
-
-## 🛠️ Instalación
-
-1. **Clonar el repositorio:**
-   ```bash
-   git clone <tu-repositorio>
-   cd aiquaa
-   ```
-
-2. **Instalar dependencias:**
-   ```bash
-   npm install
-   ```
-
-3. **Ejecutar en modo desarrollo:**
-   ```bash
-   npm run dev
-   ```
-
-4. **Abrir en el navegador:**
-   ```
-   http://localhost:5173
-   ```
-
-## 📁 Estructura del Proyecto
+## 🏗️ Estructura del Proyecto
 
 ```
 aiquaa/
-├── src/
-│   ├── components/     # Componentes reutilizables
-│   │   ├── Header.tsx
-│   │   ├── Footer.tsx
-│   │   ├── Layout.tsx
-│   │   ├── FeedbackForm.tsx
-│   │   └── Labs/       # Herramientas de desarrollo
-│   ├── pages/         # Páginas de la aplicación
-│   │   ├── Home.tsx
-│   │   ├── Blog.tsx
-│   │   ├── Article.tsx
-│   │   ├── About.tsx
-│   │   ├── Contact.tsx
-│   │   ├── Labs.tsx
-│   │   └── Feedback.tsx
-│   ├── contexts/      # Contextos de React
-│   │   └── ThemeContext.tsx
-│   ├── App.tsx        # Componente principal
-│   └── main.tsx       # Punto de entrada
-├── data/
-│   └── articles.json  # Datos simulados de artículos
-├── public/            # Archivos estáticos
-└── package.json       # Dependencias y scripts
+├── apps/
+│   ├── frontend/          # Next.js 15 App Router
+│   └── backend/           # NestJS API
+├── packages/
+│   └── shared/            # Tipos y utilidades compartidas
+├── docker-compose.yml     # PostgreSQL
+├── Makefile              # Comandos útiles
+└── package.json          # Workspace root
 ```
 
-## 🎨 Páginas Disponibles
+## 🚀 Requisitos
 
-- **Home** (`/`): Página principal con artículos destacados
-- **Blog** (`/blog`): Lista de todos los artículos con búsqueda
-- **Article** (`/article/:slug`): Vista detallada de cada artículo
-- **About** (`/about`): Información sobre AIQUAA
-- **Contact** (`/contact`): Formulario de contacto
-- **Labs** (`/labs`): Herramientas de desarrollo (JWT Decoder, JSON Validator, etc.)
-- **Feedback** (`/feedback`): Sistema de feedback y métricas
+- Node.js 20+
+- pnpm 9+
+- Docker & Docker Compose
+- PostgreSQL 16
 
-## 🔧 Scripts Disponibles
+## 🛠️ Instalación
 
-- `npm run dev` - Servidor de desarrollo
-- `npm run build` - Construir para producción
-- `npm run preview` - Vista previa de la build
-- `npm run lint` - Ejecutar ESLint
+1. **Clonar el repositorio**
+   ```bash
+   git clone <repository-url>
+   cd aiquaa
+   ```
 
-## 🚀 Deployment
+2. **Instalar dependencias**
+   ```bash
+   pnpm install
+   ```
 
-El proyecto está configurado para deployment en:
+3. **Configurar variables de entorno**
+   ```bash
+   # Copiar archivos de ejemplo
+   cp env.example .env
+   cp apps/frontend/env.local.example apps/frontend/.env.local
+   ```
 
-- **Vercel**: Configuración automática con `vercel.json`
-- **Netlify**: Configuración con `public/_redirects`
-- **GitHub Pages**: Configuración manual
+4. **Levantar base de datos**
+   ```bash
+   make db-up
+   ```
 
-Ver `DEPLOYMENT.md` para instrucciones detalladas.
+5. **Ejecutar migraciones y seed**
+   ```bash
+   make db-seed
+   ```
 
-## 🎯 Funcionalidades Implementadas
+## 🎯 Comandos Principales
 
-### ✅ Completadas
-- [x] Blog completo con artículos y búsqueda
-- [x] Sistema de feedback con métricas
-- [x] Modo oscuro/claro
-- [x] Diseño responsive
-- [x] Sección Labs con herramientas
-- [x] SEO optimizado
-- [x] Formularios funcionales
-- [x] Navegación completa
+### Desarrollo
+```bash
+# Iniciar frontend y backend
+make dev
 
-### 🔄 Próximos Pasos
-- [ ] Integración con CMS headless
-- [ ] Sistema de comentarios
-- [ ] Newsletter subscription
-- [ ] Panel de administración
-- [ ] Más herramientas en Labs
+# Solo frontend (puerto 3001)
+make dev-front
 
-## 📝 Licencia
+# Solo backend (puerto 3000)
+make dev-back
+```
 
-MIT License - ver archivo LICENSE para detalles.
+### Base de Datos
+```bash
+# Levantar PostgreSQL
+make db-up
 
-## 🤝 Contribuir
+# Detener PostgreSQL
+make db-down
+
+# Migraciones y seed
+make db-seed
+```
+
+### Build
+```bash
+# Build de todos los paquetes
+make build
+
+# Limpiar artifacts
+make clean
+```
+
+## 📁 Apps
+
+### Frontend (Next.js 15)
+- **Puerto**: 3001
+- **URL**: http://localhost:3001
+- **Tecnologías**: Next.js 15, React 18, TypeScript, Tailwind CSS
+- **Características**: App Router, SSR, API Routes
+
+### Backend (NestJS)
+- **Puerto**: 3000
+- **URL**: http://localhost:3000/api/v1
+- **Documentación**: http://localhost:3000/api/v1/docs
+- **Tecnologías**: NestJS, TypeScript, Prisma, PostgreSQL
+- **Características**: OpenAPI, JWT Auth, CORS
+
+## 📦 Packages
+
+### Shared
+- Tipos TypeScript generados desde OpenAPI
+- Utilidades compartidas entre frontend y backend
+- Generación automática de tipos: `pnpm --filter @aiquaa/shared gen:types`
+
+## 🔧 Configuración
+
+### Variables de Entorno
+
+#### Root (.env)
+```bash
+NODE_ENV=development
+API_URL=http://localhost:3000/api/v1
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/aiquaa
+JWT_SECRET=change-me
+FRONTEND_PORT=3001
+BACKEND_PORT=3000
+```
+
+#### Frontend (.env.local)
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:3000/api/v1
+```
+
+## 🗄️ Base de Datos
+
+### PostgreSQL
+- **Versión**: 16-alpine
+- **Puerto**: 5432
+- **Base de datos**: aiquaa
+- **Usuario**: postgres
+- **Contraseña**: postgres
+
+### Migraciones
+```bash
+# Generar migración
+cd apps/backend && pnpm prisma:migrate dev
+
+# Aplicar migraciones
+cd apps/backend && pnpm prisma:migrate deploy
+
+# Ver base de datos
+cd apps/backend && pnpm prisma studio
+```
+
+## 🔄 Workflow de Desarrollo
+
+1. **Generar tipos OpenAPI**
+   ```bash
+   # Desde el backend
+   pnpm --filter @aiquaa/backend openapi:print
+   
+   # Generar tipos TypeScript
+   pnpm --filter @aiquaa/shared gen:types
+   ```
+
+2. **Desarrollo**
+   ```bash
+   # Terminal 1: Backend
+   make dev-back
+   
+   # Terminal 2: Frontend
+   make dev-front
+   ```
+
+3. **Testing**
+   ```bash
+   # Lint
+   pnpm lint
+   
+   # Build
+   pnpm build
+   ```
+
+## 🚀 Despliegue
+
+### Frontend (Vercel)
+- Configurado para Next.js 15
+- Variables de entorno: `NEXT_PUBLIC_API_URL`
+
+### Backend (Railway/Heroku)
+- Configurado para NestJS
+- Variables de entorno: `DATABASE_URL`, `JWT_SECRET`
+
+## 📚 Documentación
+
+- [API Documentation](http://localhost:3000/api/v1/docs) - Swagger UI
+- [Prisma Studio](http://localhost:5555) - Gestor de base de datos
+- [Next.js Docs](https://nextjs.org/docs) - Documentación de Next.js
+- [NestJS Docs](https://docs.nestjs.com/) - Documentación de NestJS
+
+## 🤝 Contribución
 
 1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+2. Crear una rama feature (`git checkout -b feature/AmazingFeature`)
+3. Commit los cambios (`git commit -m 'Add some AmazingFeature'`)
 4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+5. Abrir un Pull Request
 
-## 🧹 Limpieza del Repositorio
+## 📄 Licencia
 
-### Archivos Eliminados (Redundantes)
-Se han eliminado los siguientes archivos `.md` que ya no son relevantes después del desacoplamiento del backend:
+Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para detalles.
 
-- `BACKEND_SETUP.md` - Configuración de backend (ya no aplica)
-- `BACKEND_VERIFICATION.md` - Verificación de backend (ya no aplica)
-- `BACKEND_URL_CONFIGURATION.md` - Configuración de URLs de backend (ya no aplica)
-- `SUPABASE_SETUP.md` - Configuración de Supabase (ya no aplica)
-- `RESUMEN_VERIFICACION_BACKEND.md` - Resumen de verificación de backend (ya no aplica)
-- `VERCEL_DEPLOYMENT.md` - Redundante con DEPLOYMENT.md
-- `VERCEL_ENV_SETUP.md` - Redundante con DEPLOYMENT.md
-- `PROJECT_SUMMARY.md` - Redundante con README.md
-- `SOLUCIONES_IMPLEMENTADAS.md` - Redundante
-- `COMUNIDAD_FIX.md` - Fix específico ya no necesario
-- `README-TEST-DATA.md` - Datos de prueba de backend (ya no aplica)
+## 👥 Equipo
 
-### Archivos Mantenidos (Esenciales)
-- `README.md` - Documentación principal actualizada
-- `DEPLOYMENT.md` - Guía de despliegue consolidada
-- `GITHUB_SETUP.md` - Configuración de GitHub
-- `FEEDBACK_SYSTEM.md` - Sistema de feedback del frontend
-- `SEO_IMPLEMENTATION.md` - SEO del frontend
-- `DARK_MODE_IMPLEMENTATION.md` - Implementación del modo oscuro
-- `RESPONSIVE_IMPROVEMENTS.md` - Mejoras responsive
-- `LABS_IMPLEMENTATION.md` - Implementación de Labs
-- `src/components/Labs/README.md` - Documentación específica de Labs
-
-### Estado Actual
-✅ **Frontend completamente funcional y estable**
-✅ **Todas las rutas activas y funcionando**
-✅ **Blog y artículos disponibles**
-✅ **Sistema de feedback operativo**
-✅ **Labs con herramientas de desarrollo**
-✅ **Modo oscuro implementado**
-✅ **Diseño responsive optimizado**
-✅ **SEO configurado**
-✅ **Listo para deployment**
+- **Steven Ayala** - QA Lead & Automation Engineer
+- **AIQUAA Community** - Comunidad de QA en Paraguay
 
 ---
 
-**AIQUAA Blog** - Tu fuente de conocimiento en QA y tecnología 🚀
+**AIQUAA**: Saber es Calidad. Inspirados por el conocimiento, impulsados por la comunidad.
