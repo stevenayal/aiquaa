@@ -10,11 +10,19 @@
     "dev:front": "pnpm --filter @aiquaa/frontend dev",
     "dev:back": "pnpm --filter @aiquaa/backend start:dev",
     "lint": "pnpm -r lint",
-    "verify": "node scripts/verify-setup.js"
+    "verify": "pnpm -r lint && pnpm -r test:cov",
+    "test": "pnpm -r test",
+    "test:cov": "pnpm -r test:cov",
+    "test:watch": "pnpm -r test:watch",
+    "test:contract": "pnpm --filter @aiquaa/backend test:contract",
+    "e2e": "pnpm --filter @aiquaa/frontend e2e",
+    "e2e:report": "pnpm --filter @aiquaa/frontend e2e:report",
+    "perf:forum": "k6 run perf/k6/forum-smoke.js"
   },
   "devDependencies": {
     "concurrently": "^9.0.0",
     "prettier": "^3.0.0",
-    "eslint-config-prettier": "^9.0.0"
+    "eslint-config-prettier": "^9.0.0",
+    "coverage-badges": "^1.1.0"
   }
 }

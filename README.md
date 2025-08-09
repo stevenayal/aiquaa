@@ -88,131 +88,136 @@ make build
 make clean
 ```
 
-## 📁 Apps
+## 🧪 Pruebas y Cobertura
 
-### Frontend (Next.js 15)
-- **Puerto**: 3001
-- **URL**: http://localhost:3001
-- **Tecnologías**: Next.js 15, React 18, TypeScript, Tailwind CSS
-- **Características**: App Router, SSR, API Routes
+### Ejecutar Pruebas
 
-### Backend (NestJS)
-- **Puerto**: 3000
-- **URL**: http://localhost:3000/api/v1
-- **Documentación**: http://localhost:3000/api/v1/docs
-- **Tecnologías**: NestJS, TypeScript, Prisma, PostgreSQL
-- **Características**: OpenAPI, JWT Auth, CORS
-
-## 📦 Packages
-
-### Shared
-- Tipos TypeScript generados desde OpenAPI
-- Utilidades compartidas entre frontend y backend
-- Generación automática de tipos: `pnpm --filter @aiquaa/shared gen:types`
-
-## 🔧 Configuración
-
-### Variables de Entorno
-
-#### Root (.env)
 ```bash
+# Ejecutar todas las pruebas
+pnpm test
+
+# Ejecutar pruebas con cobertura
+pnpm test:cov
+```
+
+## 🎯 Etapa 2: Pruebas y Funcionalidades Post-v1
+
+### E2E Testing con Playwright
+
+```bash
+# Ejecutar tests E2E
+pnpm e2e
+
+# Ver reporte de E2E
+pnpm e2e:report
+```
+
+**Tests incluidos:**
+- `health.spec.ts` - Verificación de health check
+- `forum.crud.spec.ts` - Flujo completo CRUD del foro
+- `auth.spec.ts` - Autenticación y autorización
+- `a11y.spec.ts` - Tests de accesibilidad con axe-core
+
+### Contratos de API
+
+```bash
+# Ejecutar tests de contratos
+pnpm test:contract
+```
+
+**Tests incluidos:**
+- `contracts.forum.spec.ts` - Validación de endpoints del foro
+- `contracts.auth.spec.ts` - Validación de endpoints de autenticación
+
+### Performance Testing con k6
+
+```bash
+# Ejecutar tests de performance
+pnpm perf:forum
+```
+
+**Métricas:**
+- P95 < 400ms para requests HTTP
+- Error rate < 1%
+- Tests de carga para endpoints del foro
+
+### Búsqueda y Paginación
+
+**Endpoints implementados:**
+- `GET /forum/threads?search=&page=&limit=` - Búsqueda y paginación de hilos
+- `GET /forum/posts?threadId=&page=&limit=` - Paginación de posts
+- `GET /forum/search?q=&page=&limit=` - Búsqueda avanzada
+
+### Seguridad y Anti-spam
+
+**Funcionalidades implementadas:**
+- Rate limiting (100 requests/15min por IP)
+- Anti-spam con honeypot y time-gate (>2s)
+- Headers de seguridad (helmet)
+
+**Tests de seguridad:**
+- `security.rate-limit.spec.ts` - Validación de rate limiting
+- `security.antispam.spec.ts` - Validación de anti-spam
+
+### Stripe Integration (Sandbox)
+
+**Endpoints implementados:**
+- `POST /billing/checkout` - Crear sesión de checkout
+- `POST /billing/webhook` - Procesar eventos de Stripe
+
+**Tests incluidos:**
+- `billing.webhook.spec.ts` - Validación de webhooks
+
+### Accesibilidad y SEO
+
+**Funcionalidades:**
+- Tests de accesibilidad automáticos con axe-core
+- Meta tags dinámicos
+- ARIA labels en componentes
+- Estructura de headings semántica
+
+### Analytics
+
+**Implementación:**
+- Eventos de "CreateThread" y "ReplyPost"
+- Endpoint `/analytics/mock` para desarrollo
+- Tests RTL para verificar tracking
+
+### CI/CD Gates
+
+**Workflow actualizado:**
+- Tests unitarios y de integración
+- Tests de contratos de API
+- Tests E2E con Playwright
+- Tests de performance con k6
+- Cobertura mínima 75% (backend y frontend)
+- Linting y build verification
+
+### Variables de Entorno Requeridas
+
+```bash
+# Backend
+DATABASE_URL=postgresql://user:password@localhost:5432/dbname
+JWT_SECRET=your-jwt-secret
 NODE_ENV=development
-API_URL=http://localhost:3000/api/v1
-DATABASE_URL=postgres://postgres:postgres@localhost:5432/aiquaa
-JWT_SECRET=change-me
+PORT=3000
+
+# Frontend
 FRONTEND_PORT=3001
-BACKEND_PORT=3000
+NEXT_PUBLIC_API_URL=http://localhost:3000
+
+# Performance Testing
+BACKEND_URL=http://localhost:3000
 ```
 
-#### Frontend (.env.local)
-```bash
-NEXT_PUBLIC_API_URL=http://localhost:3000/api/v1
-```
+### Definition of Done
 
-## 🗄️ Base de Datos
+Para que una PR sea considerada completa, debe cumplir:
 
-### PostgreSQL
-- **Versión**: 16-alpine
-- **Puerto**: 5432
-- **Base de datos**: aiquaa
-- **Usuario**: postgres
-- **Contraseña**: postgres
-
-### Migraciones
-```bash
-# Generar migración
-cd apps/backend && pnpm prisma:migrate dev
-
-# Aplicar migraciones
-cd apps/backend && pnpm prisma:migrate deploy
-
-# Ver base de datos
-cd apps/backend && pnpm prisma studio
-```
-
-## 🔄 Workflow de Desarrollo
-
-1. **Generar tipos OpenAPI**
-   ```bash
-   # Desde el backend
-   pnpm --filter @aiquaa/backend openapi:print
-   
-   # Generar tipos TypeScript
-   pnpm --filter @aiquaa/shared gen:types
-   ```
-
-2. **Desarrollo**
-   ```bash
-   # Terminal 1: Backend
-   make dev-back
-   
-   # Terminal 2: Frontend
-   make dev-front
-   ```
-
-3. **Testing**
-   ```bash
-   # Lint
-   pnpm lint
-   
-   # Build
-   pnpm build
-   ```
-
-## 🚀 Despliegue
-
-### Frontend (Vercel)
-- Configurado para Next.js 15
-- Variables de entorno: `NEXT_PUBLIC_API_URL`
-
-### Backend (Railway/Heroku)
-- Configurado para NestJS
-- Variables de entorno: `DATABASE_URL`, `JWT_SECRET`
-
-## 📚 Documentación
-
-- [API Documentation](http://localhost:3000/api/v1/docs) - Swagger UI
-- [Prisma Studio](http://localhost:5555) - Gestor de base de datos
-- [Next.js Docs](https://nextjs.org/docs) - Documentación de Next.js
-- [NestJS Docs](https://docs.nestjs.com/) - Documentación de NestJS
-
-## 🤝 Contribución
-
-1. Fork el proyecto
-2. Crear una rama feature (`git checkout -b feature/AmazingFeature`)
-3. Commit los cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abrir un Pull Request
-
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para detalles.
-
-## 👥 Equipo
-
-- **Steven Ayala** - QA Lead & Automation Engineer
-- **AIQUAA Community** - Comunidad de QA en Paraguay
-
----
-
-**AIQUAA**: Saber es Calidad. Inspirados por el conocimiento, impulsados por la comunidad.
+1. ✅ `pnpm --filter @aiquaa/backend test:contract` pasa contra OpenAPI actual
+2. ✅ `pnpm --filter @aiquaa/frontend e2e` pasa (health, foro CRUD, a11y sin violaciones críticas)
+3. ✅ `pnpm perf:forum` cumple thresholds p95 < 400ms, error_rate < 1%
+4. ✅ Rate limit y anti-spam activos en endpoints definidos
+5. ✅ Webhook Stripe (mock) crea Enrollment/Purchase idempotente
+6. ✅ Coverage ≥ 75% en backend y frontend
+7. ✅ README actualizado con pasos y variables
