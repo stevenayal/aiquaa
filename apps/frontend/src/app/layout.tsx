@@ -1,16 +1,20 @@
 import type { Metadata } from 'next';
-import { Sora } from 'next/font/google';
+import { Inter } from 'next/font/google';
 import './globals.css';
-import { ThemeProvider } from '@/contexts/ThemeContext';
-import Layout from '@/components/Layout';
-import GoogleAnalytics from '@/components/GoogleAnalytics';
+import ErrorBoundary from '../components/ErrorBoundary';
+import { initializeSentry } from '../lib/observability';
 
-const sora = Sora({ subsets: ['latin'] });
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'AIQUAA - Inteligencia Artificial y Desarrollo',
-  description: 'Plataforma de inteligencia artificial y desarrollo con herramientas, laboratorios y comunidad.',
+  title: 'AIQUAA - Herramientas de QA',
+  description: 'Plataforma de herramientas de QA y testing',
 };
+
+// Initialize Sentry
+if (typeof window !== 'undefined') {
+  initializeSentry();
+}
 
 export default function RootLayout({
   children,
@@ -19,13 +23,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className={sora.className}>
-        <ThemeProvider>
-          <GoogleAnalytics />
-          <Layout>
-            {children}
-          </Layout>
-        </ThemeProvider>
+      <body className={inter.className}>
+        <ErrorBoundary>
+          {children}
+        </ErrorBoundary>
       </body>
     </html>
   );

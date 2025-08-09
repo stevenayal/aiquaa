@@ -8,6 +8,7 @@ import { ContentModule } from './content/content.module';
 import { BillingModule } from './billing/billing.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AppCacheModule } from './cache/cache.module';
+import { ObservabilityModule } from './observability/observability.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { AppCacheModule } from './cache/cache.module';
       isGlobal: true,
       envFilePath: ['.env.local', '.env'],
     }),
+    ObservabilityModule,
     PrismaModule,
     AppCacheModule,
     HealthModule,

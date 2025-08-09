@@ -1,4 +1,4 @@
-.PHONY: help db-up db-down db-seed dev dev-front dev-back build clean
+.PHONY: help db-up db-down db-seed dev dev-front dev-back build clean observability-up observability-down dev-observability test-observability
 
 help: ## Show this help message
 	@echo "AIQUAA Monorepo - Available commands:"
@@ -24,6 +24,29 @@ dev-front: ## Start only frontend in development mode
 
 dev-back: ## Start only backend in development mode
 	pnpm dev:back
+
+dev-observability: ## Start development with full observability stack
+	docker-compose -f docker-compose.observability.yml up -d
+	@echo "✅ Observability services started"
+	@echo "   - Jaeger UI: http://localhost:16686"
+	@echo "   - Grafana: http://localhost:3001 (admin/admin)"
+	@echo "   - Prometheus: http://localhost:9090"
+	pnpm dev
+
+observability-up: ## Start observability services (Jaeger, Prometheus, Grafana)
+	docker-compose -f docker-compose.observability.yml up -d
+	@echo "✅ Observability services started:"
+	@echo "   - Jaeger UI: http://localhost:16686"
+	@echo "   - Grafana: http://localhost:3001 (admin/admin)"
+	@echo "   - Prometheus: http://localhost:9090"
+
+observability-down: ## Stop observability services
+	docker-compose -f docker-compose.observability.yml down
+	@echo "✅ Observability services stopped"
+
+test-observability: ## Test observability system
+	@echo "🧪 Testing observability system..."
+	node scripts/test-observability.js
 
 build: ## Build all packages
 	pnpm build

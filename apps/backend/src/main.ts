@@ -2,12 +2,21 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { RequestIdMiddleware } from './observability/request-id.middleware';
+import { GlobalExceptionFilter } from './observability/exception.filter';
+import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Global prefix
   app.setGlobalPrefix('api/v1');
+
+  // Global middleware for request ID
+  app.use(new RequestIdMiddleware().use);
+
+  // Global exception filter
+  app.useGlobalFilters(new GlobalExceptionFilter());
 
   // CORS configuration
   app.enableCors({
@@ -53,6 +62,7 @@ async function bootstrap() {
   await app.listen(port);
   console.log(`🚀 AIQUAA Backend running on http://localhost:${port}`);
   console.log(`📚 API Documentation available at http://localhost:${port}/api/v1/docs`);
+  console.log(`📊 Metrics available at http://localhost:${port}/metrics`);
 }
 
 bootstrap();

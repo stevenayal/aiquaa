@@ -12,8 +12,11 @@ aiquaa/
 ├── packages/
 │   └── shared/            # Tipos y utilidades compartidas
 ├── docs/
-│   └── adr/              # Architecture Decision Records
+│   ├── adr/              # Architecture Decision Records
+│   ├── observability.md  # Sistema de observabilidad
+│   └── dashboard-kpis.md # KPIs y métricas
 ├── docker-compose.yml     # PostgreSQL + Redis
+├── docker-compose.observability.yml # Jaeger + Prometheus + Grafana
 ├── Makefile              # Comandos útiles
 └── package.json          # Workspace root
 ```
@@ -44,6 +47,9 @@ aiquaa/
    # Copiar archivos de ejemplo
    cp env.example .env
    cp apps/frontend/env.local.example apps/frontend/.env.local
+   
+   # Configurar observabilidad (opcional)
+   cp env.observability.example .env.observability
    ```
 
 4. **Levantar servicios**
@@ -68,6 +74,9 @@ make dev-front
 
 # Solo backend (puerto 3000)
 make dev-back
+
+# Con observabilidad completa
+make dev-observability
 ```
 
 ### Base de Datos
@@ -82,6 +91,18 @@ make db-down
 make db-seed
 ```
 
+### Observabilidad
+```bash
+# Levantar servicios de observabilidad
+make observability-up
+
+# Detener servicios de observabilidad
+make observability-down
+
+# Probar sistema de observabilidad
+make test-observability
+```
+
 ### Build
 ```bash
 # Build de todos los paquetes
@@ -90,6 +111,48 @@ make build
 # Limpiar artifacts
 make clean
 ```
+
+## 📊 Observabilidad
+
+AIQUAA incluye un sistema completo de observabilidad con:
+
+- **Logging estructurado** con Pino
+- **Tracing distribuido** con OpenTelemetry
+- **Métricas** con Prometheus
+- **Monitoreo de errores** con Sentry
+- **Correlación** con Request IDs
+
+### Endpoints de Observabilidad
+
+- **Métricas**: `http://localhost:3000/metrics` (Prometheus)
+- **Health Check**: `http://localhost:3000/api/v1/health`
+- **Jaeger UI**: `http://localhost:16686` (tracing)
+- **Grafana**: `http://localhost:3001` (dashboards)
+
+### Configuración Rápida
+
+1. **Variables de entorno**:
+   ```bash
+   # Backend
+   LOG_LEVEL=info
+   OTLP_ENDPOINT=http://localhost:4318
+   SENTRY_DSN=your-sentry-dsn
+   
+   # Frontend
+   NEXT_PUBLIC_SENTRY_DSN=your-sentry-dsn
+   ```
+
+2. **Servicios opcionales**:
+   ```bash
+   docker-compose -f docker-compose.observability.yml up -d
+   ```
+
+3. **Verificar funcionamiento**:
+   ```bash
+   node scripts/test-observability.js
+   ```
+
+Para más detalles, consulta [docs/observability.md](docs/observability.md).
 
 ## 🗄️ Data & Cache
 
