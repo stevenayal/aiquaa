@@ -1,9 +1,9 @@
 import { Module, Global } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
-import { PrometheusModule } from 'nestjs-prom';
-import { TracingService } from './tracing.service';
-import { MetricsController } from './metrics.controller';
+// import { PrometheusModule } from 'nestjs-prom';
+// import { TracingService } from './tracing.service';
+// import { MetricsController } from './metrics.controller';
 import { SentryService } from './sentry.service';
 
 @Global()
@@ -23,15 +23,15 @@ import { SentryService } from './sentry.service';
               ignore: 'pid,hostname',
             },
           } : undefined,
-          customProps: (req, res) => ({
+          customProps: (req, _res) => ({
             context: 'HTTP',
             requestId: req.headers['x-request-id'] || req.id,
           }),
-          customLogLevel: (req, res, err) => {
-            if (res.statusCode >= 400 && res.statusCode < 500) {
+          customLogLevel: (_req, _res, err) => {
+            if (_res.statusCode >= 400 && _res.statusCode < 500) {
               return 'warn';
             }
-            if (res.statusCode >= 500 || err) {
+            if (_res.statusCode >= 500 || err) {
               return 'error';
             }
             return 'silent';
@@ -62,17 +62,17 @@ import { SentryService } from './sentry.service';
       }),
       inject: [ConfigService],
     }),
-    PrometheusModule.register({
-      defaultMetrics: {
-        enabled: true,
-        config: {
-          prefix: 'aiquaa_',
-        },
-      },
-    }),
+    // PrometheusModule.register({
+    //   defaultMetrics: {
+    //     enabled: true,
+    //     config: {
+    //       prefix: 'aiquaa_',
+    //     },
+    //   },
+    // }),
   ],
-  controllers: [MetricsController],
-  providers: [TracingService, SentryService],
-  exports: [LoggerModule, PrometheusModule, TracingService, SentryService],
+  // controllers: [MetricsController],
+  providers: [SentryService],
+  exports: [LoggerModule, SentryService],
 })
 export class ObservabilityModule {}

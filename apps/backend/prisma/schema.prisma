@@ -11,32 +11,82 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String
-  password  String
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  deletedAt DateTime?
+  id              Int       @id @default(autoincrement())
+  email           String    @unique
+  passwordHash    String?   // Nullable for OAuth users
+  name            String?
+  avatarUrl       String?
+  emailVerifiedAt DateTime?
+  twoFASecret     String?   // For 2FA setup
+  role            Role      @default(USER)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
 
   // Relations
-  threads   Thread[]
-  posts     Post[]
-  enrollments Enrollment[]
-  purchases Purchase[]
+  threads              Thread[]
+  posts                Post[]
+  enrollments          Enrollment[]
+  purchases            Purchase[]
+  oauthAccounts        OAuthAccount[]
+  refreshTokens        RefreshToken[]
+  verificationTokens   VerificationToken[]
 
   @@map("users")
   @@index([deletedAt])
+  @@index([email])
+  @@index([emailVerifiedAt])
 }
 
-model Role {
-  id          Int    @id @default(autoincrement())
-  name        String @unique
-  description String?
-  users       User[]
+model OAuthAccount {
+  id             Int      @id @default(autoincrement())
+  provider       OAuthProvider
+  providerUserId String
+  userId         Int
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt      DateTime @default(now())
 
-  @@map("roles")
+  @@unique([provider, providerUserId])
+  @@map("oauth_accounts")
+  @@index([userId])
+  @@index([provider, providerUserId])
+}
+
+model RefreshToken {
+  id                Int       @id @default(autoincrement())
+  userId            Int
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash         String    @unique
+  createdAt         DateTime  @default(now())
+  expiresAt         DateTime
+  revokedAt         DateTime?
+  replacedByTokenId Int?
+  replacedByToken   RefreshToken? @relation("TokenReplacement", fields: [replacedByTokenId], references: [id])
+  replacingTokens   RefreshToken[] @relation("TokenReplacement")
+  ip                String?
+  userAgent         String?
+
+  @@map("refresh_tokens")
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([tokenHash])
+}
+
+model VerificationToken {
+  id         Int                @id @default(autoincrement())
+  userId     Int?
+  user       User?              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  email      String?
+  type       VerificationType
+  tokenHash  String             @unique
+  createdAt  DateTime           @default(now())
+  expiresAt  DateTime
+  consumedAt DateTime?
+
+  @@map("verification_tokens")
+  @@index([type, email])
+  @@index([tokenHash])
+  @@index([expiresAt])
 }
 
 model Category {
@@ -177,8 +227,18 @@ model AuditLog {
 
 enum Role {
   USER
-  ADMIN
   MODERATOR
+  ADMIN
+}
+
+enum OAuthProvider {
+  GOOGLE
+  GITHUB
+}
+
+enum VerificationType {
+  VERIFY_EMAIL
+  RESET_PASSWORD
 }
 
 enum PurchaseStatus {

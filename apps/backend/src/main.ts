@@ -4,7 +4,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { RequestIdMiddleware } from './observability/request-id.middleware';
 import { GlobalExceptionFilter } from './observability/exception.filter';
-import { Logger } from '@nestjs/common';
+
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -49,14 +49,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/v1/docs', app, document);
 
-  // Health check endpoint
-  app.get('/api/v1/health', (req, res) => {
-    res.json({
-      status: 'ok',
-      time: new Date().toISOString(),
-      version: '1.0.0',
-    });
-  });
+  // Health check endpoint is handled by HealthController
 
   const port = process.env.BACKEND_PORT || 3000;
   await app.listen(port);

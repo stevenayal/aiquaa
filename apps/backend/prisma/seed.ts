@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import * as bcrypt from 'bcryptjs';
+import * as argon2 from 'argon2';
 
 const prisma = new PrismaClient();
 
@@ -7,15 +7,30 @@ async function main() {
   console.log('🌱 Starting database seed...');
 
   // Create admin user
-  const hashedPassword = await bcrypt.hash('admin123', 10);
+  const hashedPassword = await argon2.hash('admin123');
   const adminUser = await prisma.user.upsert({
     where: { email: 'admin@aiquaa.com' },
     update: {},
     create: {
       email: 'admin@aiquaa.com',
       name: 'Admin User',
-      password: hashedPassword,
+      passwordHash: hashedPassword,
       role: 'ADMIN',
+      emailVerifiedAt: new Date(),
+    },
+  });
+
+  // Create demo user
+  const demoPassword = await argon2.hash('demo123');
+  const demoUser = await prisma.user.upsert({
+    where: { email: 'demo@aiquaa.com' },
+    update: {},
+    create: {
+      email: 'demo@aiquaa.com',
+      name: 'Demo User',
+      passwordHash: demoPassword,
+      role: 'USER',
+      emailVerifiedAt: new Date(),
     },
   });
 
@@ -61,6 +76,7 @@ async function main() {
 
   console.log('✅ Database seeded successfully!');
   console.log('👤 Admin user created:', adminUser.email);
+  console.log('👤 Demo user created:', demoUser.email);
   console.log('📁 Categories created:', categories.length);
 }
 
