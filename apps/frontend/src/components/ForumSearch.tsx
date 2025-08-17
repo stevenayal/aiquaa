@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useRouter } from 'next/navigation';
 
 interface ForumSearchProps {
   onSearch: (searchTerm: string) => void;
@@ -16,7 +15,6 @@ export const ForumSearch: React.FC<ForumSearchProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const searchParams = useSearchParams();
-  const router = useRouter();
 
   // Debounce search term
   useEffect(() => {
@@ -29,15 +27,17 @@ export const ForumSearch: React.FC<ForumSearchProps> = ({
 
   // Trigger search when debounced term changes
   useEffect(() => {
-    if (debouncedSearchTerm !== searchParams.get('search')) {
+    if (searchParams && debouncedSearchTerm !== searchParams.get('search')) {
       onSearch(debouncedSearchTerm);
     }
   }, [debouncedSearchTerm, onSearch, searchParams]);
 
   // Initialize search term from URL
   useEffect(() => {
-    const urlSearchTerm = searchParams.get('search') || '';
-    setSearchTerm(urlSearchTerm);
+    if (searchParams) {
+      const urlSearchTerm = searchParams.get('search') || '';
+      setSearchTerm(urlSearchTerm);
+    }
   }, [searchParams]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {

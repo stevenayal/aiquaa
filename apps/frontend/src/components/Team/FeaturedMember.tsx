@@ -1,7 +1,5 @@
 'use client';
 
-import Link from 'next/link';
-
 const FeaturedMember = () => {
   return (
     <section className="bg-brand-light py-12 md:py-16">

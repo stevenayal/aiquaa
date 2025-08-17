@@ -36,12 +36,18 @@ export const ForumPagination: React.FC<ForumPaginationProps> = ({
   const renderPageNumbers = () => {
     const pages = [];
     const maxVisiblePages = 5;
-    let startPage = Math.max(1, page - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-
-    if (endPage - startPage + 1 < maxVisiblePages) {
-      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    
+    // Calcular páginas iniciales
+    let initialStartPage = Math.max(1, page - Math.floor(maxVisiblePages / 2));
+    const initialEndPage = Math.min(totalPages, initialStartPage + maxVisiblePages - 1);
+    
+    // Ajustar si no hay suficientes páginas visibles
+    if (initialEndPage - initialStartPage + 1 < maxVisiblePages) {
+      initialStartPage = Math.max(1, initialEndPage - maxVisiblePages + 1);
     }
+    
+    const startPage = initialStartPage;
+    const endPage = initialEndPage;
 
     for (let i = startPage; i <= endPage; i++) {
       pages.push(

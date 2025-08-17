@@ -47,11 +47,11 @@ const Home = () => {
           <h2 className="text-2xl font-bold mb-4 text-center">Lo que dicen quienes ya usan AIQUAA:</h2>
           <div className="grid md:grid-cols-2 gap-6">
             <div className="bg-slate-700 p-4 rounded-lg">
-              <p>"Me ahorró horas validando respuestas de API. Todo en español y sin pagar nada."</p>
+              <p>&ldquo;Me ahorró horas validando respuestas de API. Todo en español y sin pagar nada.&rdquo;</p>
               <span className="block mt-2 text-sm text-gray-300">— Ana, QA Manual</span>
             </div>
             <div className="bg-slate-700 p-4 rounded-lg">
-              <p>"Usé el generador de datos para una demo y funcionó al toque. Muy útil."</p>
+              <p>&ldquo;Usé el generador de datos para una demo y funcionó al toque. Muy útil.&rdquo;</p>
               <span className="block mt-2 text-sm text-gray-300">— Luis, Automatizador</span>
             </div>
           </div>
@@ -63,7 +63,7 @@ const Home = () => {
         <h2 className="text-2xl md:text-3xl font-bold text-brand-accent mb-4">¿Qué es AIQUAA?</h2>
         <p className="text-base md:text-lg max-w-3xl mx-auto text-brand-text mb-6 px-4">
           AIQUAA es una iniciativa paraguaya que fusiona conocimiento local con innovación global en testing de software. 
-          Inspirada en el término guaraní "aikuaa" —que significa saber o conocer—, nuestra misión es construir una comunidad 
+          Inspirada en el término guaraní &ldquo;aikuaa&rdquo; —que significa saber o conocer—, nuestra misión es construir una comunidad 
           comprometida con la calidad, la capacitación constante y la excelencia profesional. Combinamos inteligencia artificial (AI) 
           con aseguramiento de calidad (QA) para transformar el testing en Paraguay y en la región.
         </p>

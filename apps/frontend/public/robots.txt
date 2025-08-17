@@ -1,0 +1,11 @@
+# *
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# Host
+Host: https://aiquaa.com
+
+# Sitemaps
+Sitemap: https://aiquaa.com/sitemap.xml

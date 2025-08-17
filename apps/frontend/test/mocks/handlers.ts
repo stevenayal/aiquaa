@@ -14,9 +14,9 @@ export const handlers = [
 
   // Auth endpoints
   http.post(`${baseUrl}/auth/login`, async ({ request }) => {
-    const body = await request.json();
+    const body = await request.json() as any;
     
-    if (body.email === 'test@example.com' && body.password === 'password123') {
+    if (body && body.email === 'test@example.com' && body.password === 'password123') {
       return HttpResponse.json({
         access_token: 'mock-access-token',
         refresh_token: 'mock-refresh-token',
@@ -32,9 +32,9 @@ export const handlers = [
   }),
 
   http.post(`${baseUrl}/auth/refresh`, async ({ request }) => {
-    const body = await request.json();
+    const body = await request.json() as any;
     
-    if (body.refresh_token === 'mock-refresh-token') {
+    if (body && body.refresh_token === 'mock-refresh-token') {
       return HttpResponse.json({
         access_token: 'new-mock-access-token',
         refresh_token: 'new-mock-refresh-token',
@@ -122,7 +122,7 @@ export const handlers = [
   }),
 
   http.post(`${baseUrl}/forum/threads`, async ({ request }) => {
-    const body = await request.json();
+    const body = await request.json() as any;
     
     return HttpResponse.json({
       id: 3,
@@ -181,7 +181,7 @@ export const handlers = [
   }),
 
   http.post(`${baseUrl}/forum/threads/:id/posts`, async ({ request, params }) => {
-    const body = await request.json();
+    const body = await request.json() as any;
     const { id } = params;
     
     return HttpResponse.json({

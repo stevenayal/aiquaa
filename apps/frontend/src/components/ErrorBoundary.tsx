@@ -1,3 +1,5 @@
+'use client';
+
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import * as Sentry from '@sentry/react';
 
@@ -70,7 +72,7 @@ class ErrorBoundary extends Component<Props, State> {
 }
 
 export default Sentry.withErrorBoundary(ErrorBoundary, {
-  fallback: (error) => (
+  fallback: (error: any) => (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
@@ -78,7 +80,7 @@ export default Sentry.withErrorBoundary(ErrorBoundary, {
             Error en la aplicación
           </h1>
           <p className="text-gray-600 mb-8">
-            {error.message || 'Ha ocurrido un error inesperado.'}
+            {error?.message || 'Ha ocurrido un error inesperado.'}
           </p>
           <button
             onClick={() => window.location.reload()}

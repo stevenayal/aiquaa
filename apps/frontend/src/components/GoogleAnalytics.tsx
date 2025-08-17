@@ -18,7 +18,7 @@ const GoogleAnalytics = () => {
 
   useEffect(() => {
     // Inicializar Google Analytics
-    if (typeof window !== 'undefined' && window.gtag) {
+    if (typeof window !== 'undefined' && window.gtag && searchParams) {
       const url = pathname + searchParams.toString();
       window.gtag('config', GA_MEASUREMENT_ID, {
         page_path: url,
