@@ -3,7 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import ErrorBoundary from '../components/ErrorBoundary';
 import Layout from '../components/Layout';
-import ThemeProvider from '../contexts/ThemeContext';
+import { ThemeProvider } from '../contexts/ThemeContext';
 import { initializeSentry } from '../lib/observability';
 
 const inter = Inter({ subsets: ['latin'] });
