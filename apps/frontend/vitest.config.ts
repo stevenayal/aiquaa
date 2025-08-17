@@ -15,7 +15,11 @@ export default defineConfig({
       'test/**/*.spec.tsx',
       'test/**/*.test.tsx',
       'test/**/*.spec.ts',
-      'test/**/*.test.ts'
+      'test/**/*.test.ts',
+      './test/**/*.spec.tsx',
+      './test/**/*.test.tsx',
+      './test/**/*.spec.ts',
+      './test/**/*.test.ts'
     ],
     exclude: [
       '**/node_modules/**',
