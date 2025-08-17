@@ -27,7 +27,12 @@ export default defineConfig({
       path.resolve(__dirname, 'test', '**', '*.spec.tsx'),
       path.resolve(__dirname, 'test', '**', '*.test.tsx'),
       path.resolve(__dirname, 'test', '**', '*.spec.ts'),
-      path.resolve(__dirname, 'test', '**', '*.test.ts')
+      path.resolve(__dirname, 'test', '**', '*.test.ts'),
+      // Patrones absolutos para CI/CD
+      '/vercel/path0/apps/frontend/test/**/*.spec.tsx',
+      '/vercel/path0/apps/frontend/test/**/*.test.tsx',
+      '/vercel/path0/apps/frontend/test/**/*.spec.ts',
+      '/vercel/path0/apps/frontend/test/**/*.test.ts'
     ],
     exclude: [
       '**/node_modules/**',
