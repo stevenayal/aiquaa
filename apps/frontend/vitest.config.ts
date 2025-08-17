@@ -7,6 +7,16 @@ export default defineConfig({
     setupFiles: ['./test/setup.ts'],
     globals: true,
     css: true,
+    include: [
+      '**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+      'test/**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'
+    ],
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/.next/**',
+      '**/coverage/**'
+    ],
   },
   resolve: {
     alias: {
