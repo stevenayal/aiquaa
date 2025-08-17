@@ -20,7 +20,7 @@
     "perf:forum": "k6 run perf/k6/forum-smoke.js",
     "adr:new": "node tools/adr-new.mjs",
     "adr:list": "ls -1 docs/adr | sort",
-    "prepare": "husky install",
+    "prepare": "if [ -d .git ] && [ \"$CI\" != \"true\" ] && [ \"$VERCEL\" != \"true\" ]; then husky install; fi",
     "commit": "git-cz",
     "lint-staged": "lint-staged",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\""
