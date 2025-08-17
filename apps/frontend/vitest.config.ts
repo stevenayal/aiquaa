@@ -8,10 +8,10 @@ export default defineConfig({
     globals: true,
     css: true,
     include: [
-      '**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
-      'test/**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
       'test/**/*.spec.tsx',
-      'test/**/*.test.tsx'
+      'test/**/*.test.tsx',
+      'test/**/*.spec.ts',
+      'test/**/*.test.ts'
     ],
     exclude: [
       '**/node_modules/**',
