@@ -23,7 +23,11 @@ export default defineConfig({
       path.resolve(__dirname, 'test/**/*.spec.tsx'),
       path.resolve(__dirname, 'test/**/*.test.tsx'),
       path.resolve(__dirname, 'test/**/*.spec.ts'),
-      path.resolve(__dirname, 'test/**/*.test.ts')
+      path.resolve(__dirname, 'test/**/*.test.ts'),
+      path.resolve(__dirname, 'test', '**', '*.spec.tsx'),
+      path.resolve(__dirname, 'test', '**', '*.test.tsx'),
+      path.resolve(__dirname, 'test', '**', '*.spec.ts'),
+      path.resolve(__dirname, 'test', '**', '*.test.ts')
     ],
     exclude: [
       '**/node_modules/**',
