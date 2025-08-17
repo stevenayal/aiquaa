@@ -20,6 +20,26 @@ export default {
           800: '#1e40af',
           900: '#1e3a8a',
         },
+        // Brand colors used in components
+        brand: {
+          primary: '#1e40af',
+          secondary: '#3b82f6',
+          accent: '#f59e0b',
+          light: '#f8fafc',
+          dark: '#1e293b',
+          text: '#334155',
+          muted: '#64748b',
+          background: '#ffffff',
+        },
+        // Dark theme colors
+        dark: {
+          primary: '#1e293b',
+          secondary: '#334155',
+          background: '#0f172a',
+          text: '#f1f5f9',
+          muted: '#94a3b8',
+          accent: '#3b82f6',
+        },
       },
       fontFamily: {
         sans: ['Sora', 'sans-serif'],

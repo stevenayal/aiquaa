@@ -14,7 +14,7 @@ const FeaturedMember = () => {
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
             <div className="flex-shrink-0">
               <img
-                src="/images/steven-ayala.jpg"
+                src="/images/logo1.png"
                 alt="Steven Ayala"
                 className="w-32 h-32 rounded-full object-cover border-4 border-brand-accent"
               />
