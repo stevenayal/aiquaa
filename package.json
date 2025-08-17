@@ -5,6 +5,7 @@
   "workspaces": ["apps/*", "packages/*"],
   "scripts": {
     "build": "pnpm -r build",
+    "build:vercel": "pnpm --filter @aiquaa/frontend run build",
     "dev": "concurrently -n FRONT,BACK -c auto \"pnpm --filter @aiquaa/frontend dev\" \"pnpm --filter @aiquaa/backend start:dev\"",
     "dev:front": "pnpm --filter @aiquaa/frontend dev",
     "dev:back": "pnpm --filter @aiquaa/backend start:dev",
@@ -21,7 +22,8 @@
     "adr:list": "ls -1 docs/adr | sort",
     "prepare": "husky install",
     "commit": "git-cz",
-    "lint-staged": "lint-staged"
+    "lint-staged": "lint-staged",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\""
   },
   "devDependencies": {
     "concurrently": "^9.0.0",
