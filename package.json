@@ -20,7 +20,7 @@
     "perf:forum": "k6 run perf/k6/forum-smoke.js",
     "adr:new": "node tools/adr-new.mjs",
     "adr:list": "ls -1 docs/adr | sort",
-    "prepare": "command -v husky >/dev/null 2>&1 && husky install || true",
+    "prepare": "node -e \"try { require('child_process').execSync('husky install', {stdio: 'ignore'}); } catch(e) {}\"",
     "commit": "git-cz",
     "lint-staged": "lint-staged",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\""
