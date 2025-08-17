@@ -8,12 +8,12 @@ import { Request } from 'express';
 @Injectable()
 export class JwtAccessStrategy extends PassportStrategy(Strategy, 'jwt-access') {
   constructor(
-    private _configService: ConfigService,
+    private configService: ConfigService,
     private prisma: PrismaService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: _configService.get<string>('JWT_SECRET'),
+      secretOrKey: configService.get<string>('JWT_SECRET'),
       ignoreExpiration: false,
       passReqToCallback: true,
     });

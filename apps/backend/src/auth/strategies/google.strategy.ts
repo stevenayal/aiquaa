@@ -7,13 +7,13 @@ import { PrismaService } from '../../prisma/prisma.service';
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(
-    private _configService: ConfigService,
+    private configService: ConfigService,
     private prisma: PrismaService,
   ) {
     super({
-      clientID: _configService.get<string>('GOOGLE_CLIENT_ID'),
-      clientSecret: _configService.get<string>('GOOGLE_CLIENT_SECRET'),
-      callbackURL: `${_configService.get<string>('BACKEND_PORT', '3000')}/api/v1/auth/google/callback`,
+      clientID: configService.get<string>('GOOGLE_CLIENT_ID'),
+      clientSecret: configService.get<string>('GOOGLE_CLIENT_SECRET'),
+      callbackURL: `${configService.get<string>('BACKEND_PORT', '3000')}/api/v1/auth/google/callback`,
       scope: ['email', 'profile'],
     });
   }

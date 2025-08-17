@@ -1,9 +1,7 @@
 import { Module, Global } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
-// import { PrometheusModule } from 'nestjs-prom';
-// import { TracingService } from './tracing.service';
-// import { MetricsController } from './metrics.controller';
+import { MetricsController } from './metrics.controller';
 import { SentryService } from './sentry.service';
 
 @Global()
@@ -62,16 +60,8 @@ import { SentryService } from './sentry.service';
       }),
       inject: [ConfigService],
     }),
-    // PrometheusModule.register({
-    //   defaultMetrics: {
-    //     enabled: true,
-    //     config: {
-    //       prefix: 'aiquaa_',
-    //     },
-    //   },
-    // }),
   ],
-  // controllers: [MetricsController],
+  controllers: [MetricsController],
   providers: [SentryService],
   exports: [LoggerModule, SentryService],
 })
