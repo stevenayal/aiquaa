@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm install && pnpm --filter @aiquaa/frontend install && pnpm --filter @aiquaa/frontend run build",
+  "buildCommand": "pnpm install && pnpm --filter @aiquaa/frontend install && pnpm --filter @aiquaa/frontend run test && pnpm --filter @aiquaa/frontend run build",
   "outputDirectory": "apps/frontend/.next",
   "installCommand": "pnpm install",
   "framework": "nextjs"
