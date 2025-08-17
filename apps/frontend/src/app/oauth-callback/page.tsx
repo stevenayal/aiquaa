@@ -14,6 +14,13 @@ export default function OAuthCallbackPage() {
   useEffect(() => {
     const handleOAuthCallback = async () => {
       try {
+        // Verificar que searchParams no sea null
+        if (!searchParams) {
+          setStatus('error');
+          setMessage('Error al obtener parámetros de la URL. Por favor, intenta nuevamente.');
+          return;
+        }
+
         const accessToken = searchParams.get('access_token');
         
         if (!accessToken) {
@@ -34,8 +41,6 @@ export default function OAuthCallbackPage() {
         });
 
         if (userResponse.ok) {
-          const userData = await userResponse.json();
-          
           // Actualizar el contexto de autenticación
           // Nota: Esto requeriría modificar el AuthContext para aceptar un usuario externo
           // Por ahora, redirigimos y el AuthContext se actualizará automáticamente
