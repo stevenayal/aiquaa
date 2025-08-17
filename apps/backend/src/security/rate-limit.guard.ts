@@ -1,5 +1,5 @@
 import { Injectable, CanActivate, ExecutionContext, HttpException, HttpStatus } from '@nestjs/common';
-import { Request } from 'express';
+import type { Request } from 'express';
 
 interface RateLimitConfig {
   windowMs: number;
