@@ -3,10 +3,12 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { isDarkMode, toggleDarkMode } = useTheme();
+  const { user, isAuthenticated, logout } = useAuth();
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -14,6 +16,11 @@ const Header = () => {
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
+  };
+
+  const handleLogout = () => {
+    logout();
+    closeMobileMenu();
   };
 
   return (
@@ -65,7 +72,7 @@ const Header = () => {
             </Link>
           </nav>
 
-          {/* Desktop Theme Toggle and Login Button */}
+          {/* Desktop Theme Toggle and Auth Buttons */}
           <div className="hidden md:flex items-center space-x-3">
             <button
               onClick={toggleDarkMode}
@@ -86,16 +93,49 @@ const Header = () => {
                 </svg>
               )}
             </button>
-            <button
-              className={`px-3 lg:px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 opacity-50 cursor-not-allowed ${
-                isDarkMode 
-                  ? 'bg-dark-secondary text-dark-text' 
-                  : 'bg-brand-accent text-brand-light'
-              }`}
-              disabled
-            >
-              Iniciar Sesión
-            </button>
+            
+            {isAuthenticated ? (
+              <div className="flex items-center space-x-3">
+                <span className={`text-sm font-medium ${
+                  isDarkMode ? 'text-dark-text' : 'text-brand-light'
+                }`}>
+                  ¡Hola, {user?.name}!
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className={`px-3 lg:px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
+                    isDarkMode 
+                      ? 'bg-dark-secondary text-dark-text hover:bg-dark-accent' 
+                      : 'bg-brand-accent text-brand-light hover:bg-brand-primary'
+                  }`}
+                >
+                  Cerrar Sesión
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-3">
+                <Link
+                  href="/login"
+                  className={`px-3 lg:px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
+                    isDarkMode 
+                      ? 'text-dark-text hover:bg-dark-secondary' 
+                      : 'text-brand-light hover:bg-brand-accent/20'
+                  }`}
+                >
+                  Iniciar Sesión
+                </Link>
+                <Link
+                  href="/register"
+                  className={`px-3 lg:px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
+                    isDarkMode 
+                      ? 'bg-dark-secondary text-dark-text hover:bg-dark-accent' 
+                      : 'bg-brand-accent text-brand-light hover:bg-brand-primary'
+                  }`}
+                >
+                  Registrarse
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -147,6 +187,50 @@ const Header = () => {
                 <span className="mr-1">🧪</span>
                 Labs
               </Link>
+              
+              {/* Mobile Auth Buttons */}
+              <div className="pt-4 pb-3 border-t border-gray-200">
+                {isAuthenticated ? (
+                  <div className="space-y-2">
+                    <div className={`px-3 py-2 text-sm font-medium ${
+                      isDarkMode ? 'text-dark-text' : 'text-brand-light'
+                    }`}>
+                      ¡Hola, {user?.name}!
+                    </div>
+                    <button
+                      onClick={handleLogout}
+                      className={`w-full text-left px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                        isDarkMode 
+                          ? 'text-dark-text hover:bg-dark-secondary' 
+                          : 'text-brand-light hover:bg-brand-accent/20'
+                      }`}
+                    >
+                      Cerrar Sesión
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Link
+                      href="/login"
+                      className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                        isDarkMode ? 'text-dark-text hover:bg-dark-secondary' : 'text-brand-light hover:bg-brand-accent/20'
+                      }`}
+                      onClick={closeMobileMenu}
+                    >
+                      Iniciar Sesión
+                    </Link>
+                    <Link
+                      href="/register"
+                      className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                        isDarkMode ? 'text-dark-text hover:bg-dark-secondary' : 'text-brand-light hover:bg-brand-accent/20'
+                      }`}
+                      onClick={closeMobileMenu}
+                    >
+                      Registrarse
+                    </Link>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}

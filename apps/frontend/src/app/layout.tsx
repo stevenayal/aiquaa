@@ -4,6 +4,7 @@ import './globals.css';
 import ErrorBoundary from '../components/ErrorBoundary';
 import Layout from '../components/Layout';
 import { ThemeProvider } from '../contexts/ThemeContext';
+import { AuthProvider } from '../contexts/AuthContext';
 import { initializeSentry } from '../lib/observability';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -28,9 +29,11 @@ export default function RootLayout({
       <body className={inter.className}>
         <ErrorBoundary>
           <ThemeProvider>
-            <Layout>
-              {children}
-            </Layout>
+            <AuthProvider>
+              <Layout>
+                {children}
+              </Layout>
+            </AuthProvider>
           </ThemeProvider>
         </ErrorBoundary>
       </body>
