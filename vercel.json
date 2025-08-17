@@ -1,4 +1,12 @@
 {
   "buildCommand": "pnpm install && pnpm --filter @aiquaa/frontend run build",
-  "outputDirectory": "apps/frontend/.next"
+  "outputDirectory": "apps/frontend/.next",
+  "installCommand": "pnpm install",
+  "framework": "nextjs",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
 }
