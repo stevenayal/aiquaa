@@ -8,6 +8,10 @@ export default defineConfig({
     globals: true,
     css: true,
     include: [
+      '**/*.spec.tsx',
+      '**/*.test.tsx',
+      '**/*.spec.ts',
+      '**/*.test.ts',
       'test/**/*.spec.tsx',
       'test/**/*.test.tsx',
       'test/**/*.spec.ts',
