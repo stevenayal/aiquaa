@@ -1,11 +1,6 @@
 {
-  "buildCommand": "pnpm install && pnpm run build:vercel",
-  "outputDirectory": "apps/frontend/.next",
+  "buildCommand": "cd apps/frontend && pnpm install && pnpm run build",
+  "outputDirectory": ".next",
   "installCommand": "pnpm install",
-  "framework": "nextjs",
-  "functions": {
-    "apps/frontend/.next/**/*.js": {
-      "runtime": "nodejs18.x"
-    }
-  }
-} 
+  "framework": "nextjs"
+}
