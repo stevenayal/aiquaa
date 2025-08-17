@@ -5,7 +5,6 @@ import { AppModule } from './app.module';
 import { RequestIdMiddleware } from './observability/request-id.middleware';
 import { GlobalExceptionFilter } from './observability/exception.filter';
 
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -19,13 +18,16 @@ async function bootstrap() {
   app.useGlobalFilters(new GlobalExceptionFilter());
 
   // CORS configuration
+  const allowedOrigins = [
+    'http://localhost:3001',
+    'http://localhost:3000',
+    process.env.FRONT_ORIGIN,
+    'https://aiquaa.vercel.app',
+    'https://aiquaa-frontend.vercel.app',
+  ].filter(Boolean); // Filtrar valores undefined/null
+
   app.enableCors({
-    origin: [
-      'http://localhost:3001',
-      'http://localhost:3000',
-      'https://aiquaa.vercel.app',
-      'https://aiquaa-frontend.vercel.app',
-    ],
+    origin: allowedOrigins,
     credentials: true,
   });
 

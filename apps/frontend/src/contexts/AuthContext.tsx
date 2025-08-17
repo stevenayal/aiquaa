@@ -1,13 +1,13 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface User {
-  id: string;
-  email: string;
+  id: number;
   name: string;
+  email: string;
   role: string;
-  isEmailVerified: boolean;
+  avatarUrl?: string;
 }
 
 interface AuthContextType {
@@ -17,7 +17,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<boolean>;
   register: (name: string, email: string, password: string) => Promise<boolean>;
   logout: () => void;
-  refreshToken: () => Promise<boolean>;
+  refreshToken: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -30,13 +30,12 @@ export const useAuth = () => {
   return context;
 };
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Obtener la URL del backend desde las variables de entorno
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
 
   const isAuthenticated = !!user;
 
@@ -50,7 +49,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const token = localStorage.getItem('access_token');
       if (token) {
         // Verificar si el token es válido
-        const response = await fetch('/api/auth/profile', {
+        const response = await fetch(`${backendUrl}/api/v1/auth/profile`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -75,7 +74,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setIsLoading(true);
       
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch(`${backendUrl}/api/v1/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -90,7 +89,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         localStorage.setItem('access_token', data.access_token);
         
         // Obtener información del usuario
-        const userResponse = await fetch('/api/auth/profile', {
+        const userResponse = await fetch(`${backendUrl}/api/v1/auth/profile`, {
           headers: {
             'Authorization': `Bearer ${data.access_token}`
           }
@@ -116,7 +115,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setIsLoading(true);
       
-      const response = await fetch('/api/auth/register', {
+      const response = await fetch(`${backendUrl}/api/v1/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -140,33 +139,46 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('access_token');
     setUser(null);
-    
-    // Llamar al endpoint de logout del backend
-    fetch('/api/auth/logout', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-      }
-    }).catch(console.error);
   };
 
-  const refreshToken = async (): Promise<boolean> => {
+  const refreshToken = async () => {
     try {
-      const response = await fetch('/api/auth/refresh', {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        setUser(null);
+        return;
+      }
+
+      const response = await fetch(`${backendUrl}/api/v1/auth/refresh`, {
         method: 'POST',
-        credentials: 'include', // Para incluir cookies
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ refresh_token: token }),
       });
 
       if (response.ok) {
         const data = await response.json();
         localStorage.setItem('access_token', data.access_token);
-        return true;
+        
+        // Obtener información actualizada del usuario
+        const userResponse = await fetch(`${backendUrl}/api/v1/auth/profile`, {
+          headers: {
+            'Authorization': `Bearer ${data.access_token}`
+          }
+        });
+        
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          setUser(userData);
+        }
+      } else {
+        // Refresh token inválido, hacer logout
+        logout();
       }
-      
-      return false;
     } catch (error) {
       console.error('Refresh token error:', error);
-      return false;
+      logout();
     }
   };
 
