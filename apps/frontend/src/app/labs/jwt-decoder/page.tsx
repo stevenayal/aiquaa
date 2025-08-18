@@ -3,19 +3,22 @@
 import { useState } from 'react';
 import Link from 'next/link';
 
-interface JwtPayload {
+interface DecodedJwtResult {
   header: any;
   payload: any;
   signature: string;
   isValid: boolean;
+  isExpired?: boolean;
+  isExpiringSoon?: boolean;
+  isActive?: boolean;
   error?: string;
 }
 
 export default function JwtDecoderPage() {
   const [jwtToken, setJwtToken] = useState('');
-  const [decodedJwt, setDecodedJwt] = useState<JwtPayload | null>(null);
+  const [decodedJwt, setDecodedJwt] = useState<DecodedJwtResult | null>(null);
 
-  const decodeJwt = (token: string): JwtPayload | null => {
+  const decodeJwt = (token: string): DecodedJwtResult | null => {
     try {
       // Verificar formato básico del JWT
       if (!token || !token.includes('.')) {
