@@ -1,4 +1,23 @@
 {
-  "installCommand": "pnpm install",
-  "buildCommand": "pnpm --filter @aiquaa/frontend run build"
+  "version": 2,
+  "builds": [
+    {
+      "src": "apps/frontend/package.json",
+      "use": "@vercel/next"
+    },
+    {
+      "src": "apps/backend/src/main.ts",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "apps/backend/src/main.ts"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "apps/frontend/$1"
+    }
+  ]
 }
