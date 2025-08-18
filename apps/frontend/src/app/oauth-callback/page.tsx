@@ -10,7 +10,7 @@ export default function OAuthCallbackPage() {
   const [message, setMessage] = useState('');
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { refreshToken } = useAuth();
+  const { refreshUser } = useAuth();
 
   useEffect(() => {
     const handleOAuthCallback = async () => {
@@ -64,7 +64,7 @@ export default function OAuthCallbackPage() {
     };
 
     handleOAuthCallback();
-  }, [searchParams, router, refreshToken]);
+  }, [searchParams, router, refreshUser]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">

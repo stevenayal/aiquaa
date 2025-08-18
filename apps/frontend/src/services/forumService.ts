@@ -90,10 +90,20 @@ class ForumService {
   ): Promise<ForumResponse<T>> {
     const url = `${API_BASE_URL}${endpoint}`;
     
-    const headers: HeadersInit = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      ...options.headers,
     };
+
+    // Agregar headers adicionales si existen
+    if (options.headers) {
+      if (typeof options.headers === 'object' && !Array.isArray(options.headers)) {
+        Object.entries(options.headers).forEach(([key, value]) => {
+          if (typeof value === 'string') {
+            headers[key] = value;
+          }
+        });
+      }
+    }
 
     // Agregar token de acceso si existe
     const token = authService.getAccessToken();

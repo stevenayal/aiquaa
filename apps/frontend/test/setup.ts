@@ -2,6 +2,12 @@ import '@testing-library/jest-dom';
 import { beforeAll, afterEach, afterAll } from 'vitest';
 import { server } from './mocks/server';
 
+// Polyfill para crypto en tests
+if (typeof globalThis.crypto === 'undefined') {
+  const { webcrypto } = require('crypto');
+  globalThis.crypto = webcrypto;
+}
+
 // Establecer handlers de MSW
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 

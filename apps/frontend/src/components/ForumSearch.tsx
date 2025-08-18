@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 interface ForumSearchProps {
+  // eslint-disable-next-line no-unused-vars
   onSearch: (searchTerm: string) => void;
   placeholder?: string;
   className?: string;

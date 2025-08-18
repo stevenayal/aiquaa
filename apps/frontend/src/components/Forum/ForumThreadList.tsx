@@ -2,9 +2,10 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Thread, User } from '../../services/forumService';
+import { Thread } from '../../services/forumService';
 import forumService from '../../services/forumService';
 import { useAuth } from '../../contexts/AuthContext';
+import { User } from '../../services/authService';
 
 interface ForumThreadListProps {
   threads: Thread[];

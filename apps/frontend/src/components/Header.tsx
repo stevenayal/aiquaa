@@ -102,7 +102,7 @@ const Header = () => {
                 <span className={`text-sm font-medium ${
                   isDarkMode ? 'text-dark-text' : 'text-brand-light'
                 }`}>
-                  ¡Hola, {user?.name}!
+                  ¡Hola, {user?.username}!
                 </span>
                 <button
                   onClick={handleLogout}
@@ -198,7 +198,7 @@ const Header = () => {
                     <div className={`px-3 py-2 text-sm font-medium ${
                       isDarkMode ? 'text-dark-text' : 'text-brand-light'
                     }`}>
-                      ¡Hola, {user?.name}!
+                      ¡Hola, {user?.username}!
                     </div>
                     <button
                       onClick={handleLogout}

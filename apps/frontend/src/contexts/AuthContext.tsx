@@ -7,7 +7,9 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  // eslint-disable-next-line no-unused-vars
   login: (credentials: LoginCredentials) => Promise<{ success: boolean; message?: string }>;
+  // eslint-disable-next-line no-unused-vars
   register: (userData: RegisterData) => Promise<{ success: boolean; message?: string }>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;

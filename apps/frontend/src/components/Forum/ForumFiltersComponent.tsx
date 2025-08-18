@@ -5,6 +5,7 @@ import { ForumFilters } from '../../services/forumService';
 import forumService from '../../services/forumService';
 
 interface ForumFiltersComponentProps {
+  // eslint-disable-next-line no-unused-vars
   filters: ForumFilters;
   onFiltersChange: (filters: Partial<ForumFilters>) => void;
 }
