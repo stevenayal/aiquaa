@@ -49,7 +49,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     initializeAuth();
-  }, []);
+  }, [isAuthenticated]);
 
   const refreshUser = async () => {
     try {
@@ -68,10 +68,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const login = async (credentials: LoginCredentials): Promise<{ success: boolean; message?: string }> => {
+  const login = async (userData: LoginCredentials): Promise<{ success: boolean; message?: string }> => {
     try {
       setIsLoading(true);
-      const response = await authService.login(credentials);
+      const response = await authService.login(userData);
       
       if (response.success && response.data) {
         setUser(response.data.user);

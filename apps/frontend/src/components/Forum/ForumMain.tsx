@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import forumService, { Thread, ForumFilters } from '../../services/forumService';
 import ForumThreadList from './ForumThreadList';
@@ -24,11 +24,7 @@ export default function ForumMain() {
     totalPages: 0,
   });
 
-  useEffect(() => {
-    loadThreads();
-  }, [filters]);
-
-  const loadThreads = async () => {
+  const loadThreads = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await forumService.getThreads(filters);
@@ -46,7 +42,11 @@ export default function ForumMain() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [filters]);
+
+  useEffect(() => {
+    loadThreads();
+  }, [filters, loadThreads]);
 
   const handleCreateThread = async (threadData: any) => {
     try {

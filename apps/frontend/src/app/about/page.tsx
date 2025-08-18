@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-brand-light py-12 md:py-16">
@@ -28,9 +30,11 @@ export default function AboutPage() {
             </p>
           </div>
           <div className="text-center">
-            <img
+            <Image
               src="/images/logo1.png"
               alt="AIQUAA Logo"
+              width={256}
+              height={256}
               className="w-64 h-64 mx-auto rounded-lg shadow-lg"
             />
           </div>

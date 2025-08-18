@@ -6,7 +6,7 @@ import forumService from '../../services/forumService';
 
 interface ForumFiltersComponentProps {
   filters: ForumFilters;
-  onFiltersChange: (newFilters: Partial<ForumFilters>) => void;
+  onFiltersChange: (filters: Partial<ForumFilters>) => void;
 }
 
 export default function ForumFiltersComponent({ filters, onFiltersChange }: ForumFiltersComponentProps) {
@@ -172,7 +172,7 @@ export default function ForumFiltersComponent({ filters, onFiltersChange }: Foru
           <h4 className="text-sm font-medium text-brand-text mb-2">Filtros activos:</h4>
           <div className="space-y-1 text-xs text-brand-muted">
             {filters.search && (
-              <div>🔍 Búsqueda: "{filters.search}"</div>
+              <div>🔍 Búsqueda: &quot;{filters.search}&quot;</div>
             )}
             {filters.category && (
               <div>📂 Categoría: {filters.category}</div>

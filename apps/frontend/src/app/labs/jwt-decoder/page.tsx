@@ -14,7 +14,6 @@ interface JwtPayload {
 export default function JwtDecoderPage() {
   const [jwtToken, setJwtToken] = useState('');
   const [decodedJwt, setDecodedJwt] = useState<JwtPayload | null>(null);
-  const [showExpired, setShowExpired] = useState(true);
 
   const decodeJwt = (token: string): JwtPayload | null => {
     try {
@@ -375,7 +374,7 @@ export default function JwtDecoderPage() {
                   Ingresa un token JWT
                 </h3>
                 <p className="text-brand-muted">
-                  Pega tu token JWT en el campo de la izquierda y haz clic en "Decodificar JWT" para ver su contenido.
+                  Pega tu token JWT en el campo de la izquierda y haz clic en &quot;Decodificar JWT&quot; para ver su contenido.
                 </p>
               </div>
             )}

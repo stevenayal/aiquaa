@@ -12,7 +12,7 @@ export const ForumSearch: React.FC<ForumSearchProps> = ({
   placeholder = 'Buscar hilos...',
   className = '',
 }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const searchParams = useSearchParams();
 

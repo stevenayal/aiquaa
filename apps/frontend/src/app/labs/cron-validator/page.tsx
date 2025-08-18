@@ -162,7 +162,7 @@ export default function CronValidatorPage() {
 
   const calculateNextExecutions = (expression: string, count: number): Date[] => {
     const executions: Date[] = [];
-    let currentDate = new Date(currentTime);
+    const currentDate = new Date(currentTime);
     
     // Avanzar al siguiente minuto para evitar ejecuciones pasadas
     currentDate.setSeconds(0, 0);
@@ -487,7 +487,7 @@ export default function CronValidatorPage() {
                   Ingresa una expresión cron
                 </h3>
                 <p className="text-brand-muted">
-                  Pega tu expresión cron en el campo de la izquierda y haz clic en "Validar Cron" para verificar su validez y calcular las próximas ejecuciones.
+                  Pega tu expresión cron en el campo de la izquierda y haz clic en &quot;Validar Cron&quot; para verificar su validez y calcular las próximas ejecuciones.
                 </p>
               </div>
             )}

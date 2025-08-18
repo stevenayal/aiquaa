@@ -5,7 +5,7 @@ import { CreateThreadData } from '../../services/forumService';
 import forumService from '../../services/forumService';
 
 interface ForumCreateThreadProps {
-  onSubmit: (threadData: CreateThreadData) => Promise<{ success: boolean; message?: string }>;
+  onSubmit: (data: CreateThreadData) => Promise<{ success: boolean; message?: string }>;
   onCancel: () => void;
 }
 

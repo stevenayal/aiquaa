@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -34,9 +35,11 @@ const Header = () => {
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2 sm:space-x-4 mr-4 sm:mr-8" onClick={closeMobileMenu}>
-              <img 
+              <Image 
                 src="/images/logo1.png" 
                 alt="AIQUAA Logo" 
+                width={112}
+                height={112}
                 className="h-16 sm:h-20 md:h-24 lg:h-28 w-auto"
               />
             </Link>

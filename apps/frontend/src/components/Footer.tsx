@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useTheme } from '@/contexts/ThemeContext';
+import Image from 'next/image';
 
 const Footer = () => {
   const { isDarkMode } = useTheme();
@@ -17,9 +18,11 @@ const Footer = () => {
           {/* Brand */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-3 mb-4">
-              <img 
+              <Image 
                 src="/images/logo1.png" 
                 alt="AIQUAA Logo" 
+                width={40}
+                height={40}
                 className="h-10 w-auto"
               />
             </div>

@@ -64,7 +64,7 @@ export default function DataGeneratorPage() {
         const words = ['Lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing', 'elit', 'sed', 'do', 'eiusmod', 'tempor', 'incididunt', 'ut', 'labore', 'et', 'dolore', 'magna', 'aliqua'];
         const length = field.minLength || 5;
         const maxLength = field.maxLength || 50;
-        let result = words.slice(0, Math.max(length, 1)).join(' ');
+        const result = words.slice(0, Math.max(length, 1)).join(' ');
         return result.length > maxLength ? result.substring(0, maxLength) : result;
       
       case 'email':

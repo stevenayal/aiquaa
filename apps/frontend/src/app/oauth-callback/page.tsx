@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import Image from 'next/image';
 
 export default function OAuthCallbackPage() {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
@@ -70,10 +71,12 @@ export default function OAuthCallbackPage() {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <div className="mx-auto h-12 w-12 flex items-center justify-center mb-4">
-            <img
+            <Image
               className="h-12 w-auto"
               src="/images/logo1.png"
               alt="AIQUAA Logo"
+              width={48}
+              height={48}
             />
           </div>
           
