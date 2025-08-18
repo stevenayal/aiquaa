@@ -28,12 +28,40 @@ Para que el frontend funcione correctamente en Vercel, necesitas configurar las 
    - Valor: Token secreto para revalidación de caché
    - Descripción: Para la API de revalidación
 
+### Variables para OAuth (Recomendadas)
+
+6. **NEXT_PUBLIC_GOOGLE_CLIENT_ID**
+   - Valor: Tu Google OAuth Client ID
+   - Descripción: Para autenticación con Google
+
+7. **NEXT_PUBLIC_GITHUB_CLIENT_ID**
+   - Valor: Tu GitHub OAuth Client ID
+   - Descripción: Para autenticación con GitHub
+
 ## Cómo Configurar en Vercel
 
 1. Ve a tu proyecto en [vercel.com](https://vercel.com)
 2. Navega a **Settings** → **Environment Variables**
 3. Agrega cada variable con su valor correspondiente
 4. Asegúrate de que estén configuradas para **Production**, **Preview** y **Development**
+
+## Configuración de OAuth
+
+### Google OAuth
+1. Ve a [Google Cloud Console](https://console.cloud.google.com/)
+2. Crea un proyecto o selecciona uno existente
+3. Habilita la API de Google+ 
+4. Crea credenciales OAuth 2.0
+5. Configura las URLs de redirección:
+   - `https://api.aiquaa.com/api/v1/auth/google/callback`
+   - `http://localhost:3000/api/v1/auth/google/callback` (para desarrollo)
+
+### GitHub OAuth
+1. Ve a [GitHub Developer Settings](https://github.com/settings/developers)
+2. Crea una nueva OAuth App
+3. Configura las URLs de redirección:
+   - `https://api.aiquaa.com/api/v1/auth/github/callback`
+   - `http://localhost:3000/api/v1/auth/github/callback` (para desarrollo)
 
 ## Solución de Problemas
 
@@ -45,6 +73,13 @@ Este error ocurre cuando las variables de entorno no están configuradas correct
 1. Verifica que `NEXT_PUBLIC_API_URL` esté configurada en Vercel
 2. Asegúrate de que el valor sea correcto (ej: `https://api.aiquaa.com`)
 3. Redespliega la aplicación después de configurar las variables
+
+### Botones de OAuth no funcionan
+
+**Solución:**
+1. Verifica que las variables `NEXT_PUBLIC_GOOGLE_CLIENT_ID` y `NEXT_PUBLIC_GITHUB_CLIENT_ID` estén configuradas
+2. Asegúrate de que el backend esté configurado con los mismos Client IDs
+3. Verifica que las URLs de redirección estén configuradas correctamente
 
 ### Build Fallando
 
@@ -60,3 +95,4 @@ Si el build falla durante la generación estática:
 - Las variables sin `NEXT_PUBLIC_` solo están disponibles en el servidor
 - Después de cambiar las variables de entorno, es necesario redesplegar la aplicación
 - Para desarrollo local, copia `env.local.example` a `.env.local` y configura los valores
+- Los botones de OAuth se deshabilitarán automáticamente si no están configuradas las variables correspondientes

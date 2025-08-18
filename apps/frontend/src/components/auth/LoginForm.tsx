@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import oauthService from '../../services/oauthService';
 import Link from 'next/link';
 
 export default function LoginForm() {
@@ -41,32 +42,46 @@ export default function LoginForm() {
     }));
   };
 
+  const handleGoogleLogin = () => {
+    if (oauthService.isGoogleOAuthConfigured()) {
+      oauthService.initiateGoogleAuth();
+    } else {
+      setError('Autenticación con Google no está configurada');
+    }
+  };
+
+  const handleGitHubLogin = () => {
+    if (oauthService.isGitHubOAuthConfigured()) {
+      oauthService.initiateGitHubAuth();
+    } else {
+      setError('Autenticación con GitHub no está configurada');
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-brand-light flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-brand-accent">
-            <span className="text-2xl">🔐</span>
-          </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-brand-text">
-            Iniciar Sesión
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Iniciar sesión en tu cuenta
           </h2>
-          <p className="mt-2 text-center text-sm text-brand-muted">
-            Accede a tu cuenta para continuar
+          <p className="mt-2 text-center text-sm text-gray-600">
+            O{' '}
+            <Link href="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
+              crea una nueva cuenta
+            </Link>
           </p>
         </div>
-        
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-              {error}
+            <div className="rounded-md bg-red-50 p-4">
+              <div className="text-sm text-red-700">{error}</div>
             </div>
           )}
-          
-          <div className="space-y-4">
+          <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-brand-text">
-                Correo Electrónico
+              <label htmlFor="email" className="sr-only">
+                Email
               </label>
               <input
                 id="email"
@@ -74,15 +89,14 @@ export default function LoginForm() {
                 type="email"
                 autoComplete="email"
                 required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Email"
                 value={formData.email}
                 onChange={handleChange}
-                className="mt-1 appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-brand-text rounded-lg focus:outline-none focus:ring-brand-accent focus:border-brand-accent focus:z-10 sm:text-sm"
-                placeholder="tu@email.com"
               />
             </div>
-            
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-brand-text">
+              <label htmlFor="password" className="sr-only">
                 Contraseña
               </label>
               <input
@@ -91,22 +105,11 @@ export default function LoginForm() {
                 type="password"
                 autoComplete="current-password"
                 required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Contraseña"
                 value={formData.password}
                 onChange={handleChange}
-                className="mt-1 appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-brand-text rounded-lg focus:outline-none focus:ring-brand-accent focus:border-brand-accent focus:z-10 sm:text-sm"
-                placeholder="Tu contraseña"
               />
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="text-sm">
-              <Link 
-                href="/forgot-password" 
-                className="font-medium text-brand-accent hover:text-brand-primary transition-colors"
-              >
-                ¿Olvidaste tu contraseña?
-              </Link>
             </div>
           </div>
 
@@ -114,29 +117,10 @@ export default function LoginForm() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-brand-accent hover:bg-brand-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? (
-                <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Iniciando sesión...
-                </div>
-              ) : (
-                'Iniciar Sesión'
-              )}
+              {isSubmitting ? 'Iniciando sesión...' : 'Iniciar sesión'}
             </button>
-          </div>
-
-          <div className="text-center">
-            <p className="text-sm text-brand-muted">
-              ¿No tienes una cuenta?{' '}
-              <Link 
-                href="/register" 
-                className="font-medium text-brand-accent hover:text-brand-primary transition-colors"
-              >
-                Regístrate aquí
-              </Link>
-            </p>
           </div>
 
           <div className="mt-6">
@@ -145,14 +129,16 @@ export default function LoginForm() {
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-brand-light text-brand-muted">O continúa con</span>
+                <span className="px-2 bg-gray-50 text-gray-500">O continuar con</span>
               </div>
             </div>
 
             <div className="mt-6 grid grid-cols-2 gap-3">
               <button
                 type="button"
-                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors"
+                onClick={handleGoogleLogin}
+                disabled={!oauthService.isGoogleOAuthConfigured()}
+                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span className="sr-only">Iniciar sesión con Google</span>
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -165,7 +151,9 @@ export default function LoginForm() {
 
               <button
                 type="button"
-                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors"
+                onClick={handleGitHubLogin}
+                disabled={!oauthService.isGitHubOAuthConfigured()}
+                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span className="sr-only">Iniciar sesión con GitHub</span>
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">

@@ -2,62 +2,26 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import oauthService from '../../services/oauthService';
 import Link from 'next/link';
 
 export default function RegisterForm() {
   const { register } = useAuth();
   const [formData, setFormData] = useState({
+    name: '',
     email: '',
-    username: '',
     password: '',
     confirmPassword: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.email.trim()) {
-      newErrors.email = 'El email es requerido';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'El email no es válido';
-    }
-
-    if (!formData.username.trim()) {
-      newErrors.username = 'El nombre de usuario es requerido';
-    } else if (formData.username.length < 3) {
-      newErrors.username = 'El nombre de usuario debe tener al menos 3 caracteres';
-    } else if (formData.username.length > 20) {
-      newErrors.username = 'El nombre de usuario no puede exceder 20 caracteres';
-    } else if (!/^[a-zA-Z0-9_]+$/.test(formData.username)) {
-      newErrors.username = 'El nombre de usuario solo puede contener letras, números y guiones bajos';
-    }
-
-    if (!formData.password) {
-      newErrors.password = 'La contraseña es requerida';
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'La contraseña debe tener al menos 8 caracteres';
-    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
-      newErrors.password = 'La contraseña debe contener al menos una mayúscula, una minúscula y un número';
-    }
-
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Confirma tu contraseña';
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Las contraseñas no coinciden';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    
-    if (!validateForm()) {
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Las contraseñas no coinciden');
       return;
     }
 
@@ -84,42 +48,64 @@ export default function RegisterForm() {
       ...prev,
       [e.target.name]: e.target.value
     }));
-    
-    // Limpiar error del campo cuando el usuario empiece a escribir
-    if (errors[e.target.name]) {
-      setErrors(prev => ({
-        ...prev,
-        [e.target.name]: ''
-      }));
+  };
+
+  const handleGoogleRegister = () => {
+    if (oauthService.isGoogleOAuthConfigured()) {
+      oauthService.initiateGoogleAuth();
+    } else {
+      setError('Autenticación con Google no está configurada');
+    }
+  };
+
+  const handleGitHubRegister = () => {
+    if (oauthService.isGitHubOAuthConfigured()) {
+      oauthService.initiateGitHubAuth();
+    } else {
+      setError('Autenticación con GitHub no está configurada');
     }
   };
 
   return (
-    <div className="min-h-screen bg-brand-light flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-brand-accent">
-            <span className="text-2xl">📝</span>
-          </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-brand-text">
-            Crear Cuenta
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Crear tu cuenta
           </h2>
-          <p className="mt-2 text-center text-sm text-brand-muted">
-            Únete a nuestra comunidad
+          <p className="mt-2 text-center text-sm text-gray-600">
+            O{' '}
+            <Link href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+              inicia sesión si ya tienes una cuenta
+            </Link>
           </p>
         </div>
-        
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-              {error}
+            <div className="rounded-md bg-red-50 p-4">
+              <div className="text-sm text-red-700">{error}</div>
             </div>
           )}
-          
-          <div className="space-y-4">
+          <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-brand-text">
-                Correo Electrónico *
+              <label htmlFor="name" className="sr-only">
+                Nombre completo
+              </label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                autoComplete="name"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Nombre completo"
+                value={formData.name}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="email" className="sr-only">
+                Email
               </label>
               <input
                 id="email"
@@ -127,51 +113,15 @@ export default function RegisterForm() {
                 type="email"
                 autoComplete="email"
                 required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Email"
                 value={formData.email}
                 onChange={handleChange}
-                className={`mt-1 appearance-none relative block w-full px-3 py-3 border placeholder-gray-500 text-brand-text rounded-lg focus:outline-none focus:ring-2 focus:z-10 sm:text-sm ${
-                  errors.email 
-                    ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
-                    : 'border-gray-300 focus:ring-brand-accent focus:border-brand-accent'
-                }`}
-                placeholder="tu@email.com"
               />
-              {errors.email && (
-                <p className="text-red-500 text-sm mt-1">{errors.email}</p>
-              )}
             </div>
-            
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-brand-text">
-                Nombre de Usuario *
-              </label>
-              <input
-                id="username"
-                name="username"
-                type="text"
-                autoComplete="username"
-                required
-                value={formData.username}
-                onChange={handleChange}
-                className={`mt-1 appearance-none relative block w-full px-3 py-3 border placeholder-gray-500 text-brand-text rounded-lg focus:outline-none focus:ring-2 focus:z-10 sm:text-sm ${
-                  errors.username 
-                    ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
-                    : 'border-gray-300 focus:ring-brand-accent focus:border-brand-accent'
-                }`}
-                placeholder="tu_usuario"
-                maxLength={20}
-              />
-              {errors.username && (
-                <p className="text-red-500 text-sm mt-1">{errors.username}</p>
-              )}
-              <p className="text-gray-500 text-sm mt-1">
-                Solo letras, números y guiones bajos. 3-20 caracteres.
-              </p>
-            </div>
-            
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-brand-text">
-                Contraseña *
+              <label htmlFor="password" className="sr-only">
+                Contraseña
               </label>
               <input
                 id="password"
@@ -179,26 +129,15 @@ export default function RegisterForm() {
                 type="password"
                 autoComplete="new-password"
                 required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Contraseña"
                 value={formData.password}
                 onChange={handleChange}
-                className={`mt-1 appearance-none relative block w-full px-3 py-3 border placeholder-gray-500 text-brand-text rounded-lg focus:outline-none focus:ring-2 focus:z-10 sm:text-sm ${
-                  errors.password 
-                    ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
-                    : 'border-gray-300 focus:ring-brand-accent focus:border-brand-accent'
-                }`}
-                placeholder="Tu contraseña"
               />
-              {errors.password && (
-                <p className="text-red-500 text-sm mt-1">{errors.password}</p>
-              )}
-              <p className="text-gray-500 text-sm mt-1">
-                Mínimo 8 caracteres con mayúscula, minúscula y número.
-              </p>
             </div>
-            
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-brand-text">
-                Confirmar Contraseña *
+              <label htmlFor="confirmPassword" className="sr-only">
+                Confirmar contraseña
               </label>
               <input
                 id="confirmPassword"
@@ -206,18 +145,11 @@ export default function RegisterForm() {
                 type="password"
                 autoComplete="new-password"
                 required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Confirmar contraseña"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className={`mt-1 appearance-none relative block w-full px-3 py-3 border placeholder-gray-500 text-brand-text rounded-lg focus:outline-none focus:ring-2 focus:z-10 sm:text-sm ${
-                  errors.confirmPassword 
-                    ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
-                    : 'border-gray-300 focus:ring-brand-accent focus:border-brand-accent'
-                }`}
-                placeholder="Confirma tu contraseña"
               />
-              {errors.confirmPassword && (
-                <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>
-              )}
             </div>
           </div>
 
@@ -225,29 +157,10 @@ export default function RegisterForm() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-brand-accent hover:bg-brand-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? (
-                <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Creando cuenta...
-                </div>
-              ) : (
-                'Crear Cuenta'
-              )}
+              {isSubmitting ? 'Creando cuenta...' : 'Crear cuenta'}
             </button>
-          </div>
-
-          <div className="text-center">
-            <p className="text-sm text-brand-muted">
-              ¿Ya tienes una cuenta?{' '}
-              <Link 
-                href="/login" 
-                className="font-medium text-brand-accent hover:text-brand-primary transition-colors"
-              >
-                Inicia sesión aquí
-              </Link>
-            </p>
           </div>
 
           <div className="mt-6">
@@ -256,14 +169,16 @@ export default function RegisterForm() {
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-brand-light text-brand-muted">O regístrate con</span>
+                <span className="px-2 bg-gray-50 text-gray-500">O continuar con</span>
               </div>
             </div>
 
             <div className="mt-6 grid grid-cols-2 gap-3">
               <button
                 type="button"
-                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors"
+                onClick={handleGoogleRegister}
+                disabled={!oauthService.isGoogleOAuthConfigured()}
+                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span className="sr-only">Registrarse con Google</span>
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -276,7 +191,9 @@ export default function RegisterForm() {
 
               <button
                 type="button"
-                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors"
+                onClick={handleGitHubRegister}
+                disabled={!oauthService.isGitHubOAuthConfigured()}
+                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span className="sr-only">Registrarse con GitHub</span>
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -284,26 +201,6 @@ export default function RegisterForm() {
                 </svg>
               </button>
             </div>
-          </div>
-
-          {/* Términos y condiciones */}
-          <div className="text-center">
-            <p className="text-xs text-brand-muted">
-              Al crear una cuenta, aceptas nuestros{' '}
-              <Link 
-                href="/terms" 
-                className="text-brand-accent hover:text-brand-primary transition-colors"
-              >
-                Términos de Servicio
-              </Link>{' '}
-              y{' '}
-              <Link 
-                href="/privacy" 
-                className="text-brand-accent hover:text-brand-primary transition-colors"
-              >
-                Política de Privacidad
-              </Link>
-            </p>
           </div>
         </form>
       </div>

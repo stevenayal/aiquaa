@@ -25,7 +25,8 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "ts-node prisma/seed.ts",
     "prisma:studio": "prisma studio",
-    "openapi:print": "node scripts/print-openapi.js"
+    "openapi:print": "node scripts/print-openapi.js",
+    "check:oauth": "node scripts/check-oauth.js"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

@@ -16,6 +16,11 @@ const optionalEnvVars = [
   'REVALIDATE_TOKEN'
 ];
 
+const oauthEnvVars = [
+  'NEXT_PUBLIC_GOOGLE_CLIENT_ID',
+  'NEXT_PUBLIC_GITHUB_CLIENT_ID'
+];
+
 console.log('🔍 Verificando variables de entorno...\n');
 
 let hasErrors = false;
@@ -42,6 +47,16 @@ optionalEnvVars.forEach(varName => {
   }
 });
 
+console.log('\n🔐 Variables de OAuth:');
+oauthEnvVars.forEach(varName => {
+  const value = process.env[varName];
+  if (value) {
+    console.log(`  ✅ ${varName}: ${value}`);
+  } else {
+    console.log(`  ⚠️  ${varName}: NO CONFIGURADA (OAuth no funcionará)`);
+  }
+});
+
 console.log('\n🌍 Entorno:', process.env.NODE_ENV || 'development');
 
 if (hasErrors) {
@@ -52,4 +67,12 @@ if (hasErrors) {
 } else {
   console.log('\n✅ Todas las variables de entorno requeridas están configuradas.');
   console.log('🚀 El build debería funcionar correctamente.');
+  
+  // Verificar si OAuth está configurado
+  const oauthConfigured = oauthEnvVars.some(varName => process.env[varName]);
+  if (oauthConfigured) {
+    console.log('🔐 OAuth está configurado y funcionará correctamente.');
+  } else {
+    console.log('⚠️  OAuth no está configurado. Los botones de Google/GitHub no funcionarán.');
+  }
 }
