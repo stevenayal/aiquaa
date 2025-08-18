@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  # Jaeger - Distributed tracing
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: aiquaa-jaeger
+    ports:
+      - "16686:16686"  # UI
+      - "4318:4318"    # OTLP HTTP
+      - "4317:4317"    # OTLP gRPC
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - COLLECTOR_OTLP_HTTP_PORT=4318
+    volumes:
+      - jaeger-data:/var/lib/jaeger
+    networks:
+      - aiquaa-network
+
+  # Tempo - Distributed tracing (alternative to Jaeger)
+  tempo:
+    image: grafana/tempo:latest
+    container_name: aiquaa-tempo
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./tempo.yaml:/etc/tempo.yaml
+      - tempo-data:/var/tempo
+    ports:
+      - "3200:3200"  # tempo
+      - "4318:4318"  # otlp http
+      - "4317:4317"  # otlp grpc
+    networks:
+      - aiquaa-network
+
+  # Prometheus - Metrics collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: aiquaa-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - aiquaa-network
+
+  # Grafana - Metrics visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: aiquaa-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    networks:
+      - aiquaa-network
+    depends_on:
+      - prometheus
+      - jaeger
+
+volumes:
+  jaeger-data:
+  tempo-data:
+  prometheus-data:
+  grafana-data:
+
+networks:
+  aiquaa-network:
+    driver: bridge

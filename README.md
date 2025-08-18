@@ -1,176 +1,353 @@
-# AIQUAA Blog
+# AIQUAA Monorepo
 
-Un blog moderno enfocado en QA y tecnología, construido con React, TypeScript, TailwindCSS y React Router. **Frontend independiente** con funcionalidades completas de blog.
+Plataforma de inteligencia artificial y desarrollo con herramientas, laboratorios y comunidad para QA en Paraguay.
 
-## 🚀 Características
-
-- **React 18** con TypeScript
-- **TailwindCSS** para estilos modernos y responsive
-- **React Router** para navegación SPA
-- **Vite** como bundler rápido
-- **Diseño responsive** para móviles y desktop
-- **Búsqueda y filtrado** de artículos
-- **5 artículos de ejemplo** sobre QA y tecnología
-- **Formulario de contacto** funcional
-- **Sistema de feedback** integrado
-- **Modo oscuro** implementado
-- **Sección Labs** con herramientas de desarrollo
-- **Configuración lista para deployment** (Vercel, Netlify, GitHub Pages)
-
-## 📋 Requisitos
-
-- **Node.js**: v16.18.0 o superior (probado con v16.18.0)
-- **npm**: v8.19.2 o superior
-
-## 🛠️ Instalación
-
-1. **Clonar el repositorio:**
-   ```bash
-   git clone <tu-repositorio>
-   cd aiquaa
-   ```
-
-2. **Instalar dependencias:**
-   ```bash
-   npm install
-   ```
-
-3. **Ejecutar en modo desarrollo:**
-   ```bash
-   npm run dev
-   ```
-
-4. **Abrir en el navegador:**
-   ```
-   http://localhost:5173
-   ```
-
-## 📁 Estructura del Proyecto
+## 🏗️ Estructura del Proyecto
 
 ```
 aiquaa/
-├── src/
-│   ├── components/     # Componentes reutilizables
-│   │   ├── Header.tsx
-│   │   ├── Footer.tsx
-│   │   ├── Layout.tsx
-│   │   ├── FeedbackForm.tsx
-│   │   └── Labs/       # Herramientas de desarrollo
-│   ├── pages/         # Páginas de la aplicación
-│   │   ├── Home.tsx
-│   │   ├── Blog.tsx
-│   │   ├── Article.tsx
-│   │   ├── About.tsx
-│   │   ├── Contact.tsx
-│   │   ├── Labs.tsx
-│   │   └── Feedback.tsx
-│   ├── contexts/      # Contextos de React
-│   │   └── ThemeContext.tsx
-│   ├── App.tsx        # Componente principal
-│   └── main.tsx       # Punto de entrada
-├── data/
-│   └── articles.json  # Datos simulados de artículos
-├── public/            # Archivos estáticos
-└── package.json       # Dependencias y scripts
+├── apps/
+│   ├── frontend/          # Next.js 15 App Router
+│   └── backend/           # NestJS API
+├── packages/
+│   └── shared/            # Tipos y utilidades compartidas
+├── docs/
+│   ├── adr/              # Architecture Decision Records
+│   ├── observability.md  # Sistema de observabilidad
+│   └── dashboard-kpis.md # KPIs y métricas
+├── docker-compose.yml     # PostgreSQL + Redis
+├── docker-compose.observability.yml # Jaeger + Prometheus + Grafana
+├── Makefile              # Comandos útiles
+└── package.json          # Workspace root
 ```
 
-## 🎨 Páginas Disponibles
+## 🚀 Requisitos
 
-- **Home** (`/`): Página principal con artículos destacados
-- **Blog** (`/blog`): Lista de todos los artículos con búsqueda
-- **Article** (`/article/:slug`): Vista detallada de cada artículo
-- **About** (`/about`): Información sobre AIQUAA
-- **Contact** (`/contact`): Formulario de contacto
-- **Labs** (`/labs`): Herramientas de desarrollo (JWT Decoder, JSON Validator, etc.)
-- **Feedback** (`/feedback`): Sistema de feedback y métricas
+- Node.js 20+
+- pnpm 9+
+- Docker & Docker Compose
+- PostgreSQL 16
+- Redis 7
 
-## 🔧 Scripts Disponibles
+## 🛠️ Instalación
 
-- `npm run dev` - Servidor de desarrollo
-- `npm run build` - Construir para producción
-- `npm run preview` - Vista previa de la build
-- `npm run lint` - Ejecutar ESLint
+1. **Clonar el repositorio**
+   ```bash
+   git clone <repository-url>
+   cd aiquaa
+   ```
 
-## 🚀 Deployment
+2. **Instalar dependencias**
+   ```bash
+   pnpm install
+   ```
 
-El proyecto está configurado para deployment en:
+3. **Configurar variables de entorno**
+   ```bash
+   # Copiar archivos de ejemplo
+   cp env.example .env
+   cp apps/frontend/env.local.example apps/frontend/.env.local
+   
+   # Configurar observabilidad (opcional)
+   cp env.observability.example .env.observability
+   ```
 
-- **Vercel**: Configuración automática con `vercel.json`
-- **Netlify**: Configuración con `public/_redirects`
-- **GitHub Pages**: Configuración manual
+4. **Levantar servicios**
+   ```bash
+   make db-up
+   ```
 
-Ver `DEPLOYMENT.md` para instrucciones detalladas.
+5. **Ejecutar migraciones y seed**
+   ```bash
+   make db-seed
+   ```
 
-## 🎯 Funcionalidades Implementadas
+## 🎯 Comandos Principales
 
-### ✅ Completadas
-- [x] Blog completo con artículos y búsqueda
-- [x] Sistema de feedback con métricas
-- [x] Modo oscuro/claro
-- [x] Diseño responsive
-- [x] Sección Labs con herramientas
-- [x] SEO optimizado
-- [x] Formularios funcionales
-- [x] Navegación completa
+### Desarrollo
+```bash
+# Iniciar frontend y backend
+make dev
 
-### 🔄 Próximos Pasos
-- [ ] Integración con CMS headless
-- [ ] Sistema de comentarios
-- [ ] Newsletter subscription
-- [ ] Panel de administración
-- [ ] Más herramientas en Labs
+# Solo frontend (puerto 3001)
+make dev-front
 
-## 📝 Licencia
+# Solo backend (puerto 3000)
+make dev-back
 
-MIT License - ver archivo LICENSE para detalles.
+# Con observabilidad completa
+make dev-observability
+```
 
-## 🤝 Contribuir
+### Base de Datos
+```bash
+# Levantar PostgreSQL y Redis
+make db-up
 
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+# Detener servicios
+make db-down
 
-## 🧹 Limpieza del Repositorio
+# Migraciones y seed
+make db-seed
+```
 
-### Archivos Eliminados (Redundantes)
-Se han eliminado los siguientes archivos `.md` que ya no son relevantes después del desacoplamiento del backend:
+### Observabilidad
+```bash
+# Levantar servicios de observabilidad
+make observability-up
 
-- `BACKEND_SETUP.md` - Configuración de backend (ya no aplica)
-- `BACKEND_VERIFICATION.md` - Verificación de backend (ya no aplica)
-- `BACKEND_URL_CONFIGURATION.md` - Configuración de URLs de backend (ya no aplica)
-- `SUPABASE_SETUP.md` - Configuración de Supabase (ya no aplica)
-- `RESUMEN_VERIFICACION_BACKEND.md` - Resumen de verificación de backend (ya no aplica)
-- `VERCEL_DEPLOYMENT.md` - Redundante con DEPLOYMENT.md
-- `VERCEL_ENV_SETUP.md` - Redundante con DEPLOYMENT.md
-- `PROJECT_SUMMARY.md` - Redundante con README.md
-- `SOLUCIONES_IMPLEMENTADAS.md` - Redundante
-- `COMUNIDAD_FIX.md` - Fix específico ya no necesario
-- `README-TEST-DATA.md` - Datos de prueba de backend (ya no aplica)
+# Detener servicios de observabilidad
+make observability-down
 
-### Archivos Mantenidos (Esenciales)
-- `README.md` - Documentación principal actualizada
-- `DEPLOYMENT.md` - Guía de despliegue consolidada
-- `GITHUB_SETUP.md` - Configuración de GitHub
-- `FEEDBACK_SYSTEM.md` - Sistema de feedback del frontend
-- `SEO_IMPLEMENTATION.md` - SEO del frontend
-- `DARK_MODE_IMPLEMENTATION.md` - Implementación del modo oscuro
-- `RESPONSIVE_IMPROVEMENTS.md` - Mejoras responsive
-- `LABS_IMPLEMENTATION.md` - Implementación de Labs
-- `src/components/Labs/README.md` - Documentación específica de Labs
+# Probar sistema de observabilidad
+make test-observability
+```
 
-### Estado Actual
-✅ **Frontend completamente funcional y estable**
-✅ **Todas las rutas activas y funcionando**
-✅ **Blog y artículos disponibles**
-✅ **Sistema de feedback operativo**
-✅ **Labs con herramientas de desarrollo**
-✅ **Modo oscuro implementado**
-✅ **Diseño responsive optimizado**
-✅ **SEO configurado**
-✅ **Listo para deployment**
+### Build
+```bash
+# Build de todos los paquetes
+make build
 
----
+# Limpiar artifacts
+make clean
+```
 
-**AIQUAA Blog** - Tu fuente de conocimiento en QA y tecnología 🚀
+## 📊 Observabilidad
+
+AIQUAA incluye un sistema completo de observabilidad con:
+
+- **Logging estructurado** con Pino
+- **Tracing distribuido** con OpenTelemetry
+- **Métricas** con Prometheus
+- **Monitoreo de errores** con Sentry
+- **Correlación** con Request IDs
+
+### Endpoints de Observabilidad
+
+- **Métricas**: `http://localhost:3000/metrics` (Prometheus)
+- **Health Check**: `http://localhost:3000/api/v1/health`
+- **Jaeger UI**: `http://localhost:16686` (tracing)
+- **Grafana**: `http://localhost:3001` (dashboards)
+
+### Configuración Rápida
+
+1. **Variables de entorno**:
+   ```bash
+   # Backend
+   LOG_LEVEL=info
+   OTLP_ENDPOINT=http://localhost:4318
+   SENTRY_DSN=your-sentry-dsn
+   
+   # Frontend
+   NEXT_PUBLIC_SENTRY_DSN=your-sentry-dsn
+   ```
+
+2. **Servicios opcionales**:
+   ```bash
+   docker-compose -f docker-compose.observability.yml up -d
+   ```
+
+3. **Verificar funcionamiento**:
+   ```bash
+   node scripts/test-observability.js
+   ```
+
+Para más detalles, consulta [docs/observability.md](docs/observability.md).
+
+## 🗄️ Data & Cache
+
+### Redis Cache
+El proyecto utiliza Redis para cachear consultas frecuentes y mejorar el rendimiento.
+
+#### Configuración
+```bash
+# Variables de entorno
+REDIS_URL=redis://localhost:6379
+CACHE_TTL=60
+CACHE_MAX_ITEMS=100
+```
+
+#### Invalidación
+- **Threads**: Se invalida automáticamente al crear/editar/eliminar threads
+- **Posts**: Se invalida automáticamente al crear/editar/eliminar posts
+- **Patrones**: Soporte para invalidación por patrones (ej: `forum:threads:*`)
+
+#### Monitoreo
+- Logs de cache hit/miss disponibles
+- Métricas de performance en desarrollo
+
+### Soft Delete & Auditoría
+- **Soft Delete**: Los registros se marcan como eliminados (`deletedAt`) en lugar de eliminarse físicamente
+- **Auditoría**: Todos los cambios se registran automáticamente en `audit_logs`
+- **Índices**: Optimizados para consultas frecuentes y búsquedas
+
+## 🔍 SEO
+
+### Sitemap y Robots
+- **Generación automática**: `next-sitemap` genera `/sitemap.xml` y `/robots.txt`
+- **Configuración**: `apps/frontend/next-sitemap.config.js`
+- **Build**: Se ejecuta automáticamente después del build
+
+### Metadata
+- **Dinámica**: Metadata generada dinámicamente por ruta
+- **Open Graph**: Soporte completo para redes sociales
+- **JSON-LD**: Schema.org para mejor SEO
+
+### Revalidación
+- **API Route**: `/api/revalidate` para invalidar cache
+- **Tokens**: Seguridad con `REVALIDATE_TOKEN`
+- **Tags**: Revalidación granular por tags
+
+## 📋 ADRs (Architecture Decision Records)
+
+Los ADRs documentan decisiones arquitectónicas importantes del proyecto.
+
+### Comandos
+```bash
+# Crear nuevo ADR
+pnpm adr:new "Título del ADR"
+
+# Listar ADRs existentes
+pnpm adr:list
+```
+
+### ADRs Existentes
+- [ADR-001: Monolito modular Nest](./docs/adr/ADR-001-monolito-modular-nest.md)
+- [ADR-002: Next vs Nuxt](./docs/adr/ADR-002-next-vs-nuxt.md)
+- [ADR-003: OpenAPI + codegen tipos compartidos](./docs/adr/ADR-003-openapi-codegen-tipos-compartidos.md)
+- [ADR-004: Redis cache con invalidación por tags](./docs/adr/ADR-004-redis-cache-invalidacion-tags.md)
+- [ADR-005: Soft delete + auditoría con Prisma](./docs/adr/ADR-005-soft-delete-auditoria-prisma.md)
+
+## 🧪 Pruebas y Cobertura
+
+### Ejecutar Pruebas
+
+```bash
+# Ejecutar todas las pruebas
+pnpm test
+
+# Ejecutar pruebas con cobertura
+pnpm test:cov
+```
+
+## 🎯 Etapa 2: Pruebas y Funcionalidades Post-v1
+
+### E2E Testing con Playwright
+
+```bash
+# Ejecutar tests E2E
+pnpm e2e
+
+# Ver reporte de E2E
+pnpm e2e:report
+```
+
+**Tests incluidos:**
+- `health.spec.ts` - Verificación de health check
+- `forum.crud.spec.ts` - Flujo completo CRUD del foro
+- `auth.spec.ts` - Autenticación y autorización
+- `a11y.spec.ts` - Tests de accesibilidad con axe-core
+
+### Contratos de API
+
+```bash
+# Ejecutar tests de contratos
+pnpm test:contract
+```
+
+**Tests incluidos:**
+- `contracts.forum.spec.ts` - Validación de endpoints del foro
+- `contracts.auth.spec.ts` - Validación de endpoints de autenticación
+
+### Performance Testing con k6
+
+```bash
+# Ejecutar tests de performance
+pnpm perf:forum
+```
+
+**Métricas:**
+- P95 < 400ms para requests HTTP
+- Error rate < 1%
+- Tests de carga para endpoints del foro
+
+### Búsqueda y Paginación
+
+**Endpoints implementados:**
+- `GET /forum/threads?search=&page=&limit=` - Búsqueda y paginación de hilos
+- `GET /forum/posts?threadId=&page=&limit=` - Paginación de posts
+- `GET /forum/search?q=&page=&limit=` - Búsqueda avanzada
+
+### Seguridad y Anti-spam
+
+**Funcionalidades implementadas:**
+- Rate limiting (100 requests/15min por IP)
+- Anti-spam con honeypot y time-gate (>2s)
+- Headers de seguridad (helmet)
+
+**Tests de seguridad:**
+- `security.rate-limit.spec.ts` - Validación de rate limiting
+- `security.antispam.spec.ts` - Validación de anti-spam
+
+### Stripe Integration (Sandbox)
+
+**Endpoints implementados:**
+- `POST /billing/checkout` - Crear sesión de checkout
+- `POST /billing/webhook` - Procesar eventos de Stripe
+
+**Tests incluidos:**
+- `billing.webhook.spec.ts` - Validación de webhooks
+
+### Accesibilidad y SEO
+
+**Funcionalidades:**
+- Tests de accesibilidad automáticos con axe-core
+- Meta tags dinámicos
+- ARIA labels en componentes
+- Estructura de headings semántica
+
+### Analytics
+
+**Implementación:**
+- Eventos de "CreateThread" y "ReplyPost"
+- Endpoint `/analytics/mock` para desarrollo
+- Tests RTL para verificar tracking
+
+### CI/CD Gates
+
+**Workflow actualizado:**
+- Tests unitarios y de integración
+- Tests de contratos de API
+- Tests E2E con Playwright
+- Tests de performance con k6
+- Cobertura mínima 75% (backend y frontend)
+- Linting y build verification
+
+### Variables de Entorno Requeridas
+
+```bash
+# Backend
+DATABASE_URL=postgresql://user:password@localhost:5432/dbname
+JWT_SECRET=your-jwt-secret
+NODE_ENV=development
+PORT=3000
+
+# Frontend
+FRONTEND_PORT=3001
+NEXT_PUBLIC_API_URL=http://localhost:3000
+
+# Performance Testing
+BACKEND_URL=http://localhost:3000
+```
+
+### Definition of Done
+
+Para que una PR sea considerada completa, debe cumplir:
+
+1. ✅ `pnpm --filter @aiquaa/backend test:contract` pasa contra OpenAPI actual
+2. ✅ `pnpm --filter @aiquaa/frontend e2e` pasa (health, foro CRUD, a11y sin violaciones críticas)
+3. ✅ `pnpm perf:forum` cumple thresholds p95 < 400ms, error_rate < 1%
+4. ✅ Rate limit y anti-spam activos en endpoints definidos
+5. ✅ Webhook Stripe (mock) crea Enrollment/Purchase idempotente
+6. ✅ Coverage ≥ 75% en backend y frontend
+7. ✅ README actualizado con pasos y variables

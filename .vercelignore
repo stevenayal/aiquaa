@@ -1,0 +1,50 @@
+# Dependencias
+node_modules/
+.pnpm-store/
+
+# Archivos de desarrollo
+.env.local
+.env.development
+.env.test
+*.log
+
+# Archivos de testing
+coverage/
+.nyc_output/
+test/
+**/*.spec.ts
+**/*.spec.js
+**/*.test.ts
+**/*.test.js
+
+# Archivos de build del backend (no necesarios para el frontend)
+apps/backend/dist/
+apps/backend/build/
+
+# Archivos de desarrollo
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos temporales
+.tmp/
+.temp/
+.cache/
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de git
+.git/
+.gitignore
+
+# Archivos de documentación
+docs/
+*.md
+README.md
+
+# Archivos de configuración local
+.eslintrc.local
+.prettierrc.local
