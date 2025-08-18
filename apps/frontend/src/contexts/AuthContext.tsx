@@ -1,23 +1,16 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-  avatarUrl?: string;
-}
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import authService, { User, LoginCredentials, RegisterData } from '../services/authService';
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
-  register: (name: string, email: string, password: string) => Promise<boolean>;
-  logout: () => void;
-  refreshToken: () => Promise<void>;
+  login: (credentials: LoginCredentials) => Promise<{ success: boolean; message?: string }>;
+  register: (userData: RegisterData) => Promise<{ success: boolean; message?: string }>;
+  logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -25,160 +18,115 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error('useAuth debe ser usado dentro de un AuthProvider');
   }
   return context;
 };
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Obtener la URL del backend desde las variables de entorno
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
+  const isAuthenticated = authService.isAuthenticated();
 
-  const isAuthenticated = !!user;
-
-  // Verificar token al cargar la página
   useEffect(() => {
-    checkAuthStatus();
+    const initializeAuth = async () => {
+      try {
+        if (isAuthenticated) {
+          await refreshUser();
+        }
+      } catch (error) {
+        console.error('Error inicializando autenticación:', error);
+        // Limpiar tokens inválidos
+        authService.logout();
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeAuth();
   }, []);
 
-  const checkAuthStatus = async () => {
+  const refreshUser = async () => {
     try {
-      const token = localStorage.getItem('access_token');
-      if (token) {
-        // Verificar si el token es válido
-        const response = await fetch(`${backendUrl}/api/v1/auth/profile`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        
-        if (response.ok) {
-          const userData = await response.json();
-          setUser(userData);
-        } else {
-          // Token inválido, intentar refresh
-          await refreshToken();
-        }
-      }
-    } catch (error) {
-      console.error('Error checking auth status:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const login = async (email: string, password: string): Promise<boolean> => {
-    try {
-      setIsLoading(true);
-      
-      const response = await fetch(`${backendUrl}/api/v1/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        
-        // Guardar token en localStorage
-        localStorage.setItem('access_token', data.access_token);
-        
-        // Obtener información del usuario
-        const userResponse = await fetch(`${backendUrl}/api/v1/auth/profile`, {
-          headers: {
-            'Authorization': `Bearer ${data.access_token}`
-          }
-        });
-        
-        if (userResponse.ok) {
-          const userData = await userResponse.json();
-          setUser(userData);
-          return true;
-        }
-      }
-      
-      return false;
-    } catch (error) {
-      console.error('Login error:', error);
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const register = async (name: string, email: string, password: string): Promise<boolean> => {
-    try {
-      setIsLoading(true);
-      
-      const response = await fetch(`${backendUrl}/api/v1/auth/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, email, password }),
-      });
-
-      if (response.ok) {
-        return true;
-      }
-      
-      return false;
-    } catch (error) {
-      console.error('Register error:', error);
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const logout = () => {
-    localStorage.removeItem('access_token');
-    setUser(null);
-  };
-
-  const refreshToken = async () => {
-    try {
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        setUser(null);
-        return;
-      }
-
-      const response = await fetch(`${backendUrl}/api/v1/auth/refresh`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ refresh_token: token }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('access_token', data.access_token);
-        
-        // Obtener información actualizada del usuario
-        const userResponse = await fetch(`${backendUrl}/api/v1/auth/profile`, {
-          headers: {
-            'Authorization': `Bearer ${data.access_token}`
-          }
-        });
-        
-        if (userResponse.ok) {
-          const userData = await userResponse.json();
-          setUser(userData);
-        }
+      const response = await authService.getCurrentUser();
+      if (response.success && response.data) {
+        setUser(response.data);
       } else {
-        // Refresh token inválido, hacer logout
-        logout();
+        // Token inválido, limpiar estado
+        setUser(null);
+        authService.logout();
       }
     } catch (error) {
-      console.error('Refresh token error:', error);
-      logout();
+      console.error('Error refrescando usuario:', error);
+      setUser(null);
+      authService.logout();
+    }
+  };
+
+  const login = async (credentials: LoginCredentials): Promise<{ success: boolean; message?: string }> => {
+    try {
+      setIsLoading(true);
+      const response = await authService.login(credentials);
+      
+      if (response.success && response.data) {
+        setUser(response.data.user);
+        return { success: true };
+      } else {
+        return { 
+          success: false, 
+          message: response.error || 'Error en el inicio de sesión' 
+        };
+      }
+    } catch (error) {
+      console.error('Error en login:', error);
+      return { 
+        success: false, 
+        message: 'Error inesperado en el inicio de sesión' 
+      };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const register = async (userData: RegisterData): Promise<{ success: boolean; message?: string }> => {
+    try {
+      setIsLoading(true);
+      const response = await authService.register(userData);
+      
+      if (response.success && response.data) {
+        setUser(response.data.user);
+        return { success: true };
+      } else {
+        return { 
+          success: false, 
+          message: response.error || 'Error en el registro' 
+        };
+      }
+    } catch (error) {
+      console.error('Error en registro:', error);
+      return { 
+        success: false, 
+        message: 'Error inesperado en el registro' 
+      };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const logout = async (): Promise<void> => {
+    try {
+      setIsLoading(true);
+      await authService.logout();
+      setUser(null);
+    } catch (error) {
+      console.error('Error en logout:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -189,7 +137,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     login,
     register,
     logout,
-    refreshToken,
+    refreshUser,
   };
 
   return (
