@@ -31,11 +31,11 @@ Para que el frontend funcione correctamente en Vercel, necesitas configurar las 
 ### Variables para OAuth (Recomendadas)
 
 6. **NEXT_PUBLIC_GOOGLE_CLIENT_ID**
-   - Valor: Tu Google OAuth Client ID
+   - Valor: `91995874414-kqjeag1g4h46nmlg1nodb7aqb6jud80r.apps.googleusercontent.com`
    - Descripción: Para autenticación con Google
 
 7. **NEXT_PUBLIC_GITHUB_CLIENT_ID**
-   - Valor: Tu GitHub OAuth Client ID
+   - Valor: `Ov23lictkb4l9L1uwTny`
    - Descripción: Para autenticación con GitHub
 
 ## Cómo Configurar en Vercel
@@ -47,21 +47,13 @@ Para que el frontend funcione correctamente en Vercel, necesitas configurar las 
 
 ## Configuración de OAuth
 
-### Google OAuth
-1. Ve a [Google Cloud Console](https://console.cloud.google.com/)
-2. Crea un proyecto o selecciona uno existente
-3. Habilita la API de Google+ 
-4. Crea credenciales OAuth 2.0
-5. Configura las URLs de redirección:
-   - `https://api.aiquaa.com/api/v1/auth/google/callback`
-   - `http://localhost:3000/api/v1/auth/google/callback` (para desarrollo)
+### Google OAuth ✅
+- **Client ID**: `91995874414-kqjeag1g4h46nmlg1nodb7aqb6jud80r.apps.googleusercontent.com`
+- **URLs de redirección**: Configuradas en Google Cloud Console
 
-### GitHub OAuth
-1. Ve a [GitHub Developer Settings](https://github.com/settings/developers)
-2. Crea una nueva OAuth App
-3. Configura las URLs de redirección:
-   - `https://api.aiquaa.com/api/v1/auth/github/callback`
-   - `http://localhost:3000/api/v1/auth/github/callback` (para desarrollo)
+### GitHub OAuth ✅
+- **Client ID**: `Ov23lictkb4l9L1uwTny`
+- **URLs de redirección**: Configuradas en GitHub Developer Settings
 
 ## Solución de Problemas
 
@@ -96,3 +88,4 @@ Si el build falla durante la generación estática:
 - Después de cambiar las variables de entorno, es necesario redesplegar la aplicación
 - Para desarrollo local, copia `env.local.example` a `.env.local` y configura los valores
 - Los botones de OAuth se deshabilitarán automáticamente si no están configuradas las variables correspondientes
+- **¡Ambos proveedores OAuth (Google y GitHub) están configurados y listos para usar!**
