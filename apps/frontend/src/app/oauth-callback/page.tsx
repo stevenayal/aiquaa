@@ -36,8 +36,12 @@ export default function OAuthCallbackPage() {
         authService.applyTokens(accessToken, refreshToken ?? undefined);
         
         // Intentar obtener información del usuario
-        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
-        const userResponse = await fetch(`${backendUrl}/api/v1/auth/profile`, {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '';
+        const base = apiUrl || (process.env.NODE_ENV !== 'production' ? 'http://localhost:3001' : '');
+        if (!base) {
+          throw new Error('NEXT_PUBLIC_API_URL no está configurada');
+        }
+        const userResponse = await fetch(`${base}/auth/profile`, {
           headers: {
             'Authorization': `Bearer ${accessToken}`
           }

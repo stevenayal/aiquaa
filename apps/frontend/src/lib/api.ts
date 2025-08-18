@@ -1,6 +1,20 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL 
-  ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1`
-  : 'http://localhost:3000/api/v1';
+function getApiBaseUrl(): string {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+  if (apiUrl && apiUrl.length > 0) {
+    return apiUrl;
+  }
+  if (backendUrl && backendUrl.length > 0) {
+    return `${backendUrl}/api/v1`;
+  }
+  if (process.env.NODE_ENV !== 'production') {
+    return 'http://localhost:3001/api/v1';
+  }
+  throw new Error('NEXT_PUBLIC_API_URL o NEXT_PUBLIC_BACKEND_URL no están configuradas en producción');
+}
+
+const API_BASE_URL = getApiBaseUrl();
 
 export interface ApiResponse<T = any> {
   data?: T;

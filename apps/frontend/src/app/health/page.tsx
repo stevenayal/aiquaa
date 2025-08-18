@@ -15,8 +15,12 @@ export default function HealthPage() {
   useEffect(() => {
     const checkHealth = async () => {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
-        const response = await fetch(`${apiUrl}/health`);
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '';
+        if (!apiUrl && process.env.NODE_ENV === 'production') {
+          throw new Error('NEXT_PUBLIC_API_URL no está configurada');
+        }
+        const base = apiUrl || 'http://localhost:3001';
+        const response = await fetch(`${base}/health`);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -51,7 +55,7 @@ export default function HealthPage() {
             <div className="text-red-500 text-lg mb-2">❌ Error</div>
             <p className="text-gray-600">{error}</p>
             <p className="text-sm text-gray-500 mt-2">
-              Asegúrate de que el backend esté ejecutándose en {process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1'}
+              Asegúrate de que el backend esté ejecutándose en {process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}
             </p>
           </div>
         )}

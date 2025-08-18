@@ -1,6 +1,19 @@
 import { jwtDecode } from 'jwt-decode';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+function getApiBaseUrl(): string {
+  const urlFromEnv = process.env.NEXT_PUBLIC_API_URL;
+  if (urlFromEnv && urlFromEnv.length > 0) {
+    return urlFromEnv;
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
+    return 'http://localhost:3001';
+  }
+
+  throw new Error('NEXT_PUBLIC_API_URL no está configurada en producción');
+}
+
+const API_BASE_URL = getApiBaseUrl();
 
 export interface User {
   id: string;
