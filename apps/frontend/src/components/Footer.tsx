@@ -156,10 +156,53 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className={`border-t mt-8 pt-8 text-center ${
-          isDarkMode ? 'border-dark-secondary text-dark-muted' : 'border-brand-accent text-brand-muted'
+        {/* Sección de licencia Creative Commons */}
+        <div className={`border-t mt-8 pt-8 ${
+          isDarkMode ? 'border-dark-secondary' : 'border-brand-accent'
         }`}>
-          <p>&copy; {new Date().getFullYear()} AIQUAA. Todos los derechos reservados.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+            {/* Copyright */}
+            <div className={`text-center md:text-left ${
+              isDarkMode ? 'text-dark-muted' : 'text-brand-muted'
+            }`}>
+              <p>&copy; {new Date().getFullYear()} AIQUAA. Todos los derechos reservados.</p>
+            </div>
+            
+            {/* Licencia Creative Commons */}
+            <div className={`text-center md:text-right ${
+              isDarkMode ? 'text-dark-muted' : 'text-brand-muted'
+            }`}>
+              <p className="mb-2">
+                El contenido de AIQUAA está licenciado bajo{' '}
+                <a
+                  href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`underline hover:no-underline transition-all duration-200 ${
+                    isDarkMode 
+                      ? 'text-dark-accent hover:text-dark-text' 
+                      : 'text-brand-accent hover:text-brand-light'
+                  }`}
+                  aria-label="Licencia Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International"
+                >
+                  CC BY-NC-SA 4.0
+                </a>
+              </p>
+              <p className="text-sm opacity-80">
+                Atribución • No Comercial • Compartir Igual
+              </p>
+            </div>
+          </div>
+          
+          {/* Información adicional de la licencia */}
+          <div className={`mt-6 pt-6 border-t text-center text-sm ${
+            isDarkMode ? 'border-dark-secondary text-dark-muted' : 'border-gray-300 text-brand-muted'
+          }`}>
+            <p>
+              Puedes compartir, adaptar y usar este contenido para fines no comerciales, 
+              siempre que proporciones atribución a AIQUAA y distribuyas tu trabajo bajo la misma licencia.
+            </p>
+          </div>
         </div>
       </div>
     </footer>

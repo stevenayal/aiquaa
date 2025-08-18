@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 interface DataField {
@@ -23,6 +23,21 @@ export default function DataGeneratorPage() {
   const [recordCount, setRecordCount] = useState(5);
   const [generatedData, setGeneratedData] = useState('');
   const [format, setFormat] = useState<'json' | 'csv'>('json');
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Detectar modo oscuro del sistema
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    setIsDarkMode(mediaQuery.matches);
+    
+    const handleChange = (e: MediaQueryListEvent) => setIsDarkMode(e.matches);
+    mediaQuery.addEventListener('change', handleChange);
+    
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  // Alternar modo oscuro
+  const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
 
   const addField = () => {
     const newField: DataField = {
@@ -46,12 +61,14 @@ export default function DataGeneratorPage() {
   const generateRandomValue = (field: DataField): any => {
     switch (field.type) {
       case 'text':
-        const words = ['Lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing', 'elit'];
+        const words = ['Lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing', 'elit', 'sed', 'do', 'eiusmod', 'tempor', 'incididunt', 'ut', 'labore', 'et', 'dolore', 'magna', 'aliqua'];
         const length = field.minLength || 5;
-        return words.slice(0, Math.max(length, 1)).join(' ').substring(0, field.maxLength || 50);
+        const maxLength = field.maxLength || 50;
+        let result = words.slice(0, Math.max(length, 1)).join(' ');
+        return result.length > maxLength ? result.substring(0, maxLength) : result;
       
       case 'email':
-        const domains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com'];
+        const domains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'protonmail.com'];
         const username = Math.random().toString(36).substring(2, 8);
         const domain = domains[Math.floor(Math.random() * domains.length)];
         return `${username}@${domain}`;
@@ -71,13 +88,13 @@ export default function DataGeneratorPage() {
         return Math.random() > 0.5;
       
       case 'phone':
-        const prefixes = ['0981', '0982', '0983', '0984', '0985'];
+        const prefixes = ['0981', '0982', '0983', '0984', '0985', '0986', '0987', '0988', '0989'];
         const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
         const phoneNumber = Math.floor(Math.random() * 10000000).toString().padStart(7, '0');
         return `${prefix}${phoneNumber}`;
       
       case 'address':
-        const streets = ['Av. España', 'Av. Mcal. López', 'Av. Brasilia', 'Av. San Martín'];
+        const streets = ['Av. España', 'Av. Mcal. López', 'Av. Brasilia', 'Av. San Martín', 'Av. República', 'Av. Independencia', 'Av. Libertad', 'Av. Democracia'];
         const street = streets[Math.floor(Math.random() * streets.length)];
         const streetNumber = Math.floor(Math.random() * 1000) + 1;
         return `${street} ${streetNumber}`;
@@ -138,33 +155,64 @@ export default function DataGeneratorPage() {
     URL.revokeObjectURL(url);
   };
 
+  // Clases CSS dinámicas para modo oscuro
+  const bgPrimary = isDarkMode ? 'bg-gray-900' : 'bg-brand-light';
+  const bgSecondary = isDarkMode ? 'bg-gray-800' : 'bg-white';
+  const textPrimary = isDarkMode ? 'text-white' : 'text-brand-text';
+  const textSecondary = isDarkMode ? 'text-gray-300' : 'text-brand-muted';
+  const borderColor = isDarkMode ? 'border-gray-600' : 'border-gray-200';
+  const inputBg = isDarkMode ? 'bg-gray-700' : 'bg-white';
+  const inputBorder = isDarkMode ? 'border-gray-600' : 'border-gray-300';
+  const inputText = isDarkMode ? 'text-white' : 'text-gray-900';
+  const placeholderText = isDarkMode ? 'placeholder-gray-400' : 'placeholder-gray-500';
+  const shadow = isDarkMode ? 'shadow-2xl' : 'shadow-lg';
+
   return (
-    <div className="min-h-screen bg-brand-light py-12 md:py-16">
+    <div className={`min-h-screen ${bgPrimary} py-8 md:py-12 lg:py-16 transition-colors duration-300`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div className="flex items-center justify-center mb-4">
-            <Link href="/labs" className="text-brand-muted hover:text-brand-text transition-colors">
-              ← Volver a Labs
+        {/* Header con botón de modo oscuro */}
+        <div className="text-center mb-8 md:mb-12">
+          <div className="flex items-center justify-between mb-6">
+            <Link 
+              href="/labs" 
+              className={`text-sm md:text-base ${textSecondary} hover:text-blue-400 transition-colors flex items-center`}
+            >
+              <span className="mr-2">←</span>
+              <span className="hidden sm:inline">Volver a Labs</span>
+              <span className="sm:hidden">Labs</span>
             </Link>
+            
+            <button
+              onClick={toggleDarkMode}
+              className={`p-2 rounded-lg ${bgSecondary} ${textPrimary} hover:bg-opacity-80 transition-all duration-200 ${shadow}`}
+              aria-label="Alternar modo oscuro"
+            >
+              {isDarkMode ? '☀️' : '🌙'}
+            </button>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-brand-text mb-6">
-            🎲 Generador de Datos
+          
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-4 md:mb-6">
+            <span className={textPrimary}>🎲 Generador de Datos</span>
           </h1>
-          <p className="text-xl text-brand-muted max-w-3xl mx-auto">
-            Crea datos de prueba realistas para formularios, APIs y bases de datos. Perfecto para testers y desarrolladores.
+          
+          <p className={`text-base sm:text-lg md:text-xl ${textSecondary} max-w-3xl mx-auto px-4`}>
+            Crea datos de prueba realistas para formularios, APIs y bases de datos. 
+            <span className="hidden sm:inline"> Perfecto para testers y desarrolladores.</span>
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        {/* Layout responsive mejorado */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 md:gap-8">
           {/* Configuration Section */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h2 className="text-xl font-bold text-brand-text mb-4">Configuración</h2>
+          <div className="space-y-4 md:space-y-6 order-2 xl:order-1">
+            <div className={`${bgSecondary} rounded-xl ${shadow} p-4 md:p-6 transition-all duration-300`}>
+              <h2 className={`text-lg md:text-xl font-bold ${textPrimary} mb-4 md:mb-6`}>
+                ⚙️ Configuración
+              </h2>
               
               {/* Record Count */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-brand-text mb-2">
+              <div className="mb-4 md:mb-6">
+                <label className={`block text-sm font-medium ${textPrimary} mb-2`}>
                   Cantidad de registros
                 </label>
                 <input
@@ -173,66 +221,70 @@ export default function DataGeneratorPage() {
                   max="1000"
                   value={recordCount}
                   onChange={(e) => setRecordCount(parseInt(e.target.value) || 1)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-accent focus:border-transparent"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${inputBg} ${inputBorder} ${inputText} ${placeholderText}`}
+                  placeholder="5"
                 />
               </div>
 
               {/* Format Selection */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-brand-text mb-2">
+                <label className={`block text-sm font-medium ${textPrimary} mb-3`}>
                   Formato de salida
                 </label>
-                <div className="flex gap-3">
-                  <label className="flex items-center">
+                <div className="flex flex-wrap gap-3">
+                  <label className="flex items-center cursor-pointer">
                     <input
                       type="radio"
                       value="json"
                       checked={format === 'json'}
                       onChange={(e) => setFormat(e.target.value as 'json' | 'csv')}
-                      className="mr-2"
+                      className="mr-2 text-blue-600 focus:ring-blue-500"
                     />
-                    JSON
+                    <span className={textPrimary}>JSON</span>
                   </label>
-                  <label className="flex items-center">
+                  <label className="flex items-center cursor-pointer">
                     <input
                       type="radio"
                       value="csv"
                       checked={format === 'csv'}
                       onChange={(e) => setFormat(e.target.value as 'json' | 'csv')}
-                      className="mr-2"
+                      className="mr-2 text-blue-600 focus:ring-blue-500"
                     />
-                    CSV
+                    <span className={textPrimary}>CSV</span>
                   </label>
                 </div>
               </div>
 
               {/* Fields Configuration */}
               <div>
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold text-brand-text">Campos</h3>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
+                  <h3 className={`text-base md:text-lg font-semibold ${textPrimary}`}>Campos</h3>
                   <button
                     onClick={addField}
-                    className="bg-brand-accent hover:bg-brand-primary text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center justify-center"
                   >
-                    ➕ Agregar Campo
+                    <span className="mr-1">➕</span>
+                    <span className="hidden sm:inline">Agregar Campo</span>
+                    <span className="sm:hidden">Agregar</span>
                   </button>
                 </div>
 
                 <div className="space-y-3">
                   {fields.map((field) => (
-                    <div key={field.id} className="border border-gray-200 rounded-lg p-3">
-                      <div className="grid grid-cols-2 gap-3 mb-3">
+                    <div key={field.id} className={`border rounded-lg p-3 md:p-4 transition-all duration-200 ${borderColor} ${bgSecondary}`}>
+                      {/* Campo nombre y tipo */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                         <input
                           type="text"
                           value={field.name}
                           onChange={(e) => updateField(field.id, { name: e.target.value })}
                           placeholder="Nombre del campo"
-                          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-accent focus:border-transparent"
+                          className={`px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${inputBg} ${inputBorder} ${inputText} ${placeholderText}`}
                         />
                         <select
                           value={field.type}
                           onChange={(e) => updateField(field.id, { type: e.target.value as DataField['type'] })}
-                          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-accent focus:border-transparent"
+                          className={`px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${inputBg} ${inputBorder} ${inputText}`}
                         >
                           <option value="text">Texto</option>
                           <option value="email">Email</option>
@@ -244,9 +296,9 @@ export default function DataGeneratorPage() {
                         </select>
                       </div>
 
-                      {/* Type-specific options */}
+                      {/* Opciones específicas del tipo */}
                       {(field.type === 'text' || field.type === 'number') && (
-                        <div className="grid grid-cols-2 gap-3 mb-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                           {field.type === 'text' ? (
                             <>
                               <input
@@ -254,14 +306,14 @@ export default function DataGeneratorPage() {
                                 placeholder="Longitud mínima"
                                 value={field.minLength || ''}
                                 onChange={(e) => updateField(field.id, { minLength: parseInt(e.target.value) || undefined })}
-                                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-accent focus:border-transparent"
+                                className={`px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${inputBg} ${inputBorder} ${inputText} ${placeholderText}`}
                               />
                               <input
                                 type="number"
                                 placeholder="Longitud máxima"
                                 value={field.maxLength || ''}
                                 onChange={(e) => updateField(field.id, { maxLength: parseInt(e.target.value) || undefined })}
-                                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-accent focus:border-transparent"
+                                className={`px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${inputBg} ${inputBorder} ${inputText} ${placeholderText}`}
                               />
                             </>
                           ) : (
@@ -271,26 +323,29 @@ export default function DataGeneratorPage() {
                                 placeholder="Valor mínimo"
                                 value={field.minValue || ''}
                                 onChange={(e) => updateField(field.id, { minValue: parseInt(e.target.value) || undefined })}
-                                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-accent focus:border-transparent"
+                                className={`px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${inputBg} ${inputBorder} ${inputText} ${placeholderText}`}
                               />
                               <input
                                 type="number"
                                 placeholder="Valor máximo"
                                 value={field.maxValue || ''}
                                 onChange={(e) => updateField(field.id, { maxValue: parseInt(e.target.value) || undefined })}
-                                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-accent focus:border-transparent"
+                                className={`px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${inputBg} ${inputBorder} ${inputText} ${placeholderText}`}
                               />
                             </>
                           )}
                         </div>
                       )}
 
+                      {/* Botón eliminar */}
                       <div className="flex justify-end">
                         <button
                           onClick={() => removeField(field.id)}
-                          className="text-red-600 hover:text-red-800 text-sm font-medium transition-colors"
+                          className="text-red-500 hover:text-red-700 text-sm font-medium transition-colors duration-200 flex items-center"
                         >
-                          🗑️ Eliminar
+                          <span className="mr-1">🗑️</span>
+                          <span className="hidden sm:inline">Eliminar</span>
+                          <span className="sm:hidden">Eliminar</span>
                         </button>
                       </div>
                     </div>
@@ -298,10 +353,10 @@ export default function DataGeneratorPage() {
                 </div>
               </div>
 
-              {/* Generate Button */}
+              {/* Botón generar */}
               <button
                 onClick={generateData}
-                className="w-full bg-brand-accent hover:bg-brand-primary text-white py-3 rounded-lg font-semibold transition-colors mt-6"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-3 md:py-4 rounded-lg font-semibold transition-all duration-300 mt-6 transform hover:scale-105 active:scale-95"
               >
                 🚀 Generar Datos
               </button>
@@ -309,37 +364,41 @@ export default function DataGeneratorPage() {
           </div>
 
           {/* Output Section */}
-          <div className="space-y-6">
+          <div className="space-y-4 md:space-y-6 order-1 xl:order-2">
             <div>
-              <label className="block text-sm font-medium text-brand-text mb-2">
-                Datos Generados
+              <label className={`block text-sm font-medium ${textPrimary} mb-2`}>
+                📊 Datos Generados
               </label>
               <textarea
                 value={generatedData}
                 readOnly
                 placeholder="Los datos generados aparecerán aquí..."
-                className="w-full h-96 p-4 border border-gray-300 rounded-lg bg-gray-50 font-mono text-sm resize-none"
+                className={`w-full h-64 md:h-80 lg:h-96 p-3 md:p-4 border rounded-lg font-mono text-sm resize-none transition-all duration-200 ${inputBg} ${inputBorder} ${inputText} ${placeholderText}`}
               />
             </div>
 
-            {/* Output Actions */}
+            {/* Acciones de salida */}
             {generatedData && (
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   id="copy-btn"
                   onClick={copyToClipboard}
-                  className="bg-brand-primary hover:bg-brand-accent text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 md:px-6 py-3 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center"
                 >
-                  📋 Copiar
+                  <span className="mr-2">📋</span>
+                  <span className="hidden sm:inline">Copiar</span>
+                  <span className="sm:hidden">Copiar</span>
                 </button>
                 <button
                   onClick={downloadData}
-                  className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                  className="bg-green-600 hover:bg-green-700 text-white px-4 md:px-6 py-3 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center"
                 >
-                  💾 Descargar
+                  <span className="mr-2">💾</span>
+                  <span className="hidden sm:inline">Descargar</span>
+                  <span className="sm:hidden">Descargar</span>
                 </button>
-                <div className="flex items-center px-4 py-3 bg-gray-100 rounded-lg">
-                  <span className="text-sm text-gray-600">
+                <div className={`flex items-center justify-center px-4 py-3 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                  <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                     {format.toUpperCase()} • {recordCount} registros
                   </span>
                 </div>
@@ -348,30 +407,30 @@ export default function DataGeneratorPage() {
           </div>
         </div>
 
-        {/* Features Section */}
-        <div className="mt-16 bg-white rounded-lg shadow-lg p-8">
-          <h2 className="text-2xl font-bold text-brand-text mb-6 text-center">
-            Características del Generador de Datos
+        {/* Sección de características */}
+        <div className={`mt-12 md:mt-16 ${bgSecondary} rounded-xl ${shadow} p-6 md:p-8 transition-all duration-300`}>
+          <h2 className={`text-xl md:text-2xl font-bold ${textPrimary} mb-6 text-center`}>
+            ✨ Características del Generador de Datos
           </h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="text-center">
-              <div className="text-4xl mb-4">🎯</div>
-              <h3 className="text-lg font-semibold text-brand-text mb-2">Datos Realistas</h3>
-              <p className="text-brand-muted">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            <div className="text-center p-4 rounded-lg hover:bg-opacity-50 transition-all duration-200">
+              <div className="text-3xl md:text-4xl mb-3">🎯</div>
+              <h3 className={`text-base md:text-lg font-semibold ${textPrimary} mb-2`}>Datos Realistas</h3>
+              <p className={`text-sm md:text-base ${textSecondary}`}>
                 Genera datos que se ven y comportan como información real
               </p>
             </div>
-            <div className="text-center">
-              <div className="text-4xl mb-4">⚙️</div>
-              <h3 className="text-lg font-semibold text-brand-text mb-2">Configuración Flexible</h3>
-              <p className="text-brand-muted">
+            <div className="text-center p-4 rounded-lg hover:bg-opacity-50 transition-all duration-200">
+              <div className="text-3xl md:text-4xl mb-3">⚙️</div>
+              <h3 className={`text-base md:text-lg font-semibold ${textPrimary} mb-2`}>Configuración Flexible</h3>
+              <p className={`text-sm md:text-base ${textSecondary}`}>
                 Personaliza tipos de datos, rangos y restricciones
               </p>
             </div>
-            <div className="text-center">
-              <div className="text-4xl mb-4">📊</div>
-              <h3 className="text-lg font-semibold text-brand-text mb-2">Múltiples Formatos</h3>
-              <p className="text-brand-muted">
+            <div className="text-center p-4 rounded-lg hover:bg-opacity-50 transition-all duration-200">
+              <div className="text-3xl md:text-4xl mb-3">📊</div>
+              <h3 className={`text-base md:text-lg font-semibold ${textPrimary} mb-2`}>Múltiples Formatos</h3>
+              <p className={`text-sm md:text-base ${textSecondary}`}>
                 Exporta en JSON o CSV según tus necesidades
               </p>
             </div>
