@@ -9,6 +9,7 @@ export default function RegisterForm() {
   const { register } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
+    username: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -28,7 +29,12 @@ export default function RegisterForm() {
     setIsSubmitting(true);
 
     try {
-      const result = await register(formData);
+      const result = await register({
+        email: formData.email,
+        username: formData.username,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+      });
       
       if (result.success) {
         // Redirigir al dashboard o página principal
@@ -100,6 +106,22 @@ export default function RegisterForm() {
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Nombre completo"
                 value={formData.name}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="username" className="sr-only">
+                Nombre de usuario
+              </label>
+              <input
+                id="username"
+                name="username"
+                type="text"
+                autoComplete="username"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Nombre de usuario"
+                value={formData.username}
                 onChange={handleChange}
               />
             </div>

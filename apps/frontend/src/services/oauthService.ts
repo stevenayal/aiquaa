@@ -1,13 +1,21 @@
-import { getApiBaseUrl } from './authService';
-
 class OAuthService {
-  private getBackendUrl(): string {
-    return getApiBaseUrl();
+  private getApiBaseUrl(): string {
+    const urlFromEnv = process.env.NEXT_PUBLIC_API_URL;
+    if (urlFromEnv && urlFromEnv.length > 0) {
+      return urlFromEnv;
+    }
+
+    if (process.env.NODE_ENV !== 'production') {
+      return 'http://localhost:3001';
+    }
+
+    // En producción, usar un valor por defecto en lugar de lanzar un error
+    return 'https://api.aiquaa.com';
   }
 
   // Iniciar autenticación con Google
   initiateGoogleAuth(): void {
-    const backendUrl = this.getBackendUrl();
+    const backendUrl = this.getApiBaseUrl();
     const googleAuthUrl = `${backendUrl}/auth/google`;
     
     // Redirigir al backend para iniciar el flujo de OAuth
@@ -16,7 +24,7 @@ class OAuthService {
 
   // Iniciar autenticación con GitHub
   initiateGitHubAuth(): void {
-    const backendUrl = this.getBackendUrl();
+    const backendUrl = this.getApiBaseUrl();
     const githubAuthUrl = `${backendUrl}/auth/github`;
     
     // Redirigir al backend para iniciar el flujo de OAuth
