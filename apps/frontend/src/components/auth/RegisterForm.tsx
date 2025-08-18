@@ -17,6 +17,12 @@ export default function RegisterForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Debug OAuth al cargar el componente
+  React.useEffect(() => {
+    console.log('🔍 === REGISTER FORM LOADED ===');
+    oauthService.debugOAuthConfig();
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -57,20 +63,38 @@ export default function RegisterForm() {
   };
 
   const handleGoogleRegister = () => {
+    console.log('🔍 Intentando registro con Google...');
     if (oauthService.isGoogleOAuthConfigured()) {
-      oauthService.initiateGoogleAuth();
+      try {
+        oauthService.initiateGoogleAuth();
+      } catch (error) {
+        console.error('❌ Error en handleGoogleRegister:', error);
+        setError('Error al iniciar autenticación con Google');
+      }
     } else {
+      console.warn('⚠️  Google OAuth no está configurado');
       setError('Autenticación con Google no está configurada');
     }
   };
 
   const handleGitHubRegister = () => {
+    console.log('🔍 Intentando registro con GitHub...');
     if (oauthService.isGitHubOAuthConfigured()) {
-      oauthService.initiateGitHubAuth();
+      try {
+        oauthService.initiateGitHubAuth();
+      } catch (error) {
+        console.error('❌ Error en handleGitHubRegister:', error);
+        setError('Error al iniciar autenticación con GitHub');
+      }
     } else {
+      console.warn('⚠️  GitHub OAuth no está configurado');
       setError('Autenticación con GitHub no está configurada');
     }
   };
+
+  // Verificar estado de OAuth
+  const isGoogleConfigured = oauthService.isGoogleOAuthConfigured();
+  const isGitHubConfigured = oauthService.isGitHubOAuthConfigured();
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -92,6 +116,18 @@ export default function RegisterForm() {
               <div className="text-sm text-red-700">{error}</div>
             </div>
           )}
+          
+          {/* Debug info en desarrollo */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="rounded-md bg-blue-50 p-4 text-xs">
+              <div className="text-blue-700">
+                <strong>Debug OAuth:</strong><br/>
+                Google: {isGoogleConfigured ? '✅' : '❌'}<br/>
+                GitHub: {isGitHubConfigured ? '✅' : '❌'}
+              </div>
+            </div>
+          )}
+
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <label htmlFor="name" className="sr-only">
@@ -199,8 +235,9 @@ export default function RegisterForm() {
               <button
                 type="button"
                 onClick={handleGoogleRegister}
-                disabled={!oauthService.isGoogleOAuthConfigured()}
+                disabled={!isGoogleConfigured}
                 className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                title={isGoogleConfigured ? 'Registrarse con Google' : 'Google OAuth no configurado'}
               >
                 <span className="sr-only">Registrarse con Google</span>
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -214,8 +251,9 @@ export default function RegisterForm() {
               <button
                 type="button"
                 onClick={handleGitHubRegister}
-                disabled={!oauthService.isGitHubOAuthConfigured()}
+                disabled={!isGitHubConfigured}
                 className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                title={isGitHubConfigured ? 'Registrarse con GitHub' : 'GitHub OAuth no configurado'}
               >
                 <span className="sr-only">Registrarse con GitHub</span>
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
