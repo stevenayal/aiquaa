@@ -37,7 +37,7 @@ export default function OAuthCallbackPage() {
         
         // Intentar obtener información del usuario
         const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '';
-        const base = apiUrl || (process.env.NODE_ENV !== 'production' ? 'http://localhost:3001' : '');
+        const base = apiUrl || (process.env.NODE_ENV !== 'production' ? 'http://localhost:3001' : 'https://api.aiquaa.com');
         if (!base) {
           throw new Error('NEXT_PUBLIC_API_URL no está configurada');
         }

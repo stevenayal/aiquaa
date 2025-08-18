@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface DataField {
   id: string;
@@ -15,6 +16,7 @@ interface DataField {
 }
 
 export default function DataGeneratorPage() {
+  const { isDarkMode, toggleDarkMode } = useTheme();
   const [fields, setFields] = useState<DataField[]>([
     { id: '1', name: 'nombre', type: 'text', minLength: 3, maxLength: 20 },
     { id: '2', name: 'email', type: 'email' },
@@ -23,21 +25,6 @@ export default function DataGeneratorPage() {
   const [recordCount, setRecordCount] = useState(5);
   const [generatedData, setGeneratedData] = useState('');
   const [format, setFormat] = useState<'json' | 'csv'>('json');
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  // Detectar modo oscuro del sistema
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    setIsDarkMode(mediaQuery.matches);
-    
-    const handleChange = (e: MediaQueryListEvent) => setIsDarkMode(e.matches);
-    mediaQuery.addEventListener('change', handleChange);
-    
-    return () => mediaQuery.removeEventListener('change', handleChange);
-  }, []);
-
-  // Alternar modo oscuro
-  const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
 
   const addField = () => {
     const newField: DataField = {

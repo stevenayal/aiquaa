@@ -11,7 +11,8 @@ function getApiBaseUrl(): string {
   if (process.env.NODE_ENV !== 'production') {
     return 'http://localhost:3001/api/v1';
   }
-  throw new Error('NEXT_PUBLIC_API_URL o NEXT_PUBLIC_BACKEND_URL no están configuradas en producción');
+  // En producción, usar un valor por defecto en lugar de lanzar un error
+  return 'https://api.aiquaa.com/api/v1';
 }
 
 const API_BASE_URL = getApiBaseUrl();

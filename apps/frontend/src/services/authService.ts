@@ -10,7 +10,8 @@ function getApiBaseUrl(): string {
     return 'http://localhost:3001';
   }
 
-  throw new Error('NEXT_PUBLIC_API_URL no está configurada en producción');
+  // En producción, usar un valor por defecto en lugar de lanzar un error
+  return 'https://api.aiquaa.com';
 }
 
 const API_BASE_URL = getApiBaseUrl();
