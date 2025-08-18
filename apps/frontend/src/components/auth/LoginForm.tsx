@@ -34,8 +34,21 @@ const LoginForm = () => {
   };
 
   const handleOAuthLogin = (provider: 'github' | 'google') => {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
-    window.location.href = `${backendUrl}/api/v1/auth/${provider}`;
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    
+    // Debug: mostrar qué URL se está usando
+    console.log('NEXT_PUBLIC_BACKEND_URL:', process.env.NEXT_PUBLIC_BACKEND_URL);
+    console.log('backendUrl final:', backendUrl);
+    
+    if (!backendUrl) {
+      console.error('❌ NEXT_PUBLIC_BACKEND_URL no está configurada!');
+      alert('Error de configuración: NEXT_PUBLIC_BACKEND_URL no está configurada');
+      return;
+    }
+    
+    const oauthUrl = `${backendUrl}/api/v1/auth/${provider}`;
+    console.log('🚀 Redirigiendo a:', oauthUrl);
+    window.location.href = oauthUrl;
   };
 
   return (
