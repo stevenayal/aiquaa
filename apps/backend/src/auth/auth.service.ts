@@ -222,7 +222,7 @@ export class AuthService {
     }
 
     // Marcar email como verificado
-    await this.prisma.user.update({
+    const updatedUser = await this.prisma.user.update({
       where: { id: tokenRecord.userId! },
       data: { emailVerifiedAt: new Date() },
     });
@@ -232,6 +232,13 @@ export class AuthService {
       where: { id: tokenRecord.id },
       data: { consumedAt: new Date() },
     });
+
+    // Enviar email de bienvenida (no bloqueante)
+    try {
+      await this.mailerService.sendWelcomeEmail(updatedUser.email, updatedUser.name || updatedUser.email);
+    } catch (_) {
+      // Ignorar error de envío para no afectar la verificación
+    }
 
     return { message: 'Email verificado exitosamente' };
   }

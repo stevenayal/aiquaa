@@ -30,13 +30,16 @@ export default function AboutPage() {
             </p>
           </div>
           <div className="text-center">
-            <Image
-              src="/images/logo1.png"
-              alt="AIQUAA Logo"
-              width={256}
-              height={256}
-              className="w-64 h-64 mx-auto rounded-lg shadow-lg"
-            />
+            <div className="inline-flex items-center justify-center p-6 rounded-lg shadow-lg bg-brand-dark">
+              <Image
+                src="/images/logo1.png"
+                alt="AIQUAA Logo"
+                width={256}
+                height={256}
+                className="w-64 h-64 object-contain"
+                priority
+              />
+            </div>
           </div>
         </div>
 

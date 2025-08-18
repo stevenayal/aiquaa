@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import authService from '@/services/authService';
 import Image from 'next/image';
 
 export default function OAuthCallbackPage() {
@@ -23,6 +24,7 @@ export default function OAuthCallbackPage() {
         }
 
         const accessToken = searchParams.get('access_token');
+        const refreshToken = searchParams.get('refresh_token');
         
         if (!accessToken) {
           setStatus('error');
@@ -30,8 +32,8 @@ export default function OAuthCallbackPage() {
           return;
         }
 
-        // Guardar el token en localStorage
-        localStorage.setItem('access_token', accessToken);
+        // Aplicar tokens al servicio de auth (maneja localStorage internamente)
+        authService.applyTokens(accessToken, refreshToken ?? undefined);
         
         // Intentar obtener información del usuario
         const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
@@ -45,7 +47,7 @@ export default function OAuthCallbackPage() {
           // Actualizar el contexto de autenticación
           // Nota: Esto requeriría modificar el AuthContext para aceptar un usuario externo
           // Por ahora, redirigimos y el AuthContext se actualizará automáticamente
-          
+          await refreshUser();
           setStatus('success');
           setMessage('¡Autenticación exitosa! Redirigiendo...');
           

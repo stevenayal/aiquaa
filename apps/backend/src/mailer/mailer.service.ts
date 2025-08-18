@@ -94,6 +94,27 @@ export class MailerService {
     }
   }
 
+  async sendWelcomeEmail(email: string, name: string): Promise<void> {
+    const mailOptions = {
+      from: this.configService.get<string>('EMAIL_FROM', 'AIQUAA <no-reply@aiquaa.com>'),
+      to: email,
+      subject: '¡Bienvenido a AIQUAA! 🎉',
+      html: this.getWelcomeEmailTemplate(name),
+    };
+
+    try {
+      const info = await this.transporter.sendMail(mailOptions);
+      this.logger.log(`Email de bienvenida enviado a ${email}: ${info.messageId}`);
+
+      if (info.messageId.includes('ethereal')) {
+        this.logger.log(`Preview URL: ${nodemailer.getTestMessageUrl(info)}`);
+      }
+    } catch (error) {
+      this.logger.error(`Error enviando email de bienvenida a ${email}`, error);
+      // No relanzamos para no bloquear el flujo de verificación
+    }
+  }
+
   private getVerificationEmailTemplate(name: string, verificationUrl: string): string {
     return `
       <!DOCTYPE html>
@@ -168,6 +189,43 @@ export class MailerService {
             <p><a href="${resetUrl}">${resetUrl}</a></p>
             <p>Este enlace expirará en 24 horas.</p>
             <p>Si no solicitaste este cambio, puedes ignorar este email. Tu contraseña actual permanecerá sin cambios.</p>
+          </div>
+          <div class="footer">
+            <p>© 2024 AIQUAA. Todos los derechos reservados.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  private getWelcomeEmailTemplate(name: string): string {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Bienvenido a AIQUAA</title>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: #16A34A; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+          .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px; }
+          .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>🎯 AIQUAA</h1>
+            <p>¡Bienvenido!</p>
+          </div>
+          <div class="content">
+            <h2>¡Hola ${name}!</h2>
+            <p>Gracias por verificar tu email y unirte a AIQUAA. Estamos emocionados de tenerte con nosotros.</p>
+            <p>Desde tu cuenta podrás explorar el foro, participar en discusiones y aprovechar nuestras herramientas en Labs.</p>
+            <p>Si tienes dudas, responde a este correo o visita la sección de ayuda.</p>
           </div>
           <div class="footer">
             <p>© 2024 AIQUAA. Todos los derechos reservados.</p>

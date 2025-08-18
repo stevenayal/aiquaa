@@ -48,6 +48,21 @@ class AuthService {
     }
   }
 
+  // Permite configurar tokens desde flujos externos (p.ej., OAuth callback)
+  applyTokens(accessToken: string, refreshToken?: string): void {
+    this.accessToken = accessToken;
+    if (refreshToken) {
+      this.refreshToken = refreshToken;
+    }
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('accessToken', accessToken);
+      if (refreshToken) {
+        localStorage.setItem('refreshToken', refreshToken);
+      }
+    }
+  }
+
   private async makeRequest<T>(
     endpoint: string,
     options: RequestInit = {}
