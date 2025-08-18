@@ -73,14 +73,14 @@ export default function DataGeneratorPage() {
       case 'phone':
         const prefixes = ['0981', '0982', '0983', '0984', '0985'];
         const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
-        const number = Math.floor(Math.random() * 10000000).toString().padStart(7, '0');
-        return `${prefix}${number}`;
+        const phoneNumber = Math.floor(Math.random() * 10000000).toString().padStart(7, '0');
+        return `${prefix}${phoneNumber}`;
       
       case 'address':
         const streets = ['Av. España', 'Av. Mcal. López', 'Av. Brasilia', 'Av. San Martín'];
         const street = streets[Math.floor(Math.random() * streets.length)];
-        const number = Math.floor(Math.random() * 1000) + 1;
-        return `${street} ${number}`;
+        const streetNumber = Math.floor(Math.random() * 1000) + 1;
+        return `${street} ${streetNumber}`;
       
       default:
         return 'valor';
