@@ -1,4 +1,5 @@
 import { jwtDecode } from 'jwt-decode';
+import { getGoogleAuthUrl, getGitHubAuthUrl } from '../config/oauth';
 
 function getApiBaseUrl(): string {
   const urlFromEnv = process.env.NEXT_PUBLIC_API_URL;
@@ -292,25 +293,31 @@ class AuthService {
 
   // Método para login con GitHub
   loginWithGitHub(): void {
-    const currentUrl = typeof window !== 'undefined' ? window.location.origin : '';
-    const redirectUrl = `${currentUrl}/oauth-callback`;
-    
-    const githubAuthUrl = `${API_BASE_URL}/auth/github?redirect=${encodeURIComponent(redirectUrl)}`;
-    
-    if (typeof window !== 'undefined') {
-      window.location.href = githubAuthUrl;
+    try {
+      const githubAuthUrl = getGitHubAuthUrl();
+      console.log('🔗 Redirigiendo a GitHub OAuth:', githubAuthUrl);
+      
+      if (typeof window !== 'undefined') {
+        window.location.href = githubAuthUrl;
+      }
+    } catch (error) {
+      console.error('Error al generar URL de GitHub OAuth:', error);
+      throw error;
     }
   }
 
   // Método para login con Google
   loginWithGoogle(): void {
-    const currentUrl = typeof window !== 'undefined' ? window.location.origin : '';
-    const redirectUrl = `${currentUrl}/oauth-callback`;
-    
-    const googleAuthUrl = `${API_BASE_URL}/auth/google?redirect=${encodeURIComponent(redirectUrl)}`;
-    
-    if (typeof window !== 'undefined') {
-      window.location.href = googleAuthUrl;
+    try {
+      const googleAuthUrl = getGoogleAuthUrl();
+      console.log('🔗 Redirigiendo a Google OAuth:', googleAuthUrl);
+      
+      if (typeof window !== 'undefined') {
+        window.location.href = googleAuthUrl;
+      }
+    } catch (error) {
+      console.error('Error al generar URL de Google OAuth:', error);
+      throw error;
     }
   }
 
