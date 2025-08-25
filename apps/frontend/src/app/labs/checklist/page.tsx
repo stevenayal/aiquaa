@@ -24,7 +24,7 @@ export default function ChecklistPage() {
   const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>([]);
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [showCompleted, setShowCompleted] = useState(true);
-  const [showAlert, setAlertMessage] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState<'success' | 'error'>('success');
 
