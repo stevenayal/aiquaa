@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import { Alert } from '@/components/common';
 
 export default function Base64ConverterPage() {
   const [inputText, setInputText] = useState('');
@@ -10,6 +11,13 @@ export default function Base64ConverterPage() {
   const [inputType, setInputType] = useState<'text' | 'file'>('text');
   const [fileName, setFileName] = useState('');
   const [fileSize, setFileSize] = useState(0);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState<'success' | 'error'>('success');
+  const [isDragOver, setIsDragOver] = useState(false);
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const outputRef = useRef<HTMLTextAreaElement>(null);
 
   const encodeText = (text: string) => {
     try {
@@ -33,42 +41,105 @@ export default function Base64ConverterPage() {
       return;
     }
 
+    let result: string;
     if (mode === 'encode') {
-      setOutputText(encodeText(inputText));
+      result = encodeText(inputText);
     } else {
-      setOutputText(decodeText(inputText));
+      result = decodeText(inputText);
     }
+    
+    setOutputText(result);
+    
+    // Mostrar mensaje de éxito
+    setAlertMessage(`${mode === 'encode' ? 'Codificado' : 'Decodificado'} correctamente`);
+    setAlertType('success');
+    setShowAlert(true);
+    
+    // Scroll automático al resultado
+    setTimeout(() => {
+      outputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+    
+    // Ocultar alerta después de 2 segundos
+    setTimeout(() => setShowAlert(false), 2000);
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setFileName(file.name);
-      setFileSize(file.size);
-      
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
-        if (mode === 'encode') {
-          // Para archivos, usamos la representación base64 directa
-          setOutputText(result.split(',')[1] || result);
-        } else {
-          setInputText(result);
-        }
-      };
-      reader.readAsDataURL(file);
+      processFile(file);
     }
   };
 
+  const processFile = (file: File) => {
+    // Validar tamaño del archivo (máximo 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      setAlertMessage('El archivo es demasiado grande. Máximo 10MB permitido.');
+      setAlertType('error');
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
+      return;
+    }
+
+    setFileName(file.name);
+    setFileSize(file.size);
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      if (mode === 'encode') {
+        // Para archivos, usamos la representación base64 directa
+        const base64 = result.split(',')[1] || result;
+        setOutputText(base64);
+        setInputText(base64);
+      } else {
+        setInputText(result);
+      }
+      
+      // Mostrar mensaje de éxito
+      setAlertMessage(`Archivo ${mode === 'encode' ? 'codificado' : 'cargado'} correctamente`);
+      setAlertType('success');
+      setShowAlert(true);
+      
+      // Scroll automático al resultado
+      setTimeout(() => {
+        outputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+      
+      // Ocultar alerta después de 2 segundos
+      setTimeout(() => setShowAlert(false), 2000);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      processFile(files[0]);
+    }
+  }, []);
+
   const copyToClipboard = () => {
     navigator.clipboard.writeText(outputText);
-    const button = document.getElementById('copy-btn');
-    if (button) {
-      button.textContent = '¡Copiado!';
-      setTimeout(() => {
-        button.textContent = '📋 Copiar';
-      }, 2000);
-    }
+    setAlertMessage('¡Copiado al portapapeles!');
+    setAlertType('success');
+    setShowAlert(true);
+    
+    // Ocultar alerta después de 2 segundos
+    setTimeout(() => setShowAlert(false), 2000);
   };
 
   const clearAll = () => {
@@ -76,6 +147,7 @@ export default function Base64ConverterPage() {
     setOutputText('');
     setFileName('');
     setFileSize(0);
+    setShowAlert(false);
   };
 
   const downloadResult = () => {
@@ -97,6 +169,11 @@ export default function Base64ConverterPage() {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+        
+        setAlertMessage('¡Archivo descargado correctamente!');
+        setAlertType('success');
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 2000);
       } catch (error) {
         // Si no es un archivo, descargar como texto
         const blob = new Blob([outputText], { type: 'text/plain' });
@@ -108,6 +185,11 @@ export default function Base64ConverterPage() {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+        
+        setAlertMessage('¡Archivo descargado correctamente!');
+        setAlertType('success');
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 2000);
       }
     }
   };
@@ -128,6 +210,32 @@ export default function Base64ConverterPage() {
     return true;
   };
 
+  const handleModeChange = (newMode: 'encode' | 'decode') => {
+    setMode(newMode);
+    setInputText('');
+    setOutputText('');
+    setFileName('');
+    setFileSize(0);
+    setShowAlert(false);
+  };
+
+  const handleInputTypeChange = (newType: 'text' | 'file') => {
+    setInputType(newType);
+    setInputText('');
+    setOutputText('');
+    setFileName('');
+    setFileSize(0);
+    setShowAlert(false);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInputText(e.target.value);
+    // Limpiar salida al cambiar el input
+    if (outputText) {
+      setOutputText('');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-brand-light py-12 md:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -146,6 +254,17 @@ export default function Base64ConverterPage() {
           </p>
         </div>
 
+        {/* Alertas */}
+        {showAlert && (
+          <div className="mb-6">
+            <Alert
+              type={alertType}
+              message={alertMessage}
+              onClose={() => setShowAlert(false)}
+            />
+          </div>
+        )}
+
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Input Section */}
           <div className="space-y-6">
@@ -163,7 +282,7 @@ export default function Base64ConverterPage() {
                       type="radio"
                       value="encode"
                       checked={mode === 'encode'}
-                      onChange={(e) => setMode(e.target.value as 'encode' | 'decode')}
+                      onChange={(e) => handleModeChange(e.target.value as 'encode' | 'decode')}
                       className="mr-2"
                     />
                     <span className="text-sm">Codificar (Texto → Base64)</span>
@@ -173,7 +292,7 @@ export default function Base64ConverterPage() {
                       type="radio"
                       value="decode"
                       checked={mode === 'decode'}
-                      onChange={(e) => setMode(e.target.value as 'encode' | 'decode')}
+                      onChange={(e) => handleModeChange(e.target.value as 'encode' | 'decode')}
                       className="mr-2"
                     />
                     <span className="text-sm">Decodificar (Base64 → Texto)</span>
@@ -192,7 +311,7 @@ export default function Base64ConverterPage() {
                       type="radio"
                       value="text"
                       checked={inputType === 'text'}
-                      onChange={(e) => setInputType(e.target.value as 'text' | 'file')}
+                      onChange={(e) => handleInputTypeChange(e.target.value as 'text' | 'file')}
                       className="mr-2"
                     />
                     <span className="text-sm">Texto</span>
@@ -202,7 +321,7 @@ export default function Base64ConverterPage() {
                       type="radio"
                       value="file"
                       checked={inputType === 'file'}
-                      onChange={(e) => setInputType(e.target.value as 'text' | 'file')}
+                      onChange={(e) => handleInputTypeChange(e.target.value as 'text' | 'file')}
                       className="mr-2"
                     />
                     <span className="text-sm">Archivo</span>
@@ -216,14 +335,45 @@ export default function Base64ConverterPage() {
                   <label className="block text-sm font-medium text-brand-text mb-2">
                     Seleccionar archivo
                   </label>
-                  <input
-                    type="file"
-                    onChange={handleFileUpload}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-accent focus:border-transparent"
-                  />
+                  
+                  {/* Drag & Drop Area */}
+                  <div
+                    className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+                      isDragOver 
+                        ? 'border-brand-accent bg-brand-accent/10' 
+                        : 'border-gray-300 hover:border-gray-400'
+                    }`}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                  >
+                    <div className="text-4xl mb-4">📁</div>
+                    <p className="text-brand-text mb-2">
+                      Arrastra y suelta un archivo aquí
+                    </p>
+                    <p className="text-sm text-brand-muted mb-4">
+                      o haz clic para seleccionar
+                    </p>
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="bg-brand-accent hover:bg-brand-primary text-white px-4 py-2 rounded-lg transition-colors"
+                    >
+                      Seleccionar Archivo
+                    </button>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                    />
+                  </div>
+                  
                   {fileName && (
-                    <div className="mt-2 text-sm text-brand-muted">
-                      Archivo: {fileName} ({(fileSize / 1024).toFixed(2)} KB)
+                    <div className="mt-2 p-3 bg-gray-50 rounded-lg">
+                      <div className="text-sm text-brand-text">
+                        <div className="font-medium">Archivo: {fileName}</div>
+                        <div className="text-brand-muted">Tamaño: {(fileSize / 1024).toFixed(2)} KB</div>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -238,7 +388,7 @@ export default function Base64ConverterPage() {
                   <textarea
                     id="input-text"
                     value={inputText}
-                    onChange={(e) => setInputText(e.target.value)}
+                    onChange={handleInputChange}
                     placeholder={mode === 'encode' ? 'Ingresa el texto que quieres codificar...' : 'Ingresa el Base64 que quieres decodificar...'}
                     className="w-full h-64 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-accent focus:border-transparent font-mono text-sm resize-none"
                   />
@@ -271,6 +421,7 @@ export default function Base64ConverterPage() {
                 Resultado
               </label>
               <textarea
+                ref={outputRef}
                 id="output-text"
                 value={outputText}
                 readOnly
@@ -283,7 +434,6 @@ export default function Base64ConverterPage() {
             {outputText && (
               <div className="flex gap-3">
                 <button
-                  id="copy-btn"
                   onClick={copyToClipboard}
                   className="bg-brand-primary hover:bg-brand-accent text-white px-6 py-3 rounded-lg font-semibold transition-colors"
                 >

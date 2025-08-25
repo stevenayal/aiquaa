@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import oauthService from '../../services/oauthService';
 import Link from 'next/link';
+import { Alert } from '@/components/common';
 
 export default function LoginForm() {
   const { login } = useAuth();
@@ -13,23 +14,50 @@ export default function LoginForm() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState<'success' | 'error'>('error');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setShowAlert(false);
     setIsSubmitting(true);
 
     try {
       const result = await login(formData);
       
       if (result.success) {
-        // Redirigir al dashboard o página principal
-        window.location.href = '/forum';
+        setAlertMessage('Inicio de sesión exitoso. Redirigiendo...');
+        setAlertType('success');
+        setShowAlert(true);
+        
+        // Redirigir al dashboard o página principal después de un breve delay
+        setTimeout(() => {
+          window.location.href = '/forum';
+        }, 1500);
       } else {
         setError(result.message || 'Error en el inicio de sesión');
+        setAlertMessage(result.message || 'Error en el inicio de sesión');
+        setAlertType('error');
+        setShowAlert(true);
       }
     } catch (error) {
-      setError('Error inesperado en el inicio de sesión');
+      console.error('Error en login:', error);
+      
+      // Manejar diferentes tipos de errores
+      let errorMessage = 'Error inesperado en el inicio de sesión';
+      
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        errorMessage = 'Error de conexión. Verifica tu conexión a internet o contacta al administrador.';
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
+      setError(errorMessage);
+      setAlertMessage(errorMessage);
+      setAlertType('error');
+      setShowAlert(true);
     } finally {
       setIsSubmitting(false);
     }
@@ -40,22 +68,53 @@ export default function LoginForm() {
       ...prev,
       [e.target.name]: e.target.value
     }));
+    
+    // Limpiar errores al cambiar el input
+    if (error) {
+      setError(null);
+      setShowAlert(false);
+    }
   };
 
   const handleGoogleLogin = () => {
     if (oauthService.isGoogleOAuthConfigured()) {
-      oauthService.initiateGoogleAuth();
+      try {
+        oauthService.initiateGoogleAuth();
+      } catch (error) {
+        setError('Error al iniciar autenticación con Google');
+        setAlertMessage('Error al iniciar autenticación con Google');
+        setAlertType('error');
+        setShowAlert(true);
+      }
     } else {
       setError('Autenticación con Google no está configurada');
+      setAlertMessage('Autenticación con Google no está configurada');
+      setAlertType('error');
+      setShowAlert(true);
     }
   };
 
   const handleGitHubLogin = () => {
     if (oauthService.isGitHubOAuthConfigured()) {
-      oauthService.initiateGitHubAuth();
+      try {
+        oauthService.initiateGitHubAuth();
+      } catch (error) {
+        setError('Error al iniciar autenticación con GitHub');
+        setAlertMessage('Error al iniciar autenticación con GitHub');
+        setAlertType('error');
+        setShowAlert(true);
+      }
     } else {
       setError('Autenticación con GitHub no está configurada');
+      setAlertMessage('Autenticación con GitHub no está configurada');
+      setAlertType('error');
+      setShowAlert(true);
     }
+  };
+
+  const clearError = () => {
+    setError(null);
+    setShowAlert(false);
   };
 
   return (
@@ -72,12 +131,17 @@ export default function LoginForm() {
             </Link>
           </p>
         </div>
+        
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
-            <div className="rounded-md bg-red-50 p-4">
-              <div className="text-sm text-red-700">{error}</div>
-            </div>
+          {/* Alertas */}
+          {showAlert && (
+            <Alert
+              type={alertType}
+              message={alertMessage}
+              onClose={clearError}
+            />
           )}
+          
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <label htmlFor="email" className="sr-only">

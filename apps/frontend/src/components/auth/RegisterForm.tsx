@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import oauthService from '../../services/oauthService';
 import Link from 'next/link';
+import { Alert } from '@/components/common';
 
 export default function RegisterForm() {
   const { register } = useAuth();
@@ -16,6 +17,9 @@ export default function RegisterForm() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState<'success' | 'error'>('error');
 
   // Debug OAuth al cargar el componente
   React.useEffect(() => {
@@ -26,9 +30,13 @@ export default function RegisterForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setShowAlert(false);
 
     if (formData.password !== formData.confirmPassword) {
       setError('Las contraseñas no coinciden');
+      setAlertMessage('Las contraseñas no coinciden');
+      setAlertType('error');
+      setShowAlert(true);
       return;
     }
 
@@ -43,13 +51,36 @@ export default function RegisterForm() {
       });
       
       if (result.success) {
-        // Redirigir al dashboard o página principal
-        window.location.href = '/forum';
+        setAlertMessage('Registro exitoso. Redirigiendo...');
+        setAlertType('success');
+        setShowAlert(true);
+        
+        // Redirigir al dashboard o página principal después de un breve delay
+        setTimeout(() => {
+          window.location.href = '/forum';
+        }, 1500);
       } else {
         setError(result.message || 'Error en el registro');
+        setAlertMessage(result.message || 'Error en el registro');
+        setAlertType('error');
+        setShowAlert(true);
       }
     } catch (error) {
-      setError('Error inesperado en el registro');
+      console.error('Error en registro:', error);
+      
+      // Manejar diferentes tipos de errores
+      let errorMessage = 'Error inesperado en el registro';
+      
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        errorMessage = 'Error de conexión. Verifica tu conexión a internet o contacta al administrador.';
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
+      setError(errorMessage);
+      setAlertMessage(errorMessage);
+      setAlertType('error');
+      setShowAlert(true);
     } finally {
       setIsSubmitting(false);
     }
@@ -60,6 +91,12 @@ export default function RegisterForm() {
       ...prev,
       [e.target.name]: e.target.value
     }));
+    
+    // Limpiar errores al cambiar el input
+    if (error) {
+      setError(null);
+      setShowAlert(false);
+    }
   };
 
   const handleGoogleRegister = () => {
@@ -70,10 +107,16 @@ export default function RegisterForm() {
       } catch (error) {
         console.error('❌ Error en handleGoogleRegister:', error);
         setError('Error al iniciar autenticación con Google');
+        setAlertMessage('Error al iniciar autenticación con Google');
+        setAlertType('error');
+        setShowAlert(true);
       }
     } else {
       console.warn('⚠️  Google OAuth no está configurado');
       setError('Autenticación con Google no está configurada');
+      setAlertMessage('Autenticación con Google no está configurada');
+      setAlertType('error');
+      setShowAlert(true);
     }
   };
 
@@ -85,11 +128,22 @@ export default function RegisterForm() {
       } catch (error) {
         console.error('❌ Error en handleGitHubRegister:', error);
         setError('Error al iniciar autenticación con GitHub');
+        setAlertMessage('Error al iniciar autenticación con GitHub');
+        setAlertType('error');
+        setShowAlert(true);
       }
     } else {
       console.warn('⚠️  GitHub OAuth no está configurado');
       setError('Autenticación con GitHub no está configurada');
+      setAlertMessage('Autenticación con GitHub no está configurada');
+      setAlertType('error');
+      setShowAlert(true);
     }
+  };
+
+  const clearError = () => {
+    setError(null);
+    setShowAlert(false);
   };
 
   // Verificar estado de OAuth
@@ -110,11 +164,15 @@ export default function RegisterForm() {
             </Link>
           </p>
         </div>
+        
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
-            <div className="rounded-md bg-red-50 p-4">
-              <div className="text-sm text-red-700">{error}</div>
-            </div>
+          {/* Alertas */}
+          {showAlert && (
+            <Alert
+              type={alertType}
+              message={alertMessage}
+              onClose={clearError}
+            />
           )}
           
           {/* Debug info en desarrollo */}

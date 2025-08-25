@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { Alert } from '@/components/common';
 
 interface CronField {
   name: string;
@@ -23,6 +24,14 @@ export default function CronValidatorPage() {
   const [validation, setValidation] = useState<CronValidation | null>(null);
   const [executionCount, setExecutionCount] = useState(5);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState<'success' | 'error'>('success');
+  
+  const outputRef = useRef<HTMLDivElement>(null);
+
+  // Ejemplo inicial
+  const initialExample = '0 12 * * 1';
 
   // Actualizar tiempo actual cada segundo
   useEffect(() => {
@@ -31,6 +40,11 @@ export default function CronValidatorPage() {
     }, 1000);
 
     return () => clearInterval(interval);
+  }, []);
+
+  // Cargar ejemplo inicial
+  useEffect(() => {
+    setCronExpression(initialExample);
   }, []);
 
   const cronFields: CronField[] = [
@@ -150,7 +164,7 @@ export default function CronValidatorPage() {
       };
     }
 
-    // Si es válido, calcular próximas ejecuciones
+    // Si es válido, calcular próximas ejecuciones usando cron-parser
     const nextExecutions = calculateNextExecutions(expression, executionCount);
     
     return {
@@ -168,16 +182,15 @@ export default function CronValidatorPage() {
     currentDate.setSeconds(0, 0);
     currentDate.setMinutes(currentDate.getMinutes() + 1);
 
-    while (executions.length < count) {
+    let attempts = 0;
+    const maxAttempts = count * 100; // Evitar bucle infinito
+
+    while (executions.length < count && attempts < maxAttempts) {
       if (isCronMatch(expression, currentDate)) {
         executions.push(new Date(currentDate));
       }
       currentDate.setMinutes(currentDate.getMinutes() + 1);
-      
-      // Evitar bucle infinito
-      if (executions.length === 0 && currentDate.getTime() - currentTime.getTime() > 24 * 60 * 60 * 1000) {
-        break;
-      }
+      attempts++;
     }
 
     return executions;
@@ -233,11 +246,33 @@ export default function CronValidatorPage() {
 
     const result = validateCronExpression(cronExpression.trim());
     setValidation(result);
+    
+    if (result.isValid) {
+      setAlertMessage('Expresión cron válida');
+      setAlertType('success');
+      setShowAlert(true);
+      
+      // Scroll automático al resultado
+      setTimeout(() => {
+        outputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    } else {
+      setAlertMessage(result.error || 'Expresión cron inválida');
+      setAlertType('error');
+      setShowAlert(true);
+    }
   };
 
   const clearAll = () => {
     setCronExpression('');
     setValidation(null);
+    setShowAlert(false);
+  };
+
+  const resetToExample = () => {
+    setCronExpression(initialExample);
+    setValidation(null);
+    setShowAlert(false);
   };
 
   const formatDate = (date: Date): string => {
@@ -270,10 +305,58 @@ export default function CronValidatorPage() {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    const event = new CustomEvent('showToast', { 
-      detail: { message: '¡Copiado al portapapeles!', type: 'success' } 
-    });
-    window.dispatchEvent(event);
+    setAlertMessage('¡Copiado al portapapeles!');
+    setAlertType('success');
+    setShowAlert(true);
+    
+    // Ocultar alerta después de 2 segundos
+    setTimeout(() => setShowAlert(false), 2000);
+  };
+
+  const copyAllDates = () => {
+    if (validation?.nextExecutions) {
+      const allDates = validation.nextExecutions.map(d => formatDate(d)).join('\n');
+      copyToClipboard(allDates);
+    }
+  };
+
+  const downloadDatesAsCSV = () => {
+    if (validation?.nextExecutions) {
+      const csvContent = [
+        'Número,Ejecución,Tiempo hasta ejecución',
+        ...validation.nextExecutions.map((date, index) => [
+          index + 1,
+          formatDate(date),
+          getTimeUntil(date)
+        ].join(','))
+      ].join('\n');
+      
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `cron_executions_${cronExpression.replace(/\s+/g, '_')}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      setAlertMessage('¡Fechas descargadas como CSV!');
+      setAlertType('success');
+      setShowAlert(true);
+      
+      // Ocultar alerta después de 2 segundos
+      setTimeout(() => setShowAlert(false), 2000);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setCronExpression(e.target.value);
+    // Limpiar estado de validación al cambiar el input
+    if (validation !== null) {
+      setValidation(null);
+      setShowAlert(false);
+    }
   };
 
   return (
@@ -294,6 +377,17 @@ export default function CronValidatorPage() {
           </p>
         </div>
 
+        {/* Alertas */}
+        {showAlert && (
+          <div className="mb-6">
+            <Alert
+              type={alertType}
+              message={alertMessage}
+              onClose={() => setShowAlert(false)}
+            />
+          </div>
+        )}
+
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Input Section */}
           <div className="space-y-6">
@@ -307,7 +401,7 @@ export default function CronValidatorPage() {
                 <textarea
                   id="cron-input"
                   value={cronExpression}
-                  onChange={(e) => setCronExpression(e.target.value)}
+                  onChange={handleInputChange}
                   placeholder="0 12 * * 1"
                   className="w-full h-32 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-accent focus:border-transparent font-mono text-sm resize-none"
                 />
@@ -337,6 +431,12 @@ export default function CronValidatorPage() {
                   className="flex-1 bg-brand-accent hover:bg-brand-primary disabled:bg-gray-400 text-white py-3 rounded-lg font-semibold transition-colors"
                 >
                   ✅ Validar Cron
+                </button>
+                <button
+                  onClick={resetToExample}
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                >
+                  🔄 Ejemplo
                 </button>
                 <button
                   onClick={clearAll}
@@ -372,8 +472,8 @@ export default function CronValidatorPage() {
             </div>
           </div>
 
-          {/* Output Section */}
-          <div className="space-y-6">
+          {/* Output Section - Siempre visible */}
+          <div className="space-y-6" ref={outputRef}>
             {validation ? (
               <div className="space-y-6">
                 {/* Validation Status */}
@@ -423,12 +523,20 @@ export default function CronValidatorPage() {
                       <h3 className="text-lg font-semibold text-brand-text">
                         Próximas {validation.nextExecutions.length} ejecuciones
                       </h3>
-                      <button
-                        onClick={() => copyToClipboard(validation.nextExecutions.map(d => formatDate(d)).join('\n'))}
-                        className="text-brand-accent hover:text-brand-primary text-sm font-medium transition-colors"
-                      >
-                        📋 Copiar todas
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={copyAllDates}
+                          className="text-brand-accent hover:text-brand-primary text-sm font-medium transition-colors px-3 py-1 border border-brand-accent rounded hover:bg-brand-accent hover:text-white"
+                        >
+                          📋 Copiar todas
+                        </button>
+                        <button
+                          onClick={downloadDatesAsCSV}
+                          className="text-green-600 hover:text-green-700 text-sm font-medium transition-colors px-3 py-1 border border-green-600 rounded hover:bg-green-600 hover:text-white"
+                        >
+                          💾 Descargar CSV
+                        </button>
+                      </div>
                     </div>
                     
                     <div className="space-y-3">

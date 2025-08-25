@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { Alert } from '@/components/common';
 
 interface DecodedJwtResult {
   header: any;
@@ -17,6 +18,19 @@ interface DecodedJwtResult {
 export default function JwtDecoderPage() {
   const [jwtToken, setJwtToken] = useState('');
   const [decodedJwt, setDecodedJwt] = useState<DecodedJwtResult | null>(null);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState<'success' | 'error'>('success');
+  
+  const outputRef = useRef<HTMLDivElement>(null);
+
+  // Ejemplo de JWT válido para pruebas
+  const exampleJwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MzU2ODUwMjJ9.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+
+  useEffect(() => {
+    // Cargar ejemplo inicial
+    setJwtToken(exampleJwt);
+  }, []);
 
   const decodeJwt = (token: string): DecodedJwtResult | null => {
     try {
@@ -45,7 +59,9 @@ export default function JwtDecoderPage() {
       // Decodificar header
       let header;
       try {
-        header = JSON.parse(atob(parts[0]));
+        // Agregar padding si es necesario para Base64
+        const paddedHeader = parts[0] + '='.repeat((4 - parts[0].length % 4) % 4);
+        header = JSON.parse(atob(paddedHeader));
       } catch {
         return {
           header: null,
@@ -59,7 +75,9 @@ export default function JwtDecoderPage() {
       // Decodificar payload
       let payload;
       try {
-        payload = JSON.parse(atob(parts[1]));
+        // Agregar padding si es necesario para Base64
+        const paddedPayload = parts[1] + '='.repeat((4 - parts[1].length % 4) % 4);
+        payload = JSON.parse(atob(paddedPayload));
       } catch {
         return {
           header: null,
@@ -106,20 +124,43 @@ export default function JwtDecoderPage() {
 
     const result = decodeJwt(jwtToken.trim());
     setDecodedJwt(result);
+    
+    if (result?.isValid) {
+      setAlertMessage('JWT decodificado correctamente');
+      setAlertType('success');
+      setShowAlert(true);
+      
+      // Scroll automático al resultado
+      setTimeout(() => {
+        outputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    } else {
+      setAlertMessage(result?.error || 'Error al decodificar JWT');
+      setAlertType('error');
+      setShowAlert(true);
+    }
   };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    // Mostrar feedback temporal
-    const event = new CustomEvent('showToast', { 
-      detail: { message: '¡Copiado al portapapeles!', type: 'success' } 
-    });
-    window.dispatchEvent(event);
+    setAlertMessage('¡Copiado al portapapeles!');
+    setAlertType('success');
+    setShowAlert(true);
+    
+    // Ocultar alerta después de 2 segundos
+    setTimeout(() => setShowAlert(false), 2000);
   };
 
   const clearAll = () => {
     setJwtToken('');
     setDecodedJwt(null);
+    setShowAlert(false);
+  };
+
+  const resetToExample = () => {
+    setJwtToken(exampleJwt);
+    setDecodedJwt(null);
+    setShowAlert(false);
   };
 
   const formatDate = (timestamp: number) => {
@@ -153,15 +194,24 @@ export default function JwtDecoderPage() {
   };
 
   const getStatusColor = (isExpired: boolean, isExpiringSoon: boolean) => {
-    if (isExpired) return 'text-red-600 bg-red-100';
-    if (isExpiringSoon) return 'text-orange-600 bg-orange-100';
-    return 'text-green-600 bg-green-100';
+    if (isExpired) return 'text-red-600 bg-red-100 border-red-200';
+    if (isExpiringSoon) return 'text-orange-600 bg-orange-100 border-orange-200';
+    return 'text-green-600 bg-green-100 border-green-200';
   };
 
   const getStatusText = (isExpired: boolean, isExpiringSoon: boolean) => {
     if (isExpired) return '❌ Expirado';
     if (isExpiringSoon) return '⚠️ Expirando pronto';
     return '✅ Activo';
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setJwtToken(e.target.value);
+    // Limpiar estado de decodificación al cambiar el input
+    if (decodedJwt !== null) {
+      setDecodedJwt(null);
+      setShowAlert(false);
+    }
   };
 
   return (
@@ -182,6 +232,17 @@ export default function JwtDecoderPage() {
           </p>
         </div>
 
+        {/* Alertas */}
+        {showAlert && (
+          <div className="mb-6">
+            <Alert
+              type={alertType}
+              message={alertMessage}
+              onClose={() => setShowAlert(false)}
+            />
+          </div>
+        )}
+
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Input Section */}
           <div className="space-y-6">
@@ -195,7 +256,7 @@ export default function JwtDecoderPage() {
                 <textarea
                   id="jwt-input"
                   value={jwtToken}
-                  onChange={(e) => setJwtToken(e.target.value)}
+                  onChange={handleInputChange}
                   placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
                   className="w-full h-48 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-accent focus:border-transparent font-mono text-sm resize-none"
                 />
@@ -209,6 +270,12 @@ export default function JwtDecoderPage() {
                   className="flex-1 bg-brand-accent hover:bg-brand-primary disabled:bg-gray-400 text-white py-3 rounded-lg font-semibold transition-colors"
                 >
                   🔓 Decodificar JWT
+                </button>
+                <button
+                  onClick={resetToExample}
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                >
+                  🔄 Ejemplo
                 </button>
                 <button
                   onClick={clearAll}
@@ -230,8 +297,8 @@ export default function JwtDecoderPage() {
             </div>
           </div>
 
-          {/* Output Section */}
-          <div className="space-y-6">
+          {/* Output Section - Siempre visible */}
+          <div className="space-y-6" ref={outputRef}>
             {decodedJwt ? (
               <div className="space-y-6">
                 {/* Status */}
