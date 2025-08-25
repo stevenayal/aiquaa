@@ -2,9 +2,9 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import oauthService from '../../services/oauthService';
+import authService from '../../services/authService';
 import Link from 'next/link';
-import { Alert } from '@/components/common';
+import { Alert, LoadingButton } from '@/components/common';
 
 export default function LoginForm() {
   const { login } = useAuth();
@@ -13,15 +13,43 @@ export default function LoginForm() {
     password: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState<'success' | 'error'>('error');
 
+  // Validaciones en JavaScript
+  const validateForm = (): boolean => {
+    const newErrors: { [key: string]: string } = {};
+
+    // Validar email
+    if (!formData.email.trim()) {
+      newErrors.email = 'Correo obligatorio';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Correo inválido';
+    }
+
+    // Validar contraseña
+    if (!formData.password.trim()) {
+      newErrors.password = 'Contraseña obligatoria';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
+    
+    // Limpiar errores previos
+    setErrors({});
     setShowAlert(false);
+
+    // Validar formulario
+    if (!validateForm()) {
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -37,7 +65,6 @@ export default function LoginForm() {
           window.location.href = '/forum';
         }, 1500);
       } else {
-        setError(result.message || 'Error en el inicio de sesión');
         setAlertMessage(result.message || 'Error en el inicio de sesión');
         setAlertType('error');
         setShowAlert(true);
@@ -54,7 +81,6 @@ export default function LoginForm() {
         errorMessage = error.message;
       }
       
-      setError(errorMessage);
       setAlertMessage(errorMessage);
       setAlertType('error');
       setShowAlert(true);
@@ -64,56 +90,50 @@ export default function LoginForm() {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    
     setFormData(prev => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [name]: value
     }));
     
-    // Limpiar errores al cambiar el input
-    if (error) {
-      setError(null);
+    // Limpiar errores específicos del campo al modificarlo
+    if (errors[name]) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
+    
+    // Limpiar alerta si existe
+    if (showAlert) {
       setShowAlert(false);
     }
   };
 
   const handleGoogleLogin = () => {
-    if (oauthService.isGoogleOAuthConfigured()) {
-      try {
-        oauthService.initiateGoogleAuth();
-      } catch (error) {
-        setError('Error al iniciar autenticación con Google');
-        setAlertMessage('Error al iniciar autenticación con Google');
-        setAlertType('error');
-        setShowAlert(true);
-      }
-    } else {
-      setError('Autenticación con Google no está configurada');
-      setAlertMessage('Autenticación con Google no está configurada');
+    try {
+      authService.loginWithGoogle();
+    } catch (error) {
+      setAlertMessage('Error al iniciar autenticación con Google');
       setAlertType('error');
       setShowAlert(true);
     }
   };
 
   const handleGitHubLogin = () => {
-    if (oauthService.isGitHubOAuthConfigured()) {
-      try {
-        oauthService.initiateGitHubAuth();
-      } catch (error) {
-        setError('Error al iniciar autenticación con GitHub');
-        setAlertMessage('Error al iniciar autenticación con GitHub');
-        setAlertType('error');
-        setShowAlert(true);
-      }
-    } else {
-      setError('Autenticación con GitHub no está configurada');
-      setAlertMessage('Autenticación con GitHub no está configurada');
+    try {
+      authService.loginWithGitHub();
+    } catch (error) {
+      setAlertMessage('Error al iniciar autenticación con GitHub');
       setAlertType('error');
       setShowAlert(true);
     }
   };
 
   const clearError = () => {
-    setError(null);
+    setErrors({});
     setShowAlert(false);
   };
 
@@ -150,14 +170,20 @@ export default function LoginForm() {
               <input
                 id="email"
                 name="email"
-                type="email"
+                type="text"
                 autoComplete="email"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className={`appearance-none rounded-none relative block w-full px-3 py-2 border placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm ${
+                  errors.email 
+                    ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
+                    : 'border-gray-300'
+                }`}
                 placeholder="Email"
                 value={formData.email}
                 onChange={handleChange}
               />
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+              )}
             </div>
             <div>
               <label htmlFor="password" className="sr-only">
@@ -168,23 +194,29 @@ export default function LoginForm() {
                 name="password"
                 type="password"
                 autoComplete="current-password"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className={`appearance-none rounded-none relative block w-full px-3 py-2 border placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm ${
+                  errors.password 
+                    ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
+                    : 'border-gray-300'
+                }`}
                 placeholder="Contraseña"
                 value={formData.password}
                 onChange={handleChange}
               />
+              {errors.password && (
+                <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+              )}
             </div>
           </div>
 
           <div>
-            <button
+            <LoadingButton
+              isLoading={isSubmitting}
+              loadingText="Iniciando sesión..."
               type="submit"
-              disabled={isSubmitting}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? 'Iniciando sesión...' : 'Iniciar sesión'}
-            </button>
+              Iniciar sesión
+            </LoadingButton>
           </div>
 
           <div className="mt-6">
@@ -201,8 +233,7 @@ export default function LoginForm() {
               <button
                 type="button"
                 onClick={handleGoogleLogin}
-                disabled={!oauthService.isGoogleOAuthConfigured()}
-                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group"
+                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:shadow-md transition-all duration-200 group"
               >
                 <span className="sr-only">Iniciar sesión con Google</span>
                 <svg className="w-5 h-5 text-[#4285F4] group-hover:scale-110 transition-transform duration-200" viewBox="0 0 24 24">
@@ -217,8 +248,7 @@ export default function LoginForm() {
               <button
                 type="button"
                 onClick={handleGitHubLogin}
-                disabled={!oauthService.isGitHubOAuthConfigured()}
-                className="w-full inline-flex justify-center py-2 px-4 border border-gray-800 rounded-lg shadow-sm bg-gray-900 text-sm font-medium text-white hover:bg-gray-800 hover:shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group"
+                className="w-full inline-flex justify-center py-2 px-4 border border-gray-800 rounded-lg shadow-sm bg-gray-900 text-sm font-medium text-white hover:bg-gray-800 hover:shadow-md transition-all duration-200 group"
               >
                 <span className="sr-only">Iniciar sesión con GitHub</span>
                 <svg className="w-5 h-5 text-white group-hover:scale-110 transition-transform duration-200" viewBox="0 0 24 24">

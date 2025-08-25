@@ -72,7 +72,7 @@ class AuthService {
     if (typeof window !== 'undefined') {
       localStorage.setItem('accessToken', accessToken);
       if (refreshToken) {
-        localStorage.setItem('refreshToken', refreshToken);
+        localStorage.setItem('refreshToken', accessToken);
       }
     }
   }
@@ -200,19 +200,84 @@ class AuthService {
   }
 
   async login(credentials: LoginCredentials): Promise<ApiResponse<AuthResponse>> {
-    const response = await this.makeRequest<AuthResponse>('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify(credentials),
-    });
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(credentials),
+        mode: 'cors',
+        credentials: 'include',
+      });
 
-    if (response.success && response.data) {
-      this.setTokens(response.data.accessToken, response.data.refreshToken);
+      const data = await response.json();
+
+      // Manejo específico de errores por status code
+      if (!response.ok) {
+        let errorMessage: string;
+        
+        switch (response.status) {
+          case 401:
+            errorMessage = 'Credenciales inválidas';
+            break;
+          case 404:
+            errorMessage = 'Usuario no registrado';
+            break;
+          case 400:
+            errorMessage = data.message || 'Datos de entrada inválidos';
+            break;
+          case 422:
+            errorMessage = data.message || 'Datos de entrada inválidos';
+            break;
+          case 429:
+            errorMessage = 'Demasiadas solicitudes. Intenta nuevamente en unos minutos.';
+            break;
+          case 500:
+            errorMessage = 'Error interno del servidor. Contacta al administrador.';
+            break;
+          default:
+            errorMessage = 'Error de conexión';
+        }
+
+        return {
+          success: false,
+          error: errorMessage,
+        };
+      }
+
+      if (data.success && data.data) {
+        this.setTokens(data.data.accessToken, data.data.refreshToken);
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error en login:', error);
+      
+      let errorMessage = 'Error de conexión';
+      
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        errorMessage = 'Error de conexión. Verifica tu conexión a internet.';
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
+      return {
+        success: false,
+        error: errorMessage,
+      };
     }
-
-    return response;
   }
 
   async register(userData: RegisterData): Promise<ApiResponse<AuthResponse>> {
+    // Prevención de registros en producción
+    if (process.env.NODE_ENV === 'production') {
+      return {
+        success: false,
+        error: 'Registro deshabilitado',
+      };
+    }
+
     const response = await this.makeRequest<AuthResponse>('/auth/register', {
       method: 'POST',
       body: JSON.stringify(userData),
@@ -223,6 +288,30 @@ class AuthService {
     }
 
     return response;
+  }
+
+  // Método para login con GitHub
+  loginWithGitHub(): void {
+    const currentUrl = typeof window !== 'undefined' ? window.location.origin : '';
+    const redirectUrl = `${currentUrl}/oauth-callback`;
+    
+    const githubAuthUrl = `${API_BASE_URL}/auth/github?redirect=${encodeURIComponent(redirectUrl)}`;
+    
+    if (typeof window !== 'undefined') {
+      window.location.href = githubAuthUrl;
+    }
+  }
+
+  // Método para login con Google
+  loginWithGoogle(): void {
+    const currentUrl = typeof window !== 'undefined' ? window.location.origin : '';
+    const redirectUrl = `${currentUrl}/oauth-callback`;
+    
+    const googleAuthUrl = `${API_BASE_URL}/auth/google?redirect=${encodeURIComponent(redirectUrl)}`;
+    
+    if (typeof window !== 'undefined') {
+      window.location.href = googleAuthUrl;
+    }
   }
 
   async logout(): Promise<void> {
