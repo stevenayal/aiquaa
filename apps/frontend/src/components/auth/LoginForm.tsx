@@ -2,12 +2,13 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import authService from '../../services/authService';
+import { useNextAuth } from '../../contexts/NextAuthContext';
 import Link from 'next/link';
 import { Alert, LoadingButton } from '@/components/common';
 
 export default function LoginForm() {
   const { login } = useAuth();
+  const { signInWithGoogle, signInWithGitHub, isLoading: oauthLoading } = useNextAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -17,6 +18,7 @@ export default function LoginForm() {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState<'success' | 'error'>('error');
+  const [socialLoginError, setSocialLoginError] = useState<string | null>(null);
 
   // Validaciones en JavaScript
   const validateForm = (): boolean => {
@@ -44,6 +46,7 @@ export default function LoginForm() {
     // Limpiar errores previos
     setErrors({});
     setShowAlert(false);
+    setSocialLoginError(null);
 
     // Validar formulario
     if (!validateForm()) {
@@ -110,31 +113,37 @@ export default function LoginForm() {
     if (showAlert) {
       setShowAlert(false);
     }
-  };
-
-  const handleGoogleLogin = () => {
-    try {
-      authService.loginWithGoogle();
-    } catch (error) {
-      setAlertMessage('Error al iniciar autenticación con Google');
-      setAlertType('error');
-      setShowAlert(true);
+    
+    // Limpiar errores de OAuth
+    if (socialLoginError) {
+      setSocialLoginError(null);
     }
   };
 
-  const handleGitHubLogin = () => {
+  const handleGoogleLogin = async () => {
     try {
-      authService.loginWithGitHub();
+      setSocialLoginError(null);
+      await signInWithGoogle();
     } catch (error) {
-      setAlertMessage('Error al iniciar autenticación con GitHub');
-      setAlertType('error');
-      setShowAlert(true);
+      console.error('Error en login con Google:', error);
+      setSocialLoginError('No se pudo iniciar sesión con Google. Inténtalo más tarde o contacta al soporte.');
+    }
+  };
+
+  const handleGitHubLogin = async () => {
+    try {
+      setSocialLoginError(null);
+      await signInWithGitHub();
+    } catch (error) {
+      console.error('Error en login con GitHub:', error);
+      setSocialLoginError('No se pudo iniciar sesión con GitHub. Inténtalo más tarde o contacta al soporte.');
     }
   };
 
   const clearError = () => {
     setErrors({});
     setShowAlert(false);
+    setSocialLoginError(null);
   };
 
   return (
@@ -159,6 +168,15 @@ export default function LoginForm() {
               type={alertType}
               message={alertMessage}
               onClose={clearError}
+            />
+          )}
+          
+          {/* Error de OAuth */}
+          {socialLoginError && (
+            <Alert
+              type="error"
+              message={socialLoginError}
+              onClose={() => setSocialLoginError(null)}
             />
           )}
           
@@ -233,7 +251,8 @@ export default function LoginForm() {
               <button
                 type="button"
                 onClick={handleGoogleLogin}
-                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:shadow-md transition-all duration-200 group"
+                disabled={oauthLoading}
+                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group"
               >
                 <span className="sr-only">Iniciar sesión con Google</span>
                 <svg className="w-5 h-5 text-[#4285F4] group-hover:scale-110 transition-transform duration-200" viewBox="0 0 24 24">
@@ -248,7 +267,8 @@ export default function LoginForm() {
               <button
                 type="button"
                 onClick={handleGitHubLogin}
-                className="w-full inline-flex justify-center py-2 px-4 border border-gray-800 rounded-lg shadow-sm bg-gray-900 text-sm font-medium text-white hover:bg-gray-800 hover:shadow-md transition-all duration-200 group"
+                disabled={oauthLoading}
+                className="w-full inline-flex justify-center py-2 px-4 border border-gray-800 rounded-lg shadow-sm bg-gray-900 text-sm font-medium text-white hover:bg-gray-800 hover:shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group"
               >
                 <span className="sr-only">Iniciar sesión con GitHub</span>
                 <svg className="w-5 h-5 text-white group-hover:scale-110 transition-transform duration-200" fill="currentColor" viewBox="0 0 24 24">

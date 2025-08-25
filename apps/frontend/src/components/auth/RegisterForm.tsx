@@ -2,13 +2,14 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import authService from '../../services/authService';
+import { useNextAuth } from '../../contexts/NextAuthContext';
 import Link from 'next/link';
 import { Alert, LoadingButton } from '@/components/common';
 import OAuthDebug from './OAuthDebug';
 
 export default function RegisterForm() {
   const { register } = useAuth();
+  const { signInWithGoogle, signInWithGitHub, isLoading: oauthLoading } = useNextAuth();
   const [formData, setFormData] = useState({
     name: '',
     username: '',
@@ -21,6 +22,7 @@ export default function RegisterForm() {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState<'success' | 'error'>('error');
+  const [socialLoginError, setSocialLoginError] = useState<string | null>(null);
 
   // Validaciones en JavaScript
   const validateForm = (): boolean => {
@@ -67,6 +69,7 @@ export default function RegisterForm() {
     // Limpiar errores previos
     setErrors({});
     setShowAlert(false);
+    setSocialLoginError(null);
 
     // Validar formulario
     if (!validateForm()) {
@@ -138,35 +141,37 @@ export default function RegisterForm() {
     if (showAlert) {
       setShowAlert(false);
     }
-  };
-
-  const handleGoogleRegister = () => {
-    console.log('🔍 Intentando registro con Google...');
-    try {
-      authService.loginWithGoogle();
-    } catch (error) {
-      console.error('❌ Error en handleGoogleRegister:', error);
-      setAlertMessage('Error al iniciar autenticación con Google');
-      setAlertType('error');
-      setShowAlert(true);
+    
+    // Limpiar errores de OAuth
+    if (socialLoginError) {
+      setSocialLoginError(null);
     }
   };
 
-  const handleGitHubRegister = () => {
-    console.log('🔍 Intentando registro con GitHub...');
+  const handleGoogleRegister = async () => {
     try {
-      authService.loginWithGitHub();
+      setSocialLoginError(null);
+      await signInWithGoogle();
     } catch (error) {
-      console.error('❌ Error en handleGitHubRegister:', error);
-      setAlertMessage('Error al iniciar autenticación con GitHub');
-      setAlertType('error');
-      setShowAlert(true);
+      console.error('Error en registro con Google:', error);
+      setSocialLoginError('No se pudo iniciar sesión con Google. Inténtalo más tarde o contacta al soporte.');
+    }
+  };
+
+  const handleGitHubRegister = async () => {
+    try {
+      setSocialLoginError(null);
+      await signInWithGitHub();
+    } catch (error) {
+      console.error('Error en registro con GitHub:', error);
+      setSocialLoginError('No se pudo iniciar sesión con GitHub. Inténtalo más tarde o contacta al soporte.');
     }
   };
 
   const clearError = () => {
     setErrors({});
     setShowAlert(false);
+    setSocialLoginError(null);
   };
 
   return (
@@ -191,6 +196,15 @@ export default function RegisterForm() {
               type={alertType}
               message={alertMessage}
               onClose={clearError}
+            />
+          )}
+          
+          {/* Error de OAuth */}
+          {socialLoginError && (
+            <Alert
+              type="error"
+              message={socialLoginError}
+              onClose={() => setSocialLoginError(null)}
             />
           )}
           
@@ -334,7 +348,8 @@ export default function RegisterForm() {
               <button
                 type="button"
                 onClick={handleGoogleRegister}
-                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:shadow-md transition-all duration-200 group"
+                disabled={oauthLoading}
+                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group"
                 title="Registrarse con Google"
               >
                 <span className="sr-only">Registrarse con Google</span>
@@ -350,7 +365,8 @@ export default function RegisterForm() {
               <button
                 type="button"
                 onClick={handleGitHubRegister}
-                className="w-full inline-flex justify-center py-2 px-4 border border-gray-800 rounded-lg shadow-sm bg-gray-900 text-sm font-medium text-white hover:bg-gray-800 hover:shadow-md transition-all duration-200 group"
+                disabled={oauthLoading}
+                className="w-full inline-flex justify-center py-2 px-4 border border-gray-800 rounded-lg shadow-sm bg-gray-900 text-sm font-medium text-white hover:bg-gray-800 hover:shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group"
                 title="Registrarse con GitHub"
               >
                 <span className="sr-only">Registrarse con GitHub</span>

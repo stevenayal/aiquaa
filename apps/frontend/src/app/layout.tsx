@@ -5,7 +5,9 @@ import ErrorBoundary from '../components/ErrorBoundary';
 import Layout from '../components/Layout';
 import { ThemeProvider } from '../contexts/ThemeContext';
 import { AuthProvider } from '../contexts/AuthContext';
+import { NextAuthProvider } from '../contexts/NextAuthContext';
 import { initializeSentry } from '../lib/observability';
+import { SessionProvider } from 'next-auth/react';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -28,13 +30,17 @@ export default function RootLayout({
     <html lang="es">
       <body className={inter.className}>
         <ErrorBoundary>
-          <ThemeProvider>
-            <AuthProvider>
-              <Layout>
-                {children}
-              </Layout>
-            </AuthProvider>
-          </ThemeProvider>
+          <SessionProvider>
+            <ThemeProvider>
+              <NextAuthProvider>
+                <AuthProvider>
+                  <Layout>
+                    {children}
+                  </Layout>
+                </AuthProvider>
+              </NextAuthProvider>
+            </ThemeProvider>
+          </SessionProvider>
         </ErrorBoundary>
       </body>
     </html>
