@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { Alert } from '@/components/common';
 
 export default function JsonValidatorPage() {
   const [inputJson, setInputJson] = useState('');
@@ -9,19 +10,67 @@ export default function JsonValidatorPage() {
   const [isValid, setIsValid] = useState<boolean | null>(null);
   const [error, setError] = useState('');
   const [isFormatted, setIsFormatted] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState<'success' | 'error'>('success');
+  
+  const outputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Ejemplo inicial mejorado
+  const initialExample = JSON.stringify({
+    nombre: "ejemplo",
+    edad: 25,
+    activo: true,
+    hobbies: ["programación", "testing", "música"],
+    direccion: {
+      calle: "Av. España",
+      ciudad: "Asunción",
+      pais: "Paraguay"
+    }
+  }, null, 2);
+
+  useEffect(() => {
+    // Cargar ejemplo inicial
+    setInputJson(initialExample);
+  }, []);
 
   const validateJson = () => {
     try {
+      if (!inputJson.trim()) {
+        setError('Por favor, ingresa algún contenido para validar');
+        setIsValid(false);
+        setOutputJson('');
+        setIsFormatted(false);
+        return;
+      }
+
       const parsed = JSON.parse(inputJson);
       setIsValid(true);
       setError('');
       setOutputJson(JSON.stringify(parsed, null, 2));
       setIsFormatted(true);
+      
+      // Mostrar alerta de éxito
+      setAlertMessage('JSON válido y formateado correctamente');
+      setAlertType('success');
+      setShowAlert(true);
+      
+      // Scroll automático al resultado
+      setTimeout(() => {
+        outputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+      
     } catch (err) {
       setIsValid(false);
-      setError(err instanceof Error ? err.message : 'Error de sintaxis JSON');
+      const errorMessage = err instanceof Error ? err.message : 'Error de sintaxis JSON';
+      setError(errorMessage);
       setOutputJson('');
       setIsFormatted(false);
+      
+      // Mostrar alerta de error
+      setAlertMessage(`Error de validación: ${errorMessage}`);
+      setAlertType('error');
+      setShowAlert(true);
     }
   };
 
@@ -31,8 +80,15 @@ export default function JsonValidatorPage() {
         const parsed = JSON.parse(inputJson);
         setOutputJson(JSON.stringify(parsed, null, 2));
         setIsFormatted(true);
+        
+        setAlertMessage('JSON formateado correctamente');
+        setAlertType('success');
+        setShowAlert(true);
       } catch (err) {
         setError('Error al formatear JSON');
+        setAlertMessage('Error al formatear JSON');
+        setAlertType('error');
+        setShowAlert(true);
       }
     }
   };
@@ -43,8 +99,15 @@ export default function JsonValidatorPage() {
         const parsed = JSON.parse(inputJson);
         setOutputJson(JSON.stringify(parsed));
         setIsFormatted(false);
+        
+        setAlertMessage('JSON minificado correctamente');
+        setAlertType('success');
+        setShowAlert(true);
       } catch (err) {
         setError('Error al minificar JSON');
+        setAlertMessage('Error al minificar JSON');
+        setAlertType('error');
+        setShowAlert(true);
       }
     }
   };
@@ -55,17 +118,35 @@ export default function JsonValidatorPage() {
     setIsValid(null);
     setError('');
     setIsFormatted(false);
+    setShowAlert(false);
+  };
+
+  const resetToExample = () => {
+    setInputJson(initialExample);
+    setOutputJson('');
+    setIsValid(null);
+    setError('');
+    setIsFormatted(false);
+    setShowAlert(false);
   };
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(outputJson);
-    // Mostrar feedback temporal
-    const button = document.getElementById('copy-btn');
-    if (button) {
-      button.textContent = '¡Copiado!';
-      setTimeout(() => {
-        button.textContent = 'Copiar';
-      }, 2000);
+    setAlertMessage('¡Copiado al portapapeles!');
+    setAlertType('success');
+    setShowAlert(true);
+    
+    // Ocultar alerta después de 2 segundos
+    setTimeout(() => setShowAlert(false), 2000);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInputJson(e.target.value);
+    // Limpiar estado de validación al cambiar el input
+    if (isValid !== null) {
+      setIsValid(null);
+      setError('');
+      setShowAlert(false);
     }
   };
 
@@ -87,6 +168,17 @@ export default function JsonValidatorPage() {
           </p>
         </div>
 
+        {/* Alertas */}
+        {showAlert && (
+          <div className="mb-6">
+            <Alert
+              type={alertType}
+              message={alertMessage}
+              onClose={() => setShowAlert(false)}
+            />
+          </div>
+        )}
+
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Input Section */}
           <div className="space-y-6">
@@ -97,7 +189,7 @@ export default function JsonValidatorPage() {
               <textarea
                 id="json-input"
                 value={inputJson}
-                onChange={(e) => setInputJson(e.target.value)}
+                onChange={handleInputChange}
                 placeholder='{"nombre": "ejemplo", "edad": 25, "activo": true}'
                 className="w-full h-80 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-accent focus:border-transparent font-mono text-sm resize-none"
               />
@@ -131,9 +223,15 @@ export default function JsonValidatorPage() {
               >
                 🗑️ Limpiar
               </button>
+              <button
+                onClick={resetToExample}
+                className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+              >
+                🔄 Ejemplo
+              </button>
             </div>
 
-            {/* Validation Status */}
+            {/* Validation Status - Ahora más cerca del input */}
             {isValid !== null && (
               <div className={`p-4 rounded-lg ${
                 isValid ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'
@@ -169,6 +267,7 @@ export default function JsonValidatorPage() {
                 Resultado
               </label>
               <textarea
+                ref={outputRef}
                 id="json-output"
                 value={outputJson}
                 readOnly
@@ -181,7 +280,6 @@ export default function JsonValidatorPage() {
             {outputJson && (
               <div className="flex gap-3">
                 <button
-                  id="copy-btn"
                   onClick={copyToClipboard}
                   className="bg-brand-primary hover:bg-brand-accent text-white px-6 py-3 rounded-lg font-semibold transition-colors"
                 >

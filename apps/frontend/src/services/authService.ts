@@ -107,6 +107,9 @@ class AuthService {
       const response = await fetch(url, {
         ...options,
         headers,
+        // Agregar opciones para manejar CORS y certificados
+        mode: 'cors',
+        credentials: 'include',
       });
 
       if (response.status === 401 && this.refreshToken) {
@@ -118,6 +121,8 @@ class AuthService {
           const retryResponse = await fetch(url, {
             ...options,
             headers,
+            mode: 'cors',
+            credentials: 'include',
           });
           return await retryResponse.json();
         }
@@ -126,15 +131,70 @@ class AuthService {
       const data = await response.json();
       
       if (!response.ok) {
-        throw new Error(data.message || `Error ${response.status}`);
+        // Manejar diferentes códigos de error HTTP
+        let errorMessage = data.message || `Error ${response.status}`;
+        
+        switch (response.status) {
+          case 400:
+            errorMessage = 'Datos de entrada inválidos. Verifica la información proporcionada.';
+            break;
+          case 401:
+            errorMessage = 'Credenciales inválidas o sesión expirada.';
+            break;
+          case 403:
+            errorMessage = 'No tienes permisos para realizar esta acción.';
+            break;
+          case 404:
+            errorMessage = 'El recurso solicitado no fue encontrado.';
+            break;
+          case 422:
+            errorMessage = 'Los datos proporcionados no son válidos.';
+            break;
+          case 429:
+            errorMessage = 'Demasiadas solicitudes. Intenta nuevamente en unos minutos.';
+            break;
+          case 500:
+            errorMessage = 'Error interno del servidor. Contacta al administrador.';
+            break;
+          case 502:
+            errorMessage = 'El servidor no está disponible temporalmente. Intenta más tarde.';
+            break;
+          case 503:
+            errorMessage = 'El servicio no está disponible temporalmente. Intenta más tarde.';
+            break;
+          default:
+            if (response.status >= 500) {
+              errorMessage = 'Error del servidor. Contacta al administrador.';
+            } else if (response.status >= 400) {
+              errorMessage = 'Error en la solicitud. Verifica los datos proporcionados.';
+            }
+        }
+        
+        throw new Error(errorMessage);
       }
 
       return data;
     } catch (error) {
       console.error('Error en petición:', error);
+      
+      // Manejar diferentes tipos de errores
+      let errorMessage = 'Error desconocido';
+      
+      if (error instanceof TypeError) {
+        if (error.message.includes('fetch')) {
+          errorMessage = 'Error de conexión. Verifica tu conexión a internet.';
+        } else if (error.message.includes('Failed to fetch')) {
+          errorMessage = 'No se pudo conectar con el servidor. Verifica tu conexión o contacta al administrador.';
+        } else {
+          errorMessage = `Error de red: ${error.message}`;
+        }
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Error desconocido',
+        error: errorMessage,
       };
     }
   }
@@ -275,6 +335,28 @@ class AuthService {
       return null;
     } catch {
       return null;
+    }
+  }
+
+  // Método para verificar la conectividad con la API
+  async checkApiConnectivity(): Promise<{ isConnected: boolean; message: string }> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/health`, {
+        method: 'GET',
+        mode: 'cors',
+        credentials: 'include',
+      });
+      
+      if (response.ok) {
+        return { isConnected: true, message: 'API conectada correctamente' };
+      } else {
+        return { isConnected: false, message: `API respondió con estado ${response.status}` };
+      }
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        return { isConnected: false, message: 'No se pudo conectar con la API. Verifica tu conexión a internet.' };
+      }
+      return { isConnected: false, message: `Error de conexión: ${error instanceof Error ? error.message : 'Error desconocido'}` };
     }
   }
 }

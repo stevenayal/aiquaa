@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Alert } from '@/components/common';
 
 interface ChecklistItem {
   id: string;
@@ -23,6 +24,9 @@ export default function ChecklistPage() {
   const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>([]);
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [showCompleted, setShowCompleted] = useState(true);
+  const [showAlert, setAlertMessage] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState<'success' | 'error'>('success');
 
   // Templates predefinidos
   const templates: Record<string, ChecklistTemplate> = {
@@ -88,10 +92,45 @@ export default function ChecklistPage() {
     }
   };
 
+  // Cargar estado guardado del localStorage
+  useEffect(() => {
+    const savedState = localStorage.getItem('checklistState');
+    if (savedState) {
+      try {
+        const parsed = JSON.parse(savedState);
+        if (parsed.template && parsed.items) {
+          setCurrentTemplate(parsed.template);
+          setChecklistItems(parsed.items);
+          setNotes(parsed.notes || {});
+        }
+      } catch (error) {
+        console.error('Error al cargar estado guardado:', error);
+      }
+    }
+  }, []);
+
+  // Guardar estado en localStorage cuando cambie
+  useEffect(() => {
+    if (checklistItems.length > 0) {
+      const stateToSave = {
+        template: currentTemplate,
+        items: checklistItems,
+        notes: notes,
+        timestamp: Date.now()
+      };
+      localStorage.setItem('checklistState', JSON.stringify(stateToSave));
+    }
+  }, [currentTemplate, checklistItems, notes]);
+
   const loadTemplate = (templateId: string) => {
     setCurrentTemplate(templateId);
     setChecklistItems([...templates[templateId].items]);
     setNotes({});
+    
+    setAlertMessage(`Template "${templates[templateId].name}" cargado correctamente`);
+    setAlertType('success');
+    setShowAlert(true);
+    setTimeout(() => setShowAlert(false), 2000);
   };
 
   const toggleItem = (itemId: string) => {
@@ -112,7 +151,15 @@ export default function ChecklistPage() {
     return Math.round((completed / checklistItems.length) * 100);
   };
 
-  const exportChecklist = () => {
+  const exportChecklist = (format: 'json' | 'markdown') => {
+    if (checklistItems.length === 0) {
+      setAlertMessage('No hay items para exportar');
+      setAlertType('error');
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 2000);
+      return;
+    }
+
     const data = {
       template: templates[currentTemplate].name,
       date: new Date().toISOString(),
@@ -123,20 +170,78 @@ export default function ChecklistPage() {
       }))
     };
 
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    let content: string;
+    let filename: string;
+    let mimeType: string;
+
+    if (format === 'json') {
+      content = JSON.stringify(data, null, 2);
+      filename = `checklist_${currentTemplate}_${new Date().toISOString().split('T')[0]}.json`;
+      mimeType = 'application/json';
+    } else {
+      // Markdown format
+      content = `# Checklist: ${templates[currentTemplate].name}\n\n`;
+      content += `**Fecha:** ${new Date().toLocaleDateString('es-ES')}\n`;
+      content += `**Progreso:** ${getProgress()}%\n\n`;
+      
+      // Agrupar por categoría
+      const groupedByCategory = checklistItems.reduce((acc, item) => {
+        if (!acc[item.category]) acc[item.category] = [];
+        acc[item.category].push(item);
+        return acc;
+      }, {} as Record<string, ChecklistItem[]>);
+
+      Object.entries(groupedByCategory).forEach(([category, items]) => {
+        content += `## ${category}\n\n`;
+        items.forEach(item => {
+          const status = item.isChecked ? '✅' : '❌';
+          content += `- ${status} ${item.text}\n`;
+          if (notes[item.id]) {
+            content += `  > Notas: ${notes[item.id]}\n`;
+          }
+          content += '\n';
+        });
+      });
+
+      filename = `checklist_${currentTemplate}_${new Date().toISOString().split('T')[0]}.md`;
+      mimeType = 'text/markdown';
+    }
+
+    const blob = new Blob([content], { type: mimeType });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `checklist_${currentTemplate}_${new Date().toISOString().split('T')[0]}.json`;
+    a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+
+    setAlertMessage(`Checklist exportado en formato ${format.toUpperCase()}`);
+    setAlertType('success');
+    setShowAlert(true);
+    setTimeout(() => setShowAlert(false), 2000);
   };
 
   const resetChecklist = () => {
     setChecklistItems([...templates[currentTemplate].items]);
     setNotes({});
+    
+    setAlertMessage('Checklist reiniciado correctamente');
+    setAlertType('success');
+    setShowAlert(true);
+    setTimeout(() => setShowAlert(false), 2000);
+  };
+
+  const clearSavedState = () => {
+    localStorage.removeItem('checklistState');
+    setChecklistItems([]);
+    setNotes({});
+    
+    setAlertMessage('Estado guardado eliminado correctamente');
+    setAlertType('success');
+    setShowAlert(true);
+    setTimeout(() => setShowAlert(false), 2000);
   };
 
   const filteredItems = showCompleted 
@@ -160,6 +265,17 @@ export default function ChecklistPage() {
             Organiza y gestiona tus pruebas con checklists profesionales. Perfecto para QA manual y automatizado.
           </p>
         </div>
+
+        {/* Alertas */}
+        {showAlert && (
+          <div className="mb-6">
+            <Alert
+              type={alertType}
+              message={alertMessage}
+              onClose={() => setShowAlert(false)}
+            />
+          </div>
+        )}
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Template Selection */}
@@ -206,17 +322,31 @@ export default function ChecklistPage() {
               {/* Actions */}
               {checklistItems.length > 0 && (
                 <div className="mt-6 space-y-3">
-                  <button
-                    onClick={exportChecklist}
-                    className="w-full bg-brand-accent hover:bg-brand-primary text-white py-2 px-4 rounded-lg font-medium transition-colors"
-                  >
-                    📥 Exportar Checklist
-                  </button>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => exportChecklist('json')}
+                      className="bg-brand-accent hover:bg-brand-primary text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      📥 JSON
+                    </button>
+                    <button
+                      onClick={() => exportChecklist('markdown')}
+                      className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      📝 MD
+                    </button>
+                  </div>
                   <button
                     onClick={resetChecklist}
                     className="w-full bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg font-medium transition-colors"
                   >
                     🔄 Reiniciar
+                  </button>
+                  <button
+                    onClick={clearSavedState}
+                    className="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg font-medium transition-colors"
+                  >
+                    🗑️ Limpiar Estado
                   </button>
                 </div>
               )}

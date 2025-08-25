@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useTheme } from '@/contexts/ThemeContext';
+import { Alert } from '@/components/common';
 
 interface DataField {
   id: string;
@@ -25,6 +26,11 @@ export default function DataGeneratorPage() {
   const [recordCount, setRecordCount] = useState(5);
   const [generatedData, setGeneratedData] = useState('');
   const [format, setFormat] = useState<'json' | 'csv'>('json');
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState<'success' | 'error'>('success');
+  
+  const outputRef = useRef<HTMLTextAreaElement>(null);
 
   const addField = () => {
     const newField: DataField = {
@@ -91,7 +97,25 @@ export default function DataGeneratorPage() {
     }
   };
 
+  const validateRecordCount = (count: number): boolean => {
+    return count >= 1 && count <= 1000;
+  };
+
   const generateData = () => {
+    if (!validateRecordCount(recordCount)) {
+      setAlertMessage('El número de registros debe estar entre 1 y 1000');
+      setAlertType('error');
+      setShowAlert(true);
+      return;
+    }
+
+    if (fields.length === 0) {
+      setAlertMessage('Debes agregar al menos un campo antes de generar datos');
+      setAlertType('error');
+      setShowAlert(true);
+      return;
+    }
+
     const data = [];
     
     for (let i = 0; i < recordCount; i++) {
@@ -115,17 +139,26 @@ export default function DataGeneratorPage() {
       );
       setGeneratedData([headers, ...rows].join('\n'));
     }
+
+    // Mostrar mensaje de éxito
+    setAlertMessage(`Se generaron ${recordCount} registros en formato ${format.toUpperCase()}`);
+    setAlertType('success');
+    setShowAlert(true);
+
+    // Scroll automático a la salida
+    setTimeout(() => {
+      outputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
   };
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(generatedData);
-    const button = document.getElementById('copy-btn');
-    if (button) {
-      button.textContent = '¡Copiado!';
-      setTimeout(() => {
-        button.textContent = '📋 Copiar';
-      }, 2000);
-    }
+    setAlertMessage('¡Datos copiados al portapapeles!');
+    setAlertType('success');
+    setShowAlert(true);
+    
+    // Ocultar alerta después de 2 segundos
+    setTimeout(() => setShowAlert(false), 2000);
   };
 
   const downloadData = () => {
@@ -140,6 +173,25 @@ export default function DataGeneratorPage() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+    
+    setAlertMessage('¡Archivo descargado correctamente!');
+    setAlertType('success');
+    setShowAlert(true);
+    
+    // Ocultar alerta después de 2 segundos
+    setTimeout(() => setShowAlert(false), 2000);
+  };
+
+  const handleRecordCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value) || 1;
+    setRecordCount(value);
+    
+    // Validar en tiempo real
+    if (!validateRecordCount(value)) {
+      e.target.classList.add('border-red-500');
+    } else {
+      e.target.classList.remove('border-red-500');
+    }
   };
 
   // Clases CSS dinámicas para modo oscuro
@@ -188,6 +240,17 @@ export default function DataGeneratorPage() {
           </p>
         </div>
 
+        {/* Alertas */}
+        {showAlert && (
+          <div className="mb-6">
+            <Alert
+              type={alertType}
+              message={alertMessage}
+              onClose={() => setShowAlert(false)}
+            />
+          </div>
+        )}
+
         {/* Layout responsive mejorado */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 md:gap-8">
           {/* Configuration Section */}
@@ -207,10 +270,13 @@ export default function DataGeneratorPage() {
                   min="1"
                   max="1000"
                   value={recordCount}
-                  onChange={(e) => setRecordCount(parseInt(e.target.value) || 1)}
+                  onChange={handleRecordCountChange}
                   className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${inputBg} ${inputBorder} ${inputText} ${placeholderText}`}
                   placeholder="5"
                 />
+                <p className={`text-xs mt-1 ${textSecondary}`}>
+                  Mínimo: 1, Máximo: 1000
+                </p>
               </div>
 
               {/* Format Selection */}
@@ -357,6 +423,7 @@ export default function DataGeneratorPage() {
                 📊 Datos Generados
               </label>
               <textarea
+                ref={outputRef}
                 value={generatedData}
                 readOnly
                 placeholder="Los datos generados aparecerán aquí..."
@@ -368,7 +435,6 @@ export default function DataGeneratorPage() {
             {generatedData && (
               <div className="flex flex-col sm:flex-row gap-3">
                 <button
-                  id="copy-btn"
                   onClick={copyToClipboard}
                   className="bg-blue-600 hover:bg-blue-700 text-white px-4 md:px-6 py-3 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center"
                 >
