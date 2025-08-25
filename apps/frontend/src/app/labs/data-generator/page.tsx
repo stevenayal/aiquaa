@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import Link from 'next/link';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Alert } from '@/components/common';
