@@ -1,17 +1,16 @@
 import NextAuth from "next-auth"
-import Google from "next-auth/providers/google"
-import GitHub from "next-auth/providers/github"
+import GoogleProvider from "next-auth/providers/google"
+import GitHubProvider from "next-auth/providers/github"
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
-  trustHost: true,
+export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: { strategy: "jwt" },
   providers: [
-    Google({
+    GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
-    GitHub({
+    GitHubProvider({
       clientId: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     }),
@@ -40,4 +39,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return "/login?error=registration_disabled";
     },
   },
-} as any)
+}
+
+export default NextAuth(authOptions)
