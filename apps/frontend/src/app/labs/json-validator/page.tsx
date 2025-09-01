@@ -32,7 +32,7 @@ export default function JsonValidatorPage() {
   useEffect(() => {
     // Cargar ejemplo inicial
     setInputJson(initialExample);
-  }, []);
+  }, [initialExample]);
 
   const validateJson = () => {
     try {

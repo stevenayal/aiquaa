@@ -271,12 +271,10 @@ class AuthService {
   }
 
   async register(userData: RegisterData): Promise<ApiResponse<AuthResponse>> {
-    // Prevención de registros en producción
-    if (process.env.NODE_ENV === 'production') {
-      return {
-        success: false,
-        error: 'Registro deshabilitado',
-      };
+    // Feature flag opcional para deshabilitar registro sin tocar el build
+    const disabled = process.env.NEXT_PUBLIC_DISABLE_REGISTRATION === 'true';
+    if (disabled) {
+      return { success: false, error: 'Registro temporalmente deshabilitado' };
     }
 
     const response = await this.makeRequest<AuthResponse>('/auth/register', {
@@ -287,7 +285,6 @@ class AuthService {
     if (response.success && response.data) {
       this.setTokens(response.data.accessToken, response.data.refreshToken);
     }
-
     return response;
   }
 

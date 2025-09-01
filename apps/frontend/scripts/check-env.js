@@ -5,6 +5,30 @@
  * Se ejecuta antes del build para evitar errores en producción
  */
 
+// Cargar variables de entorno desde .env.local
+const fs = require('fs');
+const path = require('path');
+
+const envPath = path.join(__dirname, '..', '.env.local');
+console.log('🔍 Buscando archivo .env.local en:', envPath);
+console.log('📁 Archivo existe:', fs.existsSync(envPath));
+
+if (fs.existsSync(envPath)) {
+  const envContent = fs.readFileSync(envPath, 'utf8');
+  console.log('📄 Contenido del archivo:', envContent);
+  
+  envContent.split('\n').forEach(line => {
+    const [key, ...valueParts] = line.split('=');
+    if (key && valueParts.length > 0) {
+      const value = valueParts.join('=').trim();
+      if (value && !process.env[key]) {
+        process.env[key] = value;
+        console.log(`✅ Cargada variable: ${key}=${value}`);
+      }
+    }
+  });
+}
+
 const requiredEnvVars = [
   'NEXT_PUBLIC_API_URL',
   'NEXT_PUBLIC_BACKEND_URL'

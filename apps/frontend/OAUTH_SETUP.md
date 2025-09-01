@@ -216,3 +216,27 @@ Si encuentras problemas:
 3. **Despliega** en staging con las nuevas variables
 4. **Verifica** que OAuth funcione correctamente
 5. **Actualiza** las credenciales de producción
+
+## 🔧 Configuración de Registro
+
+### Feature Flag para Registro
+
+Para controlar el registro de usuarios sin necesidad de recompilar la aplicación:
+
+```env
+# Deshabilitar registro temporalmente
+NEXT_PUBLIC_DISABLE_REGISTRATION=true
+
+# Habilitar registro (por defecto)
+NEXT_PUBLIC_DISABLE_REGISTRATION=false
+```
+
+**Uso**:
+- **Desarrollo**: Siempre habilitado
+- **Staging**: Configurable por variable de entorno
+- **Producción**: Configurable por variable de entorno
+
+**Ventajas**:
+- Control granular sin recompilación
+- Fácil habilitación/deshabilitación en producción
+- Mantiene la funcionalidad OAuth intacta

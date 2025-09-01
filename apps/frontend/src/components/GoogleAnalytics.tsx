@@ -6,7 +6,6 @@ import { usePathname, useSearchParams } from 'next/navigation';
 // Google Analytics 4 Measurement ID
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-XXXXXXXXXX';
 
-// eslint-disable-next-line no-unused-vars
 declare global {
   interface Window {
     gtag: (...args: any[]) => void;

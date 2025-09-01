@@ -130,7 +130,7 @@ export default function Base64ConverterPage() {
     if (files.length > 0) {
       processFile(files[0]);
     }
-  }, []);
+  }, [processFile]);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(outputText);

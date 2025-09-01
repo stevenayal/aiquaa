@@ -1,8 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { signIn, signOut, useSession, getSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { signIn, signOut, useSession } from 'next-auth/react';
 
 interface NextAuthContextType {
   user: any;
@@ -26,7 +25,6 @@ export const useNextAuth = () => {
 export const NextAuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { data: session, status } = useSession();
   const [isLoading, setIsLoading] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
     if (status !== 'loading') {

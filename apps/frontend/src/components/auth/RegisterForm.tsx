@@ -96,6 +96,7 @@ export default function RegisterForm() {
           window.location.href = '/forum';
         }, 1500);
       } else {
+        // Mostrar el mensaje de error específico del backend
         setAlertMessage(result.message || 'Error en el registro');
         setAlertType('error');
         setShowAlert(true);

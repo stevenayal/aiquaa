@@ -7,6 +7,10 @@ export default defineConfig({
     setupFiles: ['./test/setup.ts'],
     globals: true,
     css: true,
+    // Configuración para polyfills de Node.js
+    deps: {
+      inline: ['crypto'],
+    },
     include: [
       '**/*.spec.tsx',
       '**/*.test.tsx',
