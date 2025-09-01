@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
   const sp = useSearchParams();
-  const error = sp.get("error");
+  const error = sp?.get("error");
 
   return (
     <main className="mx-auto max-w-sm p-6 space-y-4">
