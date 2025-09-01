@@ -351,3 +351,76 @@ Para que una PR sea considerada completa, debe cumplir:
 5. ✅ Webhook Stripe (mock) crea Enrollment/Purchase idempotente
 6. ✅ Coverage ≥ 75% en backend y frontend
 7. ✅ README actualizado con pasos y variables
+
+## 🔐 Autenticación con NextAuth v5
+
+### Configuración de Variables de Entorno
+
+**Variables requeridas en Vercel:**
+```bash
+# NextAuth
+NEXTAUTH_SECRET=your-nextauth-secret-here
+NEXTAUTH_URL=https://your-domain.vercel.app
+
+# Google OAuth
+GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+# GitHub OAuth
+GITHUB_CLIENT_ID=your-github-client-id
+GITHUB_CLIENT_SECRET=your-github-client-secret
+
+# Control de registro (opcional)
+NEXT_PUBLIC_DISABLE_REGISTRATION=true
+```
+
+### URLs de Callback Autorizadas
+
+**Google Cloud Console:**
+- `https://your-domain.vercel.app/api/auth/callback/google`
+
+**GitHub Developer Settings:**
+- `https://your-domain.vercel.app/api/auth/callback/github`
+
+### Control de Registro
+
+**Habilitar/Deshabilitar registro:**
+```bash
+# Permitir registro libre
+NEXT_PUBLIC_DISABLE_REGISTRATION=false
+
+# Bloquear nuevos registros
+NEXT_PUBLIC_DISABLE_REGISTRATION=true
+```
+
+**Dominios autorizados (cuando registro está deshabilitado):**
+```bash
+# Solo emails de dominio específico
+ALLOWED_DOMAIN=tuempresa.com
+```
+
+### Verificación de Autenticación
+
+**Script de verificación:**
+```bash
+# Verificar que /api/auth/signin responde correctamente
+pnpm auth:check
+```
+
+**CI/CD:**
+- Ejecutar `pnpm auth:check` en Preview y Production
+- Verificar que las variables de entorno estén configuradas
+
+### Rutas Protegidas
+
+El middleware protege automáticamente:
+- `/dashboard/*` - Panel de control
+- `/labs/*` - Laboratorios
+
+**Personalizar protección:**
+```typescript
+// middleware.ts
+export const config = { 
+  matcher: ["/dashboard/:path*", "/labs/:path*", "/admin/:path*"] 
+};
+```

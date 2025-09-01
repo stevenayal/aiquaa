@@ -13,7 +13,8 @@
     "test:cov": "vitest run --coverage",
     "e2e": "playwright test",
     "e2e:report": "playwright show-report",
-    "postbuild": "next-sitemap"
+    "postbuild": "next-sitemap",
+    "auth:check": "node -e \"fetch(process.env.NEXTAUTH_URL + '/api/auth/signin').then(r=>{if(r.status<400)process.exit(0);process.exit(1)}).catch(()=>process.exit(1))\""
   },
   "dependencies": {
     "@aiquaa/shared": "workspace:*",
@@ -29,7 +30,6 @@
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.5.0",
     "@types/js-yaml": "^4.0.9",
-    "@types/node": "^20.0.0",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@types/uuid": "^10.0.0",
@@ -45,7 +45,7 @@
     "jwt-decode": "^4.0.0",
     "msw": "^2.0.0",
     "next": "^13.5.6",
-    "next-auth": "^4.24.11",
+    "next-auth": "5.0.0-beta.29",
     "next-sitemap": "^4.2.3",
     "postcss": "^8.4.32",
     "react": "^18.2.0",
@@ -58,5 +58,8 @@
     "uuid": "^11.1.0",
     "vitest": "^1.0.0",
     "whatwg-fetch": "^3.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.10"
   }
 }
