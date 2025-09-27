@@ -7,7 +7,7 @@ import { ThemeProvider } from '../contexts/ThemeContext';
 import { AuthProvider } from '../contexts/AuthContext';
 import { NextAuthProvider } from '../contexts/NextAuthContext';
 import { initializeSentry } from '../lib/observability';
-import { SessionProvider } from 'next-auth/react';
+import Providers from './providers';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -30,7 +30,7 @@ export default function RootLayout({
     <html lang="es">
       <body className={inter.className}>
         <ErrorBoundary>
-          <SessionProvider>
+          <Providers>
             <ThemeProvider>
               <NextAuthProvider>
                 <AuthProvider>
@@ -40,7 +40,7 @@ export default function RootLayout({
                 </AuthProvider>
               </NextAuthProvider>
             </ThemeProvider>
-          </SessionProvider>
+          </Providers>
         </ErrorBoundary>
       </body>
     </html>
