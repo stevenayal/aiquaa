@@ -1,8 +1,9 @@
 import NextAuth from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import GitHubProvider from "next-auth/providers/github"
+import type { NextAuthOptions } from "next-auth"
 
-export const authOptions = {
+export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: { strategy: "jwt" },
   providers: [
@@ -17,17 +18,19 @@ export const authOptions = {
   ],
   pages: { signIn: "/login" },
   callbacks: {
-    async jwt({ token, account, profile }: any) {
+    async jwt({ token, account, profile }) {
       if (account?.provider && profile) {
         token.provider = account.provider;
       }
       return token;
     },
-    async session({ session, token }: any) {
-      session.user.provider = (token as any).provider;
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.provider = token.provider as string;
+      }
       return session;
     },
-    async signIn({ user }: any) {
+    async signIn({ user }) {
       const disabled = process.env.NEXT_PUBLIC_DISABLE_REGISTRATION === "true";
       if (!disabled) return true;
 

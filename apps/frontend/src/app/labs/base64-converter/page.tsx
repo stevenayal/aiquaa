@@ -71,7 +71,7 @@ export default function Base64ConverterPage() {
     }
   };
 
-  const processFile = (file: File) => {
+  const processFile = useCallback((file: File) => {
     // Validar tamaño del archivo (máximo 10MB)
     if (file.size > 10 * 1024 * 1024) {
       setAlertMessage('El archivo es demasiado grande. Máximo 10MB permitido.');
@@ -110,7 +110,7 @@ export default function Base64ConverterPage() {
       setTimeout(() => setShowAlert(false), 2000);
     };
     reader.readAsDataURL(file);
-  };
+  }, [mode]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
