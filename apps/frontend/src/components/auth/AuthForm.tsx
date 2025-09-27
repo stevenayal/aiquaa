@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { signIn } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -44,8 +44,8 @@ export default function AuthForm({
     try {
       onSocialError(null);
       await signIn('google', { callbackUrl: '/forum' });
-    } catch (error) {
-      console.error(`Error en ${mode} con Google:`, error);
+    } catch (_error) {
+      console.error(`Error en ${mode} con Google:`, _error);
       onSocialError(`No se pudo ${mode === 'login' ? 'iniciar sesión' : 'registrarse'} con Google. Inténtalo más tarde o contacta al soporte.`);
     }
   };
@@ -54,8 +54,8 @@ export default function AuthForm({
     try {
       onSocialError(null);
       await signIn('github', { callbackUrl: '/forum' });
-    } catch (error) {
-      console.error(`Error en ${mode} con GitHub:`, error);
+    } catch (_error) {
+      console.error(`Error en ${mode} con GitHub:`, _error);
       onSocialError(`No se pudo ${mode === 'login' ? 'iniciar sesión' : 'registrarse'} con GitHub. Inténtalo más tarde o contacta al soporte.`);
     }
   };
