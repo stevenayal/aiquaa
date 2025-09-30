@@ -62,7 +62,10 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     }),
   ],
-  pages: { signIn: "/login" },
+  pages: { 
+    signIn: "/login",
+    error: "/api/auth/error"
+  },
   callbacks: {
     async jwt({ token, account, profile }) {
       if (account?.provider && profile) {

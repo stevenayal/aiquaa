@@ -72,8 +72,23 @@ export default function LoginForm() {
           case 'registration_disabled':
             errorMessage = 'Registro deshabilitado. Contacta al administrador.';
             break;
+          case 'Configuration':
+            errorMessage = 'Error de configuración del servidor. Contacta al administrador.';
+            break;
+          case 'AccessDenied':
+            errorMessage = 'Acceso denegado. No tienes permisos para acceder.';
+            break;
+          case 'Verification':
+            errorMessage = 'El enlace de verificación ha expirado. Solicita uno nuevo.';
+            break;
+          case 'Callback':
+            errorMessage = 'Error en el proceso de autenticación. Intenta nuevamente.';
+            break;
+          case 'SessionRequired':
+            errorMessage = 'Debes iniciar sesión para acceder a esta página.';
+            break;
           default:
-            errorMessage = result.error;
+            errorMessage = `Error de autenticación: ${result.error}`;
         }
         
         setAlertMessage(errorMessage);

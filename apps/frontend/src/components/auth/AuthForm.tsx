@@ -154,28 +154,6 @@ export default function AuthForm({
                     <p className="mt-1 text-sm text-red-600">{errors.name}</p>
                   )}
                 </div>
-                <div>
-                  <label htmlFor="username" className="sr-only">
-                    Nombre de usuario
-                  </label>
-                  <input
-                    id="username"
-                    name="username"
-                    type="text"
-                    autoComplete="username"
-                    className={`appearance-none rounded-none relative block w-full px-3 py-2 border placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm ${
-                      errors.username 
-                        ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
-                        : 'border-gray-300'
-                    }`}
-                    placeholder="Nombre de usuario"
-                    value={formData.username || ''}
-                    onChange={onFieldChange}
-                  />
-                  {errors.username && (
-                    <p className="mt-1 text-sm text-red-600">{errors.username}</p>
-                  )}
-                </div>
               </>
             )}
             

@@ -9,7 +9,6 @@ export default function RegisterForm() {
   const { register } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
-    username: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -28,15 +27,8 @@ export default function RegisterForm() {
     // Validar nombre
     if (!formData.name.trim()) {
       newErrors.name = 'Nombre obligatorio';
-    }
-
-    // Validar username
-    if (!formData.username.trim()) {
-      newErrors.username = 'Nombre de usuario obligatorio';
-    } else if (formData.username.length < 3 || formData.username.length > 20) {
-      newErrors.username = 'El nombre de usuario debe tener entre 3 y 20 caracteres';
-    } else if (/\s/.test(formData.username)) {
-      newErrors.username = 'El nombre de usuario no puede contener espacios';
+    } else if (formData.name.length < 2 || formData.name.length > 50) {
+      newErrors.name = 'El nombre debe tener entre 2 y 50 caracteres';
     }
 
     // Validar email
@@ -84,7 +76,7 @@ export default function RegisterForm() {
     try {
       const result = await register({
         email: formData.email,
-        username: formData.username,
+        name: formData.name,
         password: formData.password,
         confirmPassword: formData.confirmPassword,
       });

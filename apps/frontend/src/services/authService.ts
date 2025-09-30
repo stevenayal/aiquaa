@@ -33,7 +33,7 @@ export interface LoginCredentials {
 
 export interface RegisterData {
   email: string;
-  username: string;
+  name: string;
   password: string;
   confirmPassword: string;
 }
@@ -277,15 +277,43 @@ class AuthService {
       return { success: false, error: 'Registro temporalmente deshabilitado' };
     }
 
-    const response = await this.makeRequest<AuthResponse>('/auth/register', {
-      method: 'POST',
-      body: JSON.stringify(userData),
-    });
+    try {
+      const response = await this.makeRequest<AuthResponse>('/auth/register', {
+        method: 'POST',
+        body: JSON.stringify({
+          email: userData.email,
+          name: userData.name,
+          password: userData.password,
+        }),
+      });
 
-    if (response.success && response.data) {
-      this.setTokens(response.data.accessToken, response.data.refreshToken);
+      if (response.success && response.data) {
+        this.setTokens(response.data.accessToken, response.data.refreshToken);
+      }
+      return response;
+    } catch (error) {
+      console.error('Error en registro:', error);
+      
+      let errorMessage = 'Error inesperado en el registro';
+      
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        errorMessage = 'Error de conexión. Verifica tu conexión a internet o contacta al administrador.';
+      } else if (error instanceof Error) {
+        // Mapear errores específicos de red
+        if (error.message.includes('Failed to fetch')) {
+          errorMessage = 'No se pudo conectar con el servidor. Verifica tu conexión o contacta al administrador.';
+        } else if (error.message.includes('NetworkError')) {
+          errorMessage = 'Error de red. Verifica tu conexión a internet.';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
+      return {
+        success: false,
+        error: errorMessage,
+      };
     }
-    return response;
   }
 
   // Método para login con GitHub
