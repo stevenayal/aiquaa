@@ -8,7 +8,7 @@ export default function AuthErrorPage() {
   const searchParams = useSearchParams();
   const error = searchParams?.get('error');
 
-  const getErrorMessage = (error: string | null) => {
+  const getErrorMessage = (error: string | null | undefined) => {
     switch (error) {
       case 'Configuration':
         return 'Hay un problema con la configuración del servidor. Contacta al administrador.';
@@ -43,7 +43,7 @@ export default function AuthErrorPage() {
     }
   };
 
-  const getErrorTitle = (error: string | null) => {
+  const getErrorTitle = (error: string | null | undefined) => {
     switch (error) {
       case 'CredentialsSignin':
         return 'Credenciales incorrectas';
