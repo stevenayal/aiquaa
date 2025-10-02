@@ -3,11 +3,25 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { signIn, signOut, useSession } from 'next-auth/react';
 
+interface RegisterData {
+  email: string;
+  name: string;
+  password: string;
+  confirmPassword: string;
+}
+
+interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
 interface NextAuthContextType {
   user: any;
   isLoading: boolean;
   signInWithGoogle: () => Promise<void>;
   signInWithGitHub: () => Promise<void>;
+  signInWithCredentials: (credentials: LoginCredentials) => Promise<{ success: boolean; error?: string }>;
+  register: (userData: RegisterData) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
 }
@@ -78,6 +92,71 @@ export const NextAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
+  const signInWithCredentials = async (credentials: LoginCredentials) => {
+    try {
+      setIsLoading(true);
+      const result = await signIn('credentials', {
+        email: credentials.email,
+        password: credentials.password,
+        redirect: false,
+      });
+      
+      if (result?.error) {
+        return { success: false, error: result.error };
+      }
+      
+      return { success: true };
+    } catch (error) {
+      console.error('Error signing in with credentials:', error);
+      return { success: false, error: 'Error inesperado en el inicio de sesión' };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const register = async (userData: RegisterData) => {
+    try {
+      setIsLoading(true);
+      
+      // Validar que las contraseñas coincidan
+      if (userData.password !== userData.confirmPassword) {
+        return { success: false, error: 'Las contraseñas no coinciden' };
+      }
+
+      // Llamar al endpoint de registro del backend
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/v1/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: userData.email,
+          name: userData.name,
+          password: userData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return { success: false, error: data.message || 'Error en el registro' };
+      }
+
+      // Si el registro es exitoso, intentar login automático
+      const loginResult = await signInWithCredentials({
+        email: userData.email,
+        password: userData.password,
+      });
+
+      return loginResult;
+    } catch (error) {
+      console.error('Error in registration:', error);
+      return { success: false, error: 'Error de conexión. Verifica tu conexión a internet.' };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const logout = async () => {
     try {
       await signOut({ callbackUrl: '/' });
@@ -92,6 +171,8 @@ export const NextAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     isLoading,
     signInWithGoogle,
     signInWithGitHub,
+    signInWithCredentials,
+    register,
     logout,
     isAuthenticated: !!session?.user,
   };

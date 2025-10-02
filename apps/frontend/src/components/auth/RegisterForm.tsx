@@ -2,11 +2,11 @@
 
 import React, { useState } from 'react';
 import { signIn } from 'next-auth/react';
-import { useAuth } from '../../contexts/AuthContext';
+import { useNextAuth } from '../../contexts/NextAuthContext';
 import AuthForm from './AuthForm';
 
 export default function RegisterForm() {
-  const { register } = useAuth();
+  const { register } = useNextAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',

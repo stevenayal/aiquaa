@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { signIn } from 'next-auth/react';
+import { useNextAuth } from '../../contexts/NextAuthContext';
 import AuthForm from './AuthForm';
 
 export default function LoginForm() {
+  const { signInWithCredentials } = useNextAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -52,14 +53,22 @@ export default function LoginForm() {
     setIsSubmitting(true);
 
     try {
-      const result = await signIn('credentials', {
+      const result = await signInWithCredentials({
         email: formData.email,
         password: formData.password,
-        redirect: false,
       });
       
-      if (result?.error) {
-        // Manejar errores específicos de NextAuth
+      if (result.success) {
+        setAlertMessage('Inicio de sesión exitoso. Redirigiendo...');
+        setAlertType('success');
+        setShowAlert(true);
+        
+        // Redirigir al dashboard o página principal después de un breve delay
+        setTimeout(() => {
+          window.location.href = '/forum';
+        }, 1500);
+      } else {
+        // Manejar errores específicos
         let errorMessage = 'Error en el inicio de sesión';
         
         switch (result.error) {
@@ -88,21 +97,12 @@ export default function LoginForm() {
             errorMessage = 'Debes iniciar sesión para acceder a esta página.';
             break;
           default:
-            errorMessage = `Error de autenticación: ${result.error}`;
+            errorMessage = result.error || 'Error de autenticación';
         }
         
         setAlertMessage(errorMessage);
         setAlertType('error');
         setShowAlert(true);
-      } else if (result?.ok) {
-        setAlertMessage('Inicio de sesión exitoso. Redirigiendo...');
-        setAlertType('success');
-        setShowAlert(true);
-        
-        // Redirigir al dashboard o página principal después de un breve delay
-        setTimeout(() => {
-          window.location.href = '/forum';
-        }, 1500);
       }
     } catch (error) {
       console.error('Error en login:', error);
