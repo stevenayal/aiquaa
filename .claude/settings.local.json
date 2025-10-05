@@ -8,7 +8,9 @@
       "Bash(chmod:*)",
       "Bash(bash:*)",
       "Bash(npx prisma migrate dev:*)",
-      "Bash(npx prisma:*)"
+      "Bash(npx prisma:*)",
+      "Bash(vercel:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []

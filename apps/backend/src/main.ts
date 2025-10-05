@@ -27,7 +27,23 @@ async function bootstrap() {
   ].filter(Boolean); // Filtrar valores undefined/null
 
   app.enableCors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      // Permitir requests sin origin (como Postman, curl, etc)
+      if (!origin) return callback(null, true);
+
+      // Permitir orígenes en la lista
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      // Permitir cualquier subdominio de vercel.app
+      if (origin.endsWith('.vercel.app')) {
+        return callback(null, true);
+      }
+
+      // Rechazar otros orígenes
+      return callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
   });
 
