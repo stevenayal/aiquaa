@@ -1,7 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as Sentry from '@sentry/node';
-import { ProfilingIntegration } from '@sentry/profiling-node';
+// import { ProfilingIntegration } from '@sentry/profiling-node';
 
 @Injectable()
 export class SentryService implements OnModuleInit {
@@ -20,12 +20,13 @@ export class SentryService implements OnModuleInit {
       dsn,
       environment,
       integrations: [
-        new ProfilingIntegration(),
+        // Profiling disabled temporarily due to Node.js v22 compatibility issues
+        // new ProfilingIntegration(),
       ],
       // Performance Monitoring
       tracesSampleRate: environment === 'production' ? 0.1 : 1.0,
       // Profiling
-      profilesSampleRate: environment === 'production' ? 0.1 : 1.0,
+      // profilesSampleRate: environment === 'production' ? 0.1 : 1.0,
       // Enable debug in development
       debug: environment === 'development',
     });

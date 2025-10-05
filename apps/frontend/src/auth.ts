@@ -20,7 +20,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/auth/login`, {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/v1/auth/login`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -36,12 +36,13 @@ export const authOptions: NextAuthOptions = {
           }
 
           const data = await response.json();
-          
-          if (data.success && data.data?.user) {
+
+          // El backend devuelve: { access_token, refresh_token, user }
+          if (data.user) {
             return {
-              id: data.data.user.id,
-              email: data.data.user.email,
-              name: data.data.user.username,
+              id: data.user.id.toString(),
+              email: data.user.email,
+              name: data.user.name,
               image: null,
             };
           }

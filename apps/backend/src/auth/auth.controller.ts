@@ -1,35 +1,36 @@
-import { 
-  Controller, 
-  Post, 
-  Body, 
-  UseGuards, 
-  Get, 
-  Request, 
-  Res, 
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Get,
+  Request,
+  Res,
   Query,
   Param,
   BadRequestException
 } from '@nestjs/common';
-import { 
-  ApiTags, 
-  ApiOperation, 
-  ApiResponse, 
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
   ApiBearerAuth,
-  ApiQuery 
+  ApiQuery
 } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 import type { Response } from 'express';
 import { AuthService } from './auth.service';
-import { 
-  LoginDto, 
-  RegisterDto, 
-  RequestResetDto, 
-  ResetPasswordDto 
+import {
+  LoginDto,
+  RegisterDto,
+  RequestResetDto,
+  ResetPasswordDto
 } from './dto';
-import { 
-  AuthResponseDto, 
-  RefreshResponseDto, 
+import {
+  AuthResponseDto,
+  RefreshResponseDto,
   MessageResponseDto,
-  UserResponseDto 
+  UserResponseDto
 } from './dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
@@ -171,10 +172,11 @@ export class AuthController {
   }
 
   @Get('google')
+  @UseGuards(AuthGuard('google'))
   @ApiOperation({ summary: 'Iniciar OAuth con Google' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Redirección a Google OAuth' 
+  @ApiResponse({
+    status: 200,
+    description: 'Redirección a Google OAuth'
   })
   async googleAuth() {
     // Este endpoint será manejado por Passport
@@ -182,10 +184,11 @@ export class AuthController {
   }
 
   @Get('google/callback')
+  @UseGuards(AuthGuard('google'))
   @ApiOperation({ summary: 'Callback de OAuth con Google' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'OAuth exitoso, redirigiendo al frontend' 
+  @ApiResponse({
+    status: 200,
+    description: 'OAuth exitoso, redirigiendo al frontend'
   })
   async googleAuthCallback(
     @Request() req,
@@ -220,10 +223,11 @@ export class AuthController {
   }
 
   @Get('github')
+  @UseGuards(AuthGuard('github'))
   @ApiOperation({ summary: 'Iniciar OAuth con GitHub' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Redirección a GitHub OAuth' 
+  @ApiResponse({
+    status: 200,
+    description: 'Redirección a GitHub OAuth'
   })
   async githubAuth() {
     // Este endpoint será manejado por Passport
@@ -231,10 +235,11 @@ export class AuthController {
   }
 
   @Get('github/callback')
+  @UseGuards(AuthGuard('github'))
   @ApiOperation({ summary: 'Callback de OAuth con GitHub' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'OAuth exitoso, redirigiendo al frontend' 
+  @ApiResponse({
+    status: 200,
+    description: 'OAuth exitoso, redirigiendo al frontend'
   })
   async githubAuthCallback(
     @Request() req,

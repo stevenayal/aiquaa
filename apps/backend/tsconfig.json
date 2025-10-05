@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "module": "ES2020",
+    "module": "commonjs",
     "moduleResolution": "node",
     "declaration": true,
     "removeComments": true,
@@ -21,6 +21,8 @@
     "noFallthroughCasesInSwitch": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
+    "noEmit": false,
+    "allowImportingTsExtensions": false,
     "paths": {
       "@/*": ["src/*"],
       "@shared/*": ["../../packages/shared/src/*"]

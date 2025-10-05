@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { signIn } from 'next-auth/react';
 import { useNextAuth } from '../../contexts/NextAuthContext';
 import AuthForm from './AuthForm';
 
@@ -82,36 +81,14 @@ export default function RegisterForm() {
       });
       
       if (result.success) {
-        setAlertMessage('Registro exitoso. Iniciando sesión...');
+        setAlertMessage('Registro exitoso. Revisa tu email para verificar tu cuenta.');
         setAlertType('success');
         setShowAlert(true);
-        
-        // Intentar login automático después del registro exitoso
-        try {
-          const loginResult = await signIn('credentials', {
-            email: formData.email,
-            password: formData.password,
-            redirect: false,
-          });
-          
-          if (loginResult?.ok) {
-            setAlertMessage('Registro y login exitosos. Redirigiendo...');
-            setTimeout(() => {
-              window.location.href = '/forum';
-            }, 1500);
-          } else {
-            setAlertMessage('Registro exitoso. Por favor, inicia sesión manualmente.');
-            setTimeout(() => {
-              window.location.href = '/login?message=registration_success';
-            }, 2000);
-          }
-        } catch (loginError) {
-          console.error('Error en login automático:', loginError);
-          setAlertMessage('Registro exitoso. Por favor, inicia sesión manualmente.');
-          setTimeout(() => {
-            window.location.href = '/login?message=registration_success';
-          }, 2000);
-        }
+
+        // Redirigir al login después de un breve delay
+        setTimeout(() => {
+          window.location.href = '/login?message=registration_success';
+        }, 2000);
       } else {
         // Mostrar el mensaje de error específico del backend
         let errorMessage = result.message || 'Error en el registro';

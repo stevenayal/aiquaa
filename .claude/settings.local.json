@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build:*)",
+      "Bash(npm run start:dev:*)",
+      "Bash(npx tsc:*)",
+      "Bash(./node_modules/.bin/tsc)",
+      "Bash(chmod:*)",
+      "Bash(bash:*)",
+      "Bash(npx prisma migrate dev:*)",
+      "Bash(npx prisma:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -84,10 +84,9 @@ export class AuthService {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
-    // Verificar si el email está verificado
-    if (!user.emailVerifiedAt) {
-      throw new BadRequestException('Por favor verifica tu email antes de iniciar sesión');
-    }
+    // Nota: La verificación de email es opcional
+    // Los usuarios pueden iniciar sesión sin verificar su email
+    // pero algunas funcionalidades pueden requerir verificación
 
     // Generar tokens
     const accessToken = await this.generateAccessToken(user);
