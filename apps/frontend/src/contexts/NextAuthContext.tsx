@@ -21,7 +21,7 @@ interface NextAuthContextType {
   signInWithGoogle: () => Promise<void>;
   signInWithGitHub: () => Promise<void>;
   signInWithCredentials: (credentials: LoginCredentials) => Promise<{ success: boolean; error?: string }>;
-  register: (userData: RegisterData) => Promise<{ success: boolean; error?: string }>;
+  register: (userData: RegisterData) => Promise<{ success: boolean; error?: string; message?: string }>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
 }
@@ -139,16 +139,14 @@ export const NextAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       const data = await response.json();
 
       if (!response.ok) {
-        return { success: false, error: data.message || 'Error en el registro' };
+        return { success: false, error: data.message || 'Error en el registro', message: data.message };
       }
 
-      // Si el registro es exitoso, intentar login automático
-      const loginResult = await signInWithCredentials({
-        email: userData.email,
-        password: userData.password,
-      });
-
-      return loginResult;
+      // Si el registro es exitoso, devolver éxito con mensaje
+      return {
+        success: true,
+        message: data.message || 'Usuario registrado exitosamente. Por favor verifica tu email.'
+      };
     } catch (error) {
       console.error('Error in registration:', error);
       return { success: false, error: 'Error de conexión. Verifica tu conexión a internet.' };

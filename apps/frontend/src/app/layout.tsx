@@ -5,6 +5,7 @@ import ErrorBoundary from '../components/ErrorBoundary';
 import Layout from '../components/Layout';
 import { ThemeProvider } from '../contexts/ThemeContext';
 import { NextAuthProvider } from '../contexts/NextAuthContext';
+import { AuthProvider } from '../contexts/AuthContext';
 import { initializeSentry } from '../lib/observability';
 import Providers from './providers';
 
@@ -32,9 +33,11 @@ export default function RootLayout({
           <Providers>
             <ThemeProvider>
               <NextAuthProvider>
-                <Layout>
-                  {children}
-                </Layout>
+                <AuthProvider>
+                  <Layout>
+                    {children}
+                  </Layout>
+                </AuthProvider>
               </NextAuthProvider>
             </ThemeProvider>
           </Providers>
