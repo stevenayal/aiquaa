@@ -9,13 +9,27 @@ import { CacheService } from './cache.service';
   imports: [
     CacheModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        store: redisStore,
-        host: configService.get('REDIS_HOST', 'localhost'),
-        port: configService.get('REDIS_PORT', 6379),
-        ttl: configService.get('CACHE_TTL', 60),
-        max: configService.get('CACHE_MAX_ITEMS', 100),
-      }),
+      useFactory: async (configService: ConfigService) => {
+        const redisUrl = configService.get('REDIS_URL');
+
+        // Si no hay REDIS_URL, usar memoria en lugar de Redis
+        if (!redisUrl) {
+          console.log('⚠️  Redis not configured, using in-memory cache');
+          return {
+            ttl: configService.get('CACHE_TTL', 60),
+            max: configService.get('CACHE_MAX_ITEMS', 100),
+          };
+        }
+
+        // Usar Redis si está configurado
+        console.log('✅ Using Redis for caching');
+        return {
+          store: redisStore,
+          url: redisUrl,
+          ttl: configService.get('CACHE_TTL', 60),
+          max: configService.get('CACHE_MAX_ITEMS', 100),
+        };
+      },
       inject: [ConfigService],
     }),
   ],
