@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useNextAuth } from '../../contexts/NextAuthContext';
 import AuthForm from './AuthForm';
+import PasswordStrengthIndicator from './PasswordStrengthIndicator';
 
 export default function RegisterForm() {
   const { register } = useNextAuth();

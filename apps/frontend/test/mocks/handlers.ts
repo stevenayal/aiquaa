@@ -12,10 +12,68 @@ export const handlers = [
     });
   }),
 
-  // Auth endpoints
+  // Auth endpoints - Register
+  http.post(`${baseUrl}/auth/register`, async ({ request }) => {
+    const body = await request.json() as any;
+
+    // Validar datos requeridos
+    if (!body || !body.email || !body.password || !body.name) {
+      return HttpResponse.json(
+        { message: 'Todos los campos son requeridos' },
+        { status: 400 }
+      );
+    }
+
+    // Simular email ya registrado
+    if (body.email === 'existing@example.com') {
+      return HttpResponse.json(
+        { message: 'El email ya está registrado' },
+        { status: 409 }
+      );
+    }
+
+    // Validar contraseña
+    if (body.password.length < 8) {
+      return HttpResponse.json(
+        { message: 'La contraseña debe tener al menos 8 caracteres' },
+        { status: 400 }
+      );
+    }
+
+    // Validar complejidad de contraseña
+    if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(body.password)) {
+      return HttpResponse.json(
+        { message: 'La contraseña debe contener al menos una mayúscula, una minúscula y un número' },
+        { status: 400 }
+      );
+    }
+
+    // Validar confirmación de contraseña
+    if (body.password !== body.confirmPassword) {
+      return HttpResponse.json(
+        { message: 'Las contraseñas no coinciden' },
+        { status: 400 }
+      );
+    }
+
+    // Registro exitoso
+    return HttpResponse.json(
+      {
+        message: 'Usuario registrado exitosamente',
+        user: {
+          id: Date.now(),
+          email: body.email,
+          name: body.name,
+        },
+      },
+      { status: 201 }
+    );
+  }),
+
+  // Auth endpoints - Login
   http.post(`${baseUrl}/auth/login`, async ({ request }) => {
     const body = await request.json() as any;
-    
+
     if (body && body.email === 'test@example.com' && body.password === 'password123') {
       return HttpResponse.json({
         access_token: 'mock-access-token',
@@ -27,20 +85,20 @@ export const handlers = [
         },
       });
     }
-    
+
     return new HttpResponse(null, { status: 401 });
   }),
 
   http.post(`${baseUrl}/auth/refresh`, async ({ request }) => {
     const body = await request.json() as any;
-    
+
     if (body && body.refresh_token === 'mock-refresh-token') {
       return HttpResponse.json({
         access_token: 'new-mock-access-token',
         refresh_token: 'new-mock-refresh-token',
       });
     }
-    
+
     return new HttpResponse(null, { status: 401 });
   }),
 

@@ -1,0 +1,124 @@
+name: Frontend Tests
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'apps/frontend/**'
+      - '.github/workflows/test-frontend.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'apps/frontend/**'
+
+jobs:
+  unit-tests:
+    name: Unit & Component Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./apps/frontend
+
+      - name: Run unit tests
+        run: npm run test
+        working-directory: ./apps/frontend
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:3001
+          NEXTAUTH_SECRET: test-secret-key-for-ci-min-32-characters
+
+      - name: Generate coverage report
+        run: npm run test:cov
+        working-directory: ./apps/frontend
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./apps/frontend/coverage/coverage-final.json
+          flags: frontend-unit
+          name: frontend-unit-tests
+
+  e2e-tests:
+    name: E2E Tests (Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./apps/frontend
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+        working-directory: ./apps/frontend
+
+      - name: Build application
+        run: npm run build
+        working-directory: ./apps/frontend
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:3001
+          NEXTAUTH_SECRET: test-secret-key-for-ci-min-32-characters
+          NEXTAUTH_URL: http://localhost:3000
+
+      - name: Run E2E tests
+        run: npm run e2e
+        working-directory: ./apps/frontend
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:3001
+          NEXTAUTH_SECRET: test-secret-key-for-ci-min-32-characters
+          NEXTAUTH_URL: http://localhost:3000
+
+      - name: Upload Playwright Report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: apps/frontend/playwright-report/
+          retention-days: 30
+
+  lint:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./apps/frontend
+
+      - name: Run ESLint
+        run: npm run lint
+        working-directory: ./apps/frontend
+
+      - name: Run TypeScript compiler
+        run: npx tsc --noEmit
+        working-directory: ./apps/frontend

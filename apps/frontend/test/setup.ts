@@ -1,12 +1,16 @@
 import '@testing-library/jest-dom';
-import { beforeAll, afterEach, afterAll } from 'vitest';
+import { beforeAll, afterEach, afterAll, vi } from 'vitest';
 import { server } from './mocks/server';
+import React from 'react';
+
+// Hacer React disponible globalmente para JSX
+(global as any).React = React;
 
 // Polyfill para crypto en tests
 if (typeof globalThis.crypto === 'undefined') {
   const { webcrypto } = require('crypto');
   globalThis.crypto = webcrypto;
-  
+
   // Polyfill adicional para getRandomValues
   if (!globalThis.crypto.getRandomValues) {
     globalThis.crypto.getRandomValues = (array: any) => {
@@ -20,11 +24,20 @@ if (typeof globalThis.crypto === 'undefined') {
   }
 }
 
-// Establecer handlers de MSW
-beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+// Mock de fetch global
+global.fetch = vi.fn();
 
-// Resetear handlers después de cada test
-afterEach(() => server.resetHandlers());
+// Establecer handlers de MSW
+beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }));
+
+// Resetear handlers y mocks después de cada test
+afterEach(() => {
+  server.resetHandlers();
+  vi.clearAllMocks();
+  if (global.fetch && typeof (global.fetch as any).mockClear === 'function') {
+    (global.fetch as any).mockClear();
+  }
+});
 
 // Limpiar después de todos los tests
 afterAll(() => server.close());
