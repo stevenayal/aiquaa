@@ -6,6 +6,8 @@
   "scripts": {
     "build": "pnpm -r build",
     "build:vercel": "pnpm --filter @aiquaa/frontend run build",
+    "build:backend": "pnpm --filter @aiquaa/backend build",
+    "start:prod": "pnpm --filter @aiquaa/backend start:prod",
     "prisma:generate": "pnpm --filter @aiquaa/backend prisma:generate",
     "dev": "concurrently -n FRONT,BACK -c auto \"pnpm --filter @aiquaa/frontend dev\" \"pnpm --filter @aiquaa/backend start:dev\"",
     "dev:front": "pnpm --filter @aiquaa/frontend dev",

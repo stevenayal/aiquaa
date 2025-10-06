@@ -19,7 +19,8 @@
       "Bash(test:*)",
       "Bash(openssl rand:*)",
       "Bash(node -e \"console.log(require(''crypto'').randomBytes(32).toString(''base64''))\")",
-      "Bash(npx playwright test:*)"
+      "Bash(npx playwright test:*)",
+      "Read(//c/Users/stevg/Downloads/logs/**)"
     ],
     "deny": [],
     "ask": []
