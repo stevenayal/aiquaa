@@ -9,7 +9,6 @@ interface PasswordInputProps {
   placeholder: string;
   autoComplete?: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  error?: string;
   className?: string;
   showToggle?: boolean;
 }
@@ -21,7 +20,6 @@ export default function PasswordInput({
   placeholder,
   autoComplete = 'current-password',
   onChange,
-  error,
   className = '',
   showToggle = true,
 }: PasswordInputProps) {
