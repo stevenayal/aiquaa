@@ -75,11 +75,11 @@ async function bootstrap() {
 
   // Health check endpoint is handled by HealthController
 
-  const port = process.env.BACKEND_PORT || 3000;
-  await app.listen(port);
-  console.log(`🚀 AIQUAA Backend running on http://localhost:${port}`);
-  console.log(`📚 API Documentation available at http://localhost:${port}/api/v1/docs`);
-  console.log(`📊 Metrics available at http://localhost:${port}/metrics`);
+  const port = process.env.PORT || process.env.BACKEND_PORT || 3001;
+  await app.listen(port, '0.0.0.0'); // Railway requiere escuchar en 0.0.0.0
+  console.log(`🚀 AIQUAA Backend running on port ${port}`);
+  console.log(`📚 API Documentation available at /api/v1/docs`);
+  console.log(`📊 Metrics available at /metrics`);
 }
 
 bootstrap();
