@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { signIn, signOut, useSession } from 'next-auth/react';
+import { fetchJSON, FetchError } from '@/lib/fetch-with-timeout';
 
 interface RegisterData {
   email: string;
@@ -117,30 +118,26 @@ export const NextAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const register = async (userData: RegisterData) => {
     try {
       setIsLoading(true);
-      
+
       // Validar que las contraseñas coincidan
       if (userData.password !== userData.confirmPassword) {
         return { success: false, error: 'Las contraseñas no coinciden' };
       }
 
-      // Llamar al endpoint de registro del backend
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/v1/auth/register`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
+      // Llamar al endpoint de registro del backend con timeout y retry
+      const { data } = await fetchJSON(`${apiUrl}/api/v1/auth/register`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           email: userData.email,
           name: userData.name,
           password: userData.password,
         }),
+        timeout: 15000, // 15 segundos timeout
+        retries: 1, // 1 retry
+        retryDelay: 2000, // 2 segundos entre reintentos
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        return { success: false, error: data.message || 'Error en el registro', message: data.message };
-      }
 
       // Si el registro es exitoso, devolver éxito con mensaje
       return {
@@ -149,7 +146,54 @@ export const NextAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       };
     } catch (error) {
       console.error('Error in registration:', error);
-      return { success: false, error: 'Error de conexión. Verifica tu conexión a internet.' };
+
+      // Manejo detallado de errores
+      if (error instanceof FetchError) {
+        if (error.isTimeout) {
+          return {
+            success: false,
+            error: 'El servidor tardó demasiado en responder. Intenta nuevamente.',
+            message: 'Timeout del servidor'
+          };
+        }
+
+        if (error.isNetworkError) {
+          return {
+            success: false,
+            error: 'No se pudo conectar con el servidor. Verifica tu conexión a internet o contacta al administrador.',
+            message: 'Error de conexión'
+          };
+        }
+
+        // Errores HTTP con código de estado
+        if (error.statusCode === 409) {
+          return {
+            success: false,
+            error: 'Este email ya está registrado. Intenta iniciar sesión o usa otro email.',
+            message: error.message
+          };
+        }
+
+        if (error.statusCode === 400) {
+          return {
+            success: false,
+            error: 'Los datos proporcionados no son válidos. Verifica la información.',
+            message: error.message
+          };
+        }
+
+        return {
+          success: false,
+          error: error.message,
+          message: error.message
+        };
+      }
+
+      return {
+        success: false,
+        error: 'Error inesperado en el registro. Por favor intenta nuevamente.',
+        message: error instanceof Error ? error.message : 'Error desconocido'
+      };
     } finally {
       setIsLoading(false);
     }
