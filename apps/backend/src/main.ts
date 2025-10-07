@@ -5,9 +5,21 @@ import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { RequestIdMiddleware } from './observability/request-id.middleware';
 import { GlobalExceptionFilter } from './observability/exception.filter';
+import { logger } from './logger/seq.logger';
+import { HttpLoggingInterceptor } from './observability/http-logging.interceptor';
+import { LoggingContextMiddleware } from './observability/logging-context.middleware';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: false });
+  const app = await NestFactory.create(AppModule, { cors: false, bufferLogs: true });
+
+  // Integrar Pino + Seq como logger de Nest
+  app.useLogger({
+    log: (message, context) => logger.info({ context }, message),
+    error: (message, trace) => logger.error({ trace }, message),
+    warn: (message, context) => logger.warn({ context }, message),
+    debug: (message, context) => logger.debug({ context }, message),
+    verbose: (message, context) => logger.trace({ context }, message),
+  });
 
   // Trust proxy para Railway
   app.use((req, res, next) => {
@@ -71,6 +83,9 @@ async function bootstrap() {
   // Global middleware for request ID
   app.use(new RequestIdMiddleware().use);
 
+  // Enriquecer el request con contexto común para logging
+  app.use(new LoggingContextMiddleware().use);
+
   // Global exception filter
   app.useGlobalFilters(new GlobalExceptionFilter());
 
@@ -82,14 +97,16 @@ async function bootstrap() {
     next();
   });
 
-  // Logging de requests para debugging
+  // Logging básico de requests (se reemplazará por interceptor global opcional)
   app.use((req, res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`, {
-      origin: req.headers.origin,
-      referer: req.headers.referer,
-      userAgent: req.headers['user-agent'],
-      ip: req.ip
-    });
+    logger.info(
+      {
+        ...(req as any).logContext,
+        origin: req.headers.origin,
+        referer: req.headers.referer,
+      },
+      'HTTP Request',
+    );
     next();
   });
 
@@ -101,6 +118,9 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
+
+  // Interceptor global de logging
+  app.useGlobalInterceptors(new HttpLoggingInterceptor());
 
   // Swagger documentation
   const config = new DocumentBuilder()
@@ -126,9 +146,9 @@ async function bootstrap() {
 
   const port = process.env.PORT || process.env.BACKEND_PORT || 3001;
   await app.listen(port, '0.0.0.0'); // Railway requiere escuchar en 0.0.0.0
-  console.log(`🚀 AIQUAA Backend running on port ${port}`);
-  console.log(`📚 API Documentation available at /api/v1/docs`);
-  console.log(`📊 Metrics available at /metrics`);
+  logger.info({ port }, '🚀 AIQUAA Backend running');
+  logger.info({}, '📚 API Documentation available at /api/v1/docs');
+  logger.info({}, '📊 Metrics available at /metrics');
 }
 
 bootstrap();
