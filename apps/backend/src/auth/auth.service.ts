@@ -84,11 +84,30 @@ export class AuthService {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
-    // Nota: La verificación de email es opcional
-    // Los usuarios pueden iniciar sesión sin verificar su email
-    // pero algunas funcionalidades pueden requerir verificación
+    // Verificar si el usuario tiene 2FA habilitado
+    const isTwoFactorEnabled = user.twoFASecret === 'EMAIL_2FA_ENABLED';
+    
+    if (isTwoFactorEnabled) {
+      // Si tiene 2FA habilitado, enviar código y requerir verificación
+      await this.sendTwoFactorCode(email);
+      
+      // Devolver respuesta indicando que se requiere 2FA
+      return {
+        access_token: null,
+        refresh_token: null,
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          emailVerifiedAt: user.emailVerifiedAt,
+        },
+        requiresTwoFactor: true,
+        message: 'Se ha enviado un código de verificación a tu email',
+      } as any;
+    }
 
-    // Generar tokens
+    // Generar tokens si no requiere 2FA
     const accessToken = await this.generateAccessToken(user);
     const refreshToken = await this.generateRefreshToken(user);
 
@@ -452,6 +471,197 @@ export class AuthService {
     // En un entorno real, esto vendría del contexto de la request
     // Por ahora retornamos undefined
     return undefined;
+  }
+
+  async sendTwoFactorCode(email: string): Promise<MessageResponseDto> {
+    const user = await this.prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+    });
+
+    if (!user) {
+      throw new BadRequestException('Usuario no encontrado');
+    }
+
+    // Revocar códigos 2FA anteriores no consumidos
+    await this.prisma.verificationToken.updateMany({
+      where: {
+        userId: user.id,
+        type: 'TWO_FACTOR_EMAIL',
+        consumedAt: null,
+      },
+      data: { consumedAt: new Date() },
+    });
+
+    // Generar código de 6 dígitos
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const codeHash = this.hashToken(code);
+
+    // Crear token de verificación con el código
+    await this.prisma.verificationToken.create({
+      data: {
+        userId: user.id,
+        email: user.email,
+        type: 'TWO_FACTOR_EMAIL',
+        tokenHash: codeHash,
+        expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutos
+      },
+    });
+
+    // Enviar código por email
+    await this.mailerService.sendTwoFactorCode(
+      user.email,
+      code,
+      user.name || user.email
+    );
+
+    return {
+      message: 'Código de verificación enviado a tu email',
+    };
+  }
+
+  async verifyTwoFactorCode(email: string, code: string): Promise<MessageResponseDto> {
+    const user = await this.prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+    });
+
+    if (!user) {
+      throw new BadRequestException('Usuario no encontrado');
+    }
+
+    const tokenRecord = await this.prisma.verificationToken.findFirst({
+      where: {
+        userId: user.id,
+        type: 'TWO_FACTOR_EMAIL',
+        tokenHash: this.hashToken(code),
+        consumedAt: null,
+      },
+    });
+
+    if (!tokenRecord) {
+      throw new BadRequestException('Código de verificación inválido');
+    }
+
+    if (tokenRecord.expiresAt < new Date()) {
+      throw new BadRequestException('Código de verificación expirado');
+    }
+
+    // Marcar código como consumido
+    await this.prisma.verificationToken.update({
+      where: { id: tokenRecord.id },
+      data: { consumedAt: new Date() },
+    });
+
+    return {
+      message: 'Código de verificación válido',
+    };
+  }
+
+  async completeTwoFactorLogin(email: string, code: string): Promise<AuthResponseDto> {
+    const user = await this.prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+    });
+
+    if (!user) {
+      throw new BadRequestException('Usuario no encontrado');
+    }
+
+    const tokenRecord = await this.prisma.verificationToken.findFirst({
+      where: {
+        userId: user.id,
+        type: 'TWO_FACTOR_EMAIL',
+        tokenHash: this.hashToken(code),
+        consumedAt: null,
+      },
+    });
+
+    if (!tokenRecord) {
+      throw new BadRequestException('Código de verificación inválido');
+    }
+
+    if (tokenRecord.expiresAt < new Date()) {
+      throw new BadRequestException('Código de verificación expirado');
+    }
+
+    // Marcar código como consumido
+    await this.prisma.verificationToken.update({
+      where: { id: tokenRecord.id },
+      data: { consumedAt: new Date() },
+    });
+
+    // Generar tokens de acceso
+    const accessToken = await this.generateAccessToken(user);
+    const refreshToken = await this.generateRefreshToken(user);
+
+    return {
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        emailVerifiedAt: user.emailVerifiedAt,
+      },
+    };
+  }
+
+  async enableTwoFactorEmail(userId: number): Promise<MessageResponseDto> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new BadRequestException('Usuario no encontrado');
+    }
+
+    // Marcar que el usuario tiene 2FA habilitado por email
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { twoFASecret: 'EMAIL_2FA_ENABLED' },
+    });
+
+    return {
+      message: 'Verificación de segundo factor por email habilitada',
+    };
+  }
+
+  async disableTwoFactorEmail(userId: number): Promise<MessageResponseDto> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new BadRequestException('Usuario no encontrado');
+    }
+
+    // Deshabilitar 2FA
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { twoFASecret: null },
+    });
+
+    // Revocar todos los tokens 2FA pendientes
+    await this.prisma.verificationToken.updateMany({
+      where: {
+        userId,
+        type: 'TWO_FACTOR_EMAIL',
+        consumedAt: null,
+      },
+      data: { consumedAt: new Date() },
+    });
+
+    return {
+      message: 'Verificación de segundo factor por email deshabilitada',
+    };
+  }
+
+  async isTwoFactorEnabled(userId: number): Promise<boolean> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { twoFASecret: true },
+    });
+
+    return user?.twoFASecret === 'EMAIL_2FA_ENABLED';
   }
 
   async cleanupExpiredTokens(): Promise<void> {

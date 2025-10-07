@@ -20,7 +20,8 @@
       "Bash(openssl rand:*)",
       "Bash(node -e \"console.log(require(''crypto'').randomBytes(32).toString(''base64''))\")",
       "Bash(npx playwright test:*)",
-      "Read(//c/Users/stevg/Downloads/logs/**)"
+      "Read(//c/Users/stevg/Downloads/logs/**)",
+      "Bash(pnpm add resend)"
     ],
     "deny": [],
     "ask": []

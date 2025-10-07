@@ -24,7 +24,10 @@ import {
   LoginDto,
   RegisterDto,
   RequestResetDto,
-  ResetPasswordDto
+  ResetPasswordDto,
+  SendTwoFactorCodeDto,
+  VerifyTwoFactorCodeDto,
+  TwoFactorStatusDto
 } from './dto';
 import {
   AuthResponseDto,
@@ -383,5 +386,105 @@ export class AuthController {
   async listUsers() {
     // TODO: Implementar listado de usuarios para admin
     return { message: 'Lista de usuarios (implementación pendiente)' };
+  }
+
+  @Post('2fa/send-code')
+  @ApiOperation({ summary: 'Enviar código de verificación 2FA por email' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Código de verificación enviado',
+    type: MessageResponseDto
+  })
+  @ApiResponse({ 
+    status: 400, 
+    description: 'Usuario no encontrado' 
+  })
+  async sendTwoFactorCode(@Body() sendTwoFactorCodeDto: SendTwoFactorCodeDto): Promise<MessageResponseDto> {
+    return this.authService.sendTwoFactorCode(sendTwoFactorCodeDto.email);
+  }
+
+  @Post('2fa/verify-code')
+  @ApiOperation({ summary: 'Verificar código 2FA' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Código de verificación válido',
+    type: MessageResponseDto
+  })
+  @ApiResponse({ 
+    status: 400, 
+    description: 'Código inválido o expirado' 
+  })
+  async verifyTwoFactorCode(@Body() verifyTwoFactorCodeDto: VerifyTwoFactorCodeDto): Promise<MessageResponseDto> {
+    return this.authService.verifyTwoFactorCode(
+      verifyTwoFactorCodeDto.email, 
+      verifyTwoFactorCodeDto.code
+    );
+  }
+
+  @Post('2fa/complete-login')
+  @ApiOperation({ summary: 'Completar login con código 2FA' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Login completado exitosamente',
+    type: AuthResponseDto
+  })
+  @ApiResponse({ 
+    status: 400, 
+    description: 'Código inválido o expirado' 
+  })
+  async completeTwoFactorLogin(@Body() verifyTwoFactorCodeDto: VerifyTwoFactorCodeDto): Promise<AuthResponseDto> {
+    return this.authService.completeTwoFactorLogin(
+      verifyTwoFactorCodeDto.email, 
+      verifyTwoFactorCodeDto.code
+    );
+  }
+
+  @Post('2fa/enable')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Habilitar 2FA por email' })
+  @ApiResponse({ 
+    status: 200, 
+    description: '2FA habilitado exitosamente',
+    type: MessageResponseDto
+  })
+  @ApiResponse({ 
+    status: 401, 
+    description: 'No autorizado' 
+  })
+  async enableTwoFactorEmail(@CurrentUser() user: any): Promise<MessageResponseDto> {
+    return this.authService.enableTwoFactorEmail(user.id);
+  }
+
+  @Post('2fa/disable')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Deshabilitar 2FA por email' })
+  @ApiResponse({ 
+    status: 200, 
+    description: '2FA deshabilitado exitosamente',
+    type: MessageResponseDto
+  })
+  @ApiResponse({ 
+    status: 401, 
+    description: 'No autorizado' 
+  })
+  async disableTwoFactorEmail(@CurrentUser() user: any): Promise<MessageResponseDto> {
+    return this.authService.disableTwoFactorEmail(user.id);
+  }
+
+  @Get('2fa/status')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Obtener estado del 2FA' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Estado del 2FA obtenido',
+    type: TwoFactorStatusDto
+  })
+  @ApiResponse({ 
+    status: 401, 
+    description: 'No autorizado' 
+  })
+  async getTwoFactorStatus(@CurrentUser() user: any): Promise<TwoFactorStatusDto> {
+    const enabled = await this.authService.isTwoFactorEnabled(user.id);
+    return { enabled };
   }
 }

@@ -257,6 +257,7 @@ enum OAuthProvider {
 enum VerificationType {
   VERIFY_EMAIL
   RESET_PASSWORD
+  TWO_FACTOR_EMAIL
 }
 
 enum PurchaseStatus {
