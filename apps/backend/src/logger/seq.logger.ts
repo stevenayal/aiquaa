@@ -1,13 +1,15 @@
 import pino from 'pino';
-import { createStream } from 'pino-seq';
 
-const seqStream = createStream({
-  serverUrl: process.env.SEQ_URL || 'http://seq.railway.internal:5341',
-  apiKey: process.env.SEQ_API_KEY || '',
-  onError: (err, evt) => {
-    // Se usa console.error como fallback para no perder el error del transporte
-    // eslint-disable-next-line no-console
-    console.error('Error enviando a Seq:', err, evt);
+const transport = pino.transport({
+  target: 'pino-seq',
+  options: {
+    serverUrl: process.env.SEQ_URL || 'http://seq.railway.internal:5341',
+    apiKey: process.env.SEQ_API_KEY || '',
+    onError: (e: Error) => {
+      // Evitar tirar el proceso por errores de red a Seq
+      // eslint-disable-next-line no-console
+      console.error('Seq transport error:', e.message);
+    },
   },
 });
 
@@ -20,7 +22,7 @@ export const logger = pino(
     },
     timestamp: pino.stdTimeFunctions.isoTime,
   },
-  seqStream,
+  transport,
 );
 
 

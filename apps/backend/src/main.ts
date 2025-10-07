@@ -146,7 +146,7 @@ async function bootstrap() {
 
   const port = process.env.PORT || process.env.BACKEND_PORT || 3001;
   await app.listen(port, '0.0.0.0'); // Railway requiere escuchar en 0.0.0.0
-  logger.info({ port }, '🚀 AIQUAA Backend running');
+  logger.info({ port }, 'Backend listo y conectado a Seq');
   logger.info({}, '📚 API Documentation available at /api/v1/docs');
   logger.info({}, '📊 Metrics available at /metrics');
 }
