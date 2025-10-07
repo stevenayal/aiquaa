@@ -61,6 +61,10 @@ export class AuthController {
     status: 409, 
     description: 'El email ya está registrado' 
   })
+  @ApiResponse({ 
+    status: 400, 
+    description: 'Datos de registro inválidos' 
+  })
   async register(@Body() registerDto: RegisterDto, @Request() req): Promise<MessageResponseDto> {
     // Log para observabilidad
     console.log('🔐 Registration attempt:', {
@@ -73,7 +77,20 @@ export class AuthController {
       timestamp: new Date().toISOString()
     });
     
-    return this.authService.register(registerDto);
+    try {
+      const result = await this.authService.register(registerDto);
+      console.log('✅ Registration successful:', { email: registerDto.email });
+      return result;
+    } catch (error) {
+      console.error('❌ Registration failed:', {
+        email: registerDto.email,
+        error: error.message,
+        stack: error.stack
+      });
+      
+      // Re-lanzar el error para que el GlobalExceptionFilter lo maneje
+      throw error;
+    }
   }
 
   @Post('login')

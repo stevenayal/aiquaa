@@ -4,9 +4,13 @@ export async function postJson(path: string, body: unknown) {
   try {
     const res = await fetch(`${API}${path}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
       body: JSON.stringify(body),
       mode: 'cors',
+      credentials: 'include'
     });
     
     if (!res.ok) {
@@ -23,7 +27,17 @@ export async function postJson(path: string, body: unknown) {
     
     return res.json().catch(() => ({}));
   } catch (error) {
-    console.error('Network Error:', {
+    // Detectar errores de red/CORS específicos
+    if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+      console.error('Network/CORS Error:', {
+        url: `${API}${path}`,
+        error: 'No se pudo contactar con el servidor. Verificá conexión/CORS.',
+        timestamp: new Date().toISOString()
+      });
+      throw new Error('No se pudo contactar con el servidor. Verificá conexión/CORS.');
+    }
+    
+    console.error('API Error:', {
       url: `${API}${path}`,
       error: error instanceof Error ? error.message : 'Unknown error',
       timestamp: new Date().toISOString()
