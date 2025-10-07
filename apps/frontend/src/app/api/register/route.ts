@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const BACKEND_URL = process.env.BACKEND_URL || 'https://aiquaabackend-production.up.railway.app';
+const BACKEND = process.env.BACKEND_URL;
 
 export async function POST(request: NextRequest) {
   const requestId = crypto.randomUUID();
-  
+  const startedAt = Date.now();
+
+  if (!BACKEND) {
+    console.error(`[${requestId}] BACKEND_URL not set`);
+    return NextResponse.json({ error: 'BACKEND_URL not set' }, { status: 500 });
+  }
+
   try {
     // Leer el body de la request
     const body = await request.json();
@@ -61,7 +67,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Reenviar la request al backend
-    const backendResponse = await fetch(`${BACKEND_URL}/api/v1/auth/register`, {
+    const target = `${BACKEND}/api/v1/auth/register`;
+    const backendResponse = await fetch(target, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -79,39 +86,50 @@ export async function POST(request: NextRequest) {
 
     // Leer la respuesta del backend
     const responseText = await backendResponse.text();
-    let responseData;
-    
-    try {
-      responseData = JSON.parse(responseText);
-    } catch {
-      responseData = { message: responseText };
-    }
+
+    const contentType = backendResponse.headers.get('content-type') || 'text/plain';
 
     // Log de la respuesta del backend
     console.log(`[${requestId}] Backend response:`, {
       status: backendResponse.status,
       statusText: backendResponse.statusText,
       responseSize: responseText.length,
-      timestamp: new Date().toISOString()
+      durationMs: Date.now() - startedAt,
+      target
     });
 
-    // Devolver la respuesta con el mismo status
-    return NextResponse.json(
-      responseData,
-      { 
-        status: backendResponse.status,
-        headers: {
-          'X-Request-ID': requestId,
-          'X-Proxy-Source': 'AIQUAA-Frontend'
-        }
+    // Si el backend dice JSON, intentar devolver JSON crudo
+    if (contentType.includes('application/json')) {
+      try {
+        const asJson = JSON.parse(responseText);
+        return NextResponse.json(asJson, {
+          status: backendResponse.status,
+          headers: {
+            'X-Request-ID': requestId,
+            'X-Proxy-Source': 'AIQUAA-Frontend'
+          }
+        });
+      } catch {
+        // caer a texto si JSON inválido
       }
-    );
+    }
+
+    // Fallback: devolver texto con content-type original
+    return new NextResponse(responseText, {
+      status: backendResponse.status,
+      headers: {
+        'Content-Type': contentType,
+        'X-Request-ID': requestId,
+        'X-Proxy-Source': 'AIQUAA-Frontend'
+      }
+    });
 
   } catch (error) {
     console.error(`[${requestId}] Proxy error:`, {
       error: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      durationMs: Date.now() - startedAt
     });
 
     // Manejar diferentes tipos de errores
