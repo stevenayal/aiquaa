@@ -1,7 +1,7 @@
 import pino from 'pino';
-import buildSeq from 'pino-seq';
+import { createStream } from 'pino-seq';
 
-const seqStream = buildSeq({
+const seqStream = createStream({
   serverUrl: process.env.SEQ_URL || 'http://seq.railway.internal:5341',
   apiKey: process.env.SEQ_API_KEY || '',
   // Importante: firma correcta: SOLO (e: Error)
