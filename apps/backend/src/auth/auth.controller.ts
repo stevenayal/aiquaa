@@ -61,7 +61,18 @@ export class AuthController {
     status: 409, 
     description: 'El email ya está registrado' 
   })
-  async register(@Body() registerDto: RegisterDto): Promise<MessageResponseDto> {
+  async register(@Body() registerDto: RegisterDto, @Request() req): Promise<MessageResponseDto> {
+    // Log para observabilidad
+    console.log('🔐 Registration attempt:', {
+      email: registerDto.email,
+      name: registerDto.name,
+      origin: req.headers.origin,
+      referer: req.headers.referer,
+      userAgent: req.headers['user-agent'],
+      ip: req.ip,
+      timestamp: new Date().toISOString()
+    });
+    
     return this.authService.register(registerDto);
   }
 

@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { signIn, signOut, useSession } from 'next-auth/react';
-import { fetchJSON, FetchError } from '@/lib/fetch-with-timeout';
+import { postJson } from '@/lib/api';
 
 interface RegisterData {
   email: string;
@@ -124,19 +124,11 @@ export const NextAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         return { success: false, error: 'Las contraseñas no coinciden' };
       }
 
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-
-      // Llamar al endpoint de registro del backend con timeout y retry
-      const { data } = await fetchJSON(`${apiUrl}/api/v1/auth/register`, {
-        method: 'POST',
-        body: JSON.stringify({
-          email: userData.email,
-          name: userData.name,
-          password: userData.password,
-        }),
-        timeout: 15000, // 15 segundos timeout
-        retries: 1, // 1 retry
-        retryDelay: 2000, // 2 segundos entre reintentos
+      // Usar el nuevo cliente API estandarizado
+      const data = await postJson('/api/v1/auth/register', {
+        email: userData.email,
+        name: userData.name,
+        password: userData.password,
       });
 
       // Si el registro es exitoso, devolver éxito con mensaje
@@ -148,51 +140,39 @@ export const NextAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       console.error('Error in registration:', error);
 
       // Manejo detallado de errores
-      if (error instanceof FetchError) {
-        if (error.isTimeout) {
-          return {
-            success: false,
-            error: 'El servidor tardó demasiado en responder. Intenta nuevamente.',
-            message: 'Timeout del servidor'
-          };
-        }
-
-        if (error.isNetworkError) {
-          return {
-            success: false,
-            error: 'No se pudo conectar con el servidor. Verifica tu conexión a internet o contacta al administrador.',
-            message: 'Error de conexión'
-          };
-        }
-
-        // Errores HTTP con código de estado
-        if (error.statusCode === 409) {
-          return {
-            success: false,
-            error: 'Este email ya está registrado. Intenta iniciar sesión o usa otro email.',
-            message: error.message
-          };
-        }
-
-        if (error.statusCode === 400) {
-          return {
-            success: false,
-            error: 'Los datos proporcionados no son válidos. Verifica la información.',
-            message: error.message
-          };
-        }
-
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+      
+      // Detectar errores de red/CORS
+      if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError') || errorMessage.includes('status:0')) {
         return {
           success: false,
-          error: error.message,
-          message: error.message
+          error: 'No se pudo contactar con el servidor. Verificá conexión/CORS.',
+          message: 'Error de conexión'
         };
       }
-
+      
+      // Detectar errores HTTP específicos
+      if (errorMessage.includes('HTTP 409')) {
+        return {
+          success: false,
+          error: 'Este email ya está registrado. Intenta iniciar sesión o usa otro email.',
+          message: errorMessage
+        };
+      }
+      
+      if (errorMessage.includes('HTTP 400')) {
+        return {
+          success: false,
+          error: 'Los datos proporcionados no son válidos. Verifica la información.',
+          message: errorMessage
+        };
+      }
+      
+      // Error genérico
       return {
         success: false,
-        error: 'Error inesperado en el registro. Por favor intenta nuevamente.',
-        message: error instanceof Error ? error.message : 'Error desconocido'
+        error: errorMessage || 'Error inesperado. Intenta nuevamente.',
+        message: errorMessage
       };
     } finally {
       setIsLoading(false);

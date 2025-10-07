@@ -20,22 +20,11 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/v1/auth/login`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              email: credentials.email,
-              password: credentials.password,
-            }),
+          const { postJson } = await import('../lib/api');
+          const data = await postJson('/api/v1/auth/login', {
+            email: credentials.email,
+            password: credentials.password,
           });
-
-          if (!response.ok) {
-            return null;
-          }
-
-          const data = await response.json();
 
           // El backend devuelve: { access_token, refresh_token, user }
           if (data.user) {

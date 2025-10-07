@@ -8,6 +8,9 @@ import { GlobalExceptionFilter } from './observability/exception.filter';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // Trust proxy para Railway
+  app.enable('trust proxy');
+
   // Global prefix
   app.setGlobalPrefix('api/v1');
 
@@ -17,40 +20,33 @@ async function bootstrap() {
   // Global exception filter
   app.useGlobalFilters(new GlobalExceptionFilter());
 
-  // CORS configuration
-  const allowedOrigins = [
-    'http://localhost:3001',
-    'http://localhost:3000',
-    process.env.FRONT_ORIGIN,
-    'https://aiquaa.vercel.app',
-    'https://aiquaa-frontend.vercel.app',
-  ].filter(Boolean); // Filtrar valores undefined/null
-
+  // CORS configuration robusta
   app.enableCors({
-    origin: (origin, callback) => {
-      // Permitir requests sin origin (como Postman, curl, etc)
-      if (!origin) return callback(null, true);
-
-      // Permitir orígenes en la lista
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      // Permitir cualquier subdominio de vercel.app
-      if (origin.endsWith('.vercel.app')) {
-        return callback(null, true);
-      }
-
-      // Rechazar otros orígenes
-      console.log('⚠️ CORS rejected origin:', origin);
-      return callback(new Error('Not allowed by CORS'));
-    },
+    origin: [
+      'https://aiquaa.com',
+      /\.vercel\.app$/, // allow all vercel previews and prod
+      'http://localhost:3000',
+      'http://localhost:3001',
+    ],
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization', 
+      'Accept',
+      'Origin',
+      'X-Requested-With'
+    ],
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
-    exposedHeaders: ['Set-Cookie'],
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
+    maxAge: 86400,
+    exposedHeaders: ['Location']
+  });
+
+  // Manejar OPTIONS explícitamente si está detrás de un proxy
+  app.use((req, res, next) => {
+    if (req.method === 'OPTIONS') {
+      return res.sendStatus(204);
+    }
+    next();
   });
 
   // Validation pipe
@@ -73,7 +69,14 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/v1/docs', app, document);
 
-  // Health check endpoint is handled by HealthController
+  // Health check endpoint simple
+  app.get('/health', (req, res) => {
+    res.status(200).json({ 
+      status: 'ok', 
+      time: new Date().toISOString(),
+      uptime: process.uptime()
+    });
+  });
 
   const port = process.env.PORT || process.env.BACKEND_PORT || 3001;
   await app.listen(port, '0.0.0.0'); // Railway requiere escuchar en 0.0.0.0

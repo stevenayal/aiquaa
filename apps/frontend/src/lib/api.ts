@@ -1,22 +1,53 @@
-function getApiBaseUrl(): string {
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const API = process.env.NEXT_PUBLIC_API_URL!;
 
-  if (apiUrl && apiUrl.length > 0) {
-    return apiUrl;
+export async function postJson(path: string, body: unknown) {
+  try {
+    const res = await fetch(`${API}${path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      mode: 'cors',
+    });
+    
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      console.warn('API Error:', {
+        url: `${API}${path}`,
+        status: res.status,
+        statusText: res.statusText,
+        body: text,
+        timestamp: new Date().toISOString()
+      });
+      throw new Error(`HTTP ${res.status} ${res.statusText} :: ${text}`);
+    }
+    
+    return res.json().catch(() => ({}));
+  } catch (error) {
+    console.error('Network Error:', {
+      url: `${API}${path}`,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString()
+    });
+    throw error;
   }
-  if (backendUrl && backendUrl.length > 0) {
-    return `${backendUrl}/api/v1`;
-  }
-  if (process.env.NODE_ENV !== 'production') {
-    return 'http://localhost:3001/api/v1';
-  }
-  // En producción, usar un valor por defecto en lugar de lanzar un error
-  return 'https://api.aiquaa.com/api/v1';
 }
 
-const API_BASE_URL = getApiBaseUrl();
+export async function getJson(path: string) {
+  const res = await fetch(`${API}${path}`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+    mode: 'cors',
+  });
+  
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`HTTP ${res.status} ${res.statusText} :: ${text}`);
+  }
+  
+  return res.json().catch(() => ({}));
+}
 
+// Cliente API legacy para compatibilidad
 export interface ApiResponse<T = any> {
   data?: T;
   error?: string;
@@ -26,7 +57,7 @@ export interface ApiResponse<T = any> {
 class ApiClient {
   private baseUrl: string;
 
-  constructor(baseUrl: string = API_BASE_URL) {
+  constructor(baseUrl: string = API) {
     this.baseUrl = baseUrl;
   }
 
