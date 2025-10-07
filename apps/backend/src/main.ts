@@ -9,7 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Trust proxy para Railway
-  app.enable('trust proxy');
+  app.set('trust proxy', true);
 
   // Global prefix
   app.setGlobalPrefix('api/v1');
@@ -69,13 +69,17 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/v1/docs', app, document);
 
-  // Health check endpoint simple
-  app.get('/health', (req, res) => {
-    res.status(200).json({ 
-      status: 'ok', 
-      time: new Date().toISOString(),
-      uptime: process.uptime()
-    });
+  // Health check endpoint simple usando middleware
+  app.use('/health', (req, res) => {
+    if (req.method === 'GET') {
+      res.status(200).json({ 
+        status: 'ok', 
+        time: new Date().toISOString(),
+        uptime: process.uptime()
+      });
+    } else {
+      res.status(405).json({ error: 'Method not allowed' });
+    }
   });
 
   const port = process.env.PORT || process.env.BACKEND_PORT || 3001;
