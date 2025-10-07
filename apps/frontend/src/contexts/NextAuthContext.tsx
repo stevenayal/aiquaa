@@ -144,9 +144,14 @@ export const NextAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       
       // Detectar errores de red/CORS
       if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError') || errorMessage.includes('status:0')) {
+        console.error('Network/CORS Error in registration:', {
+          error: errorMessage,
+          timestamp: new Date().toISOString(),
+          userAgent: navigator.userAgent
+        });
         return {
           success: false,
-          error: 'No se pudo contactar con el servidor. Verificá conexión/CORS.',
+          error: 'No se pudo contactar con el servidor. Verificá tu conexión a internet.',
           message: 'Error de conexión'
         };
       }
