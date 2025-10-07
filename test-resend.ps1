@@ -19,3 +19,4 @@ Write-Host "🚀 Ejecutando prueba de Resend..." -ForegroundColor Yellow
 node scripts/test-resend.js
 
 Write-Host "✨ Prueba completada!" -ForegroundColor Green
+

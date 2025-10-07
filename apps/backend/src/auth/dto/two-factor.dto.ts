@@ -37,3 +37,4 @@ export class TwoFactorStatusDto {
   })
   enabled: boolean;
 }
+
