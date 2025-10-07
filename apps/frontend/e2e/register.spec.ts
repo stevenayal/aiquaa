@@ -2,127 +2,139 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Registro de usuario', () => {
   test.beforeEach(async ({ page }) => {
-    // Interceptar requests para debugging
-    await page.route('**/api/v1/auth/register', (route) => {
-      console.log('Intercepted register request:', route.request().url());
-      route.continue();
+    // Navegar a la página de registro
+    await page.goto('/register');
+  });
+
+  test('debería mostrar el formulario de registro', async ({ page }) => {
+    // Verificar que el formulario esté presente
+    await expect(page.locator('form')).toBeVisible();
+    await expect(page.locator('input[name="name"]')).toBeVisible();
+    await expect(page.locator('input[name="email"]')).toBeVisible();
+    await expect(page.locator('input[name="password"]')).toBeVisible();
+    await expect(page.locator('input[name="confirmPassword"]')).toBeVisible();
+    await expect(page.locator('button[type="submit"]')).toBeVisible();
+  });
+
+  test('debería validar campos requeridos', async ({ page }) => {
+    // Intentar enviar formulario vacío
+    await page.click('button[type="submit"]');
+    
+    // Verificar que aparezcan mensajes de error
+    await expect(page.locator('text=El nombre es requerido')).toBeVisible();
+    await expect(page.locator('text=El email es requerido')).toBeVisible();
+    await expect(page.locator('text=La contraseña es requerida')).toBeVisible();
+  });
+
+  test('debería validar formato de email', async ({ page }) => {
+    // Llenar formulario con email inválido
+    await page.fill('input[name="name"]', 'Test User');
+    await page.fill('input[name="email"]', 'email-invalido');
+    await page.fill('input[name="password"]', 'password123');
+    await page.fill('input[name="confirmPassword"]', 'password123');
+    
+    await page.click('button[type="submit"]');
+    
+    // Verificar mensaje de error de email
+    await expect(page.locator('text=Formato de email inválido')).toBeVisible();
+  });
+
+  test('debería validar que las contraseñas coincidan', async ({ page }) => {
+    // Llenar formulario con contraseñas diferentes
+    await page.fill('input[name="name"]', 'Test User');
+    await page.fill('input[name="email"]', 'test@example.com');
+    await page.fill('input[name="password"]', 'password123');
+    await page.fill('input[name="confirmPassword"]', 'password456');
+    
+    await page.click('button[type="submit"]');
+    
+    // Verificar mensaje de error
+    await expect(page.locator('text=Las contraseñas no coinciden')).toBeVisible();
+  });
+
+  test('debería validar longitud mínima de contraseña', async ({ page }) => {
+    // Llenar formulario con contraseña muy corta
+    await page.fill('input[name="name"]', 'Test User');
+    await page.fill('input[name="email"]', 'test@example.com');
+    await page.fill('input[name="password"]', '123');
+    await page.fill('input[name="confirmPassword"]', '123');
+    
+    await page.click('button[type="submit"]');
+    
+    // Verificar mensaje de error
+    await expect(page.locator('text=La contraseña debe tener al menos 8 caracteres')).toBeVisible();
+  });
+
+  test('debería intentar registrar usuario con datos válidos', async ({ page }) => {
+    // Interceptar la llamada al proxy
+    await page.route('/api/register', async (route) => {
+      // Simular respuesta exitosa del backend
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          message: 'Usuario registrado exitosamente. Por favor verifica tu email.'
+        })
+      });
     });
+
+    // Llenar formulario con datos válidos
+    const timestamp = Date.now();
+    await page.fill('input[name="name"]', 'Test User');
+    await page.fill('input[name="email"]', `test${timestamp}@example.com`);
+    await page.fill('input[name="password"]', 'password123');
+    await page.fill('input[name="confirmPassword"]', 'password123');
+    
+    await page.click('button[type="submit"]');
+    
+    // Verificar que aparezca mensaje de éxito
+    await expect(page.locator('text=Registro exitoso')).toBeVisible();
+    
+    // Verificar que se redirija al login después de un delay
+    await page.waitForURL('/login?message=registration_success', { timeout: 5000 });
   });
 
-  test('registro exitoso', async ({ page }) => {
-    await page.goto('https://aiquaa.com/register', { waitUntil: 'domcontentloaded' });
-    
-    // Esperar a que el formulario esté visible
-    await expect(page.getByPlaceholder('Nombre completo')).toBeVisible();
-    
-    // Completar formulario
-    const testEmail = `e2e${Date.now()}@example.com`;
-    await page.getByPlaceholder('Nombre completo').fill('E2E Test User');
-    await page.getByPlaceholder('Email').fill(testEmail);
-    await page.getByPlaceholder('Contraseña').fill('AiquaaTest123');
-    await page.getByPlaceholder('Confirmar contraseña').fill('AiquaaTest123');
-    
-    // Interceptar la respuesta del registro
-    const [response] = await Promise.all([
-      page.waitForResponse(r => 
-        r.url().includes('/api/v1/auth/register') && r.status() < 500, 
-        { timeout: 15000 }
-      ),
-      page.getByRole('button', { name: /crear cuenta/i }).click(),
-    ]);
-    
-    // Verificar que la respuesta sea exitosa o al menos no sea un error de servidor
-    expect(response.status()).toBeLessThan(500);
-    
-    // Verificar que se muestre algún mensaje (éxito o error específico)
-    await expect(page.locator('[role="alert"], .alert, .error, .success')).toBeVisible({ timeout: 10000 });
-  });
-
-  test('error de red visible', async ({ page }) => {
-    // Simular fallo de red
-    await page.route('**/api/v1/auth/register', route => route.abort('failed'));
-    
-    await page.goto('https://aiquaa.com/register');
-    
-    // Completar formulario
-    await page.getByPlaceholder('Nombre completo').fill('Test User');
-    await page.getByPlaceholder('Email').fill('test@example.com');
-    await page.getByPlaceholder('Contraseña').fill('TestPassword123');
-    await page.getByPlaceholder('Confirmar contraseña').fill('TestPassword123');
-    
-    // Hacer clic en registrar
-    await page.getByRole('button', { name: /crear cuenta/i }).click();
-    
-    // Verificar que se muestre el mensaje de error de conexión
-    await expect(page.getByText(/No se pudo contactar con el servidor|Error de conexión/)).toBeVisible({ timeout: 10000 });
-  });
-
-  test('validación de contraseñas que no coinciden', async ({ page }) => {
-    await page.goto('https://aiquaa.com/register');
-    
-    // Completar formulario con contraseñas diferentes
-    await page.getByPlaceholder('Nombre completo').fill('Test User');
-    await page.getByPlaceholder('Email').fill('test@example.com');
-    await page.getByPlaceholder('Contraseña').fill('Password123');
-    await page.getByPlaceholder('Confirmar contraseña').fill('DifferentPassword123');
-    
-    // Hacer clic en registrar
-    await page.getByRole('button', { name: /crear cuenta/i }).click();
-    
-    // Verificar que se muestre el error de validación
-    await expect(page.getByText(/contraseñas no coinciden|passwords do not match/i)).toBeVisible();
-  });
-
-  test('validación de email inválido', async ({ page }) => {
-    await page.goto('https://aiquaa.com/register');
-    
-    // Completar formulario con email inválido
-    await page.getByPlaceholder('Nombre completo').fill('Test User');
-    await page.getByPlaceholder('Email').fill('invalid-email');
-    await page.getByPlaceholder('Contraseña').fill('Password123');
-    await page.getByPlaceholder('Confirmar contraseña').fill('Password123');
-    
-    // Hacer clic en registrar
-    await page.getByRole('button', { name: /crear cuenta/i }).click();
-    
-    // Verificar que se muestre el error de validación
-    await expect(page.getByText(/email.*inválido|invalid.*email/i)).toBeVisible();
-  });
-
-  test('CORS headers presentes en respuesta', async ({ page }) => {
-    const responses: any[] = [];
-    
-    // Capturar todas las respuestas
-    page.on('response', response => {
-      if (response.url().includes('/api/v1/auth/register')) {
-        responses.push(response);
-      }
+  test('debería manejar error de email ya registrado', async ({ page }) => {
+    // Interceptar la llamada al proxy
+    await page.route('/api/register', async (route) => {
+      // Simular error de email ya registrado
+      await route.fulfill({
+        status: 409,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          error: 'Este email ya está registrado'
+        })
+      });
     });
+
+    // Llenar formulario con datos válidos
+    await page.fill('input[name="name"]', 'Test User');
+    await page.fill('input[name="email"]', 'existing@example.com');
+    await page.fill('input[name="password"]', 'password123');
+    await page.fill('input[name="confirmPassword"]', 'password123');
     
-    await page.goto('https://aiquaa.com/register');
+    await page.click('button[type="submit"]');
     
-    // Completar formulario
-    await page.getByPlaceholder('Nombre completo').fill('Test User');
-    await page.getByPlaceholder('Email').fill('test@example.com');
-    await page.getByPlaceholder('Contraseña').fill('TestPassword123');
-    await page.getByPlaceholder('Confirmar contraseña').fill('TestPassword123');
+    // Verificar que aparezca mensaje de error
+    await expect(page.locator('text=Este email ya está registrado')).toBeVisible();
+  });
+
+  test('debería manejar error de conexión', async ({ page }) => {
+    // Interceptar la llamada al proxy para simular error de conexión
+    await page.route('/api/register', async (route) => {
+      // Simular error de conexión
+      await route.abort('failed');
+    });
+
+    // Llenar formulario con datos válidos
+    await page.fill('input[name="name"]', 'Test User');
+    await page.fill('input[name="email"]', 'test@example.com');
+    await page.fill('input[name="password"]', 'password123');
+    await page.fill('input[name="confirmPassword"]', 'password123');
     
-    // Hacer clic en registrar
-    await page.getByRole('button', { name: /crear cuenta/i }).click();
+    await page.click('button[type="submit"]');
     
-    // Esperar a que se complete la request
-    await page.waitForTimeout(5000);
-    
-    // Verificar que se haya hecho la request
-    expect(responses.length).toBeGreaterThan(0);
-    
-    // Verificar headers CORS en la respuesta
-    const response = responses[0];
-    const headers = response.headers();
-    
-    // Verificar que los headers CORS estén presentes
-    expect(headers).toHaveProperty('access-control-allow-origin');
-    expect(headers).toHaveProperty('access-control-allow-methods');
-    expect(headers).toHaveProperty('access-control-allow-headers');
+    // Verificar que aparezca mensaje de error de conexión
+    await expect(page.locator('text=No se pudo contactar con el servidor')).toBeVisible();
   });
 });
