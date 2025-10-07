@@ -84,8 +84,8 @@ export class AuthController {
     } catch (error) {
       console.error('❌ Registration failed:', {
         email: registerDto.email,
-        error: error.message,
-        stack: error.stack
+        error: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
       });
       
       // Re-lanzar el error para que el GlobalExceptionFilter lo maneje

@@ -10,7 +10,10 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: false });
 
   // Trust proxy para Railway
-  app.enable('trust proxy');
+  app.use((req, res, next) => {
+    req.connection.remoteAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    next();
+  });
 
   // Helmet sin bloquear recursos de front
   app.use(helmet({ crossOriginResourcePolicy: false }));
