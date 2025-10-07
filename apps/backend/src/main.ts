@@ -8,8 +8,9 @@ import { GlobalExceptionFilter } from './observability/exception.filter';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Trust proxy para Railway
-  app.set('trust proxy', true);
+  // Trust proxy para Railway - configurar en el servidor Express subyacente
+  const expressApp = app.getHttpAdapter().getInstance();
+  expressApp.set('trust proxy', true);
 
   // Global prefix
   app.setGlobalPrefix('api/v1');
