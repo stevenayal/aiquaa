@@ -20,7 +20,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
-          const { postJson } = await import('../lib/api');
+          const { postJson } = await import('./lib/api');
           const data = await postJson('/api/v1/auth/login', {
             email: credentials.email,
             password: credentials.password,
