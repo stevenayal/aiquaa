@@ -1,15 +1,21 @@
-const API = process.env.NEXT_PUBLIC_API_URL!;
+// Usar proxy local para evitar problemas de CORS
+const API = process.env.NEXT_PUBLIC_API_BASE || '';
 
 export async function postJson(path: string, body: unknown) {
   try {
-    const res = await fetch(`${API}${path}`, {
+    // Para el registro, usar el proxy local
+    const url = path === '/api/v1/auth/register' 
+      ? '/api/register' 
+      : `${process.env.NEXT_PUBLIC_API_URL || ''}${path}`;
+    
+    const res = await fetch(url, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
       body: JSON.stringify(body),
-      mode: 'cors',
+      // No especificar mode para usar el modo por defecto (CORS normal)
       credentials: 'include'
     });
     
@@ -47,10 +53,11 @@ export async function postJson(path: string, body: unknown) {
 }
 
 export async function getJson(path: string) {
-  const res = await fetch(`${API}${path}`, {
+  const url = `${process.env.NEXT_PUBLIC_API_URL || ''}${path}`;
+  const res = await fetch(url, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
-    mode: 'cors',
+    // No especificar mode para usar el modo por defecto (CORS normal)
   });
   
   if (!res.ok) {
