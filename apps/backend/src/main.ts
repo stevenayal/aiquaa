@@ -18,16 +18,7 @@ async function bootstrap() {
   // Helmet sin bloquear recursos de front
   app.use(helmet({ crossOriginResourcePolicy: false }));
 
-  // Global prefix
-  app.setGlobalPrefix('api/v1');
-
-  // Global middleware for request ID
-  app.use(new RequestIdMiddleware().use);
-
-  // Global exception filter
-  app.useGlobalFilters(new GlobalExceptionFilter());
-
-  // CORS configuration robusta con función de validación
+  // CORS configuration robusta con función de validación - DEBE IR ANTES que otros middlewares
   const allowlist = [
     'https://aiquaa.com',
     /^https:\/\/.*\.vercel\.app$/,
@@ -55,7 +46,7 @@ async function bootstrap() {
         callback(new Error(`CORS blocked: ${origin}`), false);
       }
     },
-    methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
+    methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: [
       'Content-Type',
       'Authorization', 
@@ -63,12 +54,25 @@ async function bootstrap() {
       'Origin',
       'X-Requested-With',
       'Access-Control-Request-Method',
-      'Access-Control-Request-Headers'
+      'Access-Control-Request-Headers',
+      'X-Request-ID',
+      'X-Forwarded-For',
+      'X-Forwarded-Proto',
+      'X-Forwarded-Host'
     ],
     credentials: true,
     maxAge: 86400,
-    exposedHeaders: ['Location']
+    exposedHeaders: ['Location', 'X-Request-ID']
   });
+
+  // Global prefix
+  app.setGlobalPrefix('api/v1');
+
+  // Global middleware for request ID
+  app.use(new RequestIdMiddleware().use);
+
+  // Global exception filter
+  app.useGlobalFilters(new GlobalExceptionFilter());
 
   // Manejar OPTIONS explícitamente
   app.use((req, res, next) => {
