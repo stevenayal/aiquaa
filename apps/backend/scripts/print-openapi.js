@@ -1,118 +1,84 @@
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 async function printOpenAPI() {
   try {
     console.log('🔄 Generating OpenAPI specification...');
-    
-    // In a real implementation, you would start the NestJS app and fetch the OpenAPI spec
-    // For now, we'll create a basic OpenAPI spec
-    const openApiSpec = {
-      openapi: '3.0.0',
-      info: {
-        title: 'AIQUAA API',
-        description: 'API para la plataforma AIQUAA - Herramientas de QA',
-        version: '1.0.0',
-      },
-      servers: [
-        {
-          url: 'http://localhost:3000/api/v1',
-          description: 'Development server',
-        },
-      ],
-      paths: {
-        '/health': {
-          get: {
-            tags: ['Health'],
-            summary: 'Health check endpoint',
-            responses: {
-              '200': {
-                description: 'Service is healthy',
-                content: {
-                  'application/json': {
-                    schema: {
-                      type: 'object',
-                      properties: {
-                        status: { type: 'string', example: 'ok' },
-                        time: { type: 'string', example: '2024-01-01T00:00:00.000Z' },
-                        version: { type: 'string', example: '1.0.0' },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-        '/auth/login': {
-          post: {
-            tags: ['Auth'],
-            summary: 'User login',
-            requestBody: {
-              required: true,
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      email: { type: 'string', format: 'email' },
-                      password: { type: 'string', minLength: 6 },
-                    },
-                    required: ['email', 'password'],
-                  },
-                },
-              },
-            },
-            responses: {
-              '200': {
-                description: 'Login successful',
-                content: {
-                  'application/json': {
-                    schema: {
-                      type: 'object',
-                      properties: {
-                        access_token: { type: 'string' },
-                        refresh_token: { type: 'string' },
-                        user: {
-                          type: 'object',
-                          properties: {
-                            id: { type: 'integer' },
-                            email: { type: 'string' },
-                            name: { type: 'string' },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      components: {
-        securitySchemes: {
-          bearerAuth: {
-            type: 'http',
-            scheme: 'bearer',
-            bearerFormat: 'JWT',
-          },
-        },
-      },
-    };
 
-    // Ensure the generated directory exists
-    const generatedDir = path.join(__dirname, '../../packages/shared/generated');
+    // Build the application first
+    console.log('📦 Building application...');
+    execSync('pnpm build', { stdio: 'inherit', cwd: path.join(__dirname, '..') });
+
+    // Start the application temporarily to generate the OpenAPI spec
+    console.log('🚀 Starting application to generate OpenAPI spec...');
+
+    // Create a temporary script to generate the spec
+    const tempScript = `
+const { NestFactory } = require('@nestjs/core');
+const { SwaggerModule, DocumentBuilder } = require('@nestjs/swagger');
+const { AppModule } = require('./dist/app.module');
+
+async function generateOpenAPI() {
+  try {
+    const app = await NestFactory.create(AppModule, { logger: false });
+
+    const config = new DocumentBuilder()
+      .setTitle('AIQUAA API')
+      .setDescription('API para la plataforma AIQUAA - Herramientas de QA')
+      .setVersion('1.0.0')
+      .addBearerAuth()
+      .build();
+
+    const document = SwaggerModule.createDocument(app, config);
+
+    // Write to file
+    const fs = require('fs');
+    const path = require('path');
+
+    const outputPath = path.join(__dirname, 'openapi.json');
+    fs.writeFileSync(outputPath, JSON.stringify(document, null, 2));
+
+    console.log('✅ OpenAPI specification generated successfully!');
+    console.log(\`📄 File saved to: \${outputPath}\`);
+
+    await app.close();
+    process.exit(0);
+  } catch (error) {
+    console.error('❌ Error generating OpenAPI specification:', error);
+    process.exit(1);
+  }
+}
+
+generateOpenAPI();
+`;
+
+    const tempScriptPath = path.join(__dirname, '..', 'temp-generate-openapi.js');
+    fs.writeFileSync(tempScriptPath, tempScript);
+
+    // Run the temporary script
+    execSync(`node ${tempScriptPath}`, { stdio: 'inherit', cwd: path.join(__dirname, '..') });
+
+    // Clean up
+    fs.unlinkSync(tempScriptPath);
+
+    // Move the generated file to a better location
+    const generatedDir = path.join(__dirname, '..', 'generated');
     if (!fs.existsSync(generatedDir)) {
       fs.mkdirSync(generatedDir, { recursive: true });
     }
 
-    // Write the OpenAPI spec to file
-    const outputPath = path.join(generatedDir, 'openapi.json');
-    fs.writeFileSync(outputPath, JSON.stringify(openApiSpec, null, 2));
-    
-    console.log('✅ OpenAPI specification generated successfully!');
-    console.log(`📄 File saved to: ${outputPath}`);
+    const sourcePath = path.join(__dirname, '..', 'openapi.json');
+    const destPath = path.join(generatedDir, 'openapi.json');
+
+    if (fs.existsSync(sourcePath)) {
+      fs.renameSync(sourcePath, destPath);
+      console.log(`📄 OpenAPI spec moved to: ${destPath}`);
+    }
+
+    console.log('🎉 OpenAPI specification generation completed!');
+    console.log('📚 You can now access the Swagger UI at: http://localhost:3001/api/v1/docs');
+
   } catch (error) {
     console.error('❌ Error generating OpenAPI specification:', error);
     process.exit(1);

@@ -4,21 +4,58 @@ import { ForumService } from './forum.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateThreadDto, CreatePostDto } from './dto';
 
-@ApiTags('forum')
+@ApiTags('Forum')
 @Controller('forum')
 export class ForumController {
   constructor(private readonly forumService: ForumService) {}
 
   @Get('categories')
-  @ApiOperation({ summary: 'Get all categories' })
-  @ApiResponse({ status: 200, description: 'List of categories' })
+  @ApiOperation({
+    summary: 'Obtener todas las categorías',
+    description: 'Retorna la lista completa de categorías disponibles en el foro'
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de categorías obtenida exitosamente',
+    schema: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: { type: 'number', example: 1 },
+          name: { type: 'string', example: 'General' },
+          description: { type: 'string', example: 'Discusiones generales' },
+          slug: { type: 'string', example: 'general' },
+          threadCount: { type: 'number', example: 25 }
+        }
+      }
+    }
+  })
   async getCategories() {
     return this.forumService.getCategories();
   }
 
   @Get('tags')
-  @ApiOperation({ summary: 'Get all tags' })
-  @ApiResponse({ status: 200, description: 'List of tags' })
+  @ApiOperation({
+    summary: 'Obtener todas las etiquetas',
+    description: 'Retorna la lista completa de tags disponibles para clasificar threads'
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de tags obtenida exitosamente',
+    schema: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: { type: 'number', example: 1 },
+          name: { type: 'string', example: 'javascript' },
+          color: { type: 'string', example: '#3B82F6' },
+          usageCount: { type: 'number', example: 15 }
+        }
+      }
+    }
+  })
   async getTags() {
     return this.forumService.getTags();
   }
@@ -43,7 +80,7 @@ export class ForumController {
     @Query('sortBy') sortBy?: 'newest' | 'oldest' | 'mostViewed' | 'mostReplied',
   ) {
     const parsedTags = tags ? tags.split(',').map(t => t.trim()) : undefined;
-    
+
     return this.forumService.getThreads({
       page: page ? Number(page) : undefined,
       limit: limit ? Number(limit) : undefined,
@@ -166,7 +203,7 @@ export class ForumController {
     @Query('sortBy') sortBy?: 'newest' | 'oldest' | 'mostViewed' | 'mostReplied',
   ) {
     const parsedTags = tags ? tags.split(',').map(t => t.trim()) : undefined;
-    
+
     return this.forumService.search(
       searchTerm,
       {

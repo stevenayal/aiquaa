@@ -26,6 +26,8 @@
     "prisma:seed": "ts-node prisma/seed.ts",
     "prisma:studio": "prisma studio",
     "openapi:print": "node scripts/print-openapi.js",
+    "openapi:serve": "pnpm build && pnpm start:prod",
+    "test:swagger": "node scripts/test-swagger.js",
     "check:oauth": "node scripts/check-oauth.js"
   },
   "dependencies": {
