@@ -1,5 +1,5 @@
 import pino from 'pino';
-import * as pinoSeq from 'pino-seq';
+import pinoSeq from 'pino-seq';
 
 const seqStream = pinoSeq.createStream({
   serverUrl: process.env.SEQ_URL || 'http://seq.railway.internal:5341',
