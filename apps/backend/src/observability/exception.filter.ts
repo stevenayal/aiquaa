@@ -27,7 +27,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    const requestId = request.headers['x-request-id'] as string || request['requestId'];
     const method = request.method;
     const path = request.url;
 
@@ -38,7 +37,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       status = exception.getStatus();
       const exceptionResponse = exception.getResponse();
-      
+
       if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
         message = (exceptionResponse as any).message || exception.message;
         code = (exceptionResponse as any).error || exception.name;
@@ -50,6 +49,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       message = exception.message;
       code = exception.name;
     }
+
+    // Get request ID safely - never set undefined as header
+    const current = response.getHeader('X-Request-Id') as string | undefined;
+    const requestId = current || (request as any).requestId;
 
     const problemDetails: ProblemDetails = {
       status,
@@ -73,8 +76,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       }
     );
 
-    // Set response headers
-    response.setHeader('X-Request-Id', requestId);
+    // Set response headers - only if requestId exists
+    if (requestId) {
+      response.setHeader('X-Request-Id', String(requestId));
+    }
     response.setHeader('Content-Type', 'application/problem+json');
 
     // Send response

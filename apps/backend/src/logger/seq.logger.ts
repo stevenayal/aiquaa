@@ -1,38 +1,49 @@
 import pino from 'pino';
 
-// Dynamic import for ESM module
-let pinoSeq: any;
-let seqStream: any;
-
-// Initialize the logger with dynamic import
-const initializeLogger = async () => {
-  if (!pinoSeq) {
-    pinoSeq = await import('pino-seq');
-  }
-
-  if (!seqStream) {
-    seqStream = pinoSeq.default.createStream({
-      serverUrl: process.env.SEQ_URL || 'http://seq.railway.internal:5341',
-      apiKey: process.env.SEQ_API_KEY || '',
-      // Importante: firma correcta: SOLO (e: Error)
-      onError: (e: Error) => {
-        // no tumbar el proceso si falla el envío
-        // eslint-disable-next-line no-console
-        console.error('Seq stream error:', e.message);
-      },
-    });
-  }
-
-  return pino(
-    {
+export async function createSeqLogger() {
+  // Check if Seq configuration is available
+  if (!process.env.SEQ_URL && !process.env.SEQ_API_KEY) {
+    console.warn('Seq configuration not found, using basic logger');
+    return pino({
       level: process.env.LOG_LEVEL || 'info',
       base: { service: 'aiquaa-backend' },
       formatters: { level: (l) => ({ level: l.toUpperCase() }) },
       timestamp: pino.stdTimeFunctions.isoTime,
-    },
-    seqStream,
-  );
-};
+    });
+  }
+
+  try {
+    // Use dynamic import for ESM module
+    const { default: pinoSeq } = await import('pino-seq');
+
+    const transport = pino.transport({
+      target: pinoSeq,
+      options: {
+        serverUrl: process.env.SEQ_URL,
+        apiKey: process.env.SEQ_API_KEY,
+        level: process.env.LOG_LEVEL || 'info',
+        onError: (e: Error) => {
+          console.error('Seq stream error:', e.message);
+        },
+      },
+    });
+
+    return pino({
+      level: process.env.LOG_LEVEL || 'info',
+      base: { service: 'aiquaa-backend' },
+      formatters: { level: (l) => ({ level: l.toUpperCase() }) },
+      timestamp: pino.stdTimeFunctions.isoTime,
+    }, transport);
+  } catch (error) {
+    console.error('Failed to initialize Seq logger, using fallback:', error.message);
+    return pino({
+      level: process.env.LOG_LEVEL || 'info',
+      base: { service: 'aiquaa-backend' },
+      formatters: { level: (l) => ({ level: l.toUpperCase() }) },
+      timestamp: pino.stdTimeFunctions.isoTime,
+    });
+  }
+}
 
 // Create a fallback logger that will be replaced once the ESM module is loaded
 let logger = pino({
@@ -43,7 +54,7 @@ let logger = pino({
 });
 
 // Initialize the logger asynchronously
-initializeLogger().then((seqLogger) => {
+createSeqLogger().then((seqLogger) => {
   logger = seqLogger;
 }).catch((error) => {
   console.error('Failed to initialize Seq logger, using fallback:', error.message);

@@ -12,6 +12,10 @@ import { LoggingContextMiddleware } from './observability/logging-context.middle
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: false, bufferLogs: true });
 
+  // Enable trust proxy for proper IP handling
+  const expressApp = app.getHttpAdapter().getInstance();
+  expressApp.set('trust proxy', true);
+
   // Integrar Pino + Seq como logger de Nest
   app.useLogger({
     log: (message, context) => logger.info({ context }, message),
@@ -21,9 +25,9 @@ async function bootstrap() {
     verbose: (message, context) => logger.trace({ context }, message),
   });
 
-  // Trust proxy para Railway
+  // Trust proxy para Railway - no mutar socket.remoteAddress
   app.use((req, res, next) => {
-    req.connection.remoteAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    // Solo configurar req.ip para que Express maneje X-Forwarded-For
     next();
   });
 

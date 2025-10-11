@@ -10,3 +10,4 @@ setTimeout(() => {
   console.log('Logger test completed successfully');
   process.exit(0);
 }, 2000);
+
