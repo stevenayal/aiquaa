@@ -6,6 +6,7 @@ import { AppModule } from './app.module';
 import { RequestIdMiddleware } from './observability/request-id.middleware';
 import { GlobalExceptionFilter } from './observability/exception.filter';
 import { logger } from './logger/seq.logger';
+import { httpLogger } from './logger/http.logger';
 import { HttpLoggingInterceptor } from './observability/http-logging.interceptor';
 import { LoggingContextMiddleware } from './observability/logging-context.middleware';
 
@@ -87,6 +88,9 @@ async function bootstrap() {
   // Global middleware for request ID
   app.use(new RequestIdMiddleware().use);
 
+  // HTTP logging con pino-http (después del RequestIdMiddleware)
+  app.use(httpLogger);
+
   // Enriquecer el request con contexto común para logging
   app.use(new LoggingContextMiddleware().use);
 
@@ -98,19 +102,6 @@ async function bootstrap() {
     if (req.method === 'OPTIONS') {
       return res.sendStatus(204);
     }
-    next();
-  });
-
-  // Logging básico de requests (se reemplazará por interceptor global opcional)
-  app.use((req, res, next) => {
-    logger.info(
-      {
-        ...(req as any).logContext,
-        origin: req.headers.origin,
-        referer: req.headers.referer,
-      },
-      'HTTP Request',
-    );
     next();
   });
 

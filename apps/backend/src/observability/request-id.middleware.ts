@@ -11,11 +11,10 @@ declare module 'http' {
 @Injectable()
 export class RequestIdMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
-    const incoming = (req.headers['x-request-id'] as string) || '';
-    const requestId = incoming && incoming.trim() ? incoming.trim() : uuid();
-    req.requestId = requestId;
-    // asegurar string
-    res.setHeader('X-Request-Id', String(requestId));
+    const incoming = (req.headers['x-request-id'] as string) ?? '';
+    const rid = incoming.trim() || uuid();
+    (req as any).requestId = rid;
+    res.setHeader('X-Request-Id', String(rid));
     next();
   }
 }

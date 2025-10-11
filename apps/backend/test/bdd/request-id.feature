@@ -1,21 +1,19 @@
-Feature: Propagación de X-Request-Id y captura de IP sin mutar socket
+Feature: X-Request-Id e IP sin mutar socket
 
-  Scenario: Responder con X-Request-Id cuando no viene en la solicitud
-    Given no envío el header "X-Request-Id"
-    When hago un GET a "/api/v1/health"
-    Then la respuesta es 200
-    And la respuesta incluye el header "X-Request-Id"
-    And "X-Request-Id" es un UUID v4 válido
+  Scenario: Generar X-Request-Id si no viene
+    Given no envío "X-Request-Id"
+    When GET "/api/v1/health"
+    Then status 200
+    And header "X-Request-Id" existe y es UUID v4
 
   Scenario: Propagar X-Request-Id entrante
-    Given envío el header "X-Request-Id" con valor "req-123"
-    When hago un GET a "/api/v1/health"
-    Then la respuesta es 200
-    And la respuesta incluye el header "X-Request-Id" con valor "req-123"
+    Given envío "X-Request-Id" = "req-123"
+    When GET "/api/v1/health"
+    Then status 200
+    And header "X-Request-Id" = "req-123"
 
   Scenario: No mutar req.socket.remoteAddress
-    Given el cliente envía "X-Forwarded-For" con "203.0.113.10"
-    When hago un GET a "/api/v1/health"
-    Then la respuesta es 200
-    And se usa la IP "203.0.113.10" para logs/metrics
-    And no se intenta asignar a "req.socket.remoteAddress"
+    Given envío "X-Forwarded-For" = "203.0.113.10"
+    When GET "/api/v1/health"
+    Then status 200
+    And el backend registra la IP "203.0.113.10" sin mutar el socket

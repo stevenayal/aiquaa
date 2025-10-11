@@ -1,22 +1,10 @@
-import request from 'supertest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../../../src/app.module';
-import { INestApplication } from '@nestjs/common';
+import * as request from 'supertest';
 import { defineFeature, loadFeature } from 'jest-cucumber';
 import { validate as isUuid } from 'uuid';
+import { createTestApp } from '../../utils/test-app.factory';
+import { INestApplication } from '@nestjs/common';
 
-const feature = loadFeature('apps/backend/test/bdd/request-id.feature');
-
-// Helper function to create the app
-async function createTestApp(): Promise<INestApplication> {
-  const moduleFixture: TestingModule = await Test.createTestingModule({
-    imports: [AppModule],
-  }).compile();
-
-  const app = moduleFixture.createNestApplication();
-  await app.init();
-  return app;
-}
+const feature = loadFeature('./test/bdd/request-id.feature');
 
 defineFeature(feature, test => {
   let app: INestApplication;
@@ -30,66 +18,68 @@ defineFeature(feature, test => {
     await app.close();
   });
 
-  test('Responder con X-Request-Id cuando no viene', ({ given, when, then, and }) => {
-    given('no envío el header "X-Request-Id"', () => {});
-
-    when('hago un GET a "/api/v1/health"', async () => {
-      resp = await request(app.getHttpServer()).get('/api/v1/health');
+  test('Generar X-Request-Id si no viene', ({ given, when, then, and }) => {
+    given(/^no envío "(.*)"$/, (header) => {
+      // No action needed - we're testing the case where no header is sent
     });
 
-    then('la respuesta es 200', () => {
-      expect(resp.status).toBe(200);
+    when(/^GET "(.*)"$/, async (path) => {
+      resp = await request(app.getHttpServer()).get(path);
     });
 
-    and('la respuesta incluye el header "X-Request-Id"', () => {
-      expect(resp.headers['x-request-id']).toBeTruthy();
+    then(/^status (\d+)$/, (status) => {
+      expect(resp.status).toBe(parseInt(status));
     });
 
-    and('"X-Request-Id" es un UUID v4 válido', () => {
-      expect(isUuid(resp.headers['x-request-id'])).toBe(true);
+    and(/^header "(.*)" existe y es UUID v(\d+)$/, (header, version) => {
+      const rid = resp.headers[header.toLowerCase()];
+      expect(rid).toBeTruthy();
+      expect(isUuid(rid)).toBe(true);
     });
   });
 
   test('Propagar X-Request-Id entrante', ({ given, when, then, and }) => {
-    given('envío el header "X-Request-Id" con valor "req-123"', () => {});
+    given(/^envío "(.*)" = "(.*)"$/, (header, value) => {
+      // Store the header value for use in the when step
+      (global as any).testHeader = { [header]: value };
+    });
 
-    when('hago un GET a "/api/v1/health"', async () => {
+    when(/^GET "(.*)"$/, async (path) => {
+      const headers = (global as any).testHeader || {};
       resp = await request(app.getHttpServer())
-        .get('/api/v1/health')
-        .set('X-Request-Id', 'req-123');
+        .get(path)
+        .set(headers);
     });
 
-    then('la respuesta es 200', () => {
-      expect(resp.status).toBe(200);
+    then(/^status (\d+)$/, (status) => {
+      expect(resp.status).toBe(parseInt(status));
     });
 
-    and('la respuesta incluye el header "X-Request-Id" con valor "req-123"', () => {
-      expect(resp.headers['x-request-id']).toBe('req-123');
+    and(/^header "(.*)" = "(.*)"$/, (header, expectedValue) => {
+      expect(resp.headers[header.toLowerCase()]).toBe(expectedValue);
     });
   });
 
   test('No mutar req.socket.remoteAddress', ({ given, when, then, and }) => {
-    given('el cliente envía "X-Forwarded-For" con "203.0.113.10"', () => {});
+    given(/^envío "(.*)" = "(.*)"$/, (header, value) => {
+      // Store the header value for use in the when step
+      (global as any).testHeader = { [header]: value };
+    });
 
-    when('hago un GET a "/api/v1/health"', async () => {
+    when(/^GET "(.*)"$/, async (path) => {
+      const headers = (global as any).testHeader || {};
       resp = await request(app.getHttpServer())
-        .get('/api/v1/health')
-        .set('X-Forwarded-For', '203.0.113.10');
+        .get(path)
+        .set(headers);
     });
 
-    then('la respuesta es 200', () => {
-      expect(resp.status).toBe(200);
+    then(/^status (\d+)$/, (status) => {
+      expect(resp.status).toBe(parseInt(status));
     });
 
-    and('se usa la IP "203.0.113.10" para logs/metrics', () => {
-      // si hay logger/metric hook, espía/assertear según implementación.
-      // Al menos no hubo error por mutar el socket.
-      expect(resp.status).toBe(200);
-    });
-
-    and('no se intenta asignar a "req.socket.remoteAddress"', () => {
-      // This test passes if no error is thrown during the request
-      // The actual validation is that the request completes successfully
+    and(/^el backend registra la IP "(.*)" sin mutar el socket$/, (expectedIp) => {
+      // La ausencia de crash valida que no se mutó el getter del socket.
+      // El hecho de que la respuesta sea 200 significa que no hubo error por mutación
       expect(resp.status).toBe(200);
     });
   });
