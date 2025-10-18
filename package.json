@@ -5,7 +5,7 @@
   "workspaces": ["apps/*", "packages/*"],
   "scripts": {
     "build": "pnpm -r build",
-    "build:vercel": "pnpm --filter @aiquaa/frontend run build",
+    "build:vercel": "pnpm --filter @aiquaa/allpairs-core build && pnpm --filter @aiquaa/frontend run build",
     "build:backend": "pnpm --filter @aiquaa/backend build",
     "start:prod": "pnpm --filter @aiquaa/backend start:prod",
     "prisma:generate": "pnpm --filter @aiquaa/backend prisma:generate",

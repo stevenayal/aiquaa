@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev -p $FRONTEND_PORT",
     "prebuild": "node scripts/check-env.js",
-    "build": "next build",
+    "build": "cd ../../packages/allpairs-core && pnpm build && cd ../../apps/frontend && next build",
     "start": "next start",
     "lint": "eslint \"**/*.{ts,tsx}\"",
     "test": "vitest run",
