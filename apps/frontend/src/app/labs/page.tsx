@@ -49,6 +49,14 @@ export default function LabsPage() {
       icon: '⏰',
       color: 'from-indigo-500 to-indigo-600',
       href: '/labs/cron-validator'
+    },
+    {
+      id: 'allpairs',
+      name: 'All Pairs Generator',
+      description: 'Genera casos de prueba pairwise para testing combinatorio',
+      icon: '🔀',
+      color: 'from-teal-500 to-teal-600',
+      href: '/labs/allpairs'
     }
   ];
 
