@@ -14,34 +14,34 @@ const EXAMPLES: Array<{
 }> = [
   {
     id: 'car-colors',
-    name: 'Car Colors',
-    description: 'Test combinations of car year, color, and model',
+    name: 'Colores de Autos',
+    description: 'Combinaciones de prueba de año, color y modelo de auto',
     data: {
-      labels: ['Year', 'Color', 'Car'],
+      labels: ['Año', 'Color', 'Auto'],
       parameters: [
         ['2023', '2024', '2025'],
-        ['Red', 'Blue', 'Green', 'Black', 'White'],
+        ['Rojo', 'Azul', 'Verde', 'Negro', 'Blanco'],
         ['Tesla Model 3', 'Ford Mustang', 'Honda Civic', 'Toyota Camry'],
       ],
     },
   },
   {
     id: 'browser-os',
-    name: 'Browser & OS',
-    description: 'Browser compatibility testing across operating systems',
+    name: 'Navegador y SO',
+    description: 'Pruebas de compatibilidad de navegadores en diferentes sistemas operativos',
     data: {
-      labels: ['Browser', 'OS', 'Version'],
+      labels: ['Navegador', 'Sistema Operativo', 'Versión'],
       parameters: [
         ['Chrome', 'Firefox', 'Safari', 'Edge'],
         ['Windows', 'macOS', 'Linux'],
-        ['Latest', 'Previous', 'Legacy'],
+        ['Última', 'Anterior', 'Legado'],
       ],
     },
   },
   {
     id: '10x10',
-    name: '10x10 Parameters',
-    description: 'Large dataset with 10 parameters, 10 values each',
+    name: 'Parámetros 10x10',
+    description: 'Dataset grande con 10 parámetros de 10 valores cada uno',
     data: {
       labels: ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8', 'P9', 'P10'],
       parameters: [
@@ -68,7 +68,7 @@ export default function ExamplesTab({ onSelect }: ExamplesTabProps) {
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-        Example Datasets
+        Ejemplos de Datasets
       </h2>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -84,9 +84,9 @@ export default function ExamplesTab({ onSelect }: ExamplesTabProps) {
               {example.description}
             </p>
             <div className="text-xs text-gray-500 dark:text-gray-500 mb-3">
-              <div>Parameters: {example.data.labels.length}</div>
+              <div>Parámetros: {example.data.labels.length}</div>
               <div>
-                Values:{' '}
+                Valores:{' '}
                 {example.data.parameters.map((p) => p.length).join(' × ')}
               </div>
             </div>
@@ -94,7 +94,7 @@ export default function ExamplesTab({ onSelect }: ExamplesTabProps) {
               onClick={() => handleSelect(example)}
               className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
             >
-              Load Example
+              Cargar Ejemplo
             </button>
           </div>
         ))}
@@ -102,8 +102,8 @@ export default function ExamplesTab({ onSelect }: ExamplesTabProps) {
 
       <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mt-6">
         <p className="text-sm text-yellow-800 dark:text-yellow-300">
-          <strong>Note:</strong> Loading an example will replace your current configuration.
-          Make sure to export or save any work you want to keep.
+          <strong>Nota:</strong> Cargar un ejemplo reemplazará tu configuración actual.
+          Asegúrate de exportar o guardar cualquier trabajo que quieras conservar.
         </p>
       </div>
     </div>

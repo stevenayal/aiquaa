@@ -53,35 +53,35 @@ export default function JsonYamlTab({ input, onChange }: JsonYamlTabProps) {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-          JSON / YAML Editor
+          Editor JSON / YAML
         </h2>
         <div className="flex gap-2">
           <button
             onClick={handleFormat}
             className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors text-sm"
           >
-            Format JSON
+            Formatear JSON
           </button>
           <button
             onClick={handleConvert}
             disabled={isConverting}
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-sm"
           >
-            {isConverting ? 'Converting...' : 'Parse & Convert'}
+            {isConverting ? 'Convirtiendo...' : 'Analizar y Convertir'}
           </button>
         </div>
       </div>
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          Paste JSON or YAML
+          Pega JSON o YAML
         </label>
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
           rows={20}
           className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          placeholder="Paste JSON or YAML here..."
+          placeholder="Pega JSON o YAML aquí..."
         />
       </div>
 
@@ -93,11 +93,11 @@ export default function JsonYamlTab({ input, onChange }: JsonYamlTabProps) {
 
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md p-4">
         <p className="text-sm font-medium text-blue-900 dark:text-blue-300 mb-2">
-          Supported Formats:
+          Formatos Soportados:
         </p>
         <div className="space-y-2 text-sm text-blue-800 dark:text-blue-400">
           <div>
-            <strong>Direct format:</strong>
+            <strong>Formato directo:</strong>
             <pre className="mt-1 bg-white dark:bg-gray-800 p-2 rounded text-xs overflow-x-auto">
 {`{
   "labels": ["A", "B"],
@@ -106,10 +106,10 @@ export default function JsonYamlTab({ input, onChange }: JsonYamlTabProps) {
             </pre>
           </div>
           <div>
-            <strong>Object format:</strong>
+            <strong>Formato de objeto:</strong>
             <pre className="mt-1 bg-white dark:bg-gray-800 p-2 rounded text-xs overflow-x-auto">
 {`{
-  "Browser": ["Chrome", "Firefox"],
+  "Navegador": ["Chrome", "Firefox"],
   "OS": ["Windows", "Mac"]
 }`}
             </pre>

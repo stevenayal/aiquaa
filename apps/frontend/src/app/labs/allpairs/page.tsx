@@ -15,7 +15,7 @@ const STORAGE_KEY = 'allpairs-last-input';
 export default function AllPairsPage() {
   const [activeTab, setActiveTab] = useState<Tab>('editor');
   const [input, setInput] = useState<PairwiseInput>({
-    labels: ['Browser', 'OS'],
+    labels: ['Navegador', 'Sistema Operativo'],
     parameters: [
       ['Chrome', 'Firefox', 'Safari'],
       ['Windows', 'macOS', 'Linux'],
@@ -92,9 +92,9 @@ export default function AllPairsPage() {
     try {
       const csv = toCsv(result, { includeCounter });
       await navigator.clipboard.writeText(csv);
-      alert('Copied to clipboard!');
+      alert('¡Copiado al portapapeles!');
     } catch (err) {
-      alert('Failed to copy to clipboard');
+      alert('Error al copiar al portapapeles');
     }
   };
 
@@ -104,10 +104,10 @@ export default function AllPairsPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-            All Pairs Generator
+            Generador All Pairs
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Generate pairwise test combinations to reduce test cases while maintaining coverage
+            Genera combinaciones de pruebas pairwise para reducir casos de prueba manteniendo la cobertura
           </p>
         </div>
 
@@ -118,8 +118,8 @@ export default function AllPairsPage() {
               {[
                 { id: 'editor' as Tab, label: 'Editor' },
                 { id: 'json-yaml' as Tab, label: 'JSON/YAML' },
-                { id: 'examples' as Tab, label: 'Examples' },
-                { id: 'help' as Tab, label: 'Help' },
+                { id: 'examples' as Tab, label: 'Ejemplos' },
+                { id: 'help' as Tab, label: 'Ayuda' },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -157,7 +157,7 @@ export default function AllPairsPage() {
             disabled={isGenerating}
             className="px-8 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
           >
-            {isGenerating ? 'Generating...' : 'Generate Pairwise Combinations'}
+            {isGenerating ? 'Generando...' : 'Generar Combinaciones Pairwise'}
           </button>
         </div>
 
