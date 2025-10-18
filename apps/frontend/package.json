@@ -19,6 +19,7 @@
     "auth:check": "node -e \"fetch(process.env.NEXTAUTH_URL + '/api/auth/signin').then(r=>{if(r.status<400)process.exit(0);process.exit(1)}).catch(()=>process.exit(1))\""
   },
   "dependencies": {
+    "@aiquaa/allpairs-core": "workspace:*",
     "@aiquaa/shared": "workspace:*",
     "@axe-core/playwright": "^4.8.0",
     "@fontsource/sora": "^5.2.6",

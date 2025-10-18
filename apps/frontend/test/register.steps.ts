@@ -1,17 +1,14 @@
 import { Given, When, Then } from '@cucumber/cucumber';
 import { expect } from 'chai';
 import { NextRequest } from 'next/server';
-import { POST, OPTIONS } from '../src/app/api/register/route';
+import { POST } from '../src/app/api/register/route';
 
 // Variables globales para el estado de las pruebas
 let testData: any = {};
 let response: Response;
 let responseBody: any;
-let originalFetch: any;
 
 Given('que el sistema está configurado correctamente', async function () {
-  // Guardar el fetch original
-  originalFetch = global.fetch;
   // Configurar variables de entorno para las pruebas
   process.env.BACKEND_URL = 'http://localhost:3001';
 });

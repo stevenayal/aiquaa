@@ -64,9 +64,9 @@ export default function EditorTab({ input, onChange }: EditorTabProps) {
       {input.labels.length === 0 && (
         <div className="text-center py-12 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
           <p className="text-gray-500 dark:text-gray-400">
-            No parameters defined. Click "Add Parameter" to get started.
+            No parameters defined. Click &quot;Add Parameter&quot; to get started.
           </p>
-        </button>
+        </div>
       )}
 
       {input.labels.map((label, paramIndex) => (

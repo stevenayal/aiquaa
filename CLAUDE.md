@@ -225,30 +225,58 @@ NEXT_PUBLIC_SENTRY_DSN=...
 
 ### All Pairs Generator (`/labs/allpairs`)
 
-A web-based pairwise test generation tool:
+A web-based pairwise test generation tool for creating optimized test case combinations.
 
 **Location**: `apps/frontend/src/app/labs/allpairs/`
 
-**Core Package**: `packages/allpairs-core/` - TypeScript pairwise algorithm
+**Core Package**: `packages/allpairs-core/` - Standalone TypeScript pairwise algorithm library
+
+**API Endpoints**:
+- `POST /api/labs/allpairs/generate` - Generate pairwise combinations
+- `POST /api/labs/allpairs/convert` - Convert JSON/YAML to normalized format
 
 **Features**:
-- Visual parameter editor
-- JSON/YAML input support
-- CSV export functionality
-- Example datasets
-- Pagination for large result sets
-- LocalStorage persistence
+- Visual parameter editor (add/remove parameters and values)
+- JSON/YAML input support (direct and object formats)
+- CSV export with optional counter column
+- Copy to clipboard functionality
+- 3 pre-built example datasets
+- Pagination for large result sets (>50 rows)
+- LocalStorage persistence of last configuration
+- Dark mode support
+- Real-time validation with helpful error messages
+
+**Core Algorithm**:
+- Greedy pairwise generation (2-way combinations)
+- 50-99% pair coverage depending on complexity
+- Handles up to 20 parameters with 10+ values each
+- Deterministic output for same inputs
 
 **Testing**:
 ```bash
-# Core package tests
+# Core package unit tests (52 tests)
 cd packages/allpairs-core && pnpm test:cov
 
-# E2E tests
+# E2E tests with Playwright (15 scenarios)
 pnpm --filter @aiquaa/frontend e2e -- allpairs
+
+# Test specific functionality
+pnpm --filter @aiquaa/frontend e2e -- allpairs -g "should export CSV"
 ```
 
-**Documentation**: See `docs/tools/allpairs.md` for complete usage guide
+**Documentation**:
+- User Guide: `docs/tools/allpairs.md`
+- Technical Implementation: `docs/tools/ALLPAIRS_IMPLEMENTATION.md`
+- Migration Notes: `docs/tools/ALLPAIRS_MIGRATION_TO_LABS.md`
+
+**Development**:
+```bash
+# Run locally
+pnpm dev
+
+# Access at
+http://localhost:3001/labs/allpairs
+```
 
 ## Important Patterns and Conventions
 

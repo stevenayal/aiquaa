@@ -282,6 +282,9 @@ importers:
 
   apps/frontend:
     dependencies:
+      '@aiquaa/allpairs-core':
+        specifier: workspace:*
+        version: link:../../packages/allpairs-core
       '@aiquaa/shared':
         specifier: workspace:*
         version: link:../../packages/shared
