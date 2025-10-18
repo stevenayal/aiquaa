@@ -1,0 +1,7 @@
+{
+  "name": "@aiquaa/allpairs-examples",
+  "version": "0.1.0",
+  "description": "Example datasets for pairwise testing",
+  "main": "index.js",
+  "type": "module"
+}

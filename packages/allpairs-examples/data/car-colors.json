@@ -1,0 +1,8 @@
+{
+  "labels": ["Year", "Color", "Car"],
+  "parameters": [
+    ["2023", "2024", "2025"],
+    ["Red", "Blue", "Green", "Black", "White"],
+    ["Tesla Model 3", "Ford Mustang", "Honda Civic", "Toyota Camry"]
+  ]
+}
