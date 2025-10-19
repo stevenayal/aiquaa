@@ -278,12 +278,18 @@ export default function Base64ConverterPage() {
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Input Section */}
           <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h2 className="text-xl font-bold text-brand-text mb-4">Entrada</h2>
-              
+            <div className={`rounded-lg shadow-lg p-6 transition-colors ${
+              isDarkMode ? 'bg-slate-800' : 'bg-white'
+            }`}>
+              <h2 className={`text-xl font-bold mb-4 ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}>Entrada</h2>
+
               {/* Mode Selection */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-brand-text mb-2">
+                <label className={`block text-sm font-medium mb-2 ${
+                  isDarkMode ? 'text-white' : 'text-brand-text'
+                }`}>
                   Modo de operación
                 </label>
                 <div className="flex gap-3">
@@ -295,7 +301,9 @@ export default function Base64ConverterPage() {
                       onChange={(e) => handleModeChange(e.target.value as 'encode' | 'decode')}
                       className="mr-2"
                     />
-                    <span className="text-sm">Codificar (Texto → Base64)</span>
+                    <span className={`text-sm ${
+                      isDarkMode ? 'text-slate-300' : 'text-gray-900'
+                    }`}>Codificar (Texto → Base64)</span>
                   </label>
                   <label className="flex items-center">
                     <input

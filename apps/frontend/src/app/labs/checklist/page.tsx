@@ -290,9 +290,13 @@ export default function ChecklistPage() {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Template Selection */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-lg p-6 sticky top-4">
-              <h2 className="text-xl font-bold text-brand-text mb-4">Templates</h2>
-              
+            <div className={`rounded-lg shadow-lg p-6 sticky top-4 transition-colors duration-300 ${
+              isDarkMode ? 'bg-slate-800' : 'bg-white'
+            }`}>
+              <h2 className={`text-xl font-bold mb-4 ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}>Templates</h2>
+
               <div className="space-y-3">
                 {Object.values(templates).map((template) => (
                   <button
@@ -300,30 +304,48 @@ export default function ChecklistPage() {
                     onClick={() => loadTemplate(template.id)}
                     className={`w-full text-left p-4 rounded-lg border transition-colors ${
                       currentTemplate === template.id
-                        ? 'border-brand-accent bg-brand-accent/10'
-                        : 'border-gray-200 hover:border-brand-accent/50'
+                        ? isDarkMode
+                          ? 'border-brand-accent bg-brand-accent/20 text-white'
+                          : 'border-brand-accent bg-brand-accent/10'
+                        : isDarkMode
+                          ? 'border-slate-600 hover:border-brand-accent/50 text-slate-300'
+                          : 'border-gray-200 hover:border-brand-accent/50'
                     }`}
                   >
-                    <h3 className="font-semibold text-brand-text mb-1">{template.name}</h3>
-                    <p className="text-sm text-brand-muted">{template.description}</p>
+                    <h3 className={`font-semibold mb-1 ${
+                      isDarkMode ? 'text-white' : 'text-brand-text'
+                    }`}>{template.name}</h3>
+                    <p className={`text-sm ${
+                      isDarkMode ? 'text-slate-400' : 'text-brand-muted'
+                    }`}>{template.description}</p>
                   </button>
                 ))}
               </div>
 
               {/* Progress */}
               {checklistItems.length > 0 && (
-                <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                <div className={`mt-6 p-4 rounded-lg transition-colors ${
+                  isDarkMode ? 'bg-slate-700' : 'bg-gray-50'
+                }`}>
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-medium text-brand-text">Progreso</span>
-                    <span className="text-sm text-brand-muted">{getProgress()}%</span>
+                    <span className={`text-sm font-medium ${
+                      isDarkMode ? 'text-white' : 'text-brand-text'
+                    }`}>Progreso</span>
+                    <span className={`text-sm ${
+                      isDarkMode ? 'text-slate-300' : 'text-brand-muted'
+                    }`}>{getProgress()}%</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
+                  <div className={`w-full rounded-full h-2 ${
+                    isDarkMode ? 'bg-slate-600' : 'bg-gray-200'
+                  }`}>
+                    <div
                       className="bg-brand-accent h-2 rounded-full transition-all duration-300"
                       style={{ width: `${getProgress()}%` }}
                     ></div>
                   </div>
-                  <div className="text-xs text-brand-muted mt-1">
+                  <div className={`text-xs mt-1 ${
+                    isDarkMode ? 'text-slate-400' : 'text-brand-muted'
+                  }`}>
                     {checklistItems.filter(item => item.isChecked).length} de {checklistItems.length} completados
                   </div>
                 </div>
@@ -369,7 +391,9 @@ export default function ChecklistPage() {
               <div className="space-y-6">
                 {/* Controls */}
                 <div className="flex justify-between items-center">
-                  <h2 className="text-2xl font-bold text-brand-text">
+                  <h2 className={`text-2xl font-bold ${
+                    isDarkMode ? 'text-white' : 'text-brand-text'
+                  }`}>
                     {templates[currentTemplate].name}
                   </h2>
                   <label className="flex items-center">
@@ -379,14 +403,18 @@ export default function ChecklistPage() {
                       onChange={(e) => setShowCompleted(e.target.checked)}
                       className="mr-2"
                     />
-                    <span className="text-sm text-brand-muted">Mostrar completados</span>
+                    <span className={`text-sm ${
+                      isDarkMode ? 'text-slate-300' : 'text-brand-muted'
+                    }`}>Mostrar completados</span>
                   </label>
                 </div>
 
                 {/* Items */}
                 <div className="space-y-4">
                   {filteredItems.map((item) => (
-                    <div key={item.id} className="bg-white rounded-lg shadow-lg p-6">
+                    <div key={item.id} className={`rounded-lg shadow-lg p-6 transition-colors ${
+                      isDarkMode ? 'bg-slate-800' : 'bg-white'
+                    }`}>
                       <div className="flex items-start gap-4">
                         <input
                           type="checkbox"
@@ -412,17 +440,25 @@ export default function ChecklistPage() {
                               <span className="text-green-600 text-sm">✅ Completado</span>
                             )}
                           </div>
-                          <p className={`text-brand-text ${item.isChecked ? 'line-through text-gray-500' : ''}`}>
+                          <p className={`${
+                            item.isChecked
+                              ? isDarkMode ? 'line-through text-slate-500' : 'line-through text-gray-500'
+                              : isDarkMode ? 'text-white' : 'text-brand-text'
+                          }`}>
                             {item.text}
                           </p>
-                          
+
                           {/* Notes */}
                           <div className="mt-3">
                             <textarea
                               placeholder="Agregar notas..."
                               value={notes[item.id] || ''}
                               onChange={(e) => updateNotes(item.id, e.target.value)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-accent focus:border-transparent resize-none"
+                              className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-brand-accent focus:border-transparent resize-none transition-colors ${
+                                isDarkMode
+                                  ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
+                                  : 'bg-white border-gray-300 text-gray-900'
+                              }`}
                               rows={2}
                             />
                           </div>
@@ -435,10 +471,12 @@ export default function ChecklistPage() {
             ) : (
               <div className="text-center py-12">
                 <div className="text-6xl mb-4">📋</div>
-                <h3 className="text-xl font-semibold text-brand-text mb-2">
+                <h3 className={`text-xl font-semibold mb-2 ${
+                  isDarkMode ? 'text-white' : 'text-brand-text'
+                }`}>
                   Selecciona un template para comenzar
                 </h3>
-                <p className="text-brand-muted">
+                <p className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>
                   Elige uno de los templates disponibles en el panel izquierdo para crear tu checklist de pruebas.
                 </p>
               </div>
