@@ -3,8 +3,10 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { Alert } from '@/components/common';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function JsonValidatorPage() {
+  const { isDarkMode } = useTheme();
   const [inputJson, setInputJson] = useState('');
   const [outputJson, setOutputJson] = useState('');
   const [isValid, setIsValid] = useState<boolean | null>(null);
@@ -151,19 +153,27 @@ export default function JsonValidatorPage() {
   };
 
   return (
-    <div className="min-h-screen bg-brand-light py-12 md:py-16">
+    <div className={`min-h-screen py-12 md:py-16 transition-colors duration-300 ${
+      isDarkMode ? 'bg-slate-900' : 'bg-brand-light'
+    }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center mb-4">
-            <Link href="/labs" className="text-brand-muted hover:text-brand-text transition-colors">
+            <Link href="/labs" className={`transition-colors ${
+              isDarkMode ? 'text-slate-400 hover:text-white' : 'text-brand-muted hover:text-brand-text'
+            }`}>
               ← Volver a Labs
             </Link>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-brand-text mb-6">
+          <h1 className={`text-4xl md:text-5xl font-bold mb-6 ${
+            isDarkMode ? 'text-white' : 'text-brand-text'
+          }`}>
             🔍 Validador de JSON
           </h1>
-          <p className="text-xl text-brand-muted max-w-3xl mx-auto">
+          <p className={`text-xl max-w-3xl mx-auto ${
+            isDarkMode ? 'text-slate-300' : 'text-brand-muted'
+          }`}>
             Valida, formatea y minifica tu código JSON. Herramienta esencial para testers y desarrolladores.
           </p>
         </div>
@@ -183,7 +193,9 @@ export default function JsonValidatorPage() {
           {/* Input Section */}
           <div className="space-y-6">
             <div>
-              <label htmlFor="json-input" className="block text-sm font-medium text-brand-text mb-2">
+              <label htmlFor="json-input" className={`block text-sm font-medium mb-2 ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}>
                 JSON de Entrada
               </label>
               <textarea
@@ -191,7 +203,11 @@ export default function JsonValidatorPage() {
                 value={inputJson}
                 onChange={handleInputChange}
                 placeholder='{"nombre": "ejemplo", "edad": 25, "activo": true}'
-                className="w-full h-80 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-accent focus:border-transparent font-mono text-sm resize-none"
+                className={`w-full h-80 p-4 rounded-lg focus:ring-2 focus:ring-brand-accent focus:border-transparent font-mono text-sm resize-none transition-colors ${
+                  isDarkMode
+                    ? 'bg-slate-800 border-slate-600 text-white placeholder-slate-500'
+                    : 'bg-white border-gray-300 text-gray-900'
+                }`}
               />
             </div>
 
@@ -233,28 +249,30 @@ export default function JsonValidatorPage() {
 
             {/* Validation Status - Ahora más cerca del input */}
             {isValid !== null && (
-              <div className={`p-4 rounded-lg ${
-                isValid ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'
+              <div className={`p-4 rounded-lg border ${
+                isValid
+                  ? isDarkMode ? 'bg-green-900/30 border-green-700' : 'bg-green-50 border-green-200'
+                  : isDarkMode ? 'bg-red-900/30 border-red-700' : 'bg-red-50 border-red-200'
               }`}>
                 <div className="flex items-center">
                   {isValid ? (
                     <>
-                      <svg className="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <svg className={`w-5 h-5 mr-2 ${isDarkMode ? 'text-green-400' : 'text-green-600'}`} fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                       </svg>
-                      <span className="text-green-800 font-medium">JSON válido</span>
+                      <span className={`font-medium ${isDarkMode ? 'text-green-300' : 'text-green-800'}`}>JSON válido</span>
                     </>
                   ) : (
                     <>
-                      <svg className="w-5 h-5 text-red-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <svg className={`w-5 h-5 mr-2 ${isDarkMode ? 'text-red-400' : 'text-red-600'}`} fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                       </svg>
-                      <span className="text-red-800 font-medium">JSON inválido</span>
+                      <span className={`font-medium ${isDarkMode ? 'text-red-300' : 'text-red-800'}`}>JSON inválido</span>
                     </>
                   )}
                 </div>
                 {error && (
-                  <p className="text-red-700 text-sm mt-2 font-mono">{error}</p>
+                  <p className={`text-sm mt-2 font-mono ${isDarkMode ? 'text-red-300' : 'text-red-700'}`}>{error}</p>
                 )}
               </div>
             )}
@@ -263,7 +281,9 @@ export default function JsonValidatorPage() {
           {/* Output Section */}
           <div className="space-y-6">
             <div>
-              <label htmlFor="json-output" className="block text-sm font-medium text-brand-text mb-2">
+              <label htmlFor="json-output" className={`block text-sm font-medium mb-2 ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}>
                 Resultado
               </label>
               <textarea
@@ -272,7 +292,11 @@ export default function JsonValidatorPage() {
                 value={outputJson}
                 readOnly
                 placeholder="El JSON validado y formateado aparecerá aquí..."
-                className="w-full h-80 p-4 border border-gray-300 rounded-lg bg-gray-50 font-mono text-sm resize-none"
+                className={`w-full h-80 p-4 rounded-lg font-mono text-sm resize-none transition-colors ${
+                  isDarkMode
+                    ? 'bg-slate-800 border-slate-600 text-white placeholder-slate-500'
+                    : 'bg-gray-50 border-gray-300 text-gray-900'
+                }`}
               />
             </div>
 
@@ -285,8 +309,10 @@ export default function JsonValidatorPage() {
                 >
                   📋 Copiar
                 </button>
-                <div className="flex items-center px-4 py-3 bg-gray-100 rounded-lg">
-                  <span className="text-sm text-gray-600">
+                <div className={`flex items-center px-4 py-3 rounded-lg ${
+                  isDarkMode ? 'bg-slate-700' : 'bg-gray-100'
+                }`}>
+                  <span className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}>
                     {isFormatted ? 'Formateado' : 'Minificado'} • {outputJson.length} caracteres
                   </span>
                 </div>
@@ -296,29 +322,39 @@ export default function JsonValidatorPage() {
         </div>
 
         {/* Features Section */}
-        <div className="mt-16 bg-white rounded-lg shadow-lg p-8">
-          <h2 className="text-2xl font-bold text-brand-text mb-6 text-center">
+        <div className={`mt-16 rounded-lg shadow-lg p-8 transition-colors duration-300 ${
+          isDarkMode ? 'bg-slate-800' : 'bg-white'
+        }`}>
+          <h2 className={`text-2xl font-bold mb-6 text-center ${
+            isDarkMode ? 'text-white' : 'text-brand-text'
+          }`}>
             ¿Por qué usar nuestro Validador JSON?
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="text-center">
               <div className="text-4xl mb-4">⚡</div>
-              <h3 className="text-lg font-semibold text-brand-text mb-2">Validación Instantánea</h3>
-              <p className="text-brand-muted">
+              <h3 className={`text-lg font-semibold mb-2 ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}>Validación Instantánea</h3>
+              <p className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>
                 Detecta errores de sintaxis en tiempo real mientras escribes
               </p>
             </div>
             <div className="text-center">
               <div className="text-4xl mb-4">🎨</div>
-              <h3 className="text-lg font-semibold text-brand-text mb-2">Formateo Inteligente</h3>
-              <p className="text-brand-muted">
+              <h3 className={`text-lg font-semibold mb-2 ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}>Formateo Inteligente</h3>
+              <p className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>
                 Convierte JSON compacto en código legible y bien estructurado
               </p>
             </div>
             <div className="text-center">
               <div className="text-4xl mb-4">🔧</div>
-              <h3 className="text-lg font-semibold text-brand-text mb-2">Herramientas Avanzadas</h3>
-              <p className="text-brand-muted">
+              <h3 className={`text-lg font-semibold mb-2 ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}>Herramientas Avanzadas</h3>
+              <p className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>
                 Minifica, valida y formatea con un solo clic
               </p>
             </div>
