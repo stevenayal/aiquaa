@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { Alert } from '@/components/common';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface DecodedJwtResult {
   header: any;
@@ -16,6 +17,7 @@ interface DecodedJwtResult {
 }
 
 export default function JwtDecoderPage() {
+  const { isDarkMode } = useTheme();
   const [jwtToken, setJwtToken] = useState('');
   const [decodedJwt, setDecodedJwt] = useState<DecodedJwtResult | null>(null);
   const [showAlert, setShowAlert] = useState(false);
@@ -215,19 +217,27 @@ export default function JwtDecoderPage() {
   };
 
   return (
-    <div className="min-h-screen bg-brand-light py-12 md:py-16">
+    <div className={`min-h-screen py-12 md:py-16 transition-colors duration-300 ${
+      isDarkMode ? 'bg-slate-900' : 'bg-brand-light'
+    }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center mb-4">
-            <Link href="/labs" className="text-brand-muted hover:text-brand-text transition-colors">
+            <Link href="/labs" className={`transition-colors ${
+              isDarkMode ? 'text-slate-400 hover:text-white' : 'text-brand-muted hover:text-brand-text'
+            }`}>
               ← Volver a Labs
             </Link>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-brand-text mb-6">
+          <h1 className={`text-4xl md:text-5xl font-bold mb-6 ${
+            isDarkMode ? 'text-white' : 'text-brand-text'
+          }`}>
             🔐 Decodificador JWT
           </h1>
-          <p className="text-xl text-brand-muted max-w-3xl mx-auto">
+          <p className={`text-xl max-w-3xl mx-auto ${
+            isDarkMode ? 'text-slate-300' : 'text-brand-muted'
+          }`}>
             Decodifica y analiza tokens JWT. Verifica expiración, validez y contenido de tus tokens de autenticación.
           </p>
         </div>
@@ -452,29 +462,39 @@ export default function JwtDecoderPage() {
         </div>
 
         {/* Features Section */}
-        <div className="mt-16 bg-white rounded-lg shadow-lg p-8">
-          <h2 className="text-2xl font-bold text-brand-text mb-6 text-center">
+        <div className={`mt-16 rounded-lg shadow-lg p-8 transition-colors duration-300 ${
+          isDarkMode ? 'bg-slate-800' : 'bg-white'
+        }`}>
+          <h2 className={`text-2xl font-bold mb-6 text-center ${
+            isDarkMode ? 'text-white' : 'text-brand-text'
+          }`}>
             ¿Por qué usar nuestro Decodificador JWT?
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="text-center">
               <div className="text-4xl mb-4">🔍</div>
-              <h3 className="text-lg font-semibold text-brand-text mb-2">Decodificación Instantánea</h3>
-              <p className="text-brand-muted">
+              <h3 className={`text-lg font-semibold mb-2 ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}>Decodificación Instantánea</h3>
+              <p className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>
                 Decodifica tokens JWT en tiempo real sin enviar datos al servidor
               </p>
             </div>
             <div className="text-center">
               <div className="text-4xl mb-4">⏰</div>
-              <h3 className="text-lg font-semibold text-brand-text mb-2">Verificación de Expiración</h3>
-              <p className="text-brand-muted">
+              <h3 className={`text-lg font-semibold mb-2 ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}>Verificación de Expiración</h3>
+              <p className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>
                 Verifica si tu token está activo, expirando pronto o ya expiró
               </p>
             </div>
             <div className="text-center">
               <div className="text-4xl mb-4">📊</div>
-              <h3 className="text-lg font-semibold text-brand-text mb-2">Análisis Detallado</h3>
-              <p className="text-brand-muted">
+              <h3 className={`text-lg font-semibold mb-2 ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}>Análisis Detallado</h3>
+              <p className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>
                 Visualiza header, payload y signature de forma clara y organizada
               </p>
             </div>
@@ -482,8 +502,12 @@ export default function JwtDecoderPage() {
         </div>
 
         {/* Use Cases Section */}
-        <div className="mt-16 bg-white rounded-lg shadow-lg p-8">
-          <h2 className="text-2xl font-bold text-brand-text mb-6 text-center">
+        <div className={`mt-16 rounded-lg shadow-lg p-8 transition-colors duration-300 ${
+          isDarkMode ? 'bg-slate-800' : 'bg-white'
+        }`}>
+          <h2 className={`text-2xl font-bold mb-6 text-center ${
+            isDarkMode ? 'text-white' : 'text-brand-text'
+          }`}>
             Casos de Uso Comunes
           </h2>
           <div className="grid md:grid-cols-2 gap-6">

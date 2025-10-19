@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Alert } from '@/components/common';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface CronField {
   name: string;
@@ -20,6 +21,7 @@ interface CronValidation {
 }
 
 export default function CronValidatorPage() {
+  const { isDarkMode } = useTheme();
   const [cronExpression, setCronExpression] = useState('');
   const [validation, setValidation] = useState<CronValidation | null>(null);
   const [executionCount, setExecutionCount] = useState(5);
@@ -360,19 +362,27 @@ export default function CronValidatorPage() {
   };
 
   return (
-    <div className="min-h-screen bg-brand-light py-12 md:py-16">
+    <div className={`min-h-screen py-12 md:py-16 transition-colors duration-300 ${
+      isDarkMode ? 'bg-slate-900' : 'bg-brand-light'
+    }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center mb-4">
-            <Link href="/labs" className="text-brand-muted hover:text-brand-text transition-colors">
+            <Link href="/labs" className={`transition-colors ${
+              isDarkMode ? 'text-slate-400 hover:text-white' : 'text-brand-muted hover:text-brand-text'
+            }`}>
               ← Volver a Labs
             </Link>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-brand-text mb-6">
+          <h1 className={`text-4xl md:text-5xl font-bold mb-6 ${
+            isDarkMode ? 'text-white' : 'text-brand-text'
+          }`}>
             ⏰ Validador de Cron
           </h1>
-          <p className="text-xl text-brand-muted max-w-3xl mx-auto">
+          <p className={`text-xl max-w-3xl mx-auto ${
+            isDarkMode ? 'text-slate-300' : 'text-brand-muted'
+          }`}>
             Valida expresiones cron y calcula las próximas ejecuciones. Herramienta esencial para programar tareas y automatizaciones.
           </p>
         </div>
@@ -603,29 +613,39 @@ export default function CronValidatorPage() {
         </div>
 
         {/* Features Section */}
-        <div className="mt-16 bg-white rounded-lg shadow-lg p-8">
-          <h2 className="text-2xl font-bold text-brand-text mb-6 text-center">
+        <div className={`mt-16 rounded-lg shadow-lg p-8 transition-colors duration-300 ${
+          isDarkMode ? 'bg-slate-800' : 'bg-white'
+        }`}>
+          <h2 className={`text-2xl font-bold mb-6 text-center ${
+            isDarkMode ? 'text-white' : 'text-brand-text'
+          }`}>
             ¿Por qué usar nuestro Validador de Cron?
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="text-center">
               <div className="text-4xl mb-4">✅</div>
-              <h3 className="text-lg font-semibold text-brand-text mb-2">Validación Instantánea</h3>
-              <p className="text-brand-muted">
+              <h3 className={`text-lg font-semibold mb-2 ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}>Validación Instantánea</h3>
+              <p className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>
                 Verifica la sintaxis de tus expresiones cron en tiempo real
               </p>
             </div>
             <div className="text-center">
               <div className="text-4xl mb-4">📅</div>
-              <h3 className="text-lg font-semibold text-brand-text mb-2">Cálculo de Ejecuciones</h3>
-              <p className="text-brand-muted">
+              <h3 className={`text-lg font-semibold mb-2 ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}>Cálculo de Ejecuciones</h3>
+              <p className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>
                 Calcula las próximas ejecuciones de tu tarea programada
               </p>
             </div>
             <div className="text-center">
               <div className="text-4xl mb-4">🔧</div>
-              <h3 className="text-lg font-semibold text-brand-text mb-2">Referencia Completa</h3>
-              <p className="text-brand-muted">
+              <h3 className={`text-lg font-semibold mb-2 ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}>Referencia Completa</h3>
+              <p className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>
                 Guía de referencia para todos los campos cron
               </p>
             </div>
@@ -633,8 +653,12 @@ export default function CronValidatorPage() {
         </div>
 
         {/* Examples Section */}
-        <div className="mt-16 bg-white rounded-lg shadow-lg p-8">
-          <h2 className="text-2xl font-bold text-brand-text mb-6 text-center">
+        <div className={`mt-16 rounded-lg shadow-lg p-8 transition-colors duration-300 ${
+          isDarkMode ? 'bg-slate-800' : 'bg-white'
+        }`}>
+          <h2 className={`text-2xl font-bold mb-6 text-center ${
+            isDarkMode ? 'text-white' : 'text-brand-text'
+          }`}>
             Ejemplos Comunes de Expresiones Cron
           </h2>
           <div className="grid md:grid-cols-2 gap-6">

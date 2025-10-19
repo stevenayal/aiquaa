@@ -3,8 +3,10 @@
 import { useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { Alert } from '@/components/common';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function Base64ConverterPage() {
+  const { isDarkMode } = useTheme();
   const [inputText, setInputText] = useState('');
   const [outputText, setOutputText] = useState('');
   const [mode, setMode] = useState<'encode' | 'decode'>('encode');
@@ -237,19 +239,27 @@ export default function Base64ConverterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-brand-light py-12 md:py-16">
+    <div className={`min-h-screen py-12 md:py-16 transition-colors duration-300 ${
+      isDarkMode ? 'bg-slate-900' : 'bg-brand-light'
+    }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center mb-4">
-            <Link href="/labs" className="text-brand-muted hover:text-brand-text transition-colors">
+            <Link href="/labs" className={`transition-colors ${
+              isDarkMode ? 'text-slate-400 hover:text-white' : 'text-brand-muted hover:text-brand-text'
+            }`}>
               ← Volver a Labs
             </Link>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-brand-text mb-6">
+          <h1 className={`text-4xl md:text-5xl font-bold mb-6 ${
+            isDarkMode ? 'text-white' : 'text-brand-text'
+          }`}>
             🔄 Convertidor Base64
           </h1>
-          <p className="text-xl text-brand-muted max-w-3xl mx-auto">
+          <p className={`text-xl max-w-3xl mx-auto ${
+            isDarkMode ? 'text-slate-300' : 'text-brand-muted'
+          }`}>
             Codifica y decodifica texto y archivos en Base64. Herramienta esencial para testers y desarrolladores.
           </p>
         </div>
@@ -458,29 +468,39 @@ export default function Base64ConverterPage() {
         </div>
 
         {/* Features Section */}
-        <div className="mt-16 bg-white rounded-lg shadow-lg p-8">
-          <h2 className="text-2xl font-bold text-brand-text mb-6 text-center">
+        <div className={`mt-16 rounded-lg shadow-lg p-8 transition-colors duration-300 ${
+          isDarkMode ? 'bg-slate-800' : 'bg-white'
+        }`}>
+          <h2 className={`text-2xl font-bold mb-6 text-center ${
+            isDarkMode ? 'text-white' : 'text-brand-text'
+          }`}>
             ¿Por qué usar nuestro Convertidor Base64?
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="text-center">
               <div className="text-4xl mb-4">⚡</div>
-              <h3 className="text-lg font-semibold text-brand-text mb-2">Conversión Instantánea</h3>
-              <p className="text-brand-muted">
+              <h3 className={`text-lg font-semibold mb-2 ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}>Conversión Instantánea</h3>
+              <p className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>
                 Codifica y decodifica texto en tiempo real
               </p>
             </div>
             <div className="text-center">
               <div className="text-4xl mb-4">📁</div>
-              <h3 className="text-lg font-semibold text-brand-text mb-2">Soporte para Archivos</h3>
-              <p className="text-brand-muted">
+              <h3 className={`text-lg font-semibold mb-2 ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}>Soporte para Archivos</h3>
+              <p className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>
                 Trabaja con texto y archivos binarios
               </p>
             </div>
             <div className="text-center">
               <div className="text-4xl mb-4">🔧</div>
-              <h3 className="text-lg font-semibold text-brand-text mb-2">Herramientas Avanzadas</h3>
-              <p className="text-brand-muted">
+              <h3 className={`text-lg font-semibold mb-2 ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}>Herramientas Avanzadas</h3>
+              <p className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>
                 Copia, descarga y valida automáticamente
               </p>
             </div>
@@ -488,8 +508,12 @@ export default function Base64ConverterPage() {
         </div>
 
         {/* Use Cases Section */}
-        <div className="mt-16 bg-white rounded-lg shadow-lg p-8">
-          <h2 className="text-2xl font-bold text-brand-text mb-6 text-center">
+        <div className={`mt-16 rounded-lg shadow-lg p-8 transition-colors duration-300 ${
+          isDarkMode ? 'bg-slate-800' : 'bg-white'
+        }`}>
+          <h2 className={`text-2xl font-bold mb-6 text-center ${
+            isDarkMode ? 'text-white' : 'text-brand-text'
+          }`}>
             Casos de Uso Comunes
           </h2>
           <div className="grid md:grid-cols-2 gap-6">
