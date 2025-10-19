@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface FAQItem {
   question: string;
@@ -9,6 +10,7 @@ interface FAQItem {
 
 const FAQSection = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const { isDarkMode } = useTheme();
 
   const faqs: FAQItem[] = [
     {
@@ -38,13 +40,17 @@ const FAQSection = () => {
   };
 
   return (
-    <section className="bg-brand-light py-12 md:py-16">
+    <section className={`py-12 md:py-16 transition-colors duration-300 ${
+      isDarkMode ? 'bg-slate-900' : 'bg-brand-light'
+    }`}>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-brand-text mb-4">
+          <h2 className={`text-2xl md:text-3xl font-bold mb-4 ${
+            isDarkMode ? 'text-white' : 'text-brand-text'
+          }`}>
             ❓ Preguntas Frecuentes
           </h2>
-          <p className="text-brand-muted">
+          <p className={isDarkMode ? 'text-slate-300' : 'text-brand-muted'}>
             Resolvemos las dudas más comunes sobre AIQUAA
           </p>
         </div>
@@ -53,22 +59,30 @@ const FAQSection = () => {
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className="bg-white rounded-lg shadow-md overflow-hidden"
+              className={`rounded-lg shadow-md overflow-hidden transition-colors duration-300 ${
+                isDarkMode ? 'bg-slate-800' : 'bg-white'
+              }`}
             >
               <button
                 onClick={() => toggleFAQ(index)}
-                className="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-gray-50 transition"
+                className={`w-full px-6 py-4 text-left flex justify-between items-center transition ${
+                  isDarkMode
+                    ? 'hover:bg-slate-700'
+                    : 'hover:bg-gray-50'
+                }`}
               >
-                <span className="font-semibold text-brand-text">
+                <span className={`font-semibold ${
+                  isDarkMode ? 'text-white' : 'text-brand-text'
+                }`}>
                   {faq.question}
                 </span>
-                <span className="text-brand-accent">
+                <span className={isDarkMode ? 'text-blue-400' : 'text-brand-accent'}>
                   {openIndex === index ? '−' : '+'}
                 </span>
               </button>
               {openIndex === index && (
                 <div className="px-6 pb-4">
-                  <p className="text-brand-muted">
+                  <p className={isDarkMode ? 'text-slate-300' : 'text-brand-muted'}>
                     {faq.answer}
                   </p>
                 </div>

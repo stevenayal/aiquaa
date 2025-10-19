@@ -1,6 +1,11 @@
+'use client';
+
 import Link from 'next/link';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function LabsPage() {
+  const { isDarkMode } = useTheme();
+
   const tools = [
     {
       id: 'json-validator',
@@ -61,15 +66,21 @@ export default function LabsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-brand-light py-12 md:py-16">
+    <div className={`min-h-screen py-12 md:py-16 transition-colors duration-300 ${
+      isDarkMode ? 'bg-slate-900' : 'bg-brand-light'
+    }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-brand-text mb-6">
+          <h1 className={`text-4xl md:text-5xl font-bold mb-6 ${
+            isDarkMode ? 'text-white' : 'text-brand-text'
+          }`}>
             🧪 AIQUAA Labs
           </h1>
-          <p className="text-xl text-brand-muted max-w-3xl mx-auto">
-            Herramientas gratuitas para testers funcionales, automatizadores y QA manual. 
+          <p className={`text-xl max-w-3xl mx-auto ${
+            isDarkMode ? 'text-slate-300' : 'text-brand-muted'
+          }`}>
+            Herramientas gratuitas para testers funcionales, automatizadores y QA manual.
             Todo en español y diseñado específicamente para la comunidad de testing en Paraguay.
           </p>
         </div>
@@ -80,7 +91,9 @@ export default function LabsPage() {
             <Link
               key={tool.id}
               href={tool.href}
-              className="group block bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+              className={`group block rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${
+                isDarkMode ? 'bg-slate-800' : 'bg-white'
+              }`}
             >
               <div className={`bg-gradient-to-r ${tool.color} p-6 text-white`}>
                 <div className="text-3xl mb-3">{tool.icon}</div>
@@ -89,11 +102,17 @@ export default function LabsPage() {
               </div>
               <div className="p-6">
                 <div className="flex items-center justify-between">
-                  <span className="text-brand-muted text-sm">Hacer click para usar</span>
-                  <svg 
-                    className="w-5 h-5 text-brand-muted group-hover:text-brand-accent transition-colors" 
-                    fill="none" 
-                    stroke="currentColor" 
+                  <span className={`text-sm ${
+                    isDarkMode ? 'text-slate-400' : 'text-brand-muted'
+                  }`}>Hacer click para usar</span>
+                  <svg
+                    className={`w-5 h-5 transition-colors ${
+                      isDarkMode
+                        ? 'text-slate-400 group-hover:text-blue-400'
+                        : 'text-brand-muted group-hover:text-brand-accent'
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -105,13 +124,19 @@ export default function LabsPage() {
         </div>
 
         {/* Info Section */}
-        <div className="mt-16 bg-white rounded-lg shadow-lg p-8">
+        <div className={`mt-16 rounded-lg shadow-lg p-8 transition-colors duration-300 ${
+          isDarkMode ? 'bg-slate-800' : 'bg-white'
+        }`}>
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-brand-text mb-4">
+            <h2 className={`text-3xl font-bold mb-4 ${
+              isDarkMode ? 'text-white' : 'text-brand-text'
+            }`}>
               ¿Por qué usar AIQUAA Labs?
             </h2>
-            <p className="text-lg text-brand-muted max-w-2xl mx-auto">
-              Nuestras herramientas están diseñadas específicamente para testers, 
+            <p className={`text-lg max-w-2xl mx-auto ${
+              isDarkMode ? 'text-slate-300' : 'text-brand-muted'
+            }`}>
+              Nuestras herramientas están diseñadas específicamente para testers,
               con interfaz en español y funcionalidades que realmente necesitas en tu día a día.
             </p>
           </div>
@@ -119,22 +144,28 @@ export default function LabsPage() {
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="text-4xl mb-4">🚀</div>
-              <h3 className="text-xl font-bold text-brand-text mb-3">Gratis y Abierto</h3>
-              <p className="text-brand-muted">
+              <h3 className={`text-xl font-bold mb-3 ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}>Gratis y Abierto</h3>
+              <p className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>
                 Todas las herramientas son completamente gratuitas y de código abierto.
               </p>
             </div>
             <div className="text-center">
               <div className="text-4xl mb-4">🇵🇾</div>
-              <h3 className="text-xl font-bold text-brand-text mb-3">Hecho en Paraguay</h3>
-              <p className="text-brand-muted">
+              <h3 className={`text-xl font-bold mb-3 ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}>Hecho en Paraguay</h3>
+              <p className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>
                 Desarrollado por testers locales para testers locales.
               </p>
             </div>
             <div className="text-center">
               <div className="text-4xl mb-4">💡</div>
-              <h3 className="text-xl font-bold text-brand-text mb-3">Siempre Actualizado</h3>
-              <p className="text-brand-muted">
+              <h3 className={`text-xl font-bold mb-3 ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}>Siempre Actualizado</h3>
+              <p className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>
                 Nuevas herramientas y mejoras constantes basadas en feedback real.
               </p>
             </div>
@@ -143,7 +174,11 @@ export default function LabsPage() {
 
         {/* CTA Section */}
         <div className="mt-16 text-center">
-          <div className="bg-gradient-to-r from-brand-accent to-brand-primary rounded-lg p-8 text-white">
+          <div className={`rounded-lg p-8 text-white transition-colors duration-300 ${
+            isDarkMode
+              ? 'bg-gradient-to-r from-blue-600 to-indigo-700'
+              : 'bg-gradient-to-r from-brand-accent to-brand-primary'
+          }`}>
             <h2 className="text-3xl font-bold mb-4">
               ¿Tienes una idea para una nueva herramienta?
             </h2>
@@ -152,7 +187,11 @@ export default function LabsPage() {
             </p>
             <Link
               href="/contact"
-              className="inline-block bg-white text-brand-primary px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+              className={`inline-block px-8 py-3 rounded-lg font-semibold transition-colors ${
+                isDarkMode
+                  ? 'bg-white text-blue-600 hover:bg-gray-100'
+                  : 'bg-white text-brand-primary hover:bg-gray-100'
+              }`}
             >
               Contactar
             </Link>
