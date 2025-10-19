@@ -62,6 +62,14 @@ export default function LabsPage() {
       icon: '🔀',
       color: 'from-teal-500 to-teal-600',
       href: '/labs/allpairs'
+    },
+    {
+      id: 'risk-matrix',
+      name: 'Matriz de Riesgos',
+      description: 'Crea y gestiona matrices de riesgos para proyectos QA/IT',
+      icon: '🎯',
+      color: 'from-pink-500 to-pink-600',
+      href: '/labs/risk-matrix'
     }
   ];
 
