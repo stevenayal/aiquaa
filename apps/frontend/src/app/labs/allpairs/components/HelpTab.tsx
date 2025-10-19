@@ -3,72 +3,74 @@
 export default function HelpTab() {
   return (
     <div className="prose dark:prose-invert max-w-none">
-      <h2>What is Pairwise Testing?</h2>
+      <h2>¿Qué son las Pruebas por Pares?</h2>
       <p>
-        Pairwise testing (also known as all-pairs testing) is a combinatorial testing method
-        that drastically reduces the number of test cases needed while maintaining high
-        coverage of potential interactions.
+        Las pruebas por pares (también conocidas como pruebas de todos los pares o <em>all-pairs testing</em>)
+        son un método de prueba combinatorio que reduce drásticamente el número de casos de prueba necesarios,
+        manteniendo al mismo tiempo una alta cobertura de las posibles interacciones entre parámetros.
       </p>
 
-      <h3>How It Works</h3>
+      <h3>¿Cómo Funciona?</h3>
       <p>
-        Instead of testing all possible combinations of parameters (which grows exponentially),
-        pairwise testing ensures that every possible pair of values across any two parameters
-        is covered at least once.
+        En lugar de probar todas las combinaciones posibles de parámetros (lo cual crece exponencialmente),
+        las pruebas por pares garantizan que cada par posible de valores entre dos parámetros cualesquiera
+        se cubra al menos una vez.
       </p>
 
-      <h3>Benefits</h3>
+      <h3>Ventajas</h3>
       <ul>
         <li>
-          <strong>Reduced Test Cases:</strong> Dramatically fewer tests compared to exhaustive
-          testing
+          <strong>Reducción de Casos de Prueba:</strong> Número drásticamente menor de pruebas
+          en comparación con las pruebas exhaustivas
         </li>
         <li>
-          <strong>High Coverage:</strong> Studies show that pairwise testing finds 50-90% of
-          bugs
+          <strong>Alta Cobertura:</strong> Los estudios demuestran que las pruebas por pares
+          detectan entre el 50% y el 90% de los errores
         </li>
         <li>
-          <strong>Time Efficient:</strong> Faster test execution while maintaining quality
+          <strong>Eficiencia Temporal:</strong> Ejecución más rápida de las pruebas
+          sin perder calidad
         </li>
         <li>
-          <strong>Cost Effective:</strong> Reduced resources needed for testing
+          <strong>Rentabilidad:</strong> Reducción de los recursos necesarios para las pruebas
         </li>
       </ul>
 
-      <h3>Example</h3>
+      <h3>Ejemplo</h3>
       <p>
-        Consider testing with 3 browsers, 3 operating systems, and 3 versions:
+        Supongamos que necesitás probar con 3 navegadores, 3 sistemas operativos y 3 versiones:
       </p>
       <ul>
         <li>
-          <strong>Exhaustive:</strong> 3 × 3 × 3 = 27 test cases
+          <strong>Exhaustivo:</strong> 3 × 3 × 3 = 27 casos de prueba
         </li>
         <li>
-          <strong>Pairwise:</strong> Typically 9-12 test cases for 100% pair coverage
+          <strong>Por Pares:</strong> Típicamente entre 9 y 12 casos de prueba para
+          una cobertura del 100% de los pares
         </li>
       </ul>
 
-      <h3>Input Format</h3>
-      <p>Provide your test parameters in this format:</p>
+      <h3>Formato de Entrada</h3>
+      <p>Proporcioná tus parámetros de prueba en este formato:</p>
       <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded text-sm">
         {`{
-  "labels": ["Browser", "OS", "Version"],
+  "labels": ["Navegador", "SO", "Versión"],
   "parameters": [
     ["Chrome", "Firefox", "Safari"],
     ["Windows", "macOS", "Linux"],
-    ["Latest", "Previous"]
+    ["Última", "Anterior"]
   ]
 }`}
       </pre>
 
-      <h3>Limitations</h3>
+      <h3>Limitaciones</h3>
       <ul>
-        <li>Does not test all 3-way or higher-order interactions</li>
-        <li>May not catch bugs that only appear with specific 3+ parameter combinations</li>
-        <li>Not suitable for safety-critical systems requiring exhaustive testing</li>
+        <li>No prueba todas las interacciones de 3 vías o de orden superior</li>
+        <li>Es posible que no detecte errores que solo aparecen con combinaciones específicas de 3 o más parámetros</li>
+        <li>No es adecuado para sistemas críticos de seguridad que requieren pruebas exhaustivas</li>
       </ul>
 
-      <h3>Resources</h3>
+      <h3>Recursos</h3>
       <ul>
         <li>
           <a
@@ -77,7 +79,7 @@ export default function HelpTab() {
             rel="noopener noreferrer"
             className="text-blue-600 dark:text-blue-400 hover:underline"
           >
-            Pairwise.org - Comprehensive Guide
+            Pairwise.org - Guía Completa
           </a>
         </li>
         <li>
@@ -87,7 +89,7 @@ export default function HelpTab() {
             rel="noopener noreferrer"
             className="text-blue-600 dark:text-blue-400 hover:underline"
           >
-            AllPairs CLI - Python Command-Line Tool
+            AllPairs CLI - Herramienta de Línea de Comandos en Python
           </a>
         </li>
         <li>
@@ -95,18 +97,18 @@ export default function HelpTab() {
             href="/docs/tools/allpairs"
             className="text-blue-600 dark:text-blue-400 hover:underline"
           >
-            AIQUAA AllPairs Documentation
+            Documentación de AIQUAA AllPairs
           </a>
         </li>
       </ul>
 
-      <h3>Tips</h3>
+      <h3>Consejos</h3>
       <ul>
-        <li>Start with the most important parameters</li>
-        <li>Keep parameter names clear and descriptive</li>
-        <li>Use the JSON/YAML tab for bulk editing</li>
-        <li>Export results as CSV for use in test frameworks</li>
-        <li>Review generated combinations to ensure they make sense</li>
+        <li>Comenzá con los parámetros más importantes</li>
+        <li>Mantené los nombres de los parámetros claros y descriptivos</li>
+        <li>Usá la pestaña JSON/YAML para edición masiva</li>
+        <li>Exportá los resultados como CSV para usar en frameworks de prueba</li>
+        <li>Revisá las combinaciones generadas para asegurarte de que tengan sentido</li>
       </ul>
     </div>
   );
