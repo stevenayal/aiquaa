@@ -401,8 +401,12 @@ export default function CronValidatorPage() {
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Input Section */}
           <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h2 className="text-xl font-bold text-brand-text mb-4">Expresión Cron</h2>
+            <div className={`rounded-lg shadow-lg p-6 transition-colors ${
+              isDarkMode ? 'bg-slate-800' : 'bg-white'
+            }`}>
+              <h2 className={`text-xl font-bold mb-4 ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}>Expresión Cron</h2>
               
               <div className="mb-6">
                 <label htmlFor="cron-input" className={`block text-sm font-medium mb-2 ${
@@ -478,14 +482,24 @@ export default function CronValidatorPage() {
             </div>
 
             {/* Cron Fields Reference */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h3 className="text-lg font-semibold text-brand-text mb-4">Referencia de Campos</h3>
+            <div className={`rounded-lg shadow-lg p-6 transition-colors ${
+              isDarkMode ? 'bg-slate-800' : 'bg-white'
+            }`}>
+              <h3 className={`text-lg font-semibold mb-4 ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}>Referencia de Campos</h3>
               <div className="space-y-4">
                 {cronFields.map((field, index) => (
                   <div key={index} className="border-l-4 border-brand-accent pl-4">
-                    <div className="font-medium text-brand-text">{field.name}</div>
-                    <div className="text-sm text-brand-muted mb-2">{field.description}</div>
-                    <div className="text-xs text-gray-500">
+                    <div className={`font-medium ${
+                      isDarkMode ? 'text-white' : 'text-brand-text'
+                    }`}>{field.name}</div>
+                    <div className={`text-sm mb-2 ${
+                      isDarkMode ? 'text-slate-400' : 'text-brand-muted'
+                    }`}>{field.description}</div>
+                    <div className={`text-xs ${
+                      isDarkMode ? 'text-slate-500' : 'text-gray-500'
+                    }`}>
                       Rango: {field.min}-{field.max} | Ejemplos: {field.examples.join(', ')}
                     </div>
                   </div>
@@ -540,9 +554,13 @@ export default function CronValidatorPage() {
 
                 {/* Next Executions */}
                 {validation.isValid && validation.nextExecutions.length > 0 && (
-                  <div className="bg-white rounded-lg shadow-lg p-6">
+                  <div className={`rounded-lg shadow-lg p-6 transition-colors ${
+                    isDarkMode ? 'bg-slate-800' : 'bg-white'
+                  }`}>
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-semibold text-brand-text">
+                      <h3 className={`text-lg font-semibold ${
+                        isDarkMode ? 'text-white' : 'text-brand-text'
+                      }`}>
                         Próximas {validation.nextExecutions.length} ejecuciones
                       </h3>
                       <div className="flex gap-2">
@@ -563,23 +581,31 @@ export default function CronValidatorPage() {
                     
                     <div className="space-y-3">
                       {validation.nextExecutions.map((date, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div key={index} className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
+                          isDarkMode ? 'bg-slate-700' : 'bg-gray-50'
+                        }`}>
                           <div className="flex items-center space-x-3">
                             <span className="text-lg font-mono text-brand-accent">
                               #{index + 1}
                             </span>
                             <div>
-                              <div className="font-medium text-brand-text">
+                              <div className={`font-medium ${
+                                isDarkMode ? 'text-white' : 'text-brand-text'
+                              }`}>
                                 {formatDate(date)}
                               </div>
-                              <div className="text-sm text-brand-muted">
+                              <div className={`text-sm ${
+                                isDarkMode ? 'text-slate-400' : 'text-brand-muted'
+                              }`}>
                                 {getTimeUntil(date)}
                               </div>
                             </div>
                           </div>
                           <button
                             onClick={() => copyToClipboard(formatDate(date))}
-                            className="text-gray-500 hover:text-brand-accent transition-colors"
+                            className={`transition-colors ${
+                              isDarkMode ? 'text-slate-400 hover:text-brand-accent' : 'text-gray-500 hover:text-brand-accent'
+                            }`}
                           >
                             📋
                           </button>
@@ -591,19 +617,27 @@ export default function CronValidatorPage() {
 
                 {/* Expression Analysis */}
                 {validation.isValid && (
-                  <div className="bg-white rounded-lg shadow-lg p-6">
-                    <h3 className="text-lg font-semibold text-brand-text mb-4">Análisis de la Expresión</h3>
+                  <div className={`rounded-lg shadow-lg p-6 transition-colors ${
+                    isDarkMode ? 'bg-slate-800' : 'bg-white'
+                  }`}>
+                    <h3 className={`text-lg font-semibold mb-4 ${
+                      isDarkMode ? 'text-white' : 'text-brand-text'
+                    }`}>Análisis de la Expresión</h3>
                     <div className="space-y-3">
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Expresión:</span>
-                        <span className="font-mono text-sm">{cronExpression}</span>
+                        <span className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}>Expresión:</span>
+                        <span className={`font-mono text-sm ${
+                          isDarkMode ? 'text-white' : 'text-gray-900'
+                        }`}>{cronExpression}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Campos:</span>
-                        <span className="text-sm">{cronExpression.split(/\s+/).length}/5</span>
+                        <span className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}>Campos:</span>
+                        <span className={`text-sm ${
+                          isDarkMode ? 'text-white' : 'text-gray-900'
+                        }`}>{cronExpression.split(/\s+/).length}/5</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Estado:</span>
+                        <span className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}>Estado:</span>
                         <span className="text-green-600 font-medium">Válida</span>
                       </div>
                     </div>

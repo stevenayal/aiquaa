@@ -256,8 +256,12 @@ export default function JwtDecoderPage() {
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Input Section */}
           <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h2 className="text-xl font-bold text-brand-text mb-4">Token JWT</h2>
+            <div className={`rounded-lg shadow-lg p-6 transition-colors ${
+              isDarkMode ? 'bg-slate-800' : 'bg-white'
+            }`}>
+              <h2 className={`text-xl font-bold mb-4 ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}>Token JWT</h2>
               
               <div className="mb-6">
                 <label htmlFor="jwt-input" className={`block text-sm font-medium mb-2 ${
@@ -412,49 +416,65 @@ export default function JwtDecoderPage() {
 
                 {/* Payload Details */}
                 {decodedJwt.payload && (
-                  <div className="bg-white rounded-lg shadow-lg p-6">
-                    <h3 className="text-lg font-semibold text-brand-text mb-4">Información del Token</h3>
-                    
+                  <div className={`rounded-lg shadow-lg p-6 transition-colors ${
+                    isDarkMode ? 'bg-slate-800' : 'bg-white'
+                  }`}>
+                    <h3 className={`text-lg font-semibold mb-4 ${
+                      isDarkMode ? 'text-white' : 'text-brand-text'
+                    }`}>Información del Token</h3>
+
                     <div className="space-y-3">
                       {decodedJwt.payload.iss && (
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Issuer (ISS):</span>
-                          <span className="font-mono text-sm">{decodedJwt.payload.iss}</span>
+                          <span className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}>Issuer (ISS):</span>
+                          <span className={`font-mono text-sm ${
+                            isDarkMode ? 'text-white' : 'text-gray-900'
+                          }`}>{decodedJwt.payload.iss}</span>
                         </div>
                       )}
-                      
+
                       {decodedJwt.payload.sub && (
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Subject (SUB):</span>
-                          <span className="font-mono text-sm">{decodedJwt.payload.sub}</span>
+                          <span className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}>Subject (SUB):</span>
+                          <span className={`font-mono text-sm ${
+                            isDarkMode ? 'text-white' : 'text-gray-900'
+                          }`}>{decodedJwt.payload.sub}</span>
                         </div>
                       )}
-                      
+
                       {decodedJwt.payload.aud && (
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Audience (AUD):</span>
-                          <span className="font-mono text-sm">{decodedJwt.payload.aud}</span>
+                          <span className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}>Audience (AUD):</span>
+                          <span className={`font-mono text-sm ${
+                            isDarkMode ? 'text-white' : 'text-gray-900'
+                          }`}>{decodedJwt.payload.aud}</span>
                         </div>
                       )}
-                      
+
                       {decodedJwt.payload.iat && (
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Issued At (IAT):</span>
-                          <span className="font-mono text-sm">{formatDate(decodedJwt.payload.iat)}</span>
+                          <span className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}>Issued At (IAT):</span>
+                          <span className={`font-mono text-sm ${
+                            isDarkMode ? 'text-white' : 'text-gray-900'
+                          }`}>{formatDate(decodedJwt.payload.iat)}</span>
                         </div>
                       )}
-                      
+
                       {decodedJwt.payload.exp && (
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Expires At (EXP):</span>
-                          <span className="font-mono text-sm">{formatDate(decodedJwt.payload.exp)}</span>
+                          <span className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}>Expires At (EXP):</span>
+                          <span className={`font-mono text-sm ${
+                            isDarkMode ? 'text-white' : 'text-gray-900'
+                          }`}>{formatDate(decodedJwt.payload.exp)}</span>
                         </div>
                       )}
                       
                       {decodedJwt.payload.nbf && (
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Not Before (NBF):</span>
-                          <span className="font-mono text-sm">{formatDate(decodedJwt.payload.nbf)}</span>
+                          <span className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}>Not Before (NBF):</span>
+                          <span className={`font-mono text-sm ${
+                            isDarkMode ? 'text-white' : 'text-gray-900'
+                          }`}>{formatDate(decodedJwt.payload.nbf)}</span>
                         </div>
                       )}
                     </div>
