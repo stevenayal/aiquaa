@@ -1,8 +1,14 @@
 'use client';
 
+import { useTheme } from '@/contexts/ThemeContext';
+
 export default function HelpTab() {
+  const { isDarkMode } = useTheme();
+
   return (
-    <div className="prose dark:prose-invert max-w-none">
+    <div className={`prose max-w-none ${
+      isDarkMode ? 'prose-invert prose-headings:text-white prose-p:text-slate-200 prose-li:text-slate-200 prose-strong:text-white' : ''
+    }`}>
       <h2>¿Qué son las Pruebas por Pares?</h2>
       <p>
         Las pruebas por pares (también conocidas como pruebas de todos los pares o <em>all-pairs testing</em>)
