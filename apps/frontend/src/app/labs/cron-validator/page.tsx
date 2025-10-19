@@ -405,7 +405,9 @@ export default function CronValidatorPage() {
               <h2 className="text-xl font-bold text-brand-text mb-4">Expresión Cron</h2>
               
               <div className="mb-6">
-                <label htmlFor="cron-input" className="block text-sm font-medium text-brand-text mb-2">
+                <label htmlFor="cron-input" className={`block text-sm font-medium mb-2 ${
+                  isDarkMode ? 'text-white' : 'text-brand-text'
+                }`}>
                   Ingresa tu expresión cron
                 </label>
                 <textarea
@@ -413,13 +415,19 @@ export default function CronValidatorPage() {
                   value={cronExpression}
                   onChange={handleInputChange}
                   placeholder="0 12 * * 1"
-                  className="w-full h-32 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-accent focus:border-transparent font-mono text-sm resize-none"
+                  className={`w-full h-32 p-4 border rounded-lg focus:ring-2 focus:ring-brand-accent focus:border-transparent font-mono text-sm resize-none transition-colors ${
+                    isDarkMode
+                      ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
+                      : 'bg-white border-gray-300 text-gray-900'
+                  }`}
                 />
               </div>
 
               {/* Execution Count */}
               <div className="mb-6">
-                <label htmlFor="execution-count" className="block text-sm font-medium text-brand-text mb-2">
+                <label htmlFor="execution-count" className={`block text-sm font-medium mb-2 ${
+                  isDarkMode ? 'text-white' : 'text-brand-text'
+                }`}>
                   Número de próximas ejecuciones
                 </label>
                 <input
@@ -429,7 +437,11 @@ export default function CronValidatorPage() {
                   max="20"
                   value={executionCount}
                   onChange={(e) => setExecutionCount(parseInt(e.target.value) || 5)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-accent focus:border-transparent"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-accent focus:border-transparent transition-colors ${
+                    isDarkMode
+                      ? 'bg-slate-700 border-slate-600 text-white'
+                      : 'bg-white border-gray-300 text-gray-900'
+                  }`}
                 />
               </div>
 

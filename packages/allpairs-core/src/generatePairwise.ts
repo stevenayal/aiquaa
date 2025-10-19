@@ -169,6 +169,7 @@ export function generatePairwise(input: PairwiseInput): PairwiseResult {
   const allPairs = generateAllPairs(parameters);
   const uncoveredPairs = new Set(allPairs);
   const rows: string[][] = [];
+  const seenRows = new Set<string>(); // Track seen rows to prevent duplicates
 
   // Greedy algorithm: generate rows until all pairs are covered
   const maxIterations = allPairs.size * 2; // Dynamic limit based on problem size
@@ -180,8 +181,16 @@ export function generatePairwise(input: PairwiseInput): PairwiseResult {
     // Generate the best candidate row
     const candidate = generateBestCandidate(parameters, uncoveredPairs);
 
+    // Check for duplicate rows
+    const rowKey = candidate.join('|');
+    if (seenRows.has(rowKey)) {
+      // Skip duplicate row
+      continue;
+    }
+
     // Add this row to results
     rows.push(candidate);
+    seenRows.add(rowKey);
 
     // Mark pairs as covered
     const coveredByThisRow = getPairsCoveredByRow(candidate);

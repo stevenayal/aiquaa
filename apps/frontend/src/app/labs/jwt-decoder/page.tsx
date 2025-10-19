@@ -260,7 +260,9 @@ export default function JwtDecoderPage() {
               <h2 className="text-xl font-bold text-brand-text mb-4">Token JWT</h2>
               
               <div className="mb-6">
-                <label htmlFor="jwt-input" className="block text-sm font-medium text-brand-text mb-2">
+                <label htmlFor="jwt-input" className={`block text-sm font-medium mb-2 ${
+                  isDarkMode ? 'text-white' : 'text-brand-text'
+                }`}>
                   Ingresa tu token JWT
                 </label>
                 <textarea
@@ -268,7 +270,11 @@ export default function JwtDecoderPage() {
                   value={jwtToken}
                   onChange={handleInputChange}
                   placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
-                  className="w-full h-48 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-accent focus:border-transparent font-mono text-sm resize-none"
+                  className={`w-full h-48 p-4 border rounded-lg focus:ring-2 focus:ring-brand-accent focus:border-transparent font-mono text-sm resize-none transition-colors ${
+                    isDarkMode
+                      ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
+                      : 'bg-white border-gray-300 text-gray-900'
+                  }`}
                 />
               </div>
 
@@ -357,7 +363,11 @@ export default function JwtDecoderPage() {
                     <textarea
                       value={JSON.stringify(decodedJwt.header, null, 2)}
                       readOnly
-                      className="w-full h-32 p-4 border border-gray-300 rounded-lg bg-gray-50 font-mono text-sm resize-none"
+                      className={`w-full h-32 p-4 border rounded-lg font-mono text-sm resize-none transition-colors ${
+                        isDarkMode
+                          ? 'bg-slate-700 border-slate-600 text-white'
+                          : 'bg-gray-50 border-gray-300 text-gray-900'
+                      }`}
                     />
                   </div>
                 )}
@@ -379,7 +389,11 @@ export default function JwtDecoderPage() {
                     <textarea
                       value={JSON.stringify(decodedJwt.payload, null, 2)}
                       readOnly
-                      className="w-full h-64 p-4 border border-gray-300 rounded-lg bg-gray-50 font-mono text-sm resize-none"
+                      className={`w-full h-64 p-4 border rounded-lg font-mono text-sm resize-none transition-colors ${
+                        isDarkMode
+                          ? 'bg-slate-700 border-slate-600 text-white'
+                          : 'bg-gray-50 border-gray-300 text-gray-900'
+                      }`}
                     />
                   </div>
                 )}

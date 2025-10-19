@@ -400,7 +400,9 @@ export default function Base64ConverterPage() {
               {/* Text Input */}
               {inputType === 'text' && (
                 <div className="mb-6">
-                  <label htmlFor="input-text" className="block text-sm font-medium text-brand-text mb-2">
+                  <label htmlFor="input-text" className={`block text-sm font-medium mb-2 ${
+                    isDarkMode ? 'text-white' : 'text-brand-text'
+                  }`}>
                     {mode === 'encode' ? 'Texto a codificar' : 'Base64 a decodificar'}
                   </label>
                   <textarea
@@ -408,7 +410,11 @@ export default function Base64ConverterPage() {
                     value={inputText}
                     onChange={handleInputChange}
                     placeholder={mode === 'encode' ? 'Ingresa el texto que quieres codificar...' : 'Ingresa el Base64 que quieres decodificar...'}
-                    className="w-full h-64 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-accent focus:border-transparent font-mono text-sm resize-none"
+                    className={`w-full h-64 p-4 border rounded-lg focus:ring-2 focus:ring-brand-accent focus:border-transparent font-mono text-sm resize-none transition-colors ${
+                      isDarkMode
+                        ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
                   />
                 </div>
               )}
@@ -435,7 +441,9 @@ export default function Base64ConverterPage() {
           {/* Output Section */}
           <div className="space-y-6">
             <div>
-              <label htmlFor="output-text" className="block text-sm font-medium text-brand-text mb-2">
+              <label htmlFor="output-text" className={`block text-sm font-medium mb-2 ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}>
                 Resultado
               </label>
               <textarea
@@ -444,7 +452,11 @@ export default function Base64ConverterPage() {
                 value={outputText}
                 readOnly
                 placeholder="El resultado aparecerá aquí..."
-                className="w-full h-80 p-4 border border-gray-300 rounded-lg bg-gray-50 font-mono text-sm resize-none"
+                className={`w-full h-80 p-4 border rounded-lg font-mono text-sm resize-none transition-colors ${
+                  isDarkMode
+                    ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
+                    : 'bg-gray-50 border-gray-300 text-gray-900'
+                }`}
               />
             </div>
 
