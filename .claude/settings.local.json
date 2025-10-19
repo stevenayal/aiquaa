@@ -23,7 +23,8 @@
       "Read(//c/Users/stevg/Downloads/logs/**)",
       "Bash(pnpm add resend)",
       "Bash(pnpm exec prisma:*)",
-      "Bash(pnpm build:*)"
+      "Bash(pnpm build:*)",
+      "Bash(pnpm run build)"
     ],
     "deny": [],
     "ask": []

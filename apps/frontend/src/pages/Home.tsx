@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import FeaturedMember from '@/components/Team/FeaturedMember';
-import NewsletterSignup from '@/components/NewsletterSignup';
 import FAQSection from '@/components/FAQSection';
 
 const Home = () => {
@@ -150,9 +149,6 @@ const Home = () => {
 
       {/* Featured Member */}
       <FeaturedMember />
-
-      {/* Newsletter Signup */}
-      <NewsletterSignup />
 
       {/* FAQ Section */}
       <FAQSection />
