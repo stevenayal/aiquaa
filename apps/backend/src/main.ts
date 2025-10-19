@@ -367,8 +367,11 @@ async function bootstrap() {
     res.send(document);
   });
 
-  // Redirección desde /docs a /api/v1/docs para facilitar el acceso
+  // Redirección desde /docs y / a /api/v1/docs para facilitar el acceso
   const httpAdapter = app.getHttpAdapter();
+  httpAdapter.get('/', (req, res) => {
+    res.redirect(301, '/api/v1/docs');
+  });
   httpAdapter.get('/docs', (req, res) => {
     res.redirect(301, '/api/v1/docs');
   });
