@@ -79,6 +79,7 @@ export default async function BlogPage() {
                 {/* Cover Image */}
                 {post.cover_image && (
                   <div className="mb-4 rounded-lg overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={post.cover_image}
                       alt={post.title}

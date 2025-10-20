@@ -106,6 +106,7 @@ export default async function BlogPostPage({ params }: Props) {
           {/* Author and Date */}
           <div className="flex items-center gap-4 mb-6">
             {post.user.profile_image && (
+              /* eslint-disable-next-line @next/next/no-img-element */
               <img
                 src={post.user.profile_image}
                 alt={post.user.name}
@@ -147,6 +148,7 @@ export default async function BlogPostPage({ params }: Props) {
           {/* Cover Image */}
           {post.cover_image && (
             <div className="mb-8 rounded-lg overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={post.cover_image}
                 alt={post.title}

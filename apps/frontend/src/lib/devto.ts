@@ -16,7 +16,7 @@ export type DevPost = {
   canonical_url: string;
   url: string;
   body_html: string;
-  tag_list: string[];
+  tag_list: string[]; // Always normalized to array
   reading_time_minutes: number;
   public_reactions_count: number;
   comments_count: number;
@@ -28,6 +28,30 @@ export type DevPost = {
 };
 
 export type DevPostPreview = Omit<DevPost, 'body_html'>;
+
+/**
+ * Normalize tag_list to always be an array
+ * DEV.to API sometimes returns string, sometimes array
+ */
+function normalizeTags(tags: string[] | string): string[] {
+  if (Array.isArray(tags)) {
+    return tags;
+  }
+  if (typeof tags === 'string') {
+    return tags.split(',').map(t => t.trim()).filter(Boolean);
+  }
+  return [];
+}
+
+/**
+ * Normalize a post from DEV.to API
+ */
+function normalizePost<T extends DevPost | DevPostPreview>(post: any): T {
+  return {
+    ...post,
+    tag_list: normalizeTags(post.tag_list || []),
+  };
+}
 
 /**
  * Fetch list of published articles
@@ -55,7 +79,8 @@ export async function listPosts(perPage = 20): Promise<DevPostPreview[]> {
     }
 
     const data = await response.json();
-    return Array.isArray(data) ? data : [];
+    const posts = Array.isArray(data) ? data : [];
+    return posts.map(post => normalizePost(post));
   } catch (error) {
     console.error('Error fetching posts from DEV.to:', error);
     return [];
@@ -91,7 +116,7 @@ export async function getPost(slug: string): Promise<DevPost | null> {
     }
 
     const data = await response.json();
-    return data;
+    return normalizePost(data);
   } catch (error) {
     console.error(`Error fetching post ${slug} from DEV.to:`, error);
     return null;
