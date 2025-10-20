@@ -5,17 +5,10 @@ import { useEffect, useRef } from 'react';
 /**
  * Giscus Comments Component
  *
- * Before deployment, replace the following values:
- * - data-repo: Your GitHub repository (e.g., "username/repo")
- * - data-repo-id: Your repository ID (get from Giscus config)
- * - data-category: Discussion category name (e.g., "Comentarios")
- * - data-category-id: Category ID (get from Giscus config)
- *
- * To get these values:
- * 1. Visit https://giscus.app
- * 2. Enter your repository name
- * 3. Choose category for discussions
- * 4. Copy the generated script values
+ * Configured for: stevenayal/aiquaa
+ * Category: General (GitHub Discussions)
+ * Theme: Adapts to dark/light mode automatically
+ * Language: Spanish (es)
  */
 
 export default function Comments() {
@@ -32,10 +25,10 @@ export default function Comments() {
     // Create Giscus script
     const script = document.createElement('script');
     script.src = 'https://giscus.app/client.js';
-    script.setAttribute('data-repo', 'TODO:org/repo'); // TODO: Replace with your repo
-    script.setAttribute('data-repo-id', 'TODO:R_xxxxx'); // TODO: Replace with your repo ID
-    script.setAttribute('data-category', 'Comentarios'); // TODO: Replace with your category
-    script.setAttribute('data-category-id', 'TODO:DIC_xxxxx'); // TODO: Replace with your category ID
+    script.setAttribute('data-repo', 'stevenayal/aiquaa');
+    script.setAttribute('data-repo-id', 'R_kgDOPXtSEg');
+    script.setAttribute('data-category', 'General');
+    script.setAttribute('data-category-id', 'DIC_kwDOPXtSEs4Cw1_0');
     script.setAttribute('data-mapping', 'pathname');
     script.setAttribute('data-strict', '0');
     script.setAttribute('data-reactions-enabled', '1');
