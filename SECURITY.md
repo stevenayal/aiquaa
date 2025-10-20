@@ -7,7 +7,7 @@ Si descubres una vulnerabilidad de seguridad en AIQUAA, por favor sigue estos pa
 ### Proceso de Reporte
 
 1. **NO** crees un issue público en GitHub
-2. Envía un email a `security@aiquaa.com` con:
+2. Envía un email a `admin@aiquaa.com` con:
    - Descripción detallada de la vulnerabilidad
    - Pasos para reproducir el problema
    - Impacto potencial
