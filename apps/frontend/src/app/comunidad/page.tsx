@@ -46,9 +46,17 @@ export default function ComunidadPage() {
                 PY TESTING FEST 2025
               </h3>
 
+              <div className="flex justify-center mb-4">
+                <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
+                  <p className="text-sm font-semibold">
+                    🤝 AIQUAA participa como Sponsor Oficial
+                  </p>
+                </div>
+              </div>
+
               <p className="text-lg md:text-xl mb-6 text-center leading-relaxed">
-                Gracias a nuestros nuevos sponsors, este evento virtual de QA e innovación tecnológica
-                viene con más sorpresas, premios y experiencias únicas.
+                El mayor evento virtual de QA e innovación tecnológica en Paraguay.
+                Únete a esta experiencia llena de sorpresas, premios y aprendizaje.
               </p>
 
               {/* Event Details */}
