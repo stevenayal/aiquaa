@@ -115,7 +115,7 @@ export default function ComunidadPage() {
               {/* CTA Button */}
               <div className="text-center">
                 <a
-                  href="https://lnkd.in/dsJeGPRn"
+                  href="https://docs.google.com/forms/d/e/1FAIpQLSf9rhNadr074yLlc9okMT7Lo7_mtFi97Gt_uogf-s0klpy-5A/viewform"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-3 px-8 py-4 bg-white text-purple-900 font-bold text-lg rounded-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl"
