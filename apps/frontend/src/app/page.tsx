@@ -11,37 +11,61 @@ export default function HomePage() {
   return (
     <div className={isDarkMode ? 'dark' : ''}>
       {/* Hero Section - Redesigned */}
-      <section className="py-20 bg-gradient-to-b from-slate-900 to-slate-950 text-white text-center">
+      <section className="py-20 bg-gradient-to-b from-slate-900 via-slate-950 to-indigo-950 text-white text-center">
         <div className="max-w-4xl mx-auto px-6">
-          <h1 className="text-4xl md:text-5xl font-extrabold leading-tight">
-            Herramientas para QA en Paraguay - AIQUAA
+          <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-6">
+            AIQUAA: Comunidad y Herramientas de QA en Paraguay
           </h1>
-          <p className="mt-4 text-lg md:text-xl text-gray-300">
-            Desde validadores de JSON hasta generadores de datos: todo lo que necesitás para automatizar, validar y crecer como QA. Gratis, en español y hecho por testers locales para testers arriero porte.
+          <p className="mt-4 text-xl md:text-2xl text-gray-200 font-medium mb-4">
+            Transformamos el testing en Paraguay con IA, herramientas y comunidad
+          </p>
+          <p className="text-base md:text-lg text-gray-300 max-w-3xl mx-auto">
+            Validá tus APIs y datos, genera casos de prueba y participá en workshops y mentorías.
+            Únete a nuestra comunidad open-source de QA.
           </p>
 
-          <div className="mt-6 flex flex-col sm:flex-row justify-center gap-4">
+          <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4">
             <Link
               href="/labs"
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition shadow-lg hover:shadow-xl"
             >
-              🚀 Empezar a Usar Herramientas
+              🧪 Explorar Herramientas
+            </Link>
+            <Link
+              href="/comunidad"
+              className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition shadow-lg hover:shadow-xl"
+            >
+              💬 Unirse a la Comunidad
             </Link>
           </div>
 
-          <div className="mt-8 text-sm text-green-400">
-            ✅ Ya usamos estas herramientas en +20 proyectos reales en Paraguay
+          <div className="mt-10 flex flex-col sm:flex-row justify-center items-center gap-6 text-sm text-gray-300">
+            <div className="flex items-center gap-2">
+              <span className="text-green-400 text-xl">✓</span>
+              <span>100% Gratis y Open Source</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-green-400 text-xl">✓</span>
+              <span>En Español</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-green-400 text-xl">✓</span>
+              <span>Hecho en Paraguay 🇵🇾</span>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Urgency Message */}
-      <div className={`py-2 px-4 text-center text-sm font-semibold transition-colors duration-300 ${
+      {/* Community Banner */}
+      <div className={`py-3 px-4 text-center text-sm font-semibold transition-colors duration-300 ${
         isDarkMode
-          ? 'bg-yellow-600 text-white'
-          : 'bg-yellow-300 text-black'
+          ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white'
+          : 'bg-gradient-to-r from-purple-500 to-blue-500 text-white'
       }`}>
-        📢 ¡Estamos en fase piloto! Usá las herramientas y ayudanos a construir la comunidad de QA más fuerte de Paraguay.
+        <span className="inline-flex items-center gap-2">
+          <span className="text-lg">🌟</span>
+          <span>Más que herramientas: una comunidad de QA que crece con vos</span>
+        </span>
       </div>
 
       {/* Presentación Institucional */}
@@ -50,21 +74,54 @@ export default function HomePage() {
           ? 'bg-slate-800 text-slate-100'
           : 'bg-brand-light text-brand-text'
       }`}>
-        <h2 className={`text-2xl md:text-3xl font-bold mb-4 ${
+        <h2 className={`text-2xl md:text-3xl font-bold mb-6 ${
           isDarkMode ? 'text-blue-400' : 'text-brand-accent'
         }`}>¿Qué es AIQUAA?</h2>
-        <p className={`text-base md:text-lg max-w-3xl mx-auto mb-6 px-4 ${
-          isDarkMode ? 'text-slate-300' : 'text-brand-text'
-        }`}>
-          AIQUAA es una iniciativa paraguaya que fusiona conocimiento local con innovación global en testing de software.
-          Inspirada en el término guaraní &ldquo;aikuaa&rdquo; —que significa saber o conocer—, nuestra misión es construir una comunidad
-          comprometida con la calidad, la capacitación constante y la excelencia profesional. Combinamos inteligencia artificial (AI)
-          con aseguramiento de calidad (QA) para transformar el testing en Paraguay y en la región.
-        </p>
-        <p className={`text-sm md:text-base lg:text-lg max-w-4xl mx-auto px-4 ${
+
+        <p className={`text-lg md:text-xl max-w-3xl mx-auto mb-8 px-4 leading-relaxed ${
           isDarkMode ? 'text-slate-200' : 'text-brand-text'
         }`}>
-          <strong className={isDarkMode ? 'text-white' : ''}>AIQUAA es una comunidad de testing y calidad de software en Paraguay.</strong> Brindamos recursos, mentorías, eventos y contenido sobre automatización, buenas prácticas y formación en QA. Nuestras herramientas gratuitas incluyen validador de JSON, generador de datos, checklist de pruebas, decodificador Base64 y decodificador JWT, diseñadas específicamente para testers funcionales, automatizadores y QA manual.
+          <strong className={isDarkMode ? 'text-white' : ''}>Una comunidad de testing y calidad de software en Paraguay.</strong>
+        </p>
+
+        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto px-4">
+          <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-slate-700/50' : 'bg-white'}`}>
+            <div className="text-4xl mb-4">🛠️</div>
+            <h3 className={`text-xl font-bold mb-3 ${isDarkMode ? 'text-white' : 'text-brand-text'}`}>
+              Recursos Gratuitos
+            </h3>
+            <p className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}>
+              Herramientas web, generación de datos, checklist, blog y guías prácticas para testers.
+            </p>
+          </div>
+
+          <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-slate-700/50' : 'bg-white'}`}>
+            <div className="text-4xl mb-4">🎓</div>
+            <h3 className={`text-xl font-bold mb-3 ${isDarkMode ? 'text-white' : 'text-brand-text'}`}>
+              Eventos y Mentorías
+            </h3>
+            <p className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}>
+              Workshops, charlas y guía de expertos sobre automatización y buenas prácticas de QA.
+            </p>
+          </div>
+
+          <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-slate-700/50' : 'bg-white'}`}>
+            <div className="text-4xl mb-4">🤝</div>
+            <h3 className={`text-xl font-bold mb-3 ${isDarkMode ? 'text-white' : 'text-brand-text'}`}>
+              Open Source
+            </h3>
+            <p className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}>
+              Todo el código es abierto. Hecho en Paraguay para testers latinoamericanos.
+            </p>
+          </div>
+        </div>
+
+        <p className={`text-sm md:text-base max-w-3xl mx-auto mt-8 px-4 italic ${
+          isDarkMode ? 'text-slate-400' : 'text-gray-500'
+        }`}>
+          Inspirada en el término guaraní <strong>&ldquo;aikuaa&rdquo;</strong> (saber, conocer),
+          AIQUAA combina inteligencia artificial (AI) con aseguramiento de calidad (QA)
+          para transformar el testing en la región.
         </p>
       </section>
 
