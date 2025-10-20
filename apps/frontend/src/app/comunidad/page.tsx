@@ -26,6 +26,114 @@ export default function ComunidadPage() {
           </p>
         </div>
 
+        {/* Próximo Evento - PY TESTING FEST 2025 */}
+        <div className={`mb-12 rounded-2xl overflow-hidden shadow-2xl ${
+          isDarkMode
+            ? 'bg-gradient-to-br from-purple-900 via-pink-900 to-orange-900'
+            : 'bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500'
+        }`}>
+          <div className="p-8 md:p-12 text-white">
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <span className="text-4xl animate-pulse">🎉</span>
+              <h2 className="text-3xl md:text-4xl font-bold text-center">
+                Próximo Evento
+              </h2>
+              <span className="text-4xl animate-pulse">🚀</span>
+            </div>
+
+            <div className="max-w-3xl mx-auto">
+              <h3 className="text-2xl md:text-3xl font-extrabold mb-4 text-center">
+                PY TESTING FEST 2025
+              </h3>
+
+              <p className="text-lg md:text-xl mb-6 text-center leading-relaxed">
+                Gracias a nuestros nuevos sponsors, este evento virtual de QA e innovación tecnológica
+                viene con más sorpresas, premios y experiencias únicas.
+              </p>
+
+              {/* Event Details */}
+              <div className="grid md:grid-cols-2 gap-4 mb-6 text-center md:text-left">
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                  <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
+                    <span className="text-2xl">📅</span>
+                    <span className="font-bold text-lg">Fecha</span>
+                  </div>
+                  <p className="text-white/90">Sábado 25 de octubre</p>
+                </div>
+
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                  <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
+                    <span className="text-2xl">🕘</span>
+                    <span className="font-bold text-lg">Horario</span>
+                  </div>
+                  <p className="text-white/90">09:00 a 13:00</p>
+                </div>
+
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                  <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
+                    <span className="text-2xl">💻</span>
+                    <span className="font-bold text-lg">Modalidad</span>
+                  </div>
+                  <p className="text-white/90">Virtual (Zoom)</p>
+                </div>
+
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                  <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
+                    <span className="text-2xl">🎟️</span>
+                    <span className="font-bold text-lg">Entrada</span>
+                  </div>
+                  <p className="text-white/90">Gratuita</p>
+                </div>
+              </div>
+
+              {/* What to Expect */}
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 mb-6">
+                <h4 className="font-bold text-xl mb-4 flex items-center gap-2">
+                  <span className="text-2xl">💡</span>
+                  ¿Qué te espera?
+                </h4>
+                <ul className="space-y-2 text-white/90">
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-300 mt-1">✓</span>
+                    <span>Charlas con speakers nacionales e internacionales</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-300 mt-1">✓</span>
+                    <span>Tendencias en QA, automatización e IA aplicada</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-300 mt-1">✓</span>
+                    <span>Premios y sorpresas exclusivas</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-300 mt-1">✓</span>
+                    <span>Networking con la comunidad QA de Paraguay y LATAM</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* CTA Button */}
+              <div className="text-center">
+                <a
+                  href="https://lnkd.in/dsJeGPRn"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-3 px-8 py-4 bg-white text-purple-900 font-bold text-lg rounded-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl"
+                >
+                  <span className="text-2xl">🎟️</span>
+                  Inscribite Ahora - ¡Gratis!
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </a>
+                <p className="mt-4 text-sm text-white/80">
+                  🎁 No te pierdas una mañana llena de aprendizaje, premios y comunidad
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* GitHub Integration Cards */}
         <div className="grid md:grid-cols-2 gap-6 mb-12">
           {/* Issues Card */}
