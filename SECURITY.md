@@ -169,7 +169,7 @@ Si descubres una vulnerabilidad de seguridad en AIQUAA, por favor sigue estos pa
 
 ## Contacto
 
-- **Email de seguridad**: security@aiquaa.com
+- **Email de seguridad**: admin@aiquaa.com
 - **Responsable de seguridad**: Steven Ayala
 - **Horario de atención**: Lunes a Viernes, 9:00-18:00 UTC
 
