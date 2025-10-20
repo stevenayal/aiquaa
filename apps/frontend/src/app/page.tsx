@@ -13,19 +13,24 @@ export default function HomePage() {
       {/* Event Announcement Banner */}
       <Link
         href="/comunidad"
-        className="block bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 hover:from-purple-700 hover:via-pink-700 hover:to-orange-600 transition-all duration-300"
+        className="block bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 hover:from-green-700 hover:via-emerald-700 hover:to-teal-700 transition-all duration-300"
       >
         <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
-          <div className="flex items-center justify-center gap-3 text-white">
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-white">
             <span className="text-xl sm:text-2xl animate-bounce">🎉</span>
-            <p className="text-sm sm:text-base md:text-lg font-bold text-center">
-              <span className="hidden sm:inline">¡Próximo Evento! </span>
-              <span className="font-extrabold">PY TESTING FEST 2025</span>
-              <span className="hidden md:inline"> - 25 de octubre</span>
-              <span className="ml-2 px-2 py-1 bg-white/20 rounded text-xs sm:text-sm">
-                Inscripción Gratis →
+            <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-2">
+              <span className="text-sm sm:text-base md:text-lg font-bold whitespace-nowrap">
+                <span className="hidden sm:inline">¡Próximo Evento! </span>
+                <span className="font-extrabold">PY TESTING FEST 2025</span>
               </span>
-            </p>
+              <span className="hidden md:inline text-sm sm:text-base md:text-lg font-bold whitespace-nowrap">
+                - 25 de octubre
+              </span>
+              <span className="px-2 py-1 bg-white/20 rounded text-xs sm:text-sm font-bold whitespace-nowrap inline-flex items-center gap-1">
+                Inscripción Gratis
+                <span className="text-base">→</span>
+              </span>
+            </div>
             <span className="text-xl sm:text-2xl animate-bounce">🚀</span>
           </div>
         </div>
