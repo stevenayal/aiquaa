@@ -10,6 +10,27 @@ export default function HomePage() {
 
   return (
     <div className={isDarkMode ? 'dark' : ''}>
+      {/* Event Announcement Banner */}
+      <Link
+        href="/comunidad"
+        className="block bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 hover:from-purple-700 hover:via-pink-700 hover:to-orange-600 transition-all duration-300"
+      >
+        <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
+          <div className="flex items-center justify-center gap-3 text-white">
+            <span className="text-xl sm:text-2xl animate-bounce">🎉</span>
+            <p className="text-sm sm:text-base md:text-lg font-bold text-center">
+              <span className="hidden sm:inline">¡Próximo Evento! </span>
+              <span className="font-extrabold">PY TESTING FEST 2025</span>
+              <span className="hidden md:inline"> - 25 de octubre</span>
+              <span className="ml-2 px-2 py-1 bg-white/20 rounded text-xs sm:text-sm">
+                Inscripción Gratis →
+              </span>
+            </p>
+            <span className="text-xl sm:text-2xl animate-bounce">🚀</span>
+          </div>
+        </div>
+      </Link>
+
       {/* Hero Section - Redesigned */}
       <section className="py-20 bg-gradient-to-b from-slate-900 via-slate-950 to-indigo-950 text-white text-center">
         <div className="max-w-4xl mx-auto px-6">
