@@ -46,7 +46,17 @@ function normalizeTags(tags: string[] | string): string[] {
 /**
  * Normalize a post from DEV.to API
  */
-function normalizePost<T extends DevPost | DevPostPreview>(post: any): T {
+function normalizePost(post: any): DevPost {
+  return {
+    ...post,
+    tag_list: normalizeTags(post.tag_list || []),
+  };
+}
+
+/**
+ * Normalize a preview post from DEV.to API
+ */
+function normalizePreviewPost(post: any): DevPostPreview {
   return {
     ...post,
     tag_list: normalizeTags(post.tag_list || []),
@@ -80,7 +90,7 @@ export async function listPosts(perPage = 20): Promise<DevPostPreview[]> {
 
     const data = await response.json();
     const posts = Array.isArray(data) ? data : [];
-    return posts.map(post => normalizePost(post));
+    return posts.map(post => normalizePreviewPost(post));
   } catch (error) {
     console.error('Error fetching posts from DEV.to:', error);
     return [];
