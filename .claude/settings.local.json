@@ -24,7 +24,10 @@
       "Bash(pnpm add resend)",
       "Bash(pnpm exec prisma:*)",
       "Bash(pnpm build:*)",
-      "Bash(pnpm run build)"
+      "Bash(pnpm run build)",
+      "Bash(mkdir -p apps/frontend/src/lib/req-lint/__tests__)",
+      "Bash(pnpm test src/lib/req-lint/__tests__/engine.spec.ts)",
+      "Bash(pnpm exec tsc --noEmit --project tsconfig.json)"
     ],
     "deny": [],
     "ask": []

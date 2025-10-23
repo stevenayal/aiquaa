@@ -64,6 +64,14 @@ export default function LabsPage() {
       href: '/labs/allpairs'
     },
     {
+      id: 'req-lint',
+      name: 'Análisis de Requisitos',
+      description: 'Evalúa calidad de requisitos con heurísticas ISTQB (claridad, completitud, testabilidad)',
+      icon: '📋',
+      color: 'from-cyan-500 to-cyan-600',
+      href: '/labs/req-lint'
+    },
+    {
       id: 'risk-matrix',
       name: 'Matriz de Riesgos',
       description: 'Crea y gestiona matrices de riesgos para proyectos QA/IT',
