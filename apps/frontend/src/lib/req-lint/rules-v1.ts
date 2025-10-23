@@ -8,9 +8,9 @@ export type RuleDefinition = {
   severity: Severity;
   likelihood: Likelihood;
   impact_area: ImpactArea[];
-  explanation: (excerpt: string) => string;
-  fix_suggestion: (excerpt: string) => string;
-  proposed_rewrite?: (excerpt: string, fullText: string) => string | undefined;
+  explanation: (_excerpt: string) => string;
+  fix_suggestion: (_excerpt: string) => string;
+  proposed_rewrite?: (_excerpt: string, _fullText: string) => string | undefined;
 };
 
 // RPN mapping based on severity and likelihood

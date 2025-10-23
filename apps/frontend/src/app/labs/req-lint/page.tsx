@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { analyzeRequirement } from '@/lib/req-lint/engine';
 import type { RequirementInput, AnalysisResult } from '@/lib/req-lint/schemas';
 import RequirementLinter from './components/RequirementLinter';
+import HelpTab from './components/HelpTab';
+
+type Tab = 'analyzer' | 'help';
 
 const EXAMPLE_REQUIREMENTS = [
   {
@@ -63,6 +66,7 @@ Criterios de aceptación (mal formados):
 ];
 
 export default function RequirementLintPage() {
+  const [activeTab, setActiveTab] = useState<Tab>('analyzer');
   const [requirementText, setRequirementText] = useState('');
   const [requirementId, setRequirementId] = useState('REQ-001');
   const [result, setResult] = useState<AnalysisResult | null>(null);
@@ -139,8 +143,35 @@ export default function RequirementLintPage() {
           </p>
         </div>
 
-        {/* Input Section */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
+        {/* Tabs */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg mb-6">
+          <div className="border-b border-gray-200 dark:border-gray-700">
+            <nav className="flex -mb-px">
+              {[
+                { id: 'analyzer' as Tab, label: '🔍 Analizador' },
+                { id: 'help' as Tab, label: '❓ Ayuda' },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
+                    activeTab === tab.id
+                      ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </nav>
+          </div>
+        </div>
+
+        {/* Analyzer Tab */}
+        {activeTab === 'analyzer' && (
+          <>
+            {/* Input Section */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
           <div className="mb-4">
             <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
               ID del Requisito
@@ -215,8 +246,8 @@ export default function RequirementLintPage() {
           />
         )}
 
-        {/* Rules Info Section */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mt-6">
+          {/* Rules Info Section */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mt-6">
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
             Reglas Implementadas (v1)
           </h3>
@@ -301,7 +332,16 @@ export default function RequirementLintPage() {
               con valores de 1 a 9.
             </p>
           </div>
+          </div>
+        </>
+      )}
+
+      {/* Help Tab */}
+      {activeTab === 'help' && (
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+          <HelpTab />
         </div>
+      )}
       </div>
     </div>
   );
