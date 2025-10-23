@@ -45,10 +45,10 @@ export default function HelpTab() {
             /\b(rápid[oa]|fácil|óptim[oa])\b/gi
           </p>
           <p className="text-sm text-gray-700 dark:text-gray-300">
-            <strong>Detecta:</strong> Términos vagos como "rápido", "rápida", "fácil", "óptimo", "óptima"
+            <strong>Detecta:</strong> Términos vagos como &quot;rápido&quot;, &quot;rápida&quot;, &quot;fácil&quot;, &quot;óptimo&quot;, &quot;óptima&quot;
           </p>
           <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
-            • <code>\b</code> = límite de palabra | <code>[oa]</code> = 'o' o 'a' | <code>gi</code> = global + case-insensitive
+            • <code>\b</code> = límite de palabra | <code>[oa]</code> = &apos;o&apos; o &apos;a&apos; | <code>gi</code> = global + case-insensitive
           </p>
         </div>
 
@@ -91,11 +91,11 @@ export default function HelpTab() {
           <code className="mx-1">text.matchAll(pattern)</code> para encontrar coincidencias
         </li>
         <li>
-          <strong>Checks Estructurales:</strong> Busca presencia de palabras clave como "entrada", "salida",
-          "error", roles (usuario/sistema), etc.
+          <strong>Checks Estructurales:</strong> Busca presencia de palabras clave como &quot;entrada&quot;, &quot;salida&quot;,
+          &quot;error&quot;, roles (usuario/sistema), etc.
         </li>
         <li>
-          <strong>Validación Gherkin:</strong> Si detecta "Dado/Cuando/Entonces", valida el orden correcto
+          <strong>Validación Gherkin:</strong> Si detecta &quot;Dado/Cuando/Entonces&quot;, valida el orden correcto
         </li>
         <li>
           <strong>Cálculo de Cobertura:</strong> Marca checkboxes de inputs/outputs/errores/roles/NFRs
@@ -198,7 +198,7 @@ export default function HelpTab() {
       </div>
 
       <p className="text-sm">
-        <strong>Ejemplo:</strong> Un issue con severidad "High" (3) y probabilidad "Medium" (2) tiene RPN = 6.
+        <strong>Ejemplo:</strong> Un issue con severidad &quot;High&quot; (3) y probabilidad &quot;Medium&quot; (2) tiene RPN = 6.
         Los issues se priorizan por RPN descendente en el summary.
       </p>
 
@@ -306,7 +306,7 @@ for (const match of matches) {
       <div className="not-prose bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mt-6">
         <p className="text-sm text-blue-900 dark:text-blue-300">
           <strong>💡 Tip:</strong> Para obtener mejores resultados, escribe requisitos en formato estructurado:
-          "Dado [contexto], Cuando [acción], Entonces [resultado esperado]".
+          &quot;Dado [contexto], Cuando [acción], Entonces [resultado esperado]&quot;.
           Define siempre entradas, salidas, umbrales numéricos y casos de error.
         </p>
       </div>
