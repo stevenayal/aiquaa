@@ -25,6 +25,41 @@ Si el usuario no existe, retorna HTTP 404 con mensaje descriptivo.`,
     title: 'Requisito con múltiples problemas',
     text: 'El sistema será procesado pronto de forma óptima y fácil. Performance y latencia adecuadas.',
   },
+  {
+    id: 'HU-666',
+    title: '😈 HU satánica (peor caso posible)',
+    text: `Título: Como usuario quiero que el sistema funcione bien para estar contento.
+
+Descripción:
+El sistema deberá cargar rápido y ser fácil, mostrando lo necesario.
+Se realizarán validaciones según corresponda y se guardará todo.
+Si no hay internet igual debe funcionar igual.
+La contraseña debe ser segura pero fácil de recordar.
+Los montos serán alrededor de 50k o más, lo antes posible.
+Esto debe integrarse con aquello y con ellos.
+El tiempo de respuesta debe ser óptimo (<1s), pero que tampoco tarde más de 5 minutos.
+Siempre se pedirá 2FA, salvo para no molestar al usuario.
+Se procesará la información y será registrada automáticamente.
+
+Entradas/Salidas:
+(No aplica)
+
+Reglas de negocio:
+- Se hace como se hace normalmente.
+
+Manejo de errores:
+Mostrar un error si falla algo.
+
+NFR:
+Rendimiento excelente y seguridad adecuada.
+
+Criterios de aceptación (mal formados):
+- Debe ser rápido y fácil.
+- A veces guardar automáticamente.
+- Que muestre bien.
+- Dado el usuario, cuando entra, entonces algo pasa.
+- Cuando entonces dado se hace.`,
+  },
 ];
 
 export default function RequirementLintPage() {
