@@ -3,6 +3,7 @@ import { normalizeText, extractMinutes, flattenObject } from './utils';
 
 /**
  * Transform test analysis JSON to processed CSV data
+ * Supports both English and Spanish field names
  */
 export function transformToCSV(
   data: TestAnalysis,
@@ -17,17 +18,24 @@ export function transformToCSV(
   }> = [];
   const testdata: Array<{ case_id: string; key: string; value: string }> = [];
 
+  // Get test cases from either Spanish or English field
+  const testCases = data.casos_prueba || data.test_cases || [];
+
   // Process each test case
-  data.casos_prueba.forEach((testCase) => {
+  testCases.forEach((testCase) => {
     // Build plan row
     const planRow = buildPlanRow(data, testCase, options);
     plans.push(planRow);
 
+    // Get case ID from either Spanish or English field
+    const caseId = testCase.id_caso_prueba || testCase.test_case_id || '';
+
     // Process steps
-    if (!options.joinSteps && testCase.pasos && testCase.pasos.length > 0) {
-      testCase.pasos.forEach((step, index) => {
+    const stepsArray = testCase.pasos || testCase.steps || [];
+    if (!options.joinSteps && stepsArray.length > 0) {
+      stepsArray.forEach((step, index) => {
         steps.push({
-          case_id: testCase.id_caso_prueba,
+          case_id: caseId,
           step_number: index + 1,
           step_text: normalizeText(step),
         });
@@ -35,14 +43,11 @@ export function transformToCSV(
     }
 
     // Process preconditions
-    if (
-      !options.joinPreconditions &&
-      testCase.precondiciones &&
-      testCase.precondiciones.length > 0
-    ) {
-      testCase.precondiciones.forEach((precondition, index) => {
+    const preconditionsArray = testCase.precondiciones || testCase.preconditions || [];
+    if (!options.joinPreconditions && preconditionsArray.length > 0) {
+      preconditionsArray.forEach((precondition, index) => {
         preconditions.push({
-          case_id: testCase.id_caso_prueba,
+          case_id: caseId,
           precondition_number: index + 1,
           precondition_text: normalizeText(precondition),
         });
@@ -50,11 +55,12 @@ export function transformToCSV(
     }
 
     // Process test data
-    if (testCase.datos_prueba) {
-      const testDataEntries = processTestData(testCase.datos_prueba);
+    const testData = testCase.datos_prueba || testCase.test_data;
+    if (testData) {
+      const testDataEntries = processTestData(testData);
       testDataEntries.forEach(({ key, value }) => {
         testdata.push({
-          case_id: testCase.id_caso_prueba,
+          case_id: caseId,
           key,
           value,
         });
@@ -67,45 +73,63 @@ export function transformToCSV(
 
 /**
  * Build a plan CSV row from test case data
+ * Supports both English and Spanish field names
  */
 function buildPlanRow(
   data: TestAnalysis,
   testCase: TestCase,
   options: ExportOptions
 ): Record<string, string> {
-  const jira = data.datos_jira || {};
-  const coverage = data.analisis_cobertura || {};
+  // Get Jira data from either Spanish or English field
+  const jira = data.datos_jira || data.jira_data || {};
+
+  // Get coverage data from either Spanish or English field
+  const coverage = data.analisis_cobertura || data.coverage_analysis || {};
+
+  // Get work item ID from either Spanish or English field
+  const workItemId = data.id_work_item || data.work_item_id || '';
+
+  // Get analysis ID from either Spanish or English field
+  const analysisId = data.id_analisis || data.analysis_id || '';
+
+  // Get test case fields from either Spanish or English
+  const caseId = testCase.id_caso_prueba || testCase.test_case_id || '';
+  const title = testCase.titulo || testCase.title || '';
+  const description = testCase.descripcion || testCase.description || '';
+  const testType = testCase.tipo_prueba || testCase.test_type || '';
+  const priority = testCase.prioridad || testCase.priority || '';
+  const expectedResult = testCase.resultado_esperado || testCase.expected_result || '';
+  const automationPotential = testCase.potencial_automatizacion || testCase.automation_potential || '';
+  const estimatedDuration = testCase.duracion_estimada || testCase.estimated_duration || '';
 
   const row: Record<string, string> = {
-    work_item_key: jira.key || data.id_work_item || '',
+    work_item_key: jira.key || workItemId,
     work_item_summary: normalizeText(jira.summary || ''),
-    analysis_id: data.id_analisis || '',
-    case_id: testCase.id_caso_prueba,
-    title: normalizeText(testCase.titulo),
-    description: normalizeText(testCase.descripcion || ''),
-    test_type: normalizeText(testCase.tipo_prueba || ''),
-    priority: normalizeText(testCase.prioridad || ''),
-    expected_result: normalizeText(testCase.resultado_esperado || ''),
-    automation_potential: normalizeText(testCase.potencial_automatizacion || ''),
-    estimated_duration: extractMinutes(testCase.duracion_estimada || ''),
+    analysis_id: analysisId,
+    case_id: caseId,
+    title: normalizeText(title),
+    description: normalizeText(description),
+    test_type: normalizeText(testType),
+    priority: normalizeText(priority),
+    expected_result: normalizeText(expectedResult),
+    automation_potential: normalizeText(automationPotential),
+    estimated_duration: extractMinutes(estimatedDuration),
   };
 
   // Add joined steps if requested
-  if (options.joinSteps && testCase.pasos && testCase.pasos.length > 0) {
+  const stepsArray = testCase.pasos || testCase.steps || [];
+  if (options.joinSteps && stepsArray.length > 0) {
     const separator = options.multilineJoin === '\\n' ? '\n' : '||';
-    row.steps_joined = testCase.pasos
+    row.steps_joined = stepsArray
       .map((s) => normalizeText(s))
       .join(separator);
   }
 
   // Add joined preconditions if requested
-  if (
-    options.joinPreconditions &&
-    testCase.precondiciones &&
-    testCase.precondiciones.length > 0
-  ) {
+  const preconditionsArray = testCase.precondiciones || testCase.preconditions || [];
+  if (options.joinPreconditions && preconditionsArray.length > 0) {
     const separator = options.multilineJoin === '\\n' ? '\n' : '||';
-    row.preconditions_joined = testCase.precondiciones
+    row.preconditions_joined = preconditionsArray
       .map((p) => normalizeText(p))
       .join(separator);
   }
@@ -119,16 +143,27 @@ function buildPlanRow(
     row.jira_url = jira.url || '';
   }
 
-  // Add coverage columns
-  row.coverage_functional = normalizeText((coverage?.funcional || coverage?.functional) || '');
-  row.coverage_edge = normalizeText((coverage?.borde || coverage?.edge) || '');
-  row.coverage_integration = normalizeText((coverage?.integracion || coverage?.integration) || '');
-  row.coverage_security = normalizeText((coverage?.seguridad || coverage?.security) || '');
-  row.coverage_usability = normalizeText((coverage?.usabilidad || coverage?.usability) || '');
+  // Add coverage columns (support both Spanish and English field names)
+  row.coverage_functional = normalizeText(
+    (coverage?.funcional || coverage?.functional_coverage) || ''
+  );
+  row.coverage_edge = normalizeText(
+    (coverage?.borde || coverage?.edge_case_coverage) || ''
+  );
+  row.coverage_integration = normalizeText(
+    (coverage?.integracion || coverage?.integration_coverage) || ''
+  );
+  row.coverage_security = normalizeText(
+    (coverage?.seguridad || coverage?.security_coverage) || ''
+  );
+  row.coverage_usability = normalizeText(
+    (coverage?.usabilidad || coverage?.usability_coverage) || ''
+  );
 
   // Add timestamps
   if (options.includeOptionalColumns) {
-    row.created_at = jira.created || data.fecha_creacion || '';
+    const createdAt = data.fecha_creacion || data.created_at || '';
+    row.created_at = jira.created || createdAt;
     row.updated_at = jira.updated || '';
   }
 
