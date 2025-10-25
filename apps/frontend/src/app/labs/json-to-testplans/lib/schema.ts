@@ -77,7 +77,25 @@ export const TestAnalysisSchema = z.object({
         automation_potential: z.string().optional().default(''),
         duracion_estimada: z.string().optional().default(''),
         estimated_duration: z.string().optional().default(''),
-      })
+      }).refine(
+        (data) => {
+          // Ensure at least one case ID is provided
+          return data.id_caso_prueba || data.test_case_id;
+        },
+        {
+          message: "Either 'id_caso_prueba' or 'test_case_id' must be provided",
+          path: ["id_caso_prueba", "test_case_id"],
+        }
+      ).refine(
+        (data) => {
+          // Ensure at least one title is provided
+          return data.titulo || data.title;
+        },
+        {
+          message: "Either 'titulo' or 'title' must be provided",
+          path: ["titulo", "title"],
+        }
+      )
     )
     .default([]),
   test_cases: z
@@ -105,7 +123,25 @@ export const TestAnalysisSchema = z.object({
         automation_potential: z.string().optional().default(''),
         duracion_estimada: z.string().optional().default(''),
         estimated_duration: z.string().optional().default(''),
-      })
+      }).refine(
+        (data) => {
+          // Ensure at least one case ID is provided
+          return data.id_caso_prueba || data.test_case_id;
+        },
+        {
+          message: "Either 'id_caso_prueba' or 'test_case_id' must be provided",
+          path: ["id_caso_prueba", "test_case_id"],
+        }
+      ).refine(
+        (data) => {
+          // Ensure at least one title is provided
+          return data.titulo || data.title;
+        },
+        {
+          message: "Either 'titulo' or 'title' must be provided",
+          path: ["titulo", "title"],
+        }
+      )
     )
     .default([]),
   analisis_cobertura: z.record(z.string(), z.string()).optional(),
