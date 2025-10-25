@@ -34,7 +34,11 @@
       "Bash(pnpm add:*)",
       "Bash(pnpm test:*)",
       "Bash(pnpm exec tsc:*)",
-      "Bash(DEVTO_API_KEY=\"vZubvUxjjwXbGibAHnZGegGx\" node scripts/migrate-articles-to-devto.js:*)"
+      "Bash(DEVTO_API_KEY=\"vZubvUxjjwXbGibAHnZGegGx\" node scripts/migrate-articles-to-devto.js:*)",
+      "Bash(node analyze-devto.mjs:*)",
+      "Bash(node test-devto.mjs:*)",
+      "Bash(node -e:*)",
+      "WebFetch(domain:dev.to)"
     ],
     "deny": [],
     "ask": []

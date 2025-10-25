@@ -70,12 +70,17 @@ function normalizePreviewPost(post: any): DevPostPreview {
  */
 export async function listPosts(perPage = 20): Promise<DevPostPreview[]> {
   try {
+    // Note: Using Accept: */* to avoid CDN cache issues with specific Accept headers
+    // Add cache-busting timestamp to ensure we get fresh data
+    // Changes every 10 minutes to bypass stale CDN cache
+    const cacheBuster = Math.floor(Date.now() / (10 * 60 * 1000));
     const response = await fetch(
-      `${DEV_API_BASE}/articles?username=${USERNAME}&per_page=${perPage}`,
+      `${DEV_API_BASE}/articles?username=${USERNAME}&per_page=${perPage}&_=${cacheBuster}`,
       {
-        next: { revalidate: 1800 }, // ISR: revalidate every 30 minutes
+        next: { revalidate: 600 }, // ISR: revalidate every 10 minutes
         headers: {
-          'Accept': 'application/json',
+          'Accept': '*/*', // Using */* to avoid stale CDN cache
+          'Connection': 'close', // Force fresh connection
         },
       }
     );
@@ -104,12 +109,17 @@ export async function listPosts(perPage = 20): Promise<DevPostPreview[]> {
  */
 export async function getPost(slug: string): Promise<DevPost | null> {
   try {
+    // Note: Using Accept: */* to avoid CDN cache issues with specific Accept headers
+    // Add cache-busting timestamp to ensure we get fresh data
+    // Changes every 10 minutes to bypass stale CDN cache
+    const cacheBuster = Math.floor(Date.now() / (10 * 60 * 1000));
     const response = await fetch(
-      `${DEV_API_BASE}/articles/${USERNAME}/${slug}`,
+      `${DEV_API_BASE}/articles/${USERNAME}/${slug}?_=${cacheBuster}`,
       {
-        next: { revalidate: 1800 }, // ISR: revalidate every 30 minutes
+        next: { revalidate: 600 }, // ISR: revalidate every 10 minutes
         headers: {
-          'Accept': 'application/json',
+          'Accept': '*/*', // Using */* to avoid stale CDN cache
+          'Connection': 'close', // Force fresh connection
         },
       }
     );
