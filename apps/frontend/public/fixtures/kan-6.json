@@ -1,0 +1,144 @@
+{
+  "id_work_item": "KAN-6",
+  "datos_jira": {
+    "key": "KAN-6",
+    "summary": "Implementar sistema de notificaciones push",
+    "description": "Como usuario quiero recibir notificaciones push en tiempo real para estar al tanto de eventos importantes",
+    "issue_type": "Story",
+    "priority": "High",
+    "status": "In Progress",
+    "acceptance_criteria": "- Las notificaciones se envían en menos de 2 segundos\n- El usuario puede configurar preferencias de notificación\n- Las notificaciones se persisten si el usuario está offline",
+    "story_points": 8,
+    "labels": ["frontend", "backend", "notifications"],
+    "components": ["Notification Service", "Web App"],
+    "fix_versions": ["v2.1.0"],
+    "assignee": "juan.perez@example.com",
+    "reporter": "maria.gonzalez@example.com",
+    "created": "2025-10-15T10:30:00Z",
+    "updated": "2025-10-20T14:45:00Z",
+    "url": "https://jira.example.com/browse/KAN-6"
+  },
+  "id_analisis": "ANALYSIS-KAN-6-20251020",
+  "estado": "completado",
+  "casos_prueba": [
+    {
+      "id_caso_prueba": "TC-KAN-6-001",
+      "titulo": "Verificar envío de notificación push en tiempo real",
+      "descripcion": "Validar que las notificaciones se envían correctamente cuando ocurre un evento",
+      "tipo_prueba": "Funcional",
+      "prioridad": "Alta",
+      "pasos": [
+        "Iniciar sesión en la aplicación como usuario registrado",
+        "Navegar a la sección de configuración de notificaciones",
+        "Activar las notificaciones push para 'Mensajes nuevos'",
+        "Desde otro dispositivo, enviar un mensaje al usuario",
+        "Verificar que la notificación push se recibe en menos de 2 segundos"
+      ],
+      "resultado_esperado": "La notificación push se recibe exitosamente en menos de 2 segundos con el contenido correcto del mensaje",
+      "precondiciones": [
+        "El usuario debe estar registrado y autenticado",
+        "El navegador/dispositivo debe tener permisos de notificaciones habilitados",
+        "El servicio de notificaciones debe estar activo"
+      ],
+      "datos_prueba": {
+        "usuario_emisor": "test.sender@example.com",
+        "usuario_receptor": "test.receiver@example.com",
+        "mensaje": "Hola, este es un mensaje de prueba",
+        "tipo_evento": "nuevo_mensaje"
+      },
+      "potencial_automatizacion": "Alto - Se puede automatizar con Playwright y service workers",
+      "duracion_estimada": "15 min"
+    },
+    {
+      "id_caso_prueba": "TC-KAN-6-002",
+      "titulo": "Configurar preferencias de notificación",
+      "descripcion": "Verificar que el usuario puede personalizar qué tipos de notificaciones recibir",
+      "tipo_prueba": "Funcional",
+      "prioridad": "Media",
+      "pasos": [
+        "Iniciar sesión en la aplicación",
+        "Acceder a 'Configuración' > 'Notificaciones'",
+        "Desactivar la opción 'Notificaciones de comentarios'",
+        "Mantener activa la opción 'Notificaciones de mensajes directos'",
+        "Guardar los cambios",
+        "Generar un evento de comentario desde otro usuario",
+        "Generar un evento de mensaje directo desde otro usuario",
+        "Verificar que solo se recibe la notificación de mensaje directo"
+      ],
+      "resultado_esperado": "El usuario solo recibe notificaciones de los tipos que activó en su configuración",
+      "precondiciones": [
+        "El usuario debe estar autenticado",
+        "Deben existir al menos 2 tipos de notificaciones configurables"
+      ],
+      "datos_prueba": {
+        "usuario": "test.user@example.com",
+        "notificaciones_activas": ["mensajes_directos"],
+        "notificaciones_inactivas": ["comentarios", "menciones"]
+      },
+      "potencial_automatizacion": "Alto - UI testing con Playwright",
+      "duracion_estimada": "20 min"
+    },
+    {
+      "id_caso_prueba": "TC-KAN-6-003",
+      "titulo": "Persistencia de notificaciones offline",
+      "descripcion": "Validar que las notificaciones se persisten cuando el usuario está desconectado",
+      "tipo_prueba": "Integración",
+      "prioridad": "Alta",
+      "pasos": [
+        "Iniciar sesión en la aplicación",
+        "Desconectar la red (modo offline)",
+        "Desde otro dispositivo, generar 3 eventos que disparen notificaciones",
+        "Reconectar la red del usuario",
+        "Verificar que las 3 notificaciones aparecen en el centro de notificaciones"
+      ],
+      "resultado_esperado": "Todas las notificaciones generadas durante el periodo offline se muestran al usuario cuando se reconecta",
+      "precondiciones": [
+        "El usuario debe tener notificaciones habilitadas",
+        "Debe existir un mecanismo de sincronización offline"
+      ],
+      "datos_prueba": {
+        "usuario": "test.offline@example.com",
+        "cantidad_eventos": 3,
+        "tipos_eventos": ["mensaje", "comentario", "mencion"]
+      },
+      "potencial_automatizacion": "Medio - Requiere simulación de red offline",
+      "duracion_estimada": "25 min"
+    },
+    {
+      "id_caso_prueba": "TC-KAN-6-004",
+      "titulo": "Validar límite de notificaciones simultáneas",
+      "descripcion": "Verificar el comportamiento cuando se reciben múltiples notificaciones al mismo tiempo",
+      "tipo_prueba": "Performance",
+      "prioridad": "Baja",
+      "pasos": [
+        "Configurar un script para generar 50 notificaciones simultáneas",
+        "Iniciar sesión como usuario de prueba",
+        "Ejecutar el script",
+        "Observar el comportamiento del navegador y la UI",
+        "Verificar que no hay degradación significativa de rendimiento"
+      ],
+      "resultado_esperado": "El sistema maneja correctamente las notificaciones masivas sin bloquear la UI ni consumir recursos excesivos",
+      "precondiciones": [
+        "El usuario debe estar autenticado",
+        "Debe existir un límite configurado de notificaciones en cola"
+      ],
+      "datos_prueba": {
+        "cantidad_notificaciones": 50,
+        "intervalo_ms": 100,
+        "limite_cola": 20
+      },
+      "potencial_automatizacion": "Alto - Script de performance testing",
+      "duracion_estimada": "30 min"
+    }
+  ],
+  "analisis_cobertura": {
+    "funcional": "100% - Cubre flujo principal y configuración",
+    "borde": "80% - Incluye casos offline y límites",
+    "integracion": "75% - Validación con otros servicios",
+    "seguridad": "60% - Falta validar permisos y autenticación",
+    "usabilidad": "70% - Cubre preferencias de usuario"
+  },
+  "puntuacion_confianza": 0.92,
+  "tiempo_procesamiento": 3.5,
+  "fecha_creacion": "2025-10-20T16:30:00Z"
+}

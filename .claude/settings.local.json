@@ -29,7 +29,11 @@
       "Bash(pnpm test src/lib/req-lint/__tests__/engine.spec.ts)",
       "Bash(pnpm exec tsc --noEmit --project tsconfig.json)",
       "Bash(pnpm test src/lib/req-lint/__tests__/satanic-example.spec.ts)",
-      "Bash(pnpm test src/lib/req-lint/__tests__/)"
+      "Bash(pnpm test src/lib/req-lint/__tests__/)",
+      "Bash(mkdir:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm test:*)",
+      "Bash(pnpm exec tsc:*)"
     ],
     "deny": [],
     "ask": []
