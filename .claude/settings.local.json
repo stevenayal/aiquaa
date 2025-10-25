@@ -33,7 +33,8 @@
       "Bash(mkdir:*)",
       "Bash(pnpm add:*)",
       "Bash(pnpm test:*)",
-      "Bash(pnpm exec tsc:*)"
+      "Bash(pnpm exec tsc:*)",
+      "Bash(DEVTO_API_KEY=\"vZubvUxjjwXbGibAHnZGegGx\" node scripts/migrate-articles-to-devto.js:*)"
     ],
     "deny": [],
     "ask": []
