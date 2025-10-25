@@ -22,6 +22,7 @@ import JwtDecoder from './components/Labs/JwtDecoder';
 import YamlValidator from './components/Labs/YamlValidator';
 import CronTabValidator from './components/Labs/CronTabValidator';
 import SqlObjectGenerator from './components/Labs/SqlObjectGenerator';
+import JsonToTestPlans from './components/Labs/JsonToTestPlans';
 import QARoute from './pages/QARoute';
 import Stats from './pages/Stats';
 import ToolRecommender from './pages/ToolRecommender';
@@ -56,6 +57,7 @@ function App() {
               <Route path="/labs/checklist" element={<Checklist />} />
               <Route path="/labs/base64-decoder" element={<Base64Converter />} />
               <Route path="/labs/jwt-decoder" element={<JwtDecoder />} />
+              <Route path="/labs/json-to-testplans" element={<JsonToTestPlans />} />
               <Route path="/ruta-qa" element={<QARoute />} />
               <Route path="/stats" element={<Stats />} />
               <Route path="/herramientas-recomendadas" element={<ToolRecommender />} />

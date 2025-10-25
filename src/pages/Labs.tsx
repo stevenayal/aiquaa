@@ -60,6 +60,13 @@ const Labs = () => {
       path: '/labs/jwt-decoder',
       icon: '🔐',
       color: 'bg-red-500'
+    },
+    {
+      title: 'JSON to Test Plans',
+      description: 'Convierte JSON de análisis de IA en archivos CSV para gestión de pruebas',
+      path: '/labs/json-to-testplans',
+      icon: '📊',
+      color: 'bg-cyan-500'
     }
   ];
 
@@ -71,8 +78,8 @@ const Labs = () => {
       </Helmet>
 
       <div className={`min-h-screen ${
-        isDarkMode 
-          ? 'bg-gradient-to-br from-dark-background to-dark-primary' 
+        isDarkMode
+          ? 'bg-gradient-to-br from-dark-background to-dark-primary'
           : 'bg-gradient-to-br from-gray-50 to-gray-100'
       }`}>
         {/* Hero Section */}
@@ -89,7 +96,7 @@ const Labs = () => {
               <p className={`text-xl max-w-3xl mx-auto ${
                 isDarkMode ? 'text-dark-muted' : 'text-gray-600'
               }`}>
-                Laboratorio de herramientas útiles para testers, desarrolladores y DBA. 
+                Laboratorio de herramientas útiles para testers, desarrolladores y DBA.
                 Valida YAML, JSON, cron expressions, genera datos de prueba y más.
               </p>
             </div>
@@ -106,8 +113,8 @@ const Labs = () => {
                 className="group block"
               >
                 <div className={`rounded-xl shadow-sm border p-6 hover:shadow-lg transition-all duration-200 ${
-                  isDarkMode 
-                    ? 'bg-dark-primary border-dark-secondary hover:border-dark-accent' 
+                  isDarkMode
+                    ? 'bg-dark-primary border-dark-secondary hover:border-dark-accent'
                     : 'bg-white border-gray-200 hover:border-gray-300'
                 }`}>
                   <div className="flex items-center mb-4">
@@ -177,7 +184,7 @@ const Labs = () => {
             <p className="text-gray-600 mb-8">
               Utilidades rápidas para tareas comunes de testing y desarrollo.
             </p>
-            
+
             <div className="grid md:grid-cols-2 gap-8">
               {/* Validador YAML Básico */}
               <div className="border rounded-lg p-6 hover:shadow-md transition-shadow">
@@ -253,4 +260,4 @@ const Labs = () => {
   );
 };
 
-export default Labs; 
+export default Labs;

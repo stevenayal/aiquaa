@@ -56,6 +56,14 @@ export default function LabsPage() {
       href: '/labs/cron-validator'
     },
     {
+      id: 'json-to-testplans',
+      name: 'JSON to Test Plans',
+      description: 'Convierte JSON de análisis de IA en archivos CSV para gestión de pruebas',
+      icon: '📊',
+      color: 'from-cyan-500 to-cyan-600',
+      href: '/labs/json-to-testplans'
+    },
+    {
       id: 'allpairs',
       name: 'All Pairs Generator',
       description: 'Genera casos de prueba pairwise para testing combinatorio',
