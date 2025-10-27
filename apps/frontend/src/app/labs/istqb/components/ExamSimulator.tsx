@@ -56,7 +56,7 @@ export default function ExamSimulator({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isRunning, mode]);
+  }, [isRunning, mode, handleSubmitExam]);
 
   const handleAnswerChange = useCallback(
     (questionId: number, selectedAnswers: string[]) => {
@@ -212,7 +212,6 @@ export default function ExamSimulator({
           selectedAnswers={answers.get(currentQuestion.id) || []}
           onAnswerChange={handleAnswerChange}
           isMarked={isMarked}
-          mode={mode}
           showFeedback={mode === 'training'}
         />
 

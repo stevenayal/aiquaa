@@ -2,7 +2,6 @@ import type {
   ExamData,
   ExamQuestion,
   ExamResult,
-  UserAnswer,
   AnswerDetail,
   LearningObjectiveResult,
 } from './types';

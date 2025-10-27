@@ -7,9 +7,8 @@ import { checkAnswer } from '../utils';
 interface QuestionCardProps {
   question: ExamQuestion;
   selectedAnswers: string[];
-  onAnswerChange: (questionId: number, selectedAnswers: string[]) => void;
+  onAnswerChange: (_questionId: number, _selectedAnswers: string[]) => void;
   isMarked: boolean;
-  mode: 'exam' | 'training';
   showFeedback: boolean;
 }
 
@@ -18,7 +17,6 @@ export default function QuestionCard({
   selectedAnswers,
   onAnswerChange,
   isMarked,
-  mode,
   showFeedback,
 }: QuestionCardProps) {
   const { isDarkMode } = useTheme();
