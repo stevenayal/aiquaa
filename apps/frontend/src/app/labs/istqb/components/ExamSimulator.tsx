@@ -33,30 +33,24 @@ export default function ExamSimulator({
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [startTime] = useState(Date.now());
 
-  useEffect(() => {
-    const preparedQuestions = prepareExamQuestions(
-      examData.questions,
-      examData.examInfo.totalQuestions,
-      true,
-    );
-    setQuestions(preparedQuestions);
-  }, [examData]);
+  const handleSubmitExam = useCallback(
+    (autoSubmit = false) => {
+      if (!autoSubmit) {
+        setShowSubmitDialog(true);
+        return;
+      }
 
-  useEffect(() => {
-    if (mode !== 'exam' || !isRunning) return;
+      setIsRunning(false);
+      setHasSubmitted(true);
+    },
+    [],
+  );
 
-    const timer = setInterval(() => {
-      setTimeRemaining((prev) => {
-        if (prev <= 1) {
-          handleSubmitExam(true);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [isRunning, mode, handleSubmitExam]);
+  const confirmSubmit = useCallback(() => {
+    setShowSubmitDialog(false);
+    setIsRunning(false);
+    setHasSubmitted(true);
+  }, []);
 
   const handleAnswerChange = useCallback(
     (questionId: number, selectedAnswers: string[]) => {
@@ -96,24 +90,30 @@ export default function ExamSimulator({
     }
   }, [currentQuestionIndex]);
 
-  const handleSubmitExam = useCallback(
-    (autoSubmit = false) => {
-      if (!autoSubmit) {
-        setShowSubmitDialog(true);
-        return;
-      }
+  useEffect(() => {
+    const preparedQuestions = prepareExamQuestions(
+      examData.questions,
+      examData.examInfo.totalQuestions,
+      true,
+    );
+    setQuestions(preparedQuestions);
+  }, [examData]);
 
-      setIsRunning(false);
-      setHasSubmitted(true);
-    },
-    [],
-  );
+  useEffect(() => {
+    if (mode !== 'exam' || !isRunning) return;
 
-  const confirmSubmit = useCallback(() => {
-    setShowSubmitDialog(false);
-    setIsRunning(false);
-    setHasSubmitted(true);
-  }, []);
+    const timer = setInterval(() => {
+      setTimeRemaining((prev) => {
+        if (prev <= 1) {
+          handleSubmitExam(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isRunning, mode, handleSubmitExam]);
 
   if (questions.length === 0) {
     return (
