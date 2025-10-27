@@ -1,28 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { Progress } from '@/components/ui/progress';
-import {
-  Clock,
-  ChevronLeft,
-  ChevronRight,
-  Flag,
-  CheckCircle2,
-  AlertCircle,
-} from 'lucide-react';
+import { useTheme } from '@/contexts/ThemeContext';
 import type { ExamData, ExamQuestion } from '../types';
 import { prepareExamQuestions, formatTime, generateExamResult } from '../utils';
 import QuestionCard from './QuestionCard';
@@ -41,12 +20,11 @@ export default function ExamSimulator({
   examData,
   onReset,
 }: ExamSimulatorProps) {
+  const { isDarkMode } = useTheme();
   const [questions, setQuestions] = useState<ExamQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Map<number, string[]>>(new Map());
-  const [markedForReview, setMarkedForReview] = useState<Set<number>>(
-    new Set(),
-  );
+  const [markedForReview, setMarkedForReview] = useState<Set<number>>(new Set());
   const [timeRemaining, setTimeRemaining] = useState(
     mode === 'exam' ? examData.examInfo.timeLimit * 60 : 0,
   );
@@ -170,160 +148,189 @@ export default function ExamSimulator({
   const isMarked = markedForReview.has(currentQuestion.id);
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <div className="mb-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-          <div>
-            <h1 className="text-2xl font-bold">
-              AIQUAA | Simulacro CTFL v4.0
-            </h1>
-            <p className="text-muted-foreground">
-              Participante: {participantName}
-            </p>
-          </div>
+    <div className={`min-h-screen py-8 transition-colors ${isDarkMode ? 'bg-slate-900' : 'bg-gray-50'}`}>
+      <div className="container mx-auto px-4 max-w-6xl">
+        <div className="mb-6">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+            <div>
+              <h1 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                AIQUAA | Simulacro CTFL v4.0
+              </h1>
+              <p className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}>
+                Participante: {participantName}
+              </p>
+            </div>
 
-          {mode === 'exam' && (
-            <Card className="p-4">
-              <div className="flex items-center gap-2">
-                <Clock
-                  className={`h-5 w-5 ${timeRemaining < 300 ? 'text-destructive' : 'text-primary'}`}
-                />
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    Tiempo Restante
-                  </p>
-                  <p
-                    className={`text-2xl font-bold ${timeRemaining < 300 ? 'text-destructive' : ''}`}
-                  >
-                    {formatTime(timeRemaining)}
-                  </p>
+            {mode === 'exam' && (
+              <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-slate-800' : 'bg-white'} shadow`}>
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl">⏱️</span>
+                  <div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Tiempo Restante
+                    </p>
+                    <p className={`text-2xl font-bold ${timeRemaining < 300 ? 'text-red-600' : isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                      {formatTime(timeRemaining)}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </Card>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <div className={`flex justify-between text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
+              <span>
+                Pregunta {currentQuestionIndex + 1} de {questions.length}
+              </span>
+              <span>
+                Respondidas: {answeredCount} | Sin Responder: {unansweredCount}
+              </span>
+            </div>
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+              <div
+                className="bg-amber-600 h-2 rounded-full transition-all"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+          </div>
+
+          {mode === 'exam' && timeRemaining < 300 && (
+            <div className="mt-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+              <div className="flex items-center gap-2">
+                <span className="text-red-600 dark:text-red-400">⚠️</span>
+                <p className="text-red-800 dark:text-red-200">
+                  ¡Atención! Quedan menos de 5 minutos para finalizar el examen.
+                </p>
+              </div>
+            </div>
           )}
         </div>
 
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm">
-            <span>
-              Pregunta {currentQuestionIndex + 1} de {questions.length}
-            </span>
-            <span>
-              Respondidas: {answeredCount} | Sin Responder: {unansweredCount}
-            </span>
+        <QuestionCard
+          question={currentQuestion}
+          selectedAnswers={answers.get(currentQuestion.id) || []}
+          onAnswerChange={handleAnswerChange}
+          isMarked={isMarked}
+          mode={mode}
+          showFeedback={mode === 'training'}
+        />
+
+        <div className={`mt-6 rounded-lg shadow ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
+          <div className="p-6">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+              <button
+                onClick={goToPreviousQuestion}
+                disabled={currentQuestionIndex === 0}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors w-full md:w-auto ${
+                  currentQuestionIndex === 0
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : isDarkMode
+                    ? 'bg-slate-700 hover:bg-slate-600 text-white border border-slate-600'
+                    : 'bg-white hover:bg-gray-50 text-gray-900 border border-gray-300'
+                }`}
+              >
+                ← Anterior
+              </button>
+
+              <div className="flex gap-2 w-full md:w-auto">
+                <button
+                  onClick={toggleMarkForReview}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors flex-1 md:flex-none ${
+                    isMarked
+                      ? 'bg-amber-600 hover:bg-amber-700 text-white'
+                      : isDarkMode
+                      ? 'bg-slate-700 hover:bg-slate-600 text-white border border-slate-600'
+                      : 'bg-white hover:bg-gray-50 text-gray-900 border border-gray-300'
+                  }`}
+                >
+                  🚩 {isMarked ? 'Desmarcar' : 'Marcar para Revisar'}
+                </button>
+
+                {isLastQuestion && (
+                  <button
+                    onClick={() => handleSubmitExam(false)}
+                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors flex-1 md:flex-none"
+                  >
+                    ✓ Enviar Examen
+                  </button>
+                )}
+              </div>
+
+              <button
+                onClick={goToNextQuestion}
+                disabled={isLastQuestion}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors w-full md:w-auto ${
+                  isLastQuestion
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : isDarkMode
+                    ? 'bg-slate-700 hover:bg-slate-600 text-white border border-slate-600'
+                    : 'bg-white hover:bg-gray-50 text-gray-900 border border-gray-300'
+                }`}
+              >
+                Siguiente →
+              </button>
+            </div>
+
+            {!isLastQuestion && (
+              <div className="mt-4 text-center">
+                <button
+                  onClick={() => handleSubmitExam(false)}
+                  className={`text-sm ${isDarkMode ? 'text-slate-400 hover:text-slate-300' : 'text-gray-600 hover:text-gray-900'}`}
+                >
+                  Enviar examen antes de tiempo
+                </button>
+              </div>
+            )}
           </div>
-          <Progress value={progress} className="h-2" />
         </div>
 
-        {mode === 'exam' && timeRemaining < 300 && (
-          <Alert variant="destructive" className="mt-4">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              ¡Atención! Quedan menos de 5 minutos para finalizar el examen.
-            </AlertDescription>
-          </Alert>
+        {showSubmitDialog && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className={`rounded-lg shadow-xl max-w-md w-full ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
+              <div className="p-6">
+                <h2 className={`text-2xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  ¿Enviar Examen?
+                </h2>
+                <p className={`mb-4 ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
+                  Está a punto de enviar su examen. Una vez enviado, no podrá realizar cambios.
+                </p>
+                <div className={`mb-4 p-4 rounded-lg ${isDarkMode ? 'bg-slate-700' : 'bg-gray-50'}`}>
+                  <p className="font-semibold mb-2">Resumen:</p>
+                  <ul className="space-y-1 text-sm">
+                    <li>• Preguntas respondidas: {answeredCount}</li>
+                    <li>• Preguntas sin responder: {unansweredCount}</li>
+                    <li>• Marcadas para revisar: {markedForReview.size}</li>
+                  </ul>
+                  {unansweredCount > 0 && (
+                    <p className="mt-3 text-red-600 dark:text-red-400 font-semibold">
+                      Tiene {unansweredCount} pregunta(s) sin responder.
+                    </p>
+                  )}
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowSubmitDialog(false)}
+                    className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
+                      isDarkMode
+                        ? 'bg-slate-700 hover:bg-slate-600 text-white'
+                        : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
+                    }`}
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={confirmSubmit}
+                    className="flex-1 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-medium transition-colors"
+                  >
+                    Confirmar Envío
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
       </div>
-
-      <QuestionCard
-        question={currentQuestion}
-        selectedAnswers={answers.get(currentQuestion.id) || []}
-        onAnswerChange={handleAnswerChange}
-        isMarked={isMarked}
-        mode={mode}
-        showFeedback={mode === 'training'}
-      />
-
-      <Card className="mt-6">
-        <CardContent className="pt-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <Button
-              variant="outline"
-              onClick={goToPreviousQuestion}
-              disabled={currentQuestionIndex === 0}
-              className="w-full md:w-auto"
-            >
-              <ChevronLeft className="h-4 w-4 mr-2" />
-              Anterior
-            </Button>
-
-            <div className="flex gap-2 w-full md:w-auto">
-              <Button
-                variant={isMarked ? 'default' : 'outline'}
-                onClick={toggleMarkForReview}
-                className="flex-1 md:flex-none"
-              >
-                <Flag className="h-4 w-4 mr-2" />
-                {isMarked ? 'Desmarca' : 'Marcar para Revisar'}
-              </Button>
-
-              {isLastQuestion && (
-                <Button
-                  variant="default"
-                  onClick={() => handleSubmitExam(false)}
-                  className="flex-1 md:flex-none"
-                >
-                  <CheckCircle2 className="h-4 w-4 mr-2" />
-                  Enviar Examen
-                </Button>
-              )}
-            </div>
-
-            <Button
-              variant="outline"
-              onClick={goToNextQuestion}
-              disabled={isLastQuestion}
-              className="w-full md:w-auto"
-            >
-              Siguiente
-              <ChevronRight className="h-4 w-4 ml-2" />
-            </Button>
-          </div>
-
-          {!isLastQuestion && (
-            <div className="mt-4 text-center">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleSubmitExam(false)}
-              >
-                Enviar examen antes de tiempo
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      <AlertDialog open={showSubmitDialog} onOpenChange={setShowSubmitDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>¿Enviar Examen?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Está a punto de enviar su examen. Una vez enviado, no podrá
-              realizar cambios.
-              <br />
-              <br />
-              <strong>Resumen:</strong>
-              <ul className="mt-2 space-y-1">
-                <li>• Preguntas respondidas: {answeredCount}</li>
-                <li>• Preguntas sin responder: {unansweredCount}</li>
-                <li>• Marcadas para revisar: {markedForReview.size}</li>
-              </ul>
-              {unansweredCount > 0 && (
-                <p className="mt-4 text-destructive font-semibold">
-                  Tiene {unansweredCount} pregunta(s) sin responder.
-                </p>
-              )}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmSubmit}>
-              Confirmar Envío
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }
