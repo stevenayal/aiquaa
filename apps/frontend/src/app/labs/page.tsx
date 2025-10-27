@@ -86,6 +86,14 @@ export default function LabsPage() {
       icon: '🎯',
       color: 'from-pink-500 to-pink-600',
       href: '/labs/risk-matrix'
+    },
+    {
+      id: 'istqb',
+      name: 'Simulador ISTQB CTFL v4.0',
+      description: 'Simulacro del examen ISTQB Certified Tester Foundation Level v4.0 en español',
+      icon: '📝',
+      color: 'from-amber-500 to-amber-600',
+      href: '/labs/istqb'
     }
   ];
 

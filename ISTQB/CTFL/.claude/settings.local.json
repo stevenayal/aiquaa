@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//z/Proyectos/aiquaa/**)",
+      "Bash(cat:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
