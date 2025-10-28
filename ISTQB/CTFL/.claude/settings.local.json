@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Read(//z/Proyectos/aiquaa/**)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(pnpm --filter @aiquaa/frontend build:*)"
     ],
     "deny": [],
     "ask": []
