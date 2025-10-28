@@ -56,36 +56,36 @@ export default function QuestionCard({
     const baseClass = 'flex items-start space-x-3 p-4 rounded-lg border-2 transition-colors';
 
     if (!feedback) {
-      return `${baseClass} ${isDarkMode ? 'border-slate-600 hover:border-amber-500' : 'border-gray-300 hover:border-amber-500'}`;
+      return `${baseClass} ${isDarkMode ? 'border-slate-600 bg-slate-800/50 hover:border-amber-500 hover:bg-slate-700/50' : 'border-gray-300 bg-white hover:border-amber-500 hover:bg-gray-50'}`;
     }
 
     switch (feedback) {
       case 'correct-selected':
-        return `${baseClass} border-green-500 ${isDarkMode ? 'bg-green-900/30' : 'bg-green-50'}`;
+        return `${baseClass} border-green-500 ${isDarkMode ? 'bg-green-900/40 text-green-100' : 'bg-green-50 text-green-900'}`;
       case 'incorrect-selected':
-        return `${baseClass} border-red-500 ${isDarkMode ? 'bg-red-900/30' : 'bg-red-50'}`;
+        return `${baseClass} border-red-500 ${isDarkMode ? 'bg-red-900/40 text-red-100' : 'bg-red-50 text-red-900'}`;
       case 'correct-not-selected':
-        return `${baseClass} border-green-500 ${isDarkMode ? 'bg-green-900/20' : 'bg-green-50'} opacity-60`;
+        return `${baseClass} border-green-500 ${isDarkMode ? 'bg-green-900/30 text-green-200' : 'bg-green-50 text-green-800'} opacity-70`;
       default:
-        return `${baseClass} ${isDarkMode ? 'border-slate-600' : 'border-gray-300'}`;
+        return `${baseClass} ${isDarkMode ? 'border-slate-600 bg-slate-800/50' : 'border-gray-300 bg-white'}`;
     }
   };
 
   return (
     <div className={`rounded-lg shadow-lg ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
-      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-        <div className="flex justify-between items-start">
-          <h2 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+      <div className={`p-6 border-b ${isDarkMode ? 'border-slate-700' : 'border-gray-200'}`}>
+        <div className="flex justify-between items-start gap-4">
+          <h2 className={`text-lg font-bold ${isDarkMode ? 'text-slate-100' : 'text-gray-900'}`}>
             Pregunta {question.id}
             {isMarked && (
-              <span className="ml-2 text-sm text-amber-600">(Marcada)</span>
+              <span className={`ml-2 text-sm font-semibold ${isDarkMode ? 'text-amber-400' : 'text-amber-600'}`}>(Marcada 🚩)</span>
             )}
           </h2>
-          <div className="flex gap-2 text-sm">
-            <span className="px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 rounded">
+          <div className="flex gap-2 text-sm flex-shrink-0">
+            <span className={`px-3 py-1 rounded-full font-semibold ${isDarkMode ? 'bg-amber-900/40 text-amber-300 border border-amber-700' : 'bg-amber-100 text-amber-800 border border-amber-200'}`}>
               {question.kLevel}
             </span>
-            <span className={`px-2 py-1 rounded ${isDarkMode ? 'bg-slate-700 text-slate-300' : 'bg-gray-200 text-gray-700'}`}>
+            <span className={`px-3 py-1 rounded-full font-medium ${isDarkMode ? 'bg-blue-900/40 text-blue-300 border border-blue-700' : 'bg-blue-100 text-blue-800 border border-blue-200'}`}>
               {question.learningObjective}
             </span>
           </div>
@@ -123,12 +123,16 @@ export default function QuestionCard({
                     checked={isSelected}
                     onChange={(e) => handleMultipleAnswer(option.label, e.target.checked)}
                     disabled={showFeedback && hasAnswered}
-                    className="mt-1 h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
+                    className={`mt-1 h-5 w-5 text-amber-600 focus:ring-amber-500 rounded transition-colors ${
+                      isDarkMode
+                        ? 'bg-slate-700 border-slate-500 checked:bg-amber-600 checked:border-amber-600'
+                        : 'bg-white border-gray-300'
+                    }`}
                   />
                   <div className="flex-1">
                     <label
                       htmlFor={`${question.id}-${option.label}`}
-                      className={`cursor-pointer ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                      className={`cursor-pointer ${isDarkMode ? 'text-slate-100' : 'text-gray-900'}`}
                     >
                       <span className="font-semibold">{option.label})</span>{' '}
                       {option.text}
@@ -186,12 +190,16 @@ export default function QuestionCard({
                     checked={isSelected}
                     onChange={() => handleSingleAnswer(option.label)}
                     disabled={showFeedback && hasAnswered}
-                    className="mt-1 h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300"
+                    className={`mt-1 h-5 w-5 text-amber-600 focus:ring-amber-500 transition-colors ${
+                      isDarkMode
+                        ? 'bg-slate-700 border-slate-500 checked:bg-amber-600 checked:border-amber-600'
+                        : 'bg-white border-gray-300'
+                    }`}
                   />
                   <div className="flex-1">
                     <label
                       htmlFor={`${question.id}-${option.label}`}
-                      className={`cursor-pointer ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                      className={`cursor-pointer ${isDarkMode ? 'text-slate-100' : 'text-gray-900'}`}
                     >
                       <span className="font-semibold">{option.label})</span>{' '}
                       {option.text}
@@ -235,28 +243,30 @@ export default function QuestionCard({
         </div>
 
         {showFeedback && hasAnswered && (
-          <div className={`p-4 rounded-lg border ${
+          <div className={`p-4 rounded-lg border-2 ${
             isCorrect
               ? isDarkMode
-                ? 'bg-green-900/20 border-green-800'
-                : 'bg-green-50 border-green-200'
+                ? 'bg-green-900/30 border-green-700'
+                : 'bg-green-50 border-green-300'
               : isDarkMode
-              ? 'bg-red-900/20 border-red-800'
-              : 'bg-red-50 border-red-200'
+              ? 'bg-red-900/30 border-red-700'
+              : 'bg-red-50 border-red-300'
           }`}>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               {isCorrect ? (
                 <>
-                  <span className="text-green-600 dark:text-green-400">✓</span>
-                  <strong className={isDarkMode ? 'text-green-300' : 'text-green-900'}>¡Respuesta Correcta!</strong>
+                  <span className={`text-2xl ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>✓</span>
+                  <strong className={`text-base ${isDarkMode ? 'text-green-200' : 'text-green-900'}`}>¡Respuesta Correcta!</strong>
                 </>
               ) : (
                 <>
-                  <span className="text-red-600 dark:text-red-400">✗</span>
-                  <strong className={isDarkMode ? 'text-red-300' : 'text-red-900'}>
-                    Respuesta Incorrecta. La(s) respuesta(s) correcta(s):{' '}
-                    {question.correctAnswer.join(', ')}
-                  </strong>
+                  <span className={`text-2xl ${isDarkMode ? 'text-red-400' : 'text-red-600'}`}>✗</span>
+                  <div className={isDarkMode ? 'text-red-200' : 'text-red-900'}>
+                    <strong className="text-base block mb-1">Respuesta Incorrecta</strong>
+                    <span className="text-sm">
+                      La(s) respuesta(s) correcta(s): <strong>{question.correctAnswer.join(', ')}</strong>
+                    </span>
+                  </div>
                 </>
               )}
             </div>

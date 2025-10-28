@@ -162,14 +162,26 @@ export default function ExamSimulator({
             </div>
 
             {mode === 'exam' && (
-              <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-slate-800' : 'bg-white'} shadow`}>
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl">⏱️</span>
+              <div className={`p-4 rounded-lg shadow-lg border-2 ${
+                timeRemaining < 300
+                  ? isDarkMode
+                    ? 'bg-red-900/30 border-red-700'
+                    : 'bg-red-50 border-red-300'
+                  : isDarkMode
+                  ? 'bg-slate-800 border-slate-700'
+                  : 'bg-white border-gray-200'
+              }`}>
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl">⏱️</span>
                   <div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className={`text-sm font-medium ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
                       Tiempo Restante
                     </p>
-                    <p className={`text-2xl font-bold ${timeRemaining < 300 ? 'text-red-600' : isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                    <p className={`text-2xl font-bold ${
+                      timeRemaining < 300
+                        ? isDarkMode ? 'text-red-300' : 'text-red-700'
+                        : isDarkMode ? 'text-slate-100' : 'text-gray-900'
+                    }`}>
                       {formatTime(timeRemaining)}
                     </p>
                   </div>
@@ -179,17 +191,21 @@ export default function ExamSimulator({
           </div>
 
           <div className="space-y-2">
-            <div className={`flex justify-between text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
+            <div className={`flex justify-between text-sm font-medium ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}>
               <span>
-                Pregunta {currentQuestionIndex + 1} de {questions.length}
+                📝 Pregunta {currentQuestionIndex + 1} de {questions.length}
               </span>
               <span>
-                Respondidas: {answeredCount} | Sin Responder: {unansweredCount}
+                ✓ Respondidas: <strong>{answeredCount}</strong> | ⏳ Sin Responder: <strong>{unansweredCount}</strong>
               </span>
             </div>
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+            <div className={`w-full rounded-full h-3 shadow-inner ${isDarkMode ? 'bg-slate-700' : 'bg-gray-200'}`}>
               <div
-                className="bg-amber-600 h-2 rounded-full transition-all"
+                className={`h-3 rounded-full transition-all duration-300 ${
+                  progress === 100
+                    ? isDarkMode ? 'bg-green-500' : 'bg-green-600'
+                    : isDarkMode ? 'bg-amber-500' : 'bg-amber-600'
+                }`}
                 style={{ width: `${progress}%` }}
               />
             </div>
@@ -215,41 +231,43 @@ export default function ExamSimulator({
           showFeedback={mode === 'training'}
         />
 
-        <div className={`mt-6 rounded-lg shadow ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
+        <div className={`mt-6 rounded-lg shadow-lg border ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}`}>
           <div className="p-6">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               <button
                 onClick={goToPreviousQuestion}
                 disabled={currentQuestionIndex === 0}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors w-full md:w-auto ${
+                className={`px-5 py-3 rounded-lg font-semibold transition-all w-full md:w-auto ${
                   currentQuestionIndex === 0
-                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    ? isDarkMode
+                      ? 'bg-slate-700 text-slate-500 cursor-not-allowed border-2 border-slate-700'
+                      : 'bg-gray-200 text-gray-400 cursor-not-allowed border-2 border-gray-200'
                     : isDarkMode
-                    ? 'bg-slate-700 hover:bg-slate-600 text-white border border-slate-600'
-                    : 'bg-white hover:bg-gray-50 text-gray-900 border border-gray-300'
+                    ? 'bg-slate-700 hover:bg-slate-600 text-slate-100 border-2 border-slate-600 hover:border-slate-500'
+                    : 'bg-white hover:bg-gray-50 text-gray-900 border-2 border-gray-300 hover:border-gray-400'
                 }`}
               >
                 ← Anterior
               </button>
 
-              <div className="flex gap-2 w-full md:w-auto">
+              <div className="flex gap-3 w-full md:w-auto">
                 <button
                   onClick={toggleMarkForReview}
-                  className={`px-4 py-2 rounded-lg font-medium transition-colors flex-1 md:flex-none ${
+                  className={`px-5 py-3 rounded-lg font-semibold transition-all flex-1 md:flex-none ${
                     isMarked
-                      ? 'bg-amber-600 hover:bg-amber-700 text-white'
+                      ? 'bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600 text-white shadow-lg'
                       : isDarkMode
-                      ? 'bg-slate-700 hover:bg-slate-600 text-white border border-slate-600'
-                      : 'bg-white hover:bg-gray-50 text-gray-900 border border-gray-300'
+                      ? 'bg-slate-700 hover:bg-slate-600 text-slate-100 border-2 border-slate-600'
+                      : 'bg-white hover:bg-gray-50 text-gray-900 border-2 border-gray-300'
                   }`}
                 >
-                  🚩 {isMarked ? 'Desmarcar' : 'Marcar para Revisar'}
+                  🚩 {isMarked ? 'Desmarcar' : 'Marcar'}
                 </button>
 
                 {isLastQuestion && (
                   <button
                     onClick={() => handleSubmitExam(false)}
-                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors flex-1 md:flex-none"
+                    className="px-5 py-3 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white rounded-lg font-semibold transition-all flex-1 md:flex-none shadow-lg hover:shadow-xl"
                   >
                     ✓ Enviar Examen
                   </button>
@@ -259,12 +277,14 @@ export default function ExamSimulator({
               <button
                 onClick={goToNextQuestion}
                 disabled={isLastQuestion}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors w-full md:w-auto ${
+                className={`px-5 py-3 rounded-lg font-semibold transition-all w-full md:w-auto ${
                   isLastQuestion
-                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    ? isDarkMode
+                      ? 'bg-slate-700 text-slate-500 cursor-not-allowed border-2 border-slate-700'
+                      : 'bg-gray-200 text-gray-400 cursor-not-allowed border-2 border-gray-200'
                     : isDarkMode
-                    ? 'bg-slate-700 hover:bg-slate-600 text-white border border-slate-600'
-                    : 'bg-white hover:bg-gray-50 text-gray-900 border border-gray-300'
+                    ? 'bg-slate-700 hover:bg-slate-600 text-slate-100 border-2 border-slate-600 hover:border-slate-500'
+                    : 'bg-white hover:bg-gray-50 text-gray-900 border-2 border-gray-300 hover:border-gray-400'
                 }`}
               >
                 Siguiente →
@@ -275,7 +295,7 @@ export default function ExamSimulator({
               <div className="mt-4 text-center">
                 <button
                   onClick={() => handleSubmitExam(false)}
-                  className={`text-sm ${isDarkMode ? 'text-slate-400 hover:text-slate-300' : 'text-gray-600 hover:text-gray-900'}`}
+                  className={`text-sm font-medium underline decoration-dotted ${isDarkMode ? 'text-slate-400 hover:text-slate-200' : 'text-gray-600 hover:text-gray-900'}`}
                 >
                   Enviar examen antes de tiempo
                 </button>
@@ -285,44 +305,71 @@ export default function ExamSimulator({
         </div>
 
         {showSubmitDialog && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className={`rounded-lg shadow-xl max-w-md w-full ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className={`rounded-xl shadow-2xl max-w-md w-full border-2 ${
+              isDarkMode
+                ? 'bg-slate-800 border-slate-700'
+                : 'bg-white border-gray-200'
+            }`}>
               <div className="p-6">
-                <h2 className={`text-2xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                  ¿Enviar Examen?
-                </h2>
-                <p className={`mb-4 ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="text-3xl">📤</span>
+                  <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-slate-100' : 'text-gray-900'}`}>
+                    ¿Enviar Examen?
+                  </h2>
+                </div>
+                <p className={`mb-4 text-base ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}>
                   Está a punto de enviar su examen. Una vez enviado, no podrá realizar cambios.
                 </p>
-                <div className={`mb-4 p-4 rounded-lg ${isDarkMode ? 'bg-slate-700' : 'bg-gray-50'}`}>
-                  <p className="font-semibold mb-2">Resumen:</p>
-                  <ul className="space-y-1 text-sm">
-                    <li>• Preguntas respondidas: {answeredCount}</li>
-                    <li>• Preguntas sin responder: {unansweredCount}</li>
-                    <li>• Marcadas para revisar: {markedForReview.size}</li>
+                <div className={`mb-6 p-4 rounded-lg border ${
+                  isDarkMode
+                    ? 'bg-slate-700/50 border-slate-600'
+                    : 'bg-gray-50 border-gray-200'
+                }`}>
+                  <p className={`font-semibold mb-3 ${isDarkMode ? 'text-slate-200' : 'text-gray-900'}`}>📊 Resumen:</p>
+                  <ul className={`space-y-2 ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}>
+                    <li className="flex items-center gap-2">
+                      <span className="text-green-500">✓</span>
+                      Preguntas respondidas: <strong>{answeredCount}</strong>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-gray-500">○</span>
+                      Preguntas sin responder: <strong>{unansweredCount}</strong>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-amber-500">🚩</span>
+                      Marcadas para revisar: <strong>{markedForReview.size}</strong>
+                    </li>
                   </ul>
                   {unansweredCount > 0 && (
-                    <p className="mt-3 text-red-600 dark:text-red-400 font-semibold">
-                      Tiene {unansweredCount} pregunta(s) sin responder.
-                    </p>
+                    <div className={`mt-4 p-3 rounded-lg border-2 ${
+                      isDarkMode
+                        ? 'bg-red-900/30 border-red-700 text-red-300'
+                        : 'bg-red-50 border-red-300 text-red-800'
+                    }`}>
+                      <p className="font-semibold flex items-center gap-2">
+                        <span>⚠️</span>
+                        Tiene {unansweredCount} pregunta(s) sin responder.
+                      </p>
+                    </div>
                   )}
                 </div>
                 <div className="flex gap-3">
                   <button
                     onClick={() => setShowSubmitDialog(false)}
-                    className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
+                    className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all ${
                       isDarkMode
-                        ? 'bg-slate-700 hover:bg-slate-600 text-white'
-                        : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
+                        ? 'bg-slate-700 hover:bg-slate-600 text-slate-200 border-2 border-slate-600'
+                        : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-2 border-gray-300'
                     }`}
                   >
                     Cancelar
                   </button>
                   <button
                     onClick={confirmSubmit}
-                    className="flex-1 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-medium transition-colors"
+                    className="flex-1 px-4 py-3 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600 text-white rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl"
                   >
-                    Confirmar Envío
+                    ✓ Confirmar Envío
                   </button>
                 </div>
               </div>
