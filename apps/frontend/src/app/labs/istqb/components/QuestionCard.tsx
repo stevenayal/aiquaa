@@ -22,8 +22,14 @@ export default function QuestionCard({
   const { isDarkMode } = useTheme();
   const isMultiple = question.type === 'multiple';
   const hasAnswered = selectedAnswers.length > 0;
+
+  // Para preguntas múltiples, solo evaluar cuando se haya seleccionado el número correcto de opciones
+  const isSelectionComplete = isMultiple
+    ? selectedAnswers.length === question.correctAnswer.length
+    : hasAnswered;
+
   const isCorrect =
-    hasAnswered && checkAnswer(selectedAnswers, question.correctAnswer);
+    isSelectionComplete && checkAnswer(selectedAnswers, question.correctAnswer);
 
   const handleSingleAnswer = (value: string) => {
     onAnswerChange(question.id, [value]);
@@ -37,7 +43,8 @@ export default function QuestionCard({
   };
 
   const getOptionFeedback = (label: string) => {
-    if (!showFeedback || !hasAnswered) return null;
+    // Para preguntas múltiples, solo mostrar feedback cuando la selección esté completa
+    if (!showFeedback || !isSelectionComplete) return null;
 
     const isSelected = selectedAnswers.includes(label);
     const isCorrectAnswer = question.correctAnswer.includes(label);
@@ -95,13 +102,24 @@ export default function QuestionCard({
         <div>
           <p className={`text-base mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{question.questionText}</p>
           <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-blue-900/20 border-blue-800' : 'bg-blue-50 border-blue-200'} border`}>
-            <div className="flex items-center gap-2">
-              <span className="text-blue-600 dark:text-blue-400">ℹ️</span>
-              <p className={`font-semibold ${isDarkMode ? 'text-blue-300' : 'text-blue-900'}`}>
-                {isMultiple
-                  ? 'Seleccionar DOS opciones'
-                  : 'Seleccionar UNA opción'}
-              </p>
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span className="text-blue-600 dark:text-blue-400">ℹ️</span>
+                <p className={`font-semibold ${isDarkMode ? 'text-blue-300' : 'text-blue-900'}`}>
+                  {isMultiple
+                    ? 'Seleccionar DOS opciones'
+                    : 'Seleccionar UNA opción'}
+                </p>
+              </div>
+              {isMultiple && hasAnswered && !showFeedback && (
+                <span className={`text-sm font-medium px-3 py-1 rounded-full ${
+                  isSelectionComplete
+                    ? isDarkMode ? 'bg-green-900/40 text-green-300 border border-green-700' : 'bg-green-100 text-green-800 border border-green-200'
+                    : isDarkMode ? 'bg-amber-900/40 text-amber-300 border border-amber-700' : 'bg-amber-100 text-amber-800 border border-amber-200'
+                }`}>
+                  {selectedAnswers.length} de {question.correctAnswer.length} seleccionadas
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -122,7 +140,7 @@ export default function QuestionCard({
                     id={`${question.id}-${option.label}`}
                     checked={isSelected}
                     onChange={(e) => handleMultipleAnswer(option.label, e.target.checked)}
-                    disabled={showFeedback && hasAnswered}
+                    disabled={showFeedback && isSelectionComplete}
                     className={`mt-1 h-5 w-5 text-amber-600 focus:ring-amber-500 rounded transition-colors ${
                       isDarkMode
                         ? 'bg-slate-700 border-slate-500 checked:bg-amber-600 checked:border-amber-600'
@@ -137,7 +155,7 @@ export default function QuestionCard({
                       <span className="font-semibold">{option.label})</span>{' '}
                       {option.text}
                     </label>
-                    {showFeedback && hasAnswered && (
+                    {showFeedback && isSelectionComplete && (
                       <div className="mt-2 text-sm">
                         {feedback === 'correct-selected' && (
                           <div className="flex items-start gap-2 text-green-700 dark:text-green-300">
@@ -189,7 +207,7 @@ export default function QuestionCard({
                     value={option.label}
                     checked={isSelected}
                     onChange={() => handleSingleAnswer(option.label)}
-                    disabled={showFeedback && hasAnswered}
+                    disabled={showFeedback && isSelectionComplete}
                     className={`mt-1 h-5 w-5 text-amber-600 focus:ring-amber-500 transition-colors ${
                       isDarkMode
                         ? 'bg-slate-700 border-slate-500 checked:bg-amber-600 checked:border-amber-600'
@@ -204,7 +222,7 @@ export default function QuestionCard({
                       <span className="font-semibold">{option.label})</span>{' '}
                       {option.text}
                     </label>
-                    {showFeedback && hasAnswered && (
+                    {showFeedback && isSelectionComplete && (
                       <div className="mt-2 text-sm">
                         {feedback === 'correct-selected' && (
                           <div className="flex items-start gap-2 text-green-700 dark:text-green-300">
@@ -242,7 +260,7 @@ export default function QuestionCard({
           )}
         </div>
 
-        {showFeedback && hasAnswered && (
+        {showFeedback && isSelectionComplete && (
           <div className={`p-4 rounded-lg border-2 ${
             isCorrect
               ? isDarkMode
