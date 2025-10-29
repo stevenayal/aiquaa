@@ -7,8 +7,8 @@ import TestAppLayout from '../../components/TestAppLayout';
 import { useToast } from '../../components/Toast';
 import { apiGetProduct, apiAddToCart } from '../../lib/mockApi';
 import type { Product } from '../../lib/types';
-import { getCandidateId, isBugActive } from '../../lib/bugsManifest';
-import { BUG_IDS } from '../../lib/bugsManifest';
+import { getCandidateId } from '../../lib/prng';
+import { isBugActive, BUG_IDS } from '../../lib/bugsManifest';
 import { logAddToCart } from '../../lib/auditLog';
 
 export default function ProductDetailPage() {

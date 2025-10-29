@@ -8,8 +8,8 @@ import { useToast } from '../components/Toast';
 import { apiGetCart, apiUpdateCartQty, apiRemoveFromCart } from '../lib/mockApi';
 import { getProducts } from '../lib/storage';
 import type { CartItem, Product } from '../lib/types';
-import { getCandidateId, isBugActive } from '../lib/bugsManifest';
-import { BUG_IDS } from '../lib/bugsManifest';
+import { getCandidateId } from '../lib/prng';
+import { isBugActive, BUG_IDS } from '../lib/bugsManifest';
 import { logUpdateCartQty, logRemoveFromCart } from '../lib/auditLog';
 
 export default function CartPage() {

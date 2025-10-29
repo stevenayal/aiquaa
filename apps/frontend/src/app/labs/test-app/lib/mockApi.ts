@@ -25,8 +25,8 @@ import {
   addTicket,
   getUserTickets,
 } from './storage';
-import { getCandidateId, isBugActive } from './bugsManifest';
-import { BUG_IDS } from './bugsManifest';
+import { getCandidateId } from './prng';
+import { isBugActive, BUG_IDS } from './bugsManifest';
 
 /**
  * Simulate API delay
