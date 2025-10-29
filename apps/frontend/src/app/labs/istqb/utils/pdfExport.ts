@@ -1,6 +1,7 @@
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import type { ExamResult } from '../types';
+import { AIQUAA_LOGO_BASE64 } from './logoBase64';
 
 // Extend jsPDF type to include autoTable
 declare module 'jspdf' {
@@ -30,22 +31,37 @@ export function generateExamPDF(result: ExamResult, mode: 'exam' | 'training'): 
   // ===== HEADER =====
   // Background gradient effect (simulated with rectangles)
   doc.setFillColor(245, 158, 11); // Primary color
-  doc.rect(0, 0, pageWidth, 40, 'F');
+  doc.rect(0, 0, pageWidth, 50, 'F');
 
-  // Title
+  // Logo AIQUAA
+  // Dimensiones originales: 810x527 (ratio 1.54)
+  // Tamaño en PDF: 35mm ancho
+  const logoWidth = 35;
+  const logoHeight = logoWidth / 1.54; // Mantener proporción
+  const logoX = (pageWidth - logoWidth) / 2; // Centrado
+  const logoY = 8;
+
+  try {
+    doc.addImage(AIQUAA_LOGO_BASE64, 'PNG', logoX, logoY, logoWidth, logoHeight);
+  } catch (error) {
+    // Si falla la carga del logo, mostrar texto
+    console.warn('No se pudo cargar el logo:', error);
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(24);
+    doc.setFont('helvetica', 'bold');
+    doc.text('AIQUAA', pageWidth / 2, 18, { align: 'center' });
+  }
+
+  // Subtítulos debajo del logo
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(24);
-  doc.setFont('helvetica', 'bold');
-  doc.text('AIQUAA', pageWidth / 2, 18, { align: 'center' });
-
-  doc.setFontSize(14);
-  doc.setFont('helvetica', 'normal');
-  doc.text('Simulador ISTQB CTFL v4.0', pageWidth / 2, 28, { align: 'center' });
-
   doc.setFontSize(11);
-  doc.text('Informe de Resultados del Examen', pageWidth / 2, 35, { align: 'center' });
+  doc.setFont('helvetica', 'normal');
+  doc.text('Simulador ISTQB CTFL v4.0', pageWidth / 2, 38, { align: 'center' });
 
-  yPosition = 50;
+  doc.setFontSize(10);
+  doc.text('Informe de Resultados del Examen', pageWidth / 2, 45, { align: 'center' });
+
+  yPosition = 58;
 
   // ===== ESTADO DEL EXAMEN =====
   doc.setTextColor(31, 41, 55); // Dark
