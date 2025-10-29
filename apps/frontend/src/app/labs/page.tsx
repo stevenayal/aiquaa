@@ -94,6 +94,14 @@ export default function LabsPage() {
       icon: '📝',
       color: 'from-amber-500 to-amber-600',
       href: '/labs/istqb'
+    },
+    {
+      id: 'test-app',
+      name: 'AIQUAA Test App',
+      description: 'Aplicación de prueba para Exploratory Testing & Bug Hunt - Evaluación de testers (30 min)',
+      icon: '🐛',
+      color: 'from-red-500 to-rose-600',
+      href: '/labs/test-app'
     }
   ];
 
