@@ -31,7 +31,6 @@ function drawPerformanceChart(
   startY: number,
   pageWidth: number
 ): number {
-  const chartHeight = Math.min(learningObjectives.length * 12 + 30, 120);
   const chartWidth = pageWidth - 40;
   const barHeight = 8;
   const marginLeft = 20;
@@ -327,7 +326,7 @@ function drawPerformanceChart(
   }
 
   yPosition = drawPerformanceChart(doc, result.learningObjectiveAnalysis, yPosition, pageWidth);
-  
+
   // Análisis de temas que necesitan refuerzo
   yPosition += 8;
   doc.setFontSize(11);
@@ -347,7 +346,7 @@ function drawPerformanceChart(
   if (weakTopics.length > 0) {
     doc.text('Se recomienda reforzar los siguientes temas:', 15, yPosition);
     yPosition += 5;
-    
+
     weakTopics.slice(0, 5).forEach((topic) => {
       doc.setFontSize(8);
       const bullet = topic.percentage < 50 ? '🔴' : '🟠';
