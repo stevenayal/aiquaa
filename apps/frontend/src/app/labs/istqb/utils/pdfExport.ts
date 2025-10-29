@@ -23,15 +23,101 @@ export function formatTime(seconds: number): string {
 }
 
 export function generateExamPDF(result: ExamResult, mode: 'exam' | 'training'): void {
+
+// Helper function to draw performance chart
+function drawPerformanceChart(
+  doc: jsPDF,
+  learningObjectives: Array<{ learningObjective: string; percentage: number; correctAnswers: number; totalQuestions: number }>,
+  startY: number,
+  pageWidth: number
+): number {
+  const chartHeight = Math.min(learningObjectives.length * 12 + 30, 120);
+  const chartWidth = pageWidth - 40;
+  const barHeight = 8;
+  const marginLeft = 20;
+  const labelWidth = 40;
+
+  // Title
+  doc.setFontSize(13);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(31, 41, 55);
+  doc.text('Análisis Visual de Rendimiento por Tema', marginLeft, startY);
+
+  let currentY = startY + 10;
+
+  // Sort by percentage (lowest first to highlight areas needing improvement)
+  const sortedLOs = [...learningObjectives].sort((a, b) => a.percentage - b.percentage);
+
+  sortedLOs.forEach((lo) => {
+    // LO Label
+    doc.setFontSize(8);
+    doc.setTextColor(31, 41, 55);
+    doc.setFont('helvetica', 'normal');
+    const loLabel = lo.learningObjective.length > 12 ? lo.learningObjective.substring(0, 10) + '..' : lo.learningObjective;
+    doc.text(loLabel, marginLeft, currentY + 6);
+
+    // Bar background (light gray)
+    doc.setFillColor(229, 231, 235);
+    doc.rect(marginLeft + labelWidth, currentY, chartWidth - labelWidth - 35, barHeight, 'F');
+
+    // Performance bar (colored)
+    const barWidth = ((chartWidth - labelWidth - 35) * lo.percentage) / 100;
+    let barColor: [number, number, number];
+
+    if (lo.percentage >= 70) {
+      barColor = [34, 197, 94]; // Green-500
+    } else if (lo.percentage >= 50) {
+      barColor = [251, 146, 60]; // Orange-400
+    } else {
+      barColor = [239, 68, 68]; // Red-500
+    }
+
+    doc.setFillColor(barColor[0], barColor[1], barColor[2]);
+    doc.rect(marginLeft + labelWidth, currentY, barWidth, barHeight, 'F');
+
+    // Percentage text
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(barColor[0], barColor[1], barColor[2]);
+    doc.text(`${lo.percentage.toFixed(0)}%`, marginLeft + labelWidth + chartWidth - labelWidth - 28, currentY + 6);
+
+    currentY += barHeight + 4;
+  });
+
+  // Legend
+  currentY += 6;
+  doc.setFontSize(7);
+  doc.setFont('helvetica', 'normal');
+
+  // Green legend
+  doc.setFillColor(34, 197, 94);
+  doc.rect(marginLeft, currentY - 3, 3, 3, 'F');
+  doc.setTextColor(107, 114, 128);
+  doc.text('≥70% Excelente', marginLeft + 5, currentY);
+
+  // Orange legend
+  doc.setFillColor(251, 146, 60);
+  doc.rect(marginLeft + 40, currentY - 3, 3, 3, 'F');
+  doc.text('50-69% Mejorable', marginLeft + 45, currentY);
+
+  // Red legend
+  doc.setFillColor(239, 68, 68);
+  doc.rect(marginLeft + 85, currentY - 3, 3, 3, 'F');
+  doc.text('<50% Reforzar', marginLeft + 90, currentY);
+
+  return currentY + 8;
+}
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
   let yPosition = 20;
 
   // ===== HEADER =====
-  // Background gradient effect (simulated with rectangles)
-  doc.setFillColor(245, 158, 11); // Primary color
-  doc.rect(0, 0, pageWidth, 50, 'F');
+  // Background gradient effect - AIQUAA brand colors (indigo gradient)
+  doc.setFillColor(15, 23, 42); // Slate-900 (AIQUAA brand)
+  doc.rect(0, 0, pageWidth, 25, 'F');
+  doc.setFillColor(30, 27, 75); // Indigo-950
+  doc.rect(0, 25, pageWidth, 25, 'F');
 
   // Logo AIQUAA
   // Dimensiones originales: 810x527 (ratio 1.54)
@@ -153,7 +239,7 @@ export function generateExamPDF(result: ExamResult, mode: 'exam' | 'training'): 
     body: summaryData,
     theme: 'striped',
     headStyles: {
-      fillColor: [245, 158, 11], // Primary
+      fillColor: [79, 70, 229], // Indigo-600 (AIQUAA brand) // Primary
       textColor: [255, 255, 255],
       fontStyle: 'bold',
       fontSize: 10,
@@ -197,7 +283,7 @@ export function generateExamPDF(result: ExamResult, mode: 'exam' | 'training'): 
     body: loData,
     theme: 'striped',
     headStyles: {
-      fillColor: [245, 158, 11],
+      fillColor: [79, 70, 229], // Indigo-600 (AIQUAA brand)
       textColor: [255, 255, 255],
       fontStyle: 'bold',
       fontSize: 10,
@@ -218,7 +304,7 @@ export function generateExamPDF(result: ExamResult, mode: 'exam' | 'training'): 
           data.cell.styles.textColor = [22, 163, 74]; // Green
           data.cell.styles.fontStyle = 'bold';
         } else if (percentage >= 50) {
-          data.cell.styles.textColor = [245, 158, 11]; // Amber
+          data.cell.styles.textColor = [251, 146, 60]; // Orange-400 (warning)
           data.cell.styles.fontStyle = 'bold';
         } else {
           data.cell.styles.textColor = [220, 38, 38]; // Red
@@ -232,6 +318,48 @@ export function generateExamPDF(result: ExamResult, mode: 'exam' | 'training'): 
   yPosition = (doc as any).lastAutoTable.finalY + 12;
 
   // ===== DETALLE DE PREGUNTAS =====
+
+  // ===== GRÁFICO DE ANÁLISIS VISUAL =====
+  // Add chart on new page if needed, or after table if space available
+  if (yPosition > pageHeight - 80) {
+    doc.addPage();
+    yPosition = 20;
+  }
+
+  yPosition = drawPerformanceChart(doc, result.learningObjectiveAnalysis, yPosition, pageWidth);
+  
+  // Análisis de temas que necesitan refuerzo
+  yPosition += 8;
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(31, 41, 55);
+  doc.text('Recomendaciones:', 15, yPosition);
+  yPosition += 6;
+
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(107, 114, 128);
+
+  const weakTopics = result.learningObjectiveAnalysis
+    .filter(lo => lo.percentage < 70)
+    .sort((a, b) => a.percentage - b.percentage);
+
+  if (weakTopics.length > 0) {
+    doc.text('Se recomienda reforzar los siguientes temas:', 15, yPosition);
+    yPosition += 5;
+    
+    weakTopics.slice(0, 5).forEach((topic) => {
+      doc.setFontSize(8);
+      const bullet = topic.percentage < 50 ? '🔴' : '🟠';
+      doc.text(`${bullet} ${topic.learningObjective}: ${topic.percentage.toFixed(0)}% (${topic.correctAnswers}/${topic.totalQuestions})`, 20, yPosition);
+      yPosition += 4;
+    });
+  } else {
+    doc.text('¡Excelente! Has dominado todos los temas con más del 70% de acierto.', 15, yPosition);
+    yPosition += 5;
+  }
+
+  yPosition += 8;
   doc.addPage();
   yPosition = 20;
 
