@@ -5,10 +5,12 @@
 
 export class PRNG {
   private seed: number;
+  private initialSeed: number;
 
   constructor(seedString: string) {
     // Convert string to numeric seed using hash function
     this.seed = this.hashString(seedString);
+    this.initialSeed = this.seed;
   }
 
   private hashString(str: string): number {
@@ -19,6 +21,13 @@ export class PRNG {
       hash = hash & hash; // Convert to 32bit integer
     }
     return Math.abs(hash);
+  }
+
+  /**
+   * Get the initial seed value
+   */
+  getSeed(): number {
+    return this.initialSeed;
   }
 
   /**

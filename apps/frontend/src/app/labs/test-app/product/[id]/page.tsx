@@ -21,10 +21,14 @@ export default function ProductDetailPage() {
   const { showToast, ToastComponent } = useToast();
 
   useEffect(() => {
-    loadProduct();
-  }, [params.id]);
+    if (params?.id) {
+      loadProduct();
+    }
+  }, [params?.id]);
 
   const loadProduct = async () => {
+    if (!params?.id) return;
+
     try {
       const response = await apiGetProduct(params.id as string);
       if (response.success && response.data) {

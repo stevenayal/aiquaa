@@ -252,7 +252,7 @@ export function seedData(candidateId: string): void {
   const session: CandidateSession = {
     candidateId,
     activeBugs,
-    seedValue: prng.hashString(candidateId),
+    seedValue: prng.getSeed(),
     startedAt: new Date().toISOString(),
   };
 

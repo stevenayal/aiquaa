@@ -26,7 +26,7 @@ export default function AdminPage() {
   const { showToast, ToastComponent } = useToast();
 
   useEffect(() => {
-    const key = searchParams.get('key');
+    const key = searchParams?.get('key');
     if (key === ADMIN_KEY) {
       setAuthorized(true);
       const currentId = getCandidateId() || 'default';

@@ -6,7 +6,6 @@ import type {
   SupportTicket,
   CandidateSession,
 } from './types';
-import { getCandidateId } from './prng';
 
 // Storage keys
 const KEYS = {
