@@ -266,3 +266,30 @@ enum PurchaseStatus {
   FAILED
   CANCELLED
 }
+
+model IstqbExamResult {
+  id                  Int      @id @default(autoincrement())
+  participantName     String
+  participantEmail    String?
+  startTime           DateTime
+  endTime             DateTime
+  timeSpentSeconds    Int      // Tiempo total en segundos
+  score               Int
+  totalQuestions      Int
+  percentage          Decimal  @db.Decimal(5,2)
+  passed              Boolean
+  mode                ExamMode @default(EXAM)
+  answers             Json     // Array de respuestas completo
+  learningObjectives  Json     // Análisis por Learning Objectives
+  createdAt           DateTime @default(now())
+
+  @@map("istqb_exam_results")
+  @@index([participantEmail])
+  @@index([createdAt])
+  @@index([passed])
+}
+
+enum ExamMode {
+  EXAM
+  TRAINING
+}

@@ -38,7 +38,8 @@
       "Bash(node analyze-devto.mjs:*)",
       "Bash(node test-devto.mjs:*)",
       "Bash(node -e:*)",
-      "WebFetch(domain:dev.to)"
+      "WebFetch(domain:dev.to)",
+      "Bash(pnpm prisma:generate:*)"
     ],
     "deny": [],
     "ask": []

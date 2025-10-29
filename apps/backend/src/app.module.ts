@@ -9,6 +9,7 @@ import { BillingModule } from './billing/billing.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AppCacheModule } from './cache/cache.module';
 import { ObservabilityModule } from './observability/observability.module';
+import { IstqbModule } from './istqb/istqb.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { ObservabilityModule } from './observability/observability.module';
     ForumModule,
     ContentModule,
     BillingModule,
+    IstqbModule,
   ],
 })
 export class AppModule {}
