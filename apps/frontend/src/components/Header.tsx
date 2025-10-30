@@ -24,16 +24,17 @@ const Header = () => {
         : 'bg-brand-dark border-brand-accent'
     }`} role="banner">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16 md:h-20">
+        <div className="flex justify-between items-center h-20 md:h-24">
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2 sm:space-x-4 mr-4 sm:mr-8" onClick={closeMobileMenu}>
-              <Image 
-                src="/images/logo1.png" 
-                alt="AIQUAA Logo" 
+              <Image
+                src="/images/logo1.png"
+                alt="AIQUAA Logo"
                 width={112}
                 height={112}
-                className="h-16 sm:h-20 md:h-24 lg:h-28 w-auto"
+                className="h-14 sm:h-16 md:h-18 lg:h-20 w-auto"
+                priority
               />
             </Link>
           </div>
