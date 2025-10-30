@@ -6,102 +6,161 @@ import { useTheme } from '@/contexts/ThemeContext';
 export default function LabsPage() {
   const { isDarkMode } = useTheme();
 
-  const tools = [
+  const toolCategories = [
     {
-      id: 'json-validator',
-      name: 'Validador de JSON',
-      description: 'Valida y formatea JSON de forma instantánea',
-      icon: '🔍',
-      color: 'from-blue-500 to-blue-600',
-      href: '/labs/json-validator'
+      id: 'validadores',
+      name: '🧩 Validadores y Verificadores',
+      description: 'Herramientas para validar formatos y estructuras de datos',
+      tools: [
+        {
+          id: 'json-validator',
+          name: 'Validador de JSON',
+          description: 'Valida sintaxis JSON, formatea y detecta errores en tiempo real',
+          icon: '🔍',
+          color: 'from-blue-500 to-blue-600',
+          href: '/labs/json-validator',
+          featured: true,
+          implementedDate: 'Ago 2025'
+        },
+        {
+          id: 'jwt-decoder',
+          name: 'Decodificador JWT',
+          description: 'Decodifica tokens JWT y verifica estructura de header, payload y firma',
+          icon: '🔐',
+          color: 'from-red-500 to-red-600',
+          href: '/labs/jwt-decoder',
+          implementedDate: 'Sep 2025'
+        },
+        {
+          id: 'cron-validator',
+          name: 'Validador de Cron',
+          description: 'Valida expresiones cron y calcula próximas 10 ejecuciones programadas',
+          icon: '⏰',
+          color: 'from-indigo-500 to-indigo-600',
+          href: '/labs/cron-validator',
+          implementedDate: 'Sep 2025'
+        }
+      ]
     },
     {
-      id: 'data-generator',
-      name: 'Generador de Datos',
-      description: 'Crea datos de prueba para tus tests',
-      icon: '📊',
-      color: 'from-green-500 to-green-600',
-      href: '/labs/data-generator'
+      id: 'generadores',
+      name: '🧪 Generadores de Datos',
+      description: 'Crea datos sintéticos para pruebas funcionales y de cobertura',
+      tools: [
+        {
+          id: 'data-generator',
+          name: 'Generador de Datos',
+          description: 'Genera nombres, emails, teléfonos y datos aleatorios para testing',
+          icon: '📊',
+          color: 'from-green-500 to-green-600',
+          href: '/labs/data-generator',
+          featured: true,
+          implementedDate: 'Ago 2025'
+        },
+        {
+          id: 'allpairs',
+          name: 'All Pairs Generator',
+          description: 'Reduce casos de prueba combinatorios con técnica pairwise (2-way coverage)',
+          icon: '🔀',
+          color: 'from-teal-500 to-teal-600',
+          href: '/labs/allpairs',
+          featured: true,
+          implementedDate: 'Sep 2025'
+        }
+      ]
     },
     {
-      id: 'checklist',
-      name: 'Checklist de Pruebas',
-      description: 'Listas de verificación para diferentes tipos de testing',
-      icon: '✅',
-      color: 'from-purple-500 to-purple-600',
-      href: '/labs/checklist'
+      id: 'utilidades',
+      name: '🧾 Utilidades QA',
+      description: 'Herramientas prácticas para el día a día del tester',
+      tools: [
+        {
+          id: 'checklist',
+          name: 'Checklist de Pruebas',
+          description: 'Plantillas de verificación para testing funcional, regresión, humo y más',
+          icon: '✅',
+          color: 'from-purple-500 to-purple-600',
+          href: '/labs/checklist',
+          implementedDate: 'Ago 2025'
+        },
+        {
+          id: 'json-to-testplans',
+          name: 'JSON to Test Plans',
+          description: 'Convierte análisis de IA (JSON/YAML) en planes CSV importables a TestRail/Zephyr',
+          icon: '📋',
+          color: 'from-cyan-500 to-cyan-600',
+          href: '/labs/json-to-testplans',
+          implementedDate: 'Sep 2025'
+        },
+        {
+          id: 'req-lint',
+          name: 'Análisis de Requisitos',
+          description: 'Detecta ambigüedades, falta de testabilidad y problemas según heurísticas ISTQB',
+          icon: '📝',
+          color: 'from-blue-500 to-blue-600',
+          href: '/labs/req-lint',
+          implementedDate: 'Oct 2025'
+        },
+        {
+          id: 'risk-matrix',
+          name: 'Matriz de Riesgos',
+          description: 'Evalúa y prioriza riesgos del proyecto con matriz de probabilidad vs impacto',
+          icon: '🎯',
+          color: 'from-pink-500 to-pink-600',
+          href: '/labs/risk-matrix',
+          implementedDate: 'Oct 2025'
+        }
+      ]
     },
     {
-      id: 'base64-converter',
-      name: 'Convertidor Base64',
-      description: 'Codifica y decodifica texto en Base64',
-      icon: '🔄',
-      color: 'from-orange-500 to-orange-600',
-      href: '/labs/base64-converter'
+      id: 'conversores',
+      name: '🔧 Conversores',
+      description: 'Herramientas de codificación y transformación',
+      tools: [
+        {
+          id: 'base64-converter',
+          name: 'Convertidor Base64',
+          description: 'Codifica texto a Base64 y decodifica de Base64 a texto plano',
+          icon: '🔄',
+          color: 'from-orange-500 to-orange-600',
+          href: '/labs/base64-converter',
+          implementedDate: 'Sep 2025'
+        }
+      ]
     },
     {
-      id: 'jwt-decoder',
-      name: 'Decodificador JWT',
-      description: 'Analiza y decodifica tokens JWT',
-      icon: '🔐',
-      color: 'from-red-500 to-red-600',
-      href: '/labs/jwt-decoder'
+      id: 'formacion',
+      name: '🎓 Formación y Certificación',
+      description: 'Prepárate para certificaciones ISTQB',
+      tools: [
+        {
+          id: 'istqb',
+          name: 'Simulador ISTQB CTFL v4.0',
+          description: 'Examen de práctica completo con 40 preguntas oficiales del syllabus v4.0',
+          icon: '📚',
+          color: 'from-amber-500 to-amber-600',
+          href: '/labs/istqb',
+          featured: true,
+          implementedDate: 'Sep 2025'
+        }
+      ]
     },
     {
-      id: 'cron-validator',
-      name: 'Validador de Cron',
-      description: 'Valida expresiones cron y muestra próximas ejecuciones',
-      icon: '⏰',
-      color: 'from-indigo-500 to-indigo-600',
-      href: '/labs/cron-validator'
-    },
-    {
-      id: 'json-to-testplans',
-      name: 'JSON to Test Plans',
-      description: 'Convierte JSON de análisis de IA en archivos CSV para gestión de pruebas',
-      icon: '📊',
-      color: 'from-cyan-500 to-cyan-600',
-      href: '/labs/json-to-testplans'
-    },
-    {
-      id: 'allpairs',
-      name: 'All Pairs Generator',
-      description: 'Genera casos de prueba pairwise para testing combinatorio',
-      icon: '🔀',
-      color: 'from-teal-500 to-teal-600',
-      href: '/labs/allpairs'
-    },
-    {
-      id: 'req-lint',
-      name: 'Análisis de Requisitos',
-      description: 'Evalúa calidad de requisitos con heurísticas ISTQB (claridad, completitud, testabilidad)',
-      icon: '📋',
-      color: 'from-cyan-500 to-cyan-600',
-      href: '/labs/req-lint'
-    },
-    {
-      id: 'risk-matrix',
-      name: 'Matriz de Riesgos',
-      description: 'Crea y gestiona matrices de riesgos para proyectos QA/IT',
-      icon: '🎯',
-      color: 'from-pink-500 to-pink-600',
-      href: '/labs/risk-matrix'
-    },
-    {
-      id: 'istqb',
-      name: 'Simulador ISTQB CTFL v4.0',
-      description: 'Simulacro del examen ISTQB Certified Tester Foundation Level v4.0 en español',
-      icon: '📝',
-      color: 'from-amber-500 to-amber-600',
-      href: '/labs/istqb'
-    },
-    {
-      id: 'test-app',
-      name: 'AIQUAA Test App',
-      description: 'Aplicación de prueba para Exploratory Testing & Bug Hunt - Evaluación de testers (30 min)',
-      icon: '🐛',
-      color: 'from-red-500 to-rose-600',
-      href: '/labs/test-app'
+      id: 'evaluacion',
+      name: '🐛 Testing & Evaluación',
+      description: 'Aplicaciones para practicar y evaluar habilidades de testing',
+      tools: [
+        {
+          id: 'test-app',
+          name: 'AIQUAA Test App',
+          description: 'App con bugs intencionales para Bug Hunting - Evaluación práctica de 30 min',
+          icon: '🐞',
+          color: 'from-red-500 to-rose-600',
+          href: '/labs/test-app',
+          featured: true,
+          implementedDate: 'Oct 2025'
+        }
+      ]
     }
   ];
 
@@ -125,41 +184,150 @@ export default function LabsPage() {
           </p>
         </div>
 
-        {/* Tools Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {tools.map((tool) => (
-            <Link
-              key={tool.id}
-              href={tool.href}
-              className={`group block rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${
-                isDarkMode ? 'bg-slate-800' : 'bg-white'
-              }`}
-            >
-              <div className={`bg-gradient-to-r ${tool.color} p-6 text-white`}>
-                <div className="text-3xl mb-3">{tool.icon}</div>
-                <h3 className="text-xl font-bold mb-2">{tool.name}</h3>
-                <p className="text-white/90 text-sm">{tool.description}</p>
+        {/* Featured Tools of the Month */}
+        <div className={`mb-12 rounded-lg shadow-lg p-8 ${
+          isDarkMode
+            ? 'bg-gradient-to-r from-purple-900/40 to-blue-900/40 border border-purple-700/50'
+            : 'bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200'
+        }`}>
+          <div className="flex items-center gap-3 mb-6">
+            <span className="text-3xl">🔥</span>
+            <div>
+              <h2 className={`text-2xl font-bold ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}>
+                Destacadas del Mes
+              </h2>
+              <p className={`text-sm ${
+                isDarkMode ? 'text-slate-300' : 'text-brand-muted'
+              }`}>
+                Las herramientas más utilizadas por la comunidad
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {toolCategories
+              .flatMap(cat => cat.tools)
+              .filter(tool => tool.featured)
+              .slice(0, 3)
+              .map((tool, index) => (
+                <Link
+                  key={tool.id}
+                  href={tool.href}
+                  className={`group p-4 rounded-lg transition-all duration-300 hover:scale-105 ${
+                    isDarkMode
+                      ? 'bg-slate-800/80 hover:bg-slate-700/80'
+                      : 'bg-white hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className={`text-2xl font-bold ${
+                      index === 0
+                        ? 'text-yellow-500'
+                        : index === 1
+                        ? 'text-gray-400'
+                        : 'text-orange-600'
+                    }`}>
+                      #{index + 1}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xl">{tool.icon}</span>
+                        <h3 className={`font-bold ${
+                          isDarkMode ? 'text-white' : 'text-brand-text'
+                        }`}>
+                          {tool.name}
+                        </h3>
+                      </div>
+                      <p className={`text-xs ${
+                        isDarkMode ? 'text-slate-400' : 'text-brand-muted'
+                      }`}>
+                        {tool.description}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+          </div>
+        </div>
+
+        {/* Tools by Category */}
+        <div className="space-y-12">
+          {toolCategories.map((category) => (
+            <div key={category.id}>
+              {/* Category Header */}
+              <div className="mb-6">
+                <h2 className={`text-2xl md:text-3xl font-bold mb-2 ${
+                  isDarkMode ? 'text-white' : 'text-brand-text'
+                }`}>
+                  {category.name}
+                </h2>
+                <p className={`text-base ${
+                  isDarkMode ? 'text-slate-400' : 'text-brand-muted'
+                }`}>
+                  {category.description}
+                </p>
               </div>
-              <div className="p-6">
-                <div className="flex items-center justify-between">
-                  <span className={`text-sm ${
-                    isDarkMode ? 'text-slate-400' : 'text-brand-muted'
-                  }`}>Hacer click para usar</span>
-                  <svg
-                    className={`w-5 h-5 transition-colors ${
-                      isDarkMode
-                        ? 'text-slate-400 group-hover:text-blue-400'
-                        : 'text-brand-muted group-hover:text-brand-accent'
+
+              {/* Tools Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {category.tools.map((tool) => (
+                  <Link
+                    key={tool.id}
+                    href={tool.href}
+                    className={`group block rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative ${
+                      isDarkMode ? 'bg-slate-800' : 'bg-white'
                     }`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
+                    {/* Featured Badge */}
+                    {tool.featured && (
+                      <div className="absolute top-3 right-3 z-10">
+                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                          isDarkMode
+                            ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/50'
+                            : 'bg-yellow-100 text-yellow-800 border border-yellow-300'
+                        }`}>
+                          ⭐ Destacada
+                        </span>
+                      </div>
+                    )}
+
+                    <div className={`bg-gradient-to-r ${tool.color} p-6 text-white`}>
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="text-3xl">{tool.icon}</div>
+                        {tool.implementedDate && (
+                          <span className="px-2 py-1 bg-white/20 backdrop-blur-sm rounded text-xs font-medium">
+                            📅 {tool.implementedDate}
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="text-xl font-bold mb-2">{tool.name}</h3>
+                      <p className="text-white/90 text-sm">{tool.description}</p>
+                    </div>
+                    <div className="p-6">
+                      <div className="flex items-center justify-between">
+                        <span className={`text-sm ${
+                          isDarkMode ? 'text-slate-400' : 'text-brand-muted'
+                        }`}>Hacer click para usar</span>
+                        <svg
+                          className={`w-5 h-5 transition-colors ${
+                            isDarkMode
+                              ? 'text-slate-400 group-hover:text-blue-400'
+                              : 'text-brand-muted group-hover:text-brand-accent'
+                          }`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
               </div>
-            </Link>
+            </div>
           ))}
         </div>
 

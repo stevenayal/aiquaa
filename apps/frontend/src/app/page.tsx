@@ -10,32 +10,6 @@ export default function HomePage() {
 
   return (
     <div className={isDarkMode ? 'dark' : ''}>
-      {/* Event Announcement Banner */}
-      <Link
-        href="/comunidad"
-        className="block bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 hover:from-green-700 hover:via-emerald-700 hover:to-teal-700 transition-all duration-300"
-      >
-        <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
-          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-white">
-            <span className="text-xl sm:text-2xl animate-bounce">🎉</span>
-            <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-2">
-              <span className="text-sm sm:text-base md:text-lg font-bold whitespace-nowrap">
-                <span className="hidden sm:inline">¡Próximo Evento! </span>
-                <span className="font-extrabold">PY TESTING FEST 2025</span>
-              </span>
-              <span className="hidden md:inline text-sm sm:text-base md:text-lg font-bold whitespace-nowrap">
-                - 25 de octubre
-              </span>
-              <span className="px-2 py-1 bg-white/20 rounded text-xs sm:text-sm font-bold whitespace-nowrap inline-flex items-center gap-1">
-                Inscripción Gratis
-                <span className="text-base">→</span>
-              </span>
-            </div>
-            <span className="text-xl sm:text-2xl animate-bounce">🚀</span>
-          </div>
-        </div>
-      </Link>
-
       {/* Hero Section - Redesigned */}
       <section className="py-20 bg-gradient-to-b from-slate-900 via-slate-950 to-indigo-950 text-white text-center">
         <div className="max-w-4xl mx-auto px-6">
