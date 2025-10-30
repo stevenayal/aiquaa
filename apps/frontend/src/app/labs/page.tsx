@@ -8,6 +8,40 @@ export default function LabsPage() {
 
   const toolCategories = [
     {
+      id: 'formacion',
+      name: '🎓 Formación y Certificación',
+      description: 'Prepárate para certificaciones ISTQB',
+      tools: [
+        {
+          id: 'istqb',
+          name: 'Simulador ISTQB CTFL v4.0',
+          description: 'Examen de práctica completo con 40 preguntas oficiales del syllabus v4.0',
+          icon: '📚',
+          color: 'from-amber-500 to-amber-600',
+          href: '/labs/istqb',
+          featured: true,
+          implementedDate: 'Sep 2025'
+        }
+      ]
+    },
+    {
+      id: 'evaluacion',
+      name: '🐛 Testing & Evaluación',
+      description: 'Aplicaciones para practicar y evaluar habilidades de testing',
+      tools: [
+        {
+          id: 'test-app',
+          name: 'AIQUAA Test App',
+          description: 'App con bugs intencionales para Bug Hunting - Evaluación práctica de 30 min',
+          icon: '🐞',
+          color: 'from-red-500 to-rose-600',
+          href: '/labs/test-app',
+          featured: true,
+          implementedDate: 'Oct 2025'
+        }
+      ]
+    },
+    {
       id: 'validadores',
       name: '🧩 Validadores y Verificadores',
       description: 'Herramientas para validar formatos y estructuras de datos',
@@ -127,40 +161,6 @@ export default function LabsPage() {
           implementedDate: 'Sep 2025'
         }
       ]
-    },
-    {
-      id: 'formacion',
-      name: '🎓 Formación y Certificación',
-      description: 'Prepárate para certificaciones ISTQB',
-      tools: [
-        {
-          id: 'istqb',
-          name: 'Simulador ISTQB CTFL v4.0',
-          description: 'Examen de práctica completo con 40 preguntas oficiales del syllabus v4.0',
-          icon: '📚',
-          color: 'from-amber-500 to-amber-600',
-          href: '/labs/istqb',
-          featured: true,
-          implementedDate: 'Sep 2025'
-        }
-      ]
-    },
-    {
-      id: 'evaluacion',
-      name: '🐛 Testing & Evaluación',
-      description: 'Aplicaciones para practicar y evaluar habilidades de testing',
-      tools: [
-        {
-          id: 'test-app',
-          name: 'AIQUAA Test App',
-          description: 'App con bugs intencionales para Bug Hunting - Evaluación práctica de 30 min',
-          icon: '🐞',
-          color: 'from-red-500 to-rose-600',
-          href: '/labs/test-app',
-          featured: true,
-          implementedDate: 'Oct 2025'
-        }
-      ]
     }
   ];
 
@@ -276,31 +276,30 @@ export default function LabsPage() {
                   <Link
                     key={tool.id}
                     href={tool.href}
-                    className={`group block rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative ${
+                    className={`group block rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${
                       isDarkMode ? 'bg-slate-800' : 'bg-white'
                     }`}
                   >
-                    {/* Featured Badge */}
-                    {tool.featured && (
-                      <div className="absolute top-3 right-3 z-10">
-                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                          isDarkMode
-                            ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/50'
-                            : 'bg-yellow-100 text-yellow-800 border border-yellow-300'
-                        }`}>
-                          ⭐ Destacada
-                        </span>
-                      </div>
-                    )}
-
-                    <div className={`bg-gradient-to-r ${tool.color} p-6 text-white`}>
-                      <div className="flex items-start justify-between mb-3">
+                    <div className={`bg-gradient-to-r ${tool.color} p-6 text-white relative`}>
+                      {/* Badges Container */}
+                      <div className="flex items-start justify-between gap-2 mb-3">
                         <div className="text-3xl">{tool.icon}</div>
-                        {tool.implementedDate && (
-                          <span className="px-2 py-1 bg-white/20 backdrop-blur-sm rounded text-xs font-medium">
-                            📅 {tool.implementedDate}
-                          </span>
-                        )}
+                        <div className="flex flex-col items-end gap-2">
+                          {tool.featured && (
+                            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                              isDarkMode
+                                ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/50'
+                                : 'bg-yellow-100 text-yellow-800 border border-yellow-300'
+                            }`}>
+                              ⭐ Destacada
+                            </span>
+                          )}
+                          {tool.implementedDate && (
+                            <span className="px-2 py-1 bg-white/20 backdrop-blur-sm rounded text-xs font-medium">
+                              📅 {tool.implementedDate}
+                            </span>
+                          )}
+                        </div>
                       </div>
                       <h3 className="text-xl font-bold mb-2">{tool.name}</h3>
                       <p className="text-white/90 text-sm">{tool.description}</p>
