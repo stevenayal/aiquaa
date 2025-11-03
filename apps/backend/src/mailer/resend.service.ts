@@ -414,6 +414,66 @@ async sendIstqbExamReport(examData: any, resultId: number): Promise<void> {
   }
 }
 
+async sendTestResultsReport(testResults: {
+  success: boolean;
+  timestamp: Date;
+  duration: number;
+  summary: {
+    total: number;
+    passed: number;
+    failed: number;
+    skipped: number;
+  };
+  coverage?: {
+    statements: number;
+    branches: number;
+    functions: number;
+    lines: number;
+  };
+  failures?: Array<{
+    test: string;
+    error: string;
+  }>;
+  type: 'unit' | 'e2e' | 'contract' | 'all';
+}): Promise<void> {
+  const adminEmail = this.configService.get<string>('ADMIN_EMAIL', 'admin@aiquaa.com');
+  const fromEmail = this.configService.get<string>('RESEND_FROM_EMAIL', 'onboarding@resend.dev');
+
+  const testDate = testResults.timestamp.toLocaleDateString('es-ES', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
+  const typeLabels = {
+    unit: 'Pruebas Unitarias',
+    e2e: 'Pruebas E2E',
+    contract: 'Pruebas de Contrato',
+    all: 'Todas las Pruebas',
+  };
+
+  try {
+    const { data, error } = await this.resend.emails.send({
+      from: fromEmail,
+      to: [adminEmail],
+      subject: `[Tests] ${typeLabels[testResults.type]} - ${testResults.success ? '✅ EXITOSO' : '❌ FALLIDO'} - ${testDate}`,
+      html: this.getTestResultsReportTemplate(testResults, testDate, typeLabels[testResults.type]),
+    });
+
+    if (error) {
+      this.logger.error(`Error enviando resultados de pruebas a ${adminEmail}:`, error);
+      throw new Error(`Error de Resend: ${error.message}`);
+    }
+
+    this.logger.log(`Resultados de pruebas enviados a ${adminEmail}: ${data?.id}`);
+  } catch (error) {
+    this.logger.error(`Error enviando resultados de pruebas a ${adminEmail}`, error);
+    throw error;
+  }
+}
+
 private getIstqbExamReportTemplate(examData: any, resultId: number, examDate: string): string {
   const formatTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
@@ -588,6 +648,202 @@ private getIstqbExamReportTemplate(examData: any, resultId: number, examDate: st
             <p style="margin: 0; color: #0C4A6E; font-size: 14px;">
               <strong>📌 Nota:</strong> Este informe ha sido generado automáticamente por el Sistema de Simulación ISTQB de AIQUAA.
               Los resultados se han guardado en la base de datos con ID <strong>#${resultId}</strong>.
+            </p>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 32px; padding: 20px; color: #6B7280; font-size: 14px;">
+          <p style="margin: 0 0 8px 0;">© ${new Date().getFullYear()} AIQUAA. Todos los derechos reservados.</p>
+          <p style="margin: 0;">Este email fue enviado desde una dirección que no acepta respuestas.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+private getTestResultsReportTemplate(
+  testResults: {
+    success: boolean;
+    timestamp: Date;
+    duration: number;
+    summary: {
+      total: number;
+      passed: number;
+      failed: number;
+      skipped: number;
+    };
+    coverage?: {
+      statements: number;
+      branches: number;
+      functions: number;
+      lines: number;
+    };
+    failures?: Array<{
+      test: string;
+      error: string;
+    }>;
+    type: 'unit' | 'e2e' | 'contract' | 'all';
+  },
+  testDate: string,
+  testTypeLabel: string
+): string {
+  const formatDuration = (ms: number): string => {
+    const seconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return minutes > 0 ? `${minutes}m ${remainingSeconds}s` : `${seconds}s`;
+  };
+
+  const failuresList = testResults.failures && testResults.failures.length > 0
+    ? testResults.failures.map(f => `
+      <div style="background: #FEF2F2; padding: 16px; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid #DC2626;">
+        <h4 style="margin: 0 0 8px 0; color: #991B1B; font-size: 14px; font-family: monospace;">
+          ${f.test}
+        </h4>
+        <pre style="margin: 0; font-size: 12px; color: #44403C; white-space: pre-wrap; word-wrap: break-word;">${f.error}</pre>
+      </div>
+    `).join('')
+    : '';
+
+  const coverageSection = testResults.coverage ? `
+    <div style="margin-bottom: 24px;">
+      <h3 style="margin: 0 0 16px 0; color: #1F2937; font-size: 20px; border-bottom: 2px solid #4F46E5; padding-bottom: 8px;">
+        📊 Cobertura de Código
+      </h3>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+        <div style="background: ${testResults.coverage.statements >= 75 ? 'linear-gradient(135deg, #DEF7EC, #BCF0DA)' : 'linear-gradient(135deg, #FEF3C7, #FDE68A)'};
+                    padding: 20px; border-radius: 12px; text-align: center; border: 2px solid ${testResults.coverage.statements >= 75 ? '#16A34A' : '#F59E0B'};">
+          <div style="font-size: 14px; color: #6B7280; margin-bottom: 4px;">Statements</div>
+          <div style="font-size: 28px; font-weight: bold; color: ${testResults.coverage.statements >= 75 ? '#03543F' : '#92400E'};">
+            ${testResults.coverage.statements.toFixed(2)}%
+          </div>
+        </div>
+        <div style="background: ${testResults.coverage.branches >= 75 ? 'linear-gradient(135deg, #DEF7EC, #BCF0DA)' : 'linear-gradient(135deg, #FEF3C7, #FDE68A)'};
+                    padding: 20px; border-radius: 12px; text-align: center; border: 2px solid ${testResults.coverage.branches >= 75 ? '#16A34A' : '#F59E0B'};">
+          <div style="font-size: 14px; color: #6B7280; margin-bottom: 4px;">Branches</div>
+          <div style="font-size: 28px; font-weight: bold; color: ${testResults.coverage.branches >= 75 ? '#03543F' : '#92400E'};">
+            ${testResults.coverage.branches.toFixed(2)}%
+          </div>
+        </div>
+        <div style="background: ${testResults.coverage.functions >= 75 ? 'linear-gradient(135deg, #DEF7EC, #BCF0DA)' : 'linear-gradient(135deg, #FEF3C7, #FDE68A)'};
+                    padding: 20px; border-radius: 12px; text-align: center; border: 2px solid ${testResults.coverage.functions >= 75 ? '#16A34A' : '#F59E0B'};">
+          <div style="font-size: 14px; color: #6B7280; margin-bottom: 4px;">Functions</div>
+          <div style="font-size: 28px; font-weight: bold; color: ${testResults.coverage.functions >= 75 ? '#03543F' : '#92400E'};">
+            ${testResults.coverage.functions.toFixed(2)}%
+          </div>
+        </div>
+        <div style="background: ${testResults.coverage.lines >= 75 ? 'linear-gradient(135deg, #DEF7EC, #BCF0DA)' : 'linear-gradient(135deg, #FEF3C7, #FDE68A)'};
+                    padding: 20px; border-radius: 12px; text-align: center; border: 2px solid ${testResults.coverage.lines >= 75 ? '#16A34A' : '#F59E0B'};">
+          <div style="font-size: 14px; color: #6B7280; margin-bottom: 4px;">Lines</div>
+          <div style="font-size: 28px; font-weight: bold; color: ${testResults.coverage.lines >= 75 ? '#03543F' : '#92400E'};">
+            ${testResults.coverage.lines.toFixed(2)}%
+          </div>
+        </div>
+      </div>
+    </div>
+  ` : '';
+
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Resultados de Pruebas - AIQUAA</title>
+    </head>
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background: #F9FAFB;">
+      <div style="max-width: 700px; margin: 20px auto; padding: 0;">
+        <div style="background: linear-gradient(135deg, ${testResults.success ? '#16A34A, #22C55E' : '#DC2626, #EF4444'}); color: white; padding: 40px 30px; text-align: center; border-radius: 12px 12px 0 0;">
+          <h1 style="margin: 0; font-size: 32px;">🎯 AIQUAA</h1>
+          <p style="margin: 8px 0 0 0; font-size: 18px; opacity: 0.95;">Resultados de Pruebas</p>
+          <p style="margin: 4px 0 0 0; font-size: 14px; opacity: 0.85;">${testTypeLabel}</p>
+        </div>
+
+        <div style="background: #ffffff; padding: 40px 30px; border-radius: 0 0 12px 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+          <div style="background: ${testResults.success ? 'linear-gradient(135deg, #DEF7EC, #BCF0DA)' : 'linear-gradient(135deg, #FEE2E2, #FECACA)'};
+                      padding: 24px; border-radius: 12px; text-align: center; margin-bottom: 32px; border: 2px solid ${testResults.success ? '#16A34A' : '#DC2626'};">
+            <div style="font-size: 48px; margin-bottom: 8px;">${testResults.success ? '✅' : '❌'}</div>
+            <h2 style="margin: 0; font-size: 28px; color: ${testResults.success ? '#03543F' : '#991B1B'};">
+              ${testResults.success ? 'PRUEBAS EXITOSAS' : 'PRUEBAS FALLIDAS'}
+            </h2>
+            <p style="margin: 8px 0 0 0; font-size: 16px; color: #374151;">
+              Duración: <strong>${formatDuration(testResults.duration)}</strong>
+            </p>
+          </div>
+
+          <div style="background: #F3F4F6; padding: 24px; border-radius: 12px; margin-bottom: 24px;">
+            <h3 style="margin: 0 0 16px 0; color: #1F2937; font-size: 20px; border-bottom: 2px solid #4F46E5; padding-bottom: 8px;">
+              📋 Información General
+            </h3>
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 8px 0; color: #6B7280; font-weight: 600; width: 180px;">Fecha y Hora:</td>
+                <td style="padding: 8px 0; color: #1F2937; font-weight: bold;">${testDate}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #6B7280; font-weight: 600;">Tipo de Prueba:</td>
+                <td style="padding: 8px 0; color: #1F2937;">${testTypeLabel}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #6B7280; font-weight: 600;">Duración Total:</td>
+                <td style="padding: 8px 0; color: #1F2937; font-weight: bold;">${formatDuration(testResults.duration)}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #6B7280; font-weight: 600;">Estado:</td>
+                <td style="padding: 8px 0;">
+                  <span style="background: ${testResults.success ? '#DEF7EC' : '#FEE2E2'};
+                               color: ${testResults.success ? '#03543F' : '#991B1B'};
+                               padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                    ${testResults.success ? 'EXITOSO' : 'FALLIDO'}
+                  </span>
+                </td>
+              </tr>
+            </table>
+          </div>
+
+          <div style="margin-bottom: 24px;">
+            <h3 style="margin: 0 0 16px 0; color: #1F2937; font-size: 20px; border-bottom: 2px solid #4F46E5; padding-bottom: 8px;">
+              📊 Resumen de Resultados
+            </h3>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+              <div style="background: linear-gradient(135deg, #DBEAFE, #BFDBFE); padding: 16px; border-radius: 12px; text-align: center; border: 2px solid #3B82F6;">
+                <div style="font-size: 24px; margin-bottom: 4px;">📝</div>
+                <div style="font-size: 24px; font-weight: bold; color: #1E40AF; margin-bottom: 2px;">${testResults.summary.total}</div>
+                <div style="font-size: 12px; color: #1E3A8A; font-weight: 600;">Total</div>
+              </div>
+              <div style="background: linear-gradient(135deg, #DEF7EC, #BCF0DA); padding: 16px; border-radius: 12px; text-align: center; border: 2px solid #16A34A;">
+                <div style="font-size: 24px; margin-bottom: 4px;">✓</div>
+                <div style="font-size: 24px; font-weight: bold; color: #03543F; margin-bottom: 2px;">${testResults.summary.passed}</div>
+                <div style="font-size: 12px; color: #03543F; font-weight: 600;">Pasaron</div>
+              </div>
+              <div style="background: linear-gradient(135deg, #FEE2E2, #FECACA); padding: 16px; border-radius: 12px; text-align: center; border: 2px solid #DC2626;">
+                <div style="font-size: 24px; margin-bottom: 4px;">✗</div>
+                <div style="font-size: 24px; font-weight: bold; color: #991B1B; margin-bottom: 2px;">${testResults.summary.failed}</div>
+                <div style="font-size: 12px; color: #991B1B; font-weight: 600;">Fallaron</div>
+              </div>
+              <div style="background: linear-gradient(135deg, #FEF3C7, #FDE68A); padding: 16px; border-radius: 12px; text-align: center; border: 2px solid #F59E0B;">
+                <div style="font-size: 24px; margin-bottom: 4px;">⊘</div>
+                <div style="font-size: 24px; font-weight: bold; color: #92400E; margin-bottom: 2px;">${testResults.summary.skipped}</div>
+                <div style="font-size: 12px; color: #78350F; font-weight: 600;">Omitidos</div>
+              </div>
+            </div>
+          </div>
+
+          ${coverageSection}
+
+          ${failuresList ? `
+          <div style="margin-bottom: 24px;">
+            <h3 style="margin: 0 0 16px 0; color: #1F2937; font-size: 20px; border-bottom: 2px solid #DC2626; padding-bottom: 8px;">
+              ⚠️ Pruebas Fallidas (${testResults.failures?.length || 0})
+            </h3>
+            ${failuresList}
+          </div>
+          ` : ''}
+
+          <div style="background: #F0F9FF; padding: 20px; border-radius: 12px; margin-top: 32px; border-left: 4px solid #0284C7;">
+            <p style="margin: 0; color: #0C4A6E; font-size: 14px;">
+              <strong>📌 Nota:</strong> Este informe ha sido generado automáticamente por el Sistema de Pruebas de AIQUAA.
             </p>
           </div>
         </div>
