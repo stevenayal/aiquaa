@@ -40,7 +40,8 @@
       "Bash(node -e:*)",
       "WebFetch(domain:dev.to)",
       "Bash(pnpm prisma:generate:*)",
-      "Bash(timeout 15 pnpm dev:*)"
+      "Bash(timeout 15 pnpm dev:*)",
+      "Bash(pnpm exec eslint:*)"
     ],
     "deny": [],
     "ask": []
