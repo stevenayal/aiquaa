@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -122,21 +122,24 @@ export default function BugReportWidget() {
 
   // Collect technical info when opening modal
   useEffect(() => {
-    if (isOpen && !technicalInfo) {
-      setTechnicalInfo(collectTechnicalInfo());
+    if (isOpen) {
+      const currentInfo = collectTechnicalInfo();
+      setTechnicalInfo(currentInfo);
     }
   }, [isOpen]);
 
   // Handle console log capture
   useEffect(() => {
+    const capture = consoleCapture.current;
+
     if (includeConsoleLogs) {
-      consoleCapture.current.start(30000);
+      capture.start(30000);
     } else {
-      consoleCapture.current.stop();
+      capture.stop();
     }
 
     return () => {
-      consoleCapture.current.stop();
+      capture.stop();
     };
   }, [includeConsoleLogs]);
 
@@ -179,7 +182,7 @@ export default function BugReportWidget() {
     };
   }, []);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     if (submissionState === 'loading') return;
 
     setIsOpen(false);
@@ -198,7 +201,7 @@ export default function BugReportWidget() {
 
     consoleCapture.current.stop();
     consoleCapture.current.clear();
-  };
+  }, [submissionState, reset, isRecording]);
 
   const handleFileSelect = (files: FileList | null) => {
     if (!files) return;
@@ -323,14 +326,11 @@ export default function BugReportWidget() {
 
     try {
       // Add console logs if enabled
-      let finalAttachments = [...attachments];
-      if (includeConsoleLogs) {
-        const logs = consoleCapture.current.getLogs();
-        if (logs.length > 0) {
-          const logsFile = createConsoleLogsFile(logs);
-          finalAttachments.push(logsFile);
-        }
-      }
+      const logsFile = includeConsoleLogs && consoleCapture.current.getLogs().length > 0
+        ? createConsoleLogsFile(consoleCapture.current.getLogs())
+        : null;
+
+      const finalAttachments = logsFile ? [...attachments, logsFile] : [...attachments];
 
       const payload = {
         ...data,

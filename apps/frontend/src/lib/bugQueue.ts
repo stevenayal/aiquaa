@@ -300,7 +300,7 @@ export function getBugReportQueue(): BugReportQueue {
  * Process queued bug reports
  */
 export async function processQueue(
-  submitFn: (payload: BugReportPayload) => Promise<void>
+  submitFn: (bugPayload: BugReportPayload) => Promise<void>
 ): Promise<{ processed: number; failed: number }> {
   const queue = getBugReportQueue();
   await queue.init();
