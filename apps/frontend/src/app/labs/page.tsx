@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useTheme } from '@/contexts/ThemeContext';
+import BugReportWidget from '@/components/BugReportWidget';
 
 export default function LabsPage() {
   const { isDarkMode } = useTheme();
@@ -406,6 +407,9 @@ export default function LabsPage() {
           </div>
         </div>
       </div>
+
+      {/* Bug Report Widget */}
+      <BugReportWidget />
     </div>
   );
 }
