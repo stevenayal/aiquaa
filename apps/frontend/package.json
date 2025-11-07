@@ -24,6 +24,7 @@
     "@axe-core/playwright": "^4.8.0",
     "@fontsource/sora": "^5.2.6",
     "@hookform/resolvers": "^5.2.2",
+    "@octokit/rest": "^22.0.1",
     "@playwright/test": "^1.40.0",
     "@sentry/nextjs": "^7.100.1",
     "@sentry/react": "^7.100.1",

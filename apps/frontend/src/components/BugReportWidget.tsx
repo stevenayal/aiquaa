@@ -41,6 +41,7 @@ export default function BugReportWidget() {
   const [submissionState, setSubmissionState] = useState<SubmissionState>('idle');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [successMessage, setSuccessMessage] = useState<string>('');
+  const [issueUrl, setIssueUrl] = useState<string>('');
 
   const modalRef = useRef<HTMLDivElement>(null);
   const firstInputRef = useRef<HTMLInputElement>(null);
@@ -192,6 +193,7 @@ export default function BugReportWidget() {
     setSubmissionState('idle');
     setErrorMessage('');
     setSuccessMessage('');
+    setIssueUrl('');
     reset();
 
     if (isRecording) {
@@ -264,21 +266,52 @@ export default function BugReportWidget() {
   };
 
   const handleRecording = async () => {
+    setErrorMessage(''); // Clear previous errors
+
     if (isRecording) {
       try {
         const file = await screenRecorder.current.stopRecording();
+
+        // Check file size
+        const totalSize = attachments.reduce((sum, f) => sum + f.size, 0) + file.size;
+        if (totalSize > MAX_TOTAL_SIZE) {
+          setErrorMessage(`Adding this recording would exceed the 25 MB limit. Recording size: ${formatBytes(file.size)}`);
+          return;
+        }
+
+        // Check file count
+        if (attachments.length >= MAX_FILES) {
+          setErrorMessage(`Maximum ${MAX_FILES} files allowed. Please remove a file before adding the recording.`);
+          return;
+        }
+
         setAttachments([...attachments, file]);
         setIsRecording(false);
       } catch (error) {
-        setErrorMessage('Failed to save recording');
+        setIsRecording(false);
+        const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+        setErrorMessage(`Failed to save recording: ${errorMsg}`);
         console.error('Recording error:', error);
       }
     } else {
       try {
         await screenRecorder.current.startRecording({ includeAudio: true });
         setIsRecording(true);
+        setErrorMessage(''); // Clear any previous errors
       } catch (error) {
-        setErrorMessage('Failed to start recording. Please grant screen sharing permission.');
+        const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+
+        // Provide helpful error messages based on common issues
+        if (errorMsg.includes('Permission denied') || errorMsg.includes('denied')) {
+          setErrorMessage('Screen sharing permission denied. Please allow screen sharing when prompted by your browser.');
+        } else if (errorMsg.includes('NotAllowedError')) {
+          setErrorMessage('Screen sharing was cancelled or not allowed. Please try again and grant permission.');
+        } else if (errorMsg.includes('NotSupportedError')) {
+          setErrorMessage('Screen recording is not supported in your browser. Try using Chrome, Edge, or Firefox.');
+        } else {
+          setErrorMessage(`Failed to start recording: ${errorMsg}`);
+        }
+
         console.error('Recording error:', error);
       }
     }
@@ -344,18 +377,19 @@ export default function BugReportWidget() {
 
         setSubmissionState('success');
         setSuccessMessage(result.message || 'Bug report submitted successfully!');
+        setIssueUrl(result.issueUrl || '');
 
         // Emit telemetry event
         window.dispatchEvent(
           new CustomEvent('aiquaa-bug-submitted', {
-            detail: { severity: data.severity, impact: data.impact },
+            detail: { severity: data.severity, impact: data.impact, issueUrl: result.issueUrl },
           })
         );
 
-        // Close modal after 2 seconds
+        // Close modal after 5 seconds to give time to see the link
         setTimeout(() => {
           handleClose();
-        }, 2000);
+        }, 5000);
       } catch (error) {
         // If online but failed, or offline, queue for later
         if (!navigator.onLine || (error instanceof Error && error.message.includes('fetch'))) {
@@ -766,7 +800,21 @@ export default function BugReportWidget() {
 
                 {successMessage && (
                   <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md" role="status">
-                    <p className="text-sm text-green-800 dark:text-green-200">{successMessage}</p>
+                    <p className="text-sm text-green-800 dark:text-green-200 font-medium mb-2">{successMessage}</p>
+                    {issueUrl && (
+                      <a
+                        href={issueUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-sm text-green-700 dark:text-green-300 hover:text-green-900 dark:hover:text-green-100 underline"
+                      >
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                          <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                        </svg>
+                        View issue on GitHub
+                      </a>
+                    )}
                   </div>
                 )}
 

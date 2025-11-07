@@ -1,29 +1,165 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { Octokit } from '@octokit/rest';
 import type { BugReportResponse } from '@/types/bug';
 
 /**
- * Bug Report API Route Handler
+ * Bug Report API Route Handler with GitHub Integration
  *
- * This is a stub implementation. The actual backend integration should:
- * 1. Validate the incoming data
- * 2. Process attachments
- * 3. Submit to configured target (GitHub, Azure DevOps, Email, or Webhook)
- * 4. Use server-side secrets (GITHUB_TOKEN, AZURE_PAT, etc.) stored in env vars
- *
- * Environment variables:
- * - BUG_REPORT_TARGET: "github" | "azure" | "email" | "webhook"
- * - GITHUB_REPO: Owner/repo (e.g., "anthropics/aiquaa")
- * - GITHUB_TOKEN: Personal access token (secret)
- * - AZURE_ORG: Azure DevOps organization
- * - AZURE_PROJECT: Azure DevOps project
- * - AZURE_PAT: Azure DevOps personal access token (secret)
- * - BUG_REPORT_EMAIL: Email address for bug reports
- * - BUG_REPORT_WEBHOOK_URL: Webhook endpoint URL
+ * Environment variables required:
+ * - GITHUB_TOKEN: Personal access token with repo scope (secret)
+ * - GITHUB_REPO: Owner/repo (e.g., "stevenayal/aiquaa")
+ * - BUG_REPORT_TARGET: "github" (default)
  */
 
 const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25 MB
 const MAX_FILES = 5;
 const ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg', 'webm', 'mp4', 'txt', 'log'];
+
+// Initialize Octokit
+const getOctokit = () => {
+  const token = process.env.GITHUB_TOKEN;
+  if (!token) {
+    throw new Error('GITHUB_TOKEN environment variable is not set');
+  }
+  return new Octokit({ auth: token });
+};
+
+/**
+ * Submit bug report to GitHub Issues
+ */
+async function submitToGitHub(data: {
+  title: string;
+  stepsToReproduce: string;
+  expectedResult: string;
+  actualResult: string;
+  severity: string;
+  impact: string;
+  technicalInfo: any;
+  attachments: File[];
+}): Promise<{ issueNumber: number; issueUrl: string }> {
+  const octokit = getOctokit();
+  const repo = process.env.GITHUB_REPO || 'stevenayal/aiquaa';
+  const [owner, repoName] = repo.split('/');
+
+  if (!owner || !repoName) {
+    throw new Error('Invalid GITHUB_REPO format. Expected: owner/repo');
+  }
+
+  // Build issue body
+  let body = `## 🐛 Bug Report
+
+**Severity:** ${data.severity}
+**Impact:** ${data.impact}
+
+### Steps to Reproduce
+${data.stepsToReproduce}
+
+### Expected Result
+${data.expectedResult}
+
+### Actual Result
+${data.actualResult}
+`;
+
+  // Add technical information if available
+  if (data.technicalInfo) {
+    body += `\n### 🔧 Technical Information\n`;
+    body += `- **URL:** ${data.technicalInfo.url}\n`;
+    body += `- **Browser:** ${data.technicalInfo.userAgent}\n`;
+    body += `- **Viewport:** ${data.technicalInfo.viewport.width}x${data.technicalInfo.viewport.height}\n`;
+    body += `- **Language:** ${data.technicalInfo.language}\n`;
+    body += `- **Timezone:** ${data.technicalInfo.timezone}\n`;
+    body += `- **Platform:** ${data.technicalInfo.platform}\n`;
+    if (data.technicalInfo.deviceMemory) {
+      body += `- **Device Memory:** ${data.technicalInfo.deviceMemory} GB\n`;
+    }
+    body += `- **Timestamp:** ${data.technicalInfo.timestamp}\n`;
+  }
+
+  // Add attachments information
+  if (data.attachments.length > 0) {
+    body += `\n### 📎 Attachments (${data.attachments.length})\n`;
+    for (const file of data.attachments) {
+      const sizeKB = (file.size / 1024).toFixed(2);
+      body += `- ${file.name} (${sizeKB} KB)\n`;
+    }
+    body += `\n*Note: Attachments will be uploaded as comments below.*\n`;
+  }
+
+  body += `\n---\n*Reported via Bug Report Widget on ${new Date().toLocaleString()}*`;
+
+  // Determine labels based on severity
+  const labels = ['bug'];
+  if (data.severity === 'Critical') {
+    labels.push('priority: critical');
+  } else if (data.severity === 'Major') {
+    labels.push('priority: high');
+  } else {
+    labels.push('priority: medium');
+  }
+
+  // Add impact label
+  if (data.impact === 'High') {
+    labels.push('impact: high');
+  } else if (data.impact === 'Medium') {
+    labels.push('impact: medium');
+  }
+
+  // Create the issue
+  const issue = await octokit.issues.create({
+    owner,
+    repo: repoName,
+    title: `[Bug] ${data.title}`,
+    body,
+    labels,
+  });
+
+  // Upload attachments as comments with base64 content
+  if (data.attachments.length > 0) {
+    for (const file of data.attachments) {
+      try {
+        const buffer = await file.arrayBuffer();
+        const base64 = Buffer.from(buffer).toString('base64');
+        const extension = file.name.split('.').pop()?.toLowerCase() || '';
+
+        let commentBody = `### 📎 Attachment: ${file.name}\n\n`;
+
+        // For images, embed them directly
+        if (['png', 'jpg', 'jpeg'].includes(extension)) {
+          commentBody += `![${file.name}](data:image/${extension === 'jpg' ? 'jpeg' : extension};base64,${base64})\n\n`;
+        }
+        // For text files, show content
+        else if (['txt', 'log'].includes(extension)) {
+          const text = Buffer.from(buffer).toString('utf-8');
+          commentBody += `\`\`\`\n${text}\n\`\`\`\n\n`;
+        }
+        // For videos, provide download info
+        else if (['webm', 'mp4'].includes(extension)) {
+          commentBody += `**Video file:** ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)\n\n`;
+          commentBody += `*Download the video by copying this base64 data and using a base64-to-file converter.*\n\n`;
+          commentBody += `<details>\n<summary>Base64 Data (click to expand)</summary>\n\n\`\`\`\n${base64.substring(0, 1000)}...\n\`\`\`\n\n</details>\n`;
+        }
+
+        commentBody += `*Uploaded: ${new Date().toLocaleString()}*`;
+
+        await octokit.issues.createComment({
+          owner,
+          repo: repoName,
+          issue_number: issue.data.number,
+          body: commentBody,
+        });
+      } catch (error) {
+        console.error(`Failed to upload attachment ${file.name}:`, error);
+        // Continue with other attachments even if one fails
+      }
+    }
+  }
+
+  return {
+    issueNumber: issue.data.number,
+    issueUrl: issue.data.html_url,
+  };
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -120,52 +256,23 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Get target from environment
-    const target = process.env.BUG_REPORT_TARGET || 'github';
-
-    // STUB: In production, this would actually submit to the configured target
-    // For now, we just simulate a successful submission
-
-    console.log('Bug report received:', {
+    // Submit to GitHub
+    const result = await submitToGitHub({
       title,
+      stepsToReproduce,
+      expectedResult,
+      actualResult,
       severity,
       impact,
-      target,
-      attachmentsCount: attachments.length,
-      hasTechnicalInfo: !!technicalInfo,
+      technicalInfo,
+      attachments,
     });
-
-    // Simulate processing delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    // Simulate different responses based on target
-    let issueUrl = '';
-    let issueId = '';
-
-    switch (target) {
-      case 'github':
-        issueId = `#${Math.floor(Math.random() * 1000)}`;
-        issueUrl = `https://github.com/${process.env.GITHUB_REPO || 'owner/repo'}/issues/${issueId.slice(1)}`;
-        break;
-      case 'azure':
-        issueId = `${Math.floor(Math.random() * 10000)}`;
-        issueUrl = `https://dev.azure.com/${process.env.AZURE_ORG}/${process.env.AZURE_PROJECT}/_workitems/edit/${issueId}`;
-        break;
-      case 'email':
-        issueId = `EMAIL-${Date.now()}`;
-        issueUrl = '';
-        break;
-      case 'webhook':
-        issueId = `WEBHOOK-${Date.now()}`;
-        issueUrl = process.env.BUG_REPORT_WEBHOOK_URL || '';
-        break;
-    }
 
     const response: BugReportResponse = {
       success: true,
-      message: `Bug report submitted successfully to ${target}!`,
-      issueId,
-      issueUrl: issueUrl || undefined,
+      message: 'Bug report submitted successfully to GitHub!',
+      issueId: `#${result.issueNumber}`,
+      issueUrl: result.issueUrl,
     };
 
     return NextResponse.json(response, { status: 200 });
