@@ -4,11 +4,12 @@ import { MailerService } from '../mailer/mailer.service';
 @Injectable()
 export class LabsService {
   private readonly logger = new Logger(LabsService.name);
+  private readonly adminEmail = 'admin@aiquaa.com';
 
   constructor(private readonly mailerService: MailerService) {}
 
-  async sendGitExamResult(email: string, examResult: any): Promise<void> {
-    this.logger.log(`Enviando resultado de examen Git a ${email}`);
-    await this.mailerService.sendGitExamReport(email, examResult);
+  async sendGitExamResult(examResult: any): Promise<void> {
+    this.logger.log(`Enviando resultado de examen Git a ${this.adminEmail} - Estudiante: ${examResult.participantName}`);
+    await this.mailerService.sendGitExamReport(this.adminEmail, examResult);
   }
 }

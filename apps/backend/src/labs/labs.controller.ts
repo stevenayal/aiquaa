@@ -3,7 +3,6 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { LabsService } from './labs.service';
 
 class SendGitExamResultDto {
-  email: string;
   examResult: any;
 }
 
@@ -14,11 +13,11 @@ export class LabsController {
 
   @Post('git/send-result')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Send Git exam result via email' })
-  @ApiResponse({ status: 200, description: 'Email sent successfully' })
+  @ApiOperation({ summary: 'Send Git exam result via email to admin' })
+  @ApiResponse({ status: 200, description: 'Email sent successfully to admin' })
   @ApiResponse({ status: 400, description: 'Bad request' })
   async sendGitExamResult(@Body() body: SendGitExamResultDto) {
-    await this.labsService.sendGitExamResult(body.email, body.examResult);
-    return { message: 'Resultado enviado exitosamente' };
+    await this.labsService.sendGitExamResult(body.examResult);
+    return { message: 'Resultado enviado exitosamente a admin@aiquaa.com' };
   }
 }

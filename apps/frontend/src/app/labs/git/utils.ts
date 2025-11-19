@@ -315,7 +315,7 @@ export async function exportToPDF(result: ExamResult): Promise<void> {
   doc.save(`Examen-Git-${result.participantName.replace(/\s+/g, '-')}-${Date.now()}.pdf`);
 }
 
-export async function sendResultByEmail(email: string, result: ExamResult): Promise<void> {
+export async function sendResultByEmail(result: ExamResult): Promise<void> {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
   const response = await fetch(`${apiUrl}/api/v1/labs/git/send-result`, {
@@ -324,7 +324,6 @@ export async function sendResultByEmail(email: string, result: ExamResult): Prom
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      email,
       examResult: result,
     }),
   });

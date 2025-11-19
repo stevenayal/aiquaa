@@ -18,10 +18,7 @@ export default function ResultsScreen({
 }: ResultsScreenProps) {
   const { isDarkMode } = useTheme();
   const [activeTab, setActiveTab] = useState<'summary' | 'learning-objectives' | 'details'>('summary');
-  const [showEmailDialog, setShowEmailDialog] = useState(false);
-  const [email, setEmail] = useState('');
   const [sendingEmail, setSendingEmail] = useState(false);
-  const [emailError, setEmailError] = useState('');
   const [emailSuccess, setEmailSuccess] = useState(false);
 
   const handleExportCSV = () => {
@@ -40,31 +37,17 @@ export default function ResultsScreen({
   };
 
   const handleSendEmail = async () => {
-    if (!email.trim()) {
-      setEmailError('Por favor, ingresa un correo electrónico');
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setEmailError('Por favor, ingresa un correo electrónico válido');
-      return;
-    }
-
     setSendingEmail(true);
-    setEmailError('');
 
     try {
-      await sendResultByEmail(email, result);
+      await sendResultByEmail(result);
       setEmailSuccess(true);
       setTimeout(() => {
-        setShowEmailDialog(false);
         setEmailSuccess(false);
-        setEmail('');
-      }, 2000);
+      }, 3000);
     } catch (error) {
       console.error('Error al enviar correo:', error);
-      setEmailError('Error al enviar el correo. Por favor, intenta de nuevo.');
+      alert('Error al enviar el correo al administrador. Por favor, intenta de nuevo.');
     } finally {
       setSendingEmail(false);
     }
@@ -124,14 +107,18 @@ export default function ResultsScreen({
                   📄 PDF
                 </button>
                 <button
-                  onClick={() => setShowEmailDialog(true)}
+                  onClick={handleSendEmail}
+                  disabled={sendingEmail}
+                  title="Enviar resultados a admin@aiquaa.com"
                   className={`px-4 py-2 rounded-lg font-medium transition-colors flex-1 md:flex-none ${
-                    isDarkMode
+                    sendingEmail
+                      ? 'bg-gray-400 cursor-not-allowed'
+                      : isDarkMode
                       ? 'bg-blue-700 hover:bg-blue-600 text-white border border-blue-600'
                       : 'bg-blue-600 hover:bg-blue-700 text-white border border-blue-700'
                   }`}
                 >
-                  📧 Enviar
+                  {sendingEmail ? '📤 Enviando...' : emailSuccess ? '✓ Enviado' : '📧 Enviar al Admin'}
                 </button>
                 <button
                   onClick={onReset}
@@ -548,96 +535,13 @@ export default function ResultsScreen({
           </div>
         </div>
 
-        {showEmailDialog && (
-          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className={`rounded-xl shadow-2xl max-w-md w-full border-2 ${
-              isDarkMode
-                ? 'bg-slate-800 border-slate-700'
-                : 'bg-white border-gray-200'
-            }`}>
-              <div className="p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="text-3xl">📧</span>
-                  <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-slate-100' : 'text-gray-900'}`}>
-                    Enviar Resultados
-                  </h2>
-                </div>
-                <p className={`mb-4 text-base ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}>
-                  Ingresa tu correo electrónico para recibir los resultados del examen.
-                </p>
-
-                <div className="space-y-4">
-                  <div>
-                    <label htmlFor="email" className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                      Correo Electrónico *
-                    </label>
-                    <input
-                      id="email"
-                      type="email"
-                      placeholder="tu@email.com"
-                      value={email}
-                      onChange={(e) => {
-                        setEmail(e.target.value);
-                        setEmailError('');
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && email.trim() && !sendingEmail) {
-                          handleSendEmail();
-                        }
-                      }}
-                      disabled={sendingEmail}
-                      className={`w-full px-4 py-2 rounded-lg border ${
-                        emailError
-                          ? 'border-red-500 focus:ring-red-500'
-                          : isDarkMode
-                          ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                    />
-                    {emailError && (
-                      <p className="mt-2 text-sm text-red-600 dark:text-red-400">{emailError}</p>
-                    )}
-                  </div>
-
-                  {emailSuccess && (
-                    <div className="p-3 rounded-lg bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-700">
-                      <p className="text-sm text-green-800 dark:text-green-200 flex items-center gap-2">
-                        <span>✓</span>
-                        ¡Correo enviado exitosamente!
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => {
-                        setShowEmailDialog(false);
-                        setEmail('');
-                        setEmailError('');
-                      }}
-                      disabled={sendingEmail}
-                      className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all ${
-                        isDarkMode
-                          ? 'bg-slate-700 hover:bg-slate-600 text-slate-200 border-2 border-slate-600'
-                          : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-2 border-gray-300'
-                      } ${sendingEmail ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    >
-                      Cancelar
-                    </button>
-                    <button
-                      onClick={handleSendEmail}
-                      disabled={sendingEmail || !email.trim()}
-                      className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl ${
-                        sendingEmail || !email.trim()
-                          ? 'bg-gray-400 cursor-not-allowed'
-                          : 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white'
-                      }`}
-                    >
-                      {sendingEmail ? 'Enviando...' : '📧 Enviar'}
-                    </button>
-                  </div>
-                </div>
-              </div>
+        {emailSuccess && (
+          <div className="fixed bottom-4 right-4 z-50">
+            <div className="p-4 rounded-lg bg-green-100 dark:bg-green-900/90 border-2 border-green-500 dark:border-green-700 shadow-xl">
+              <p className="text-sm font-semibold text-green-800 dark:text-green-200 flex items-center gap-2">
+                <span className="text-xl">✓</span>
+                ¡Resultados enviados a admin@aiquaa.com!
+              </p>
             </div>
           </div>
         )}

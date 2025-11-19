@@ -429,7 +429,7 @@ async sendGitExamReport(email: string, examResult: any): Promise<void> {
     const { data, error } = await this.resend.emails.send({
       from: fromEmail,
       to: [email],
-      subject: `Resultado Examen Técnico GIT - ${examResult.participantName} - ${examDate}`,
+      subject: `[AIQUAA] Resultado Examen GIT - ${examResult.participantName} - ${examDate}`,
       html: this.getGitExamReportTemplate(examResult, examDate),
     });
 
