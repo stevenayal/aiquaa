@@ -239,7 +239,11 @@ export async function exportToPDF(result: ExamResult): Promise<void> {
 
   // Result Status
   doc.setFontSize(16);
-  doc.setTextColor(result.passed ? 22, 163, 74 : 220, 38, 38);
+  if (result.passed) {
+    doc.setTextColor(22, 163, 74); // Green
+  } else {
+    doc.setTextColor(220, 38, 38); // Red
+  }
   doc.text(result.passed ? '¡APROBADO!' : 'NO APROBADO', pageWidth / 2, yPosition, { align: 'center' });
   yPosition += 10;
 
