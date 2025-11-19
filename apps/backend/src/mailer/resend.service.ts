@@ -414,6 +414,37 @@ async sendIstqbExamReport(examData: any, resultId: number): Promise<void> {
   }
 }
 
+async sendGitExamReport(email: string, examResult: any): Promise<void> {
+  const fromEmail = this.configService.get<string>('RESEND_FROM_EMAIL', 'onboarding@resend.dev');
+
+  const examDate = new Date().toLocaleDateString('es-ES', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
+  try {
+    const { data, error } = await this.resend.emails.send({
+      from: fromEmail,
+      to: [email],
+      subject: `Resultado Examen Técnico GIT - ${examResult.participantName} - ${examDate}`,
+      html: this.getGitExamReportTemplate(examResult, examDate),
+    });
+
+    if (error) {
+      this.logger.error(`Error enviando resultado de examen Git a ${email}:`, error);
+      throw new Error(`Error de Resend: ${error.message}`);
+    }
+
+    this.logger.log(`Resultado de examen Git enviado a ${email}: ${data?.id}`);
+  } catch (error) {
+    this.logger.error(`Error enviando resultado de examen Git a ${email}`, error);
+    throw error;
+  }
+}
+
 async sendTestResultsReport(testResults: {
   success: boolean;
   timestamp: Date;
@@ -648,6 +679,176 @@ private getIstqbExamReportTemplate(examData: any, resultId: number, examDate: st
             <p style="margin: 0; color: #0C4A6E; font-size: 14px;">
               <strong>📌 Nota:</strong> Este informe ha sido generado automáticamente por el Sistema de Simulación ISTQB de AIQUAA.
               Los resultados se han guardado en la base de datos con ID <strong>#${resultId}</strong>.
+            </p>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 32px; padding: 20px; color: #6B7280; font-size: 14px;">
+          <p style="margin: 0 0 8px 0;">© ${new Date().getFullYear()} AIQUAA. Todos los derechos reservados.</p>
+          <p style="margin: 0;">Este email fue enviado desde una dirección que no acepta respuestas.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+private getGitExamReportTemplate(examResult: any, examDate: string): string {
+  const formatTime = (seconds: number): string => {
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${minutes}m ${secs}s`;
+  };
+
+  const topIncorrectAnswers = examResult.answers
+    .filter((a: any) => !a.isCorrect)
+    .slice(0, 3)
+    .map((a: any, index: number) => {
+      const questionIndex = examResult.answers.findIndex((ans: any) => ans.questionId === a.questionId);
+      return `
+        <div style="background: #FEF2F2; padding: 16px; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid #DC2626;">
+          <h4 style="margin: 0 0 8px 0; color: #991B1B; font-size: 14px;">
+            Pregunta ${questionIndex + 1} - ${a.learningObjective} (${a.kLevel})
+          </h4>
+          <p style="margin: 0 0 8px 0; font-size: 13px; color: #44403C;">${a.questionText.substring(0, 150)}...</p>
+          <div style="display: flex; gap: 16px; font-size: 12px;">
+            <div>
+              <span style="color: #DC2626; font-weight: bold;">❌ Tu respuesta:</span>
+              <span style="color: #44403C;">${a.userAnswer.join(', ') || 'Sin responder'}</span>
+            </div>
+            <div>
+              <span style="color: #16A34A; font-weight: bold;">✓ Correcta:</span>
+              <span style="color: #44403C;">${a.correctAnswer.join(', ')}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    })
+    .join('');
+
+  const categoryBreakdown = examResult.learningObjectiveAnalysis
+    .map((lo: any) => `
+      <tr>
+        <td style="padding: 12px; border-bottom: 1px solid #E5E7EB; color: #374151;">${lo.learningObjective}</td>
+        <td style="padding: 12px; border-bottom: 1px solid #E5E7EB; text-align: center; color: #374151;">${lo.correctAnswers}/${lo.totalQuestions}</td>
+        <td style="padding: 12px; border-bottom: 1px solid #E5E7EB; text-align: center;">
+          <span style="background: ${lo.percentage >= 70 ? '#DEF7EC' : lo.percentage >= 50 ? '#FEF3C7' : '#FEE2E2'};
+                       color: ${lo.percentage >= 70 ? '#03543F' : lo.percentage >= 50 ? '#92400E' : '#991B1B'};
+                       padding: 4px 12px; border-radius: 12px; font-weight: 600; font-size: 13px;">
+            ${lo.percentage.toFixed(0)}%
+          </span>
+        </td>
+      </tr>
+    `)
+    .join('');
+
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Resultado Examen GIT - AIQUAA</title>
+    </head>
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background: #F9FAFB;">
+      <div style="max-width: 700px; margin: 20px auto; padding: 0;">
+        <div style="background: linear-gradient(135deg, #F97316, #EA580C); color: white; padding: 40px 30px; text-align: center; border-radius: 12px 12px 0 0;">
+          <h1 style="margin: 0; font-size: 32px;">🎯 AIQUAA</h1>
+          <p style="margin: 8px 0 0 0; font-size: 18px; opacity: 0.95;">Examen Técnico GIT</p>
+          <p style="margin: 4px 0 0 0; font-size: 14px; opacity: 0.85;">Fundamentos de Control de Versiones</p>
+        </div>
+
+        <div style="background: #ffffff; padding: 40px 30px; border-radius: 0 0 12px 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+          <div style="background: ${examResult.passed ? 'linear-gradient(135deg, #DEF7EC, #BCF0DA)' : 'linear-gradient(135deg, #FEE2E2, #FECACA)'};
+                      padding: 24px; border-radius: 12px; text-align: center; margin-bottom: 32px; border: 2px solid ${examResult.passed ? '#16A34A' : '#DC2626'};">
+            <div style="font-size: 48px; margin-bottom: 8px;">${examResult.passed ? '🏆' : '❌'}</div>
+            <h2 style="margin: 0; font-size: 28px; color: ${examResult.passed ? '#03543F' : '#991B1B'};">
+              ${examResult.passed ? '¡APROBADO!' : 'NO APROBADO'}
+            </h2>
+            <p style="margin: 8px 0 0 0; font-size: 18px; color: #374151;">
+              <strong>${examResult.score}/${examResult.totalQuestions}</strong> preguntas correctas
+              <span style="font-size: 16px; color: #6B7280;">(${examResult.percentage.toFixed(2)}%)</span>
+            </p>
+          </div>
+
+          <div style="background: #F3F4F6; padding: 24px; border-radius: 12px; margin-bottom: 24px;">
+            <h3 style="margin: 0 0 16px 0; color: #1F2937; font-size: 20px; border-bottom: 2px solid #F97316; padding-bottom: 8px;">
+              📋 Información del Participante
+            </h3>
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 8px 0; color: #6B7280; font-weight: 600; width: 180px;">Nombre:</td>
+                <td style="padding: 8px 0; color: #1F2937; font-weight: bold;">${examResult.participantName}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #6B7280; font-weight: 600;">Perfil GitHub:</td>
+                <td style="padding: 8px 0; color: #1F2937;"><a href="${examResult.githubProfile}" style="color: #F97316; text-decoration: none; font-weight: 600;">${examResult.githubProfile}</a></td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #6B7280; font-weight: 600;">Fecha y Hora:</td>
+                <td style="padding: 8px 0; color: #1F2937;">${examDate}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #6B7280; font-weight: 600;">Tiempo Empleado:</td>
+                <td style="padding: 8px 0; color: #1F2937; font-weight: bold;">${formatTime(examResult.timeSpent)}</td>
+              </tr>
+            </table>
+          </div>
+
+          <div style="margin-bottom: 24px;">
+            <h3 style="margin: 0 0 16px 0; color: #1F2937; font-size: 20px; border-bottom: 2px solid #F97316; padding-bottom: 8px;">
+              📊 Resumen de Resultados
+            </h3>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+              <div style="background: linear-gradient(135deg, #FEF3C7, #FDE68A); padding: 20px; border-radius: 12px; text-align: center; border: 2px solid #F97316;">
+                <div style="font-size: 36px; margin-bottom: 8px;">🏆</div>
+                <div style="font-size: 32px; font-weight: bold; color: #92400E; margin-bottom: 4px;">${examResult.score}</div>
+                <div style="font-size: 13px; color: #78350F; font-weight: 600;">Puntaje</div>
+              </div>
+              <div style="background: linear-gradient(135deg, #DEF7EC, #BCF0DA); padding: 20px; border-radius: 12px; text-align: center; border: 2px solid #16A34A;">
+                <div style="font-size: 36px; margin-bottom: 8px;">✓</div>
+                <div style="font-size: 32px; font-weight: bold; color: #03543F; margin-bottom: 4px;">${examResult.correctAnswers}</div>
+                <div style="font-size: 13px; color: #03543F; font-weight: 600;">Correctas</div>
+              </div>
+              <div style="background: linear-gradient(135deg, #FEE2E2, #FECACA); padding: 20px; border-radius: 12px; text-align: center; border: 2px solid #DC2626;">
+                <div style="font-size: 36px; margin-bottom: 8px;">✗</div>
+                <div style="font-size: 32px; font-weight: bold; color: #991B1B; margin-bottom: 4px;">${examResult.incorrectAnswers}</div>
+                <div style="font-size: 13px; color: #991B1B; font-weight: 600;">Incorrectas</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 24px;">
+            <h3 style="margin: 0 0 16px 0; color: #1F2937; font-size: 20px; border-bottom: 2px solid #F97316; padding-bottom: 8px;">
+              📚 Desglose por Áreas de Conocimiento
+            </h3>
+            <table style="width: 100%; border-collapse: collapse; background: #F9FAFB; border-radius: 8px; overflow: hidden;">
+              <thead>
+                <tr style="background: #F3F4F6;">
+                  <th style="padding: 12px; text-align: left; color: #1F2937; font-weight: 600; border-bottom: 2px solid #D1D5DB;">Área de Conocimiento</th>
+                  <th style="padding: 12px; text-align: center; color: #1F2937; font-weight: 600; border-bottom: 2px solid #D1D5DB;">Resultado</th>
+                  <th style="padding: 12px; text-align: center; color: #1F2937; font-weight: 600; border-bottom: 2px solid #D1D5DB;">Porcentaje</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${categoryBreakdown}
+              </tbody>
+            </table>
+          </div>
+
+          ${topIncorrectAnswers ? `
+          <div style="margin-bottom: 24px;">
+            <h3 style="margin: 0 0 16px 0; color: #1F2937; font-size: 20px; border-bottom: 2px solid #F97316; padding-bottom: 8px;">
+              ⚠️ Top Preguntas Incorrectas
+            </h3>
+            ${topIncorrectAnswers}
+          </div>
+          ` : ''}
+
+          <div style="background: #F0F9FF; padding: 20px; border-radius: 12px; margin-top: 32px; border-left: 4px solid #0284C7;">
+            <p style="margin: 0; color: #0C4A6E; font-size: 14px;">
+              <strong>📌 Nota:</strong> Este informe ha sido generado automáticamente por el Sistema de Exámenes Técnicos de AIQUAA.
+              Sigue practicando para mejorar tus habilidades con Git.
             </p>
           </div>
         </div>

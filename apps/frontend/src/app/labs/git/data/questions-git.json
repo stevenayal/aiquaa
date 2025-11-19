@@ -1,0 +1,1812 @@
+{
+  "examInfo": {
+    "title": "Examen Técnico de GIT - Fundamentos",
+    "version": "V001.00",
+    "totalQuestions": 40,
+    "passingScore": 26,
+    "timeLimit": 60,
+    "pointsPerQuestion": 1
+  },
+  "questions": [
+    {
+      "id": 1,
+      "questionText": "¿Qué permite un Sistema de Control de Versiones (SCV)?",
+      "options": [
+        {
+          "label": "a",
+          "text": "Ejecutar software en múltiples plataformas"
+        },
+        {
+          "label": "b",
+          "text": "Registrar quién y cuándo hace cada modificación en el proyecto"
+        },
+        {
+          "label": "c",
+          "text": "Compilar código automáticamente"
+        },
+        {
+          "label": "d",
+          "text": "Generar documentación técnica"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Conceptos Básicos de Control de Versiones",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Los SCV no están diseñados para ejecutar software en múltiples plataformas."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "Un SCV permite registrar quién y cuándo hace cada modificación, manteniendo un historial completo de cambios."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "La compilación automática no es función de un SCV."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Generar documentación no es el propósito principal de un SCV."
+        }
+      }
+    },
+    {
+      "id": 2,
+      "questionText": "¿Cuál de las siguientes es una característica de la arquitectura distribuida de Git?",
+      "options": [
+        {
+          "label": "a",
+          "text": "Solo el servidor tiene el historial completo"
+        },
+        {
+          "label": "b",
+          "text": "Cada usuario tiene una copia completa del historial del proyecto"
+        },
+        {
+          "label": "c",
+          "text": "Los usuarios solo tienen acceso a la última versión"
+        },
+        {
+          "label": "d",
+          "text": "Requiere conexión permanente a internet"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Arquitectura de Git",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "En Git, cada usuario tiene el historial completo, no solo el servidor."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "Git es distribuido: cada usuario posee una copia completa del historial del proyecto."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "Los usuarios tienen acceso a todo el historial, no solo la última versión."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Git permite trabajo offline gracias a su arquitectura distribuida."
+        }
+      }
+    },
+    {
+      "id": 3,
+      "questionText": "¿Cuál de las siguientes NO es una ventaja de la arquitectura distribuida de Git?",
+      "options": [
+        {
+          "label": "a",
+          "text": "Trabajo offline"
+        },
+        {
+          "label": "b",
+          "text": "Redundancia de datos"
+        },
+        {
+          "label": "c",
+          "text": "Mayor control centralizado"
+        },
+        {
+          "label": "d",
+          "text": "Copia completa del repositorio"
+        }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "Arquitectura de Git",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "El trabajo offline es una ventaja de Git distribuido."
+        },
+        "b": {
+          "correct": false,
+          "explanation": "La redundancia es una ventaja de tener múltiples copias completas."
+        },
+        "c": {
+          "correct": true,
+          "explanation": "Git distribuido descentraliza el control, no lo centraliza."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Tener copia completa es una ventaja de Git."
+        }
+      }
+    },
+    {
+      "id": 4,
+      "questionText": "¿Qué comando se usa para verificar la configuración global de Git?",
+      "options": [
+        {
+          "label": "a",
+          "text": "git show --config"
+        },
+        {
+          "label": "b",
+          "text": "git config --list"
+        },
+        {
+          "label": "c",
+          "text": "git settings --all"
+        },
+        {
+          "label": "d",
+          "text": "git verify config"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Configuración de Git",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Este no es un comando válido de Git."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "El comando 'git config --list' muestra toda la configuración actual de Git."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "Este no es un comando válido de Git."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Este no es un comando válido de Git."
+        }
+      }
+    },
+    {
+      "id": 5,
+      "questionText": "Después de ejecutar 'git init', ¿qué se crea en el directorio?",
+      "options": [
+        {
+          "label": "a",
+          "text": "Un archivo README.md"
+        },
+        {
+          "label": "b",
+          "text": "Una carpeta .git con el historial del proyecto"
+        },
+        {
+          "label": "c",
+          "text": "Un repositorio remoto en GitHub"
+        },
+        {
+          "label": "d",
+          "text": "Una rama principal llamada origin"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Creación de Repositorios",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Git init no crea automáticamente un README."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "El comando 'git init' crea una carpeta oculta .git con la estructura necesaria para el control de versiones."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "Git init solo inicializa un repositorio local, no crea uno remoto."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Origin no es una rama, es el nombre convencional del repositorio remoto."
+        }
+      }
+    },
+    {
+      "id": 6,
+      "questionText": "¿Qué incluye una copia obtenida con 'git clone'?",
+      "options": [
+        {
+          "label": "a",
+          "text": "Solo los archivos de la última versión"
+        },
+        {
+          "label": "b",
+          "text": "Todo el historial de cambios, ramas y configuraciones"
+        },
+        {
+          "label": "c",
+          "text": "Únicamente la rama principal"
+        },
+        {
+          "label": "d",
+          "text": "Solo los archivos sin historial"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Clonar Repositorios",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Git clone descarga todo el historial, no solo la última versión."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "Git clone crea una copia completa e independiente incluyendo todo el historial de cambios, ramas y configuraciones."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "Clone descarga todas las ramas remotas, no solo la principal."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Clone incluye el historial completo del repositorio."
+        }
+      }
+    },
+    {
+      "id": 7,
+      "questionText": "¿Cuál de los siguientes NO es uno de los tres estados principales de Git?",
+      "options": [
+        {
+          "label": "a",
+          "text": "Working directory"
+        },
+        {
+          "label": "b",
+          "text": "Staging area"
+        },
+        {
+          "label": "c",
+          "text": "Repository"
+        },
+        {
+          "label": "d",
+          "text": "Remote zone"
+        }
+      ],
+      "correctAnswer": ["d"],
+      "learningObjective": "Estados de Git",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Working directory es uno de los tres estados principales."
+        },
+        "b": {
+          "correct": false,
+          "explanation": "Staging area (índice) es uno de los tres estados principales."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "Repository es uno de los tres estados principales."
+        },
+        "d": {
+          "correct": true,
+          "explanation": "Remote zone no es uno de los tres estados principales de Git."
+        }
+      }
+    },
+    {
+      "id": 8,
+      "questionText": "El 'staging area' también es conocido como:",
+      "options": [
+        {
+          "label": "a",
+          "text": "Directorio de trabajo"
+        },
+        {
+          "label": "b",
+          "text": "Índice"
+        },
+        {
+          "label": "c",
+          "text": "Repositorio"
+        },
+        {
+          "label": "d",
+          "text": "Commit zone"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Estados de Git",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "El directorio de trabajo es un estado diferente."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "El staging area también se conoce como índice en Git."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "El repositorio es el tercer estado, diferente del staging."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Commit zone no es un término oficial de Git."
+        }
+      }
+    },
+    {
+      "id": 9,
+      "questionText": "¿Qué hace el comando 'git add <directorio>'?",
+      "options": [
+        {
+          "label": "a",
+          "text": "Elimina un directorio"
+        },
+        {
+          "label": "b",
+          "text": "Crea un nuevo directorio"
+        },
+        {
+          "label": "c",
+          "text": "Añade todos los archivos de una carpeta al staging"
+        },
+        {
+          "label": "d",
+          "text": "Hace commit de un directorio"
+        }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "Comandos Git Add",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Git add no elimina archivos ni directorios."
+        },
+        "b": {
+          "correct": false,
+          "explanation": "Git add no crea directorios."
+        },
+        "c": {
+          "correct": true,
+          "explanation": "Git add <directorio> añade todos los archivos de esa carpeta al área de staging."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Git add prepara archivos para commit, pero no hace el commit."
+        }
+      }
+    },
+    {
+      "id": 10,
+      "questionText": "¿Qué información contiene un commit?",
+      "options": [
+        {
+          "label": "a",
+          "text": "Solo el mensaje descriptivo"
+        },
+        {
+          "label": "b",
+          "text": "Hash, autor, fecha, mensaje, árbol y blobs"
+        },
+        {
+          "label": "c",
+          "text": "Únicamente los archivos modificados"
+        },
+        {
+          "label": "d",
+          "text": "Solo el código fuente"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Estructura de Commits",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Un commit contiene mucha más información que solo el mensaje."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "Un commit contiene hash único, información del autor, fecha, mensaje descriptivo, árbol y blobs."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "Un commit contiene referencias a todos los archivos, no solo los modificados."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Un commit contiene metadatos además del código."
+        }
+      }
+    },
+    {
+      "id": 11,
+      "questionText": "Un 'blob' en Git representa:",
+      "options": [
+        {
+          "label": "a",
+          "text": "El historial completo del proyecto"
+        },
+        {
+          "label": "b",
+          "text": "Una captura del contenido de un archivo"
+        },
+        {
+          "label": "c",
+          "text": "La estructura de directorios"
+        },
+        {
+          "label": "d",
+          "text": "Un mensaje de commit"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Estructura Interna de Git",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "El historial completo no es un blob."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "Un blob (Binary Large Object) almacena el contenido comprimido de un archivo individual."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "La estructura de directorios la representa un tree, no un blob."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "El mensaje de commit es parte del objeto commit, no un blob."
+        }
+      }
+    },
+    {
+      "id": 12,
+      "questionText": "Un 'tree' en Git representa:",
+      "options": [
+        {
+          "label": "a",
+          "text": "El contenido de un archivo individual"
+        },
+        {
+          "label": "b",
+          "text": "La estructura de directorios y archivos del proyecto en ese commit"
+        },
+        {
+          "label": "c",
+          "text": "El historial de commits"
+        },
+        {
+          "label": "d",
+          "text": "Los cambios entre dos versiones"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Estructura Interna de Git",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "El contenido de un archivo lo representa un blob."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "Un tree representa la estructura de directorios y archivos del proyecto en ese commit."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "El historial de commits es una cadena de objetos commit."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Los cambios entre versiones se calculan comparando trees."
+        }
+      }
+    },
+    {
+      "id": 13,
+      "questionText": "¿A qué se refiere HEAD~2?",
+      "options": [
+        {
+          "label": "a",
+          "text": "El último commit"
+        },
+        {
+          "label": "b",
+          "text": "El primer commit del repositorio"
+        },
+        {
+          "label": "c",
+          "text": "El commit dos posiciones antes del HEAD actual"
+        },
+        {
+          "label": "d",
+          "text": "Una rama remota"
+        }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "Referencias en Git",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "El último commit se refiere con HEAD, no HEAD~2."
+        },
+        "b": {
+          "correct": false,
+          "explanation": "HEAD~2 no apunta necesariamente al primer commit."
+        },
+        "c": {
+          "correct": true,
+          "explanation": "HEAD~2 referencia al commit dos posiciones antes del HEAD actual."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "HEAD~2 es una referencia local, no remota."
+        }
+      }
+    },
+    {
+      "id": 14,
+      "questionText": "Un hash SHA-1 en Git tiene:",
+      "options": [
+        {
+          "label": "a",
+          "text": "20 caracteres"
+        },
+        {
+          "label": "b",
+          "text": "32 caracteres"
+        },
+        {
+          "label": "c",
+          "text": "40 caracteres hexadecimales"
+        },
+        {
+          "label": "d",
+          "text": "64 caracteres"
+        }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "Referencias en Git",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Un hash SHA-1 tiene más de 20 caracteres."
+        },
+        "b": {
+          "correct": false,
+          "explanation": "32 caracteres es incorrecto para SHA-1."
+        },
+        "c": {
+          "correct": true,
+          "explanation": "Un hash SHA-1 es un identificador único de 40 caracteres hexadecimales."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "64 caracteres sería SHA-256, no SHA-1."
+        }
+      }
+    },
+    {
+      "id": 15,
+      "questionText": "¿Qué muestra 'git status'?",
+      "options": [
+        {
+          "label": "a",
+          "text": "Solo el historial de commits"
+        },
+        {
+          "label": "b",
+          "text": "El estado actual del repositorio, incluyendo cambios no confirmados"
+        },
+        {
+          "label": "c",
+          "text": "Solo archivos eliminados"
+        },
+        {
+          "label": "d",
+          "text": "Únicamente conflictos de merge"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Comandos de Inspección",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "El historial de commits lo muestra git log, no git status."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "Git status muestra el estado actual del repositorio, incluyendo cambios no confirmados, archivos en staging y archivos nuevos sin seguimiento."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "Git status muestra todos los cambios, no solo archivos eliminados."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Git status muestra más que solo conflictos de merge."
+        }
+      }
+    },
+    {
+      "id": 16,
+      "questionText": "¿Qué opción de 'git log' muestra cada commit en una sola línea?",
+      "options": [
+        {
+          "label": "a",
+          "text": "git log --short"
+        },
+        {
+          "label": "b",
+          "text": "git log --compact"
+        },
+        {
+          "label": "c",
+          "text": "git log --oneline"
+        },
+        {
+          "label": "d",
+          "text": "git log --brief"
+        }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "Comandos de Historial",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Esta no es una opción válida de git log."
+        },
+        "b": {
+          "correct": false,
+          "explanation": "Esta no es una opción válida de git log."
+        },
+        "c": {
+          "correct": true,
+          "explanation": "Git log --oneline muestra cada commit en una sola línea, formato compacto ideal para revisar el historial."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Esta no es una opción válida de git log."
+        }
+      }
+    },
+    {
+      "id": 17,
+      "questionText": "¿Para qué se utiliza 'git show <commit>'?",
+      "options": [
+        {
+          "label": "a",
+          "text": "Para crear un nuevo commit"
+        },
+        {
+          "label": "b",
+          "text": "Para examinar en detalle un commit específico mostrando sus diferencias"
+        },
+        {
+          "label": "c",
+          "text": "Para eliminar un commit"
+        },
+        {
+          "label": "d",
+          "text": "Para fusionar commits"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Comandos de Inspección",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Git show no crea commits, solo los muestra."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "Git show permite examinar en detalle un commit específico, mostrando las diferencias introducidas, información del autor, fecha y mensaje descriptivo."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "Git show no elimina commits."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Git show no fusiona commits, solo los muestra."
+        }
+      }
+    },
+    {
+      "id": 18,
+      "questionText": "¿Qué comando permite ver quién modificó cada línea de un archivo?",
+      "options": [
+        {
+          "label": "a",
+          "text": "git blame"
+        },
+        {
+          "label": "b",
+          "text": "git annotate"
+        },
+        {
+          "label": "c",
+          "text": "git history"
+        },
+        {
+          "label": "d",
+          "text": "git track"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Comandos de Análisis",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Aunque git blame hace lo mismo, según el documento el comando correcto es git annotate."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "Git annotate muestra el historial de cambios línea por línea de un archivo, indicando quién modificó cada línea, cuándo lo hizo y en qué commit."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "Git history no es un comando válido de Git."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Git track no es un comando válido de Git."
+        }
+      }
+    },
+    {
+      "id": 19,
+      "questionText": "¿Qué compara 'git diff' sin argumentos?",
+      "options": [
+        {
+          "label": "a",
+          "text": "Dos commits específicos"
+        },
+        {
+          "label": "b",
+          "text": "Working directory vs staging area"
+        },
+        {
+          "label": "c",
+          "text": "Staging area vs último commit"
+        },
+        {
+          "label": "d",
+          "text": "Repositorio local vs remoto"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Comandos de Comparación",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Para comparar commits específicos se debe usar git diff <commit1> <commit2>."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "Git diff sin argumentos compara archivos modificados en el directorio de trabajo con la última versión confirmada (staging)."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "Para esta comparación se usa git diff --cached."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Git diff no compara con remotos sin argumentos adicionales."
+        }
+      }
+    },
+    {
+      "id": 20,
+      "questionText": "¿Qué compara 'git diff --cached'?",
+      "options": [
+        {
+          "label": "a",
+          "text": "Working directory vs staging"
+        },
+        {
+          "label": "b",
+          "text": "Último commit vs staging area"
+        },
+        {
+          "label": "c",
+          "text": "Dos ramas diferentes"
+        },
+        {
+          "label": "d",
+          "text": "Repositorio local vs remoto"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Comandos de Comparación",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Esto lo hace git diff sin argumentos."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "Git diff --cached muestra cambios preparados para el próximo commit, comparando el último commit con el staging area."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "Para comparar ramas se usa git diff <rama1> <rama2>."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Git diff --cached no compara con repositorios remotos."
+        }
+      }
+    },
+    {
+      "id": 21,
+      "questionText": "¿Qué hace 'git checkout HEAD -- archivo'?",
+      "options": [
+        {
+          "label": "a",
+          "text": "Crea un nuevo archivo"
+        },
+        {
+          "label": "b",
+          "text": "Restaura el archivo a su última versión confirmada"
+        },
+        {
+          "label": "c",
+          "text": "Elimina el archivo del repositorio"
+        },
+        {
+          "label": "d",
+          "text": "Añade el archivo al staging"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Comandos de Restauración",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Git checkout no crea archivos nuevos."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "Git checkout HEAD -- <archivo> restaura un archivo específico a su estado en el último commit, descartando cualquier modificación no confirmada."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "Este comando no elimina archivos."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Este comando restaura archivos, no los añade al staging."
+        }
+      }
+    },
+    {
+      "id": 22,
+      "questionText": "¿Qué hace 'git reset <archivo>' (sin opciones)?",
+      "options": [
+        {
+          "label": "a",
+          "text": "Elimina el archivo del disco"
+        },
+        {
+          "label": "b",
+          "text": "Quita el archivo del staging pero mantiene los cambios"
+        },
+        {
+          "label": "c",
+          "text": "Borra el último commit"
+        },
+        {
+          "label": "d",
+          "text": "Restaura el archivo a su versión original"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Comandos de Reset",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Git reset no elimina archivos del disco."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "Git reset <archivo> remueve archivos del área de staging, devolviéndolos al directorio de trabajo. Los cambios en los archivos se mantienen intactos."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "Sin especificar un commit, git reset no borra commits."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Git reset no restaura el contenido del archivo, solo lo quita del staging."
+        }
+      }
+    },
+    {
+      "id": 23,
+      "questionText": "¿Por qué 'git reset --hard' es considerado peligroso?",
+      "options": [
+        {
+          "label": "a",
+          "text": "Elimina la configuración de Git"
+        },
+        {
+          "label": "b",
+          "text": "Destruye cambios no confirmados de forma irreversible"
+        },
+        {
+          "label": "c",
+          "text": "Borra el repositorio remoto"
+        },
+        {
+          "label": "d",
+          "text": "Elimina todas las ramas"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Comandos de Reset",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Git reset --hard no afecta la configuración de Git."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "Git reset --hard elimina completamente todos los cambios no guardados, tanto del staging area como del directorio de trabajo. Esta operación es irreversible."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "Git reset --hard solo afecta el repositorio local."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Git reset --hard no elimina ramas."
+        }
+      }
+    },
+    {
+      "id": 24,
+      "questionText": "¿Qué hace 'git branch nueva-rama'?",
+      "options": [
+        {
+          "label": "a",
+          "text": "Crea y cambia a la nueva rama automáticamente"
+        },
+        {
+          "label": "b",
+          "text": "Crea una nueva rama sin cambiar a ella"
+        },
+        {
+          "label": "c",
+          "text": "Elimina una rama existente"
+        },
+        {
+          "label": "d",
+          "text": "Fusiona una rama"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Gestión de Ramas",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Para crear y cambiar se usa git checkout -b."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "Git branch <nombre-rama> crea una nueva rama pero no cambia a ella."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "Para eliminar se usa git branch -d o -D."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Para fusionar se usa git merge."
+        }
+      }
+    },
+    {
+      "id": 25,
+      "questionText": "La rama principal en Git se llama:",
+      "options": [
+        {
+          "label": "a",
+          "text": "origin"
+        },
+        {
+          "label": "b",
+          "text": "head"
+        },
+        {
+          "label": "c",
+          "text": "master o main"
+        },
+        {
+          "label": "d",
+          "text": "trunk"
+        }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "Gestión de Ramas",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Origin es el nombre convencional del repositorio remoto, no una rama."
+        },
+        "b": {
+          "correct": false,
+          "explanation": "HEAD es una referencia al último commit, no el nombre de la rama principal."
+        },
+        "c": {
+          "correct": true,
+          "explanation": "La rama principal se llama master o main según la convención o configuración del proyecto."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Trunk es usado en SVN, no en Git."
+        }
+      }
+    },
+    {
+      "id": 26,
+      "questionText": "¿Qué hace 'git checkout -b nueva' en un solo comando?",
+      "options": [
+        {
+          "label": "a",
+          "text": "Solo crea la rama"
+        },
+        {
+          "label": "b",
+          "text": "Crea la nueva rama y cambia a ella"
+        },
+        {
+          "label": "c",
+          "text": "Elimina la rama"
+        },
+        {
+          "label": "d",
+          "text": "Fusiona la rama"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Gestión de Ramas",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Git checkout -b hace más que solo crear la rama."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "Git checkout -b <nombre> crea una nueva rama y cambia a ella en un solo comando."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "Este comando no elimina ramas."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Este comando no fusiona ramas."
+        }
+      }
+    },
+    {
+      "id": 27,
+      "questionText": "¿Qué hace 'git merge <rama>' estando en la rama principal?",
+      "options": [
+        {
+          "label": "a",
+          "text": "Elimina la rama indicada"
+        },
+        {
+          "label": "b",
+          "text": "Crea una nueva rama"
+        },
+        {
+          "label": "c",
+          "text": "Fusiona la rama indicada en la rama actual"
+        },
+        {
+          "label": "d",
+          "text": "Solo compara las ramas"
+        }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "Fusión de Ramas",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Git merge no elimina ramas."
+        },
+        "b": {
+          "correct": false,
+          "explanation": "Git merge no crea ramas nuevas."
+        },
+        "c": {
+          "correct": true,
+          "explanation": "Git merge integra los cambios de una rama en la rama actual, combinando el historial de ambas líneas de desarrollo."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Git merge fusiona, no solo compara."
+        }
+      }
+    },
+    {
+      "id": 28,
+      "questionText": "¿Cuándo ocurren conflictos de merge?",
+      "options": [
+        {
+          "label": "a",
+          "text": "Cuando se crea una nueva rama"
+        },
+        {
+          "label": "b",
+          "text": "Cuando dos ramas modifican la misma parte de un archivo"
+        },
+        {
+          "label": "c",
+          "text": "Cuando se hace push sin pull"
+        },
+        {
+          "label": "d",
+          "text": "Cuando se eliminan archivos"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Conflictos de Fusión",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Crear una rama no genera conflictos."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "Los conflictos ocurren cuando dos ramas modifican la misma parte de un archivo de formas diferentes, y Git no puede decidir automáticamente qué cambios mantener."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "Hacer push sin pull puede causar rechazo, pero no directamente conflictos de merge."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Eliminar archivos puede causar conflictos solo si otra rama los modificó."
+        }
+      }
+    },
+    {
+      "id": 29,
+      "questionText": "¿Qué ventaja ofrece 'git rebase' sobre 'git merge'?",
+      "options": [
+        {
+          "label": "a",
+          "text": "Es más seguro para ramas públicas"
+        },
+        {
+          "label": "b",
+          "text": "Crea un historial lineal sin bifurcaciones visuales"
+        },
+        {
+          "label": "c",
+          "text": "No reescribe el historial"
+        },
+        {
+          "label": "d",
+          "text": "Genera commits de fusión automáticos"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Reorganización de Historial",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Rebase NO debe usarse en ramas públicas compartidas."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "Git rebase replica los cambios de una rama sobre otra, creando un historial lineal sin bifurcaciones visuales, más limpio que merge."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "Rebase SÍ reescribe el historial, por eso debe usarse con cuidado."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Rebase no genera commits de fusión, esa es una característica de merge."
+        }
+      }
+    },
+    {
+      "id": 30,
+      "questionText": "¿Cuándo 'git branch -d <rama>' eliminará la rama?",
+      "options": [
+        {
+          "label": "a",
+          "text": "Siempre que se ejecute"
+        },
+        {
+          "label": "b",
+          "text": "Solo cuando la rama fue fusionada previamente"
+        },
+        {
+          "label": "c",
+          "text": "Cuando tiene conflictos"
+        },
+        {
+          "label": "d",
+          "text": "Cuando es la rama principal"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Eliminación de Ramas",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Git branch -d tiene protección contra pérdida de trabajo."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "Git branch -d elimina la rama solo si ha sido fusionada. Git previene la pérdida accidental de trabajo no fusionado."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "Los conflictos no determinan si se puede eliminar una rama con -d."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "No se puede eliminar la rama principal estando en ella."
+        }
+      }
+    },
+    {
+      "id": 31,
+      "questionText": "¿Qué hace 'git branch -D <rama>' a diferencia de '-d'?",
+      "options": [
+        {
+          "label": "a",
+          "text": "Solo elimina ramas remotas"
+        },
+        {
+          "label": "b",
+          "text": "Elimina la rama aunque no esté fusionada (forzado)"
+        },
+        {
+          "label": "c",
+          "text": "Solo elimina ramas vacías"
+        },
+        {
+          "label": "d",
+          "text": "Requiere confirmación del usuario"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Eliminación de Ramas",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Git branch -D elimina ramas locales, no remotas."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "Git branch -D elimina la rama incluso si no ha sido fusionada. Úsalo con precaución ya que puedes perder cambios."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "Git branch -D elimina cualquier rama local, vacía o no."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Git branch -D no pide confirmación, por eso es peligroso."
+        }
+      }
+    },
+    {
+      "id": 32,
+      "questionText": "¿Qué es un repositorio remoto?",
+      "options": [
+        {
+          "label": "a",
+          "text": "Un backup en disco externo"
+        },
+        {
+          "label": "b",
+          "text": "Un repositorio hospedado en un servidor"
+        },
+        {
+          "label": "c",
+          "text": "Una rama protegida"
+        },
+        {
+          "label": "d",
+          "text": "Un archivo comprimido"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Repositorios Remotos",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Un repositorio remoto no es simplemente un backup local."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "Los repositorios remotos son versiones del proyecto alojadas en servidores de internet o en la red."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "Una rama protegida no es un repositorio remoto."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Un repositorio remoto no es un archivo comprimido."
+        }
+      }
+    },
+    {
+      "id": 33,
+      "questionText": "¿Qué hace 'git remote add origin <url>'?",
+      "options": [
+        {
+          "label": "a",
+          "text": "Crea un repositorio nuevo en GitHub"
+        },
+        {
+          "label": "b",
+          "text": "Enlaza el repositorio local con uno remoto"
+        },
+        {
+          "label": "c",
+          "text": "Descarga cambios del remoto"
+        },
+        {
+          "label": "d",
+          "text": "Sube cambios al servidor"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Configuración de Remotos",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Este comando no crea repositorios remotos."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "Git remote add conecta tu repositorio local con un repositorio remoto, estableciendo un enlace para sincronizar cambios."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "Para descargar se usa git fetch o git pull."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Para subir se usa git push."
+        }
+      }
+    },
+    {
+      "id": 34,
+      "questionText": "El nombre 'origin' en Git se refiere convencionalmente a:",
+      "options": [
+        {
+          "label": "a",
+          "text": "La primera rama creada"
+        },
+        {
+          "label": "b",
+          "text": "El repositorio remoto principal"
+        },
+        {
+          "label": "c",
+          "text": "El primer commit"
+        },
+        {
+          "label": "d",
+          "text": "La carpeta .git"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Repositorios Remotos",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Origin no es una rama."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "Por convención, el repositorio remoto principal se llama origin. Este nombre se usa automáticamente cuando clonas un repositorio."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "Origin no es un commit."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Origin no es la carpeta .git."
+        }
+      }
+    },
+    {
+      "id": 35,
+      "questionText": "¿Qué diferencia hay entre 'git fetch' y 'git pull'?",
+      "options": [
+        {
+          "label": "a",
+          "text": "fetch elimina cambios, pull los descarga"
+        },
+        {
+          "label": "b",
+          "text": "fetch descarga sin integrar, pull descarga e integra automáticamente"
+        },
+        {
+          "label": "c",
+          "text": "fetch es para ramas, pull para commits"
+        },
+        {
+          "label": "d",
+          "text": "No hay diferencia"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Sincronización con Remotos",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Fetch no elimina cambios."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "Git fetch descarga cambios del repositorio remoto pero NO los integra automáticamente. Git pull descarga e integra automáticamente (equivale a fetch + merge)."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "Ambos trabajan con ramas y commits."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Hay una diferencia importante entre ambos comandos."
+        }
+      }
+    },
+    {
+      "id": 36,
+      "questionText": "¿Qué hace 'git pull'?",
+      "options": [
+        {
+          "label": "a",
+          "text": "Solo descarga cambios del remoto"
+        },
+        {
+          "label": "b",
+          "text": "Descarga e integra cambios remotos (equivale a fetch + merge)"
+        },
+        {
+          "label": "c",
+          "text": "Sube cambios al remoto"
+        },
+        {
+          "label": "d",
+          "text": "Elimina commits locales"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Sincronización con Remotos",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Git pull hace más que solo descargar."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "Git pull descarga cambios del repositorio remoto y los integra automáticamente en tu rama actual. Es equivalente a ejecutar git fetch seguido de git merge."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "Subir cambios se hace con git push."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Git pull no elimina commits."
+        }
+      }
+    },
+    {
+      "id": 37,
+      "questionText": "Para subir commits locales al repositorio remoto se usa:",
+      "options": [
+        {
+          "label": "a",
+          "text": "git send"
+        },
+        {
+          "label": "b",
+          "text": "git upload"
+        },
+        {
+          "label": "c",
+          "text": "git push"
+        },
+        {
+          "label": "d",
+          "text": "git sync"
+        }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "Sincronización con Remotos",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Git send no es un comando válido."
+        },
+        "b": {
+          "correct": false,
+          "explanation": "Git upload no es un comando válido."
+        },
+        "c": {
+          "correct": true,
+          "explanation": "Git push envía tus commits locales al repositorio remoto, compartiendo tu trabajo con otros colaboradores."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Git sync no es un comando estándar de Git."
+        }
+      }
+    },
+    {
+      "id": 38,
+      "questionText": "¿Qué es un 'fork' en GitHub?",
+      "options": [
+        {
+          "label": "a",
+          "text": "Un tipo de rama especial"
+        },
+        {
+          "label": "b",
+          "text": "Una copia remota independiente del proyecto original"
+        },
+        {
+          "label": "c",
+          "text": "Un comando de Git"
+        },
+        {
+          "label": "d",
+          "text": "Un conflicto de merge"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Colaboración en GitHub",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "Un fork no es una rama, es un repositorio completo."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "Un fork es una copia remota independiente del proyecto original en tu cuenta de GitHub."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "Fork es una función de GitHub, no un comando de Git."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Un fork no es un conflicto."
+        }
+      }
+    },
+    {
+      "id": 39,
+      "questionText": "Para colaborar como colaborador oficial en un repositorio, se necesita:",
+      "options": [
+        {
+          "label": "a",
+          "text": "Hacer fork del proyecto"
+        },
+        {
+          "label": "b",
+          "text": "Permiso de la persona propietaria del repositorio"
+        },
+        {
+          "label": "c",
+          "text": "Crear un pull request"
+        },
+        {
+          "label": "d",
+          "text": "Tener 100 commits"
+        }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "Colaboración en GitHub",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "El fork se usa cuando NO eres colaborador directo."
+        },
+        "b": {
+          "correct": true,
+          "explanation": "Para colaborar directamente, el propietario del repositorio debe añadirte en la configuración de colaboradores."
+        },
+        "c": {
+          "correct": false,
+          "explanation": "Los pull requests se usan en el flujo con fork."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "El número de commits no determina si puedes ser colaborador."
+        }
+      }
+    },
+    {
+      "id": 40,
+      "questionText": "En el flujo de trabajo con fork, ¿cómo se envían los cambios al proyecto original?",
+      "options": [
+        {
+          "label": "a",
+          "text": "Con git push directo"
+        },
+        {
+          "label": "b",
+          "text": "Con git merge automático"
+        },
+        {
+          "label": "c",
+          "text": "Mediante un pull request"
+        },
+        {
+          "label": "d",
+          "text": "Con git fork --sync"
+        }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "Colaboración en GitHub",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": {
+          "correct": false,
+          "explanation": "No puedes hacer push directo a un repositorio que no es tuyo."
+        },
+        "b": {
+          "correct": false,
+          "explanation": "El merge no es automático en el flujo con fork."
+        },
+        "c": {
+          "correct": true,
+          "explanation": "En el flujo con fork, los cambios se envían al repositorio original mediante un pull request para revisión."
+        },
+        "d": {
+          "correct": false,
+          "explanation": "Este comando no existe en Git."
+        }
+      }
+    }
+  ]
+}

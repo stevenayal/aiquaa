@@ -32,4 +32,8 @@ export class MailerService {
   async sendSecurityAlert(email: string, name: string, alertType: string, details: string): Promise<void> {
     return this.resendService.sendSecurityAlert(email, name, alertType, details);
   }
+
+  async sendGitExamReport(email: string, examResult: any): Promise<void> {
+    return this.resendService.sendGitExamReport(email, examResult);
+  }
 }

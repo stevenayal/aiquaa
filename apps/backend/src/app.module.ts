@@ -10,6 +10,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AppCacheModule } from './cache/cache.module';
 import { ObservabilityModule } from './observability/observability.module';
 import { IstqbModule } from './istqb/istqb.module';
+import { LabsModule } from './labs/labs.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { IstqbModule } from './istqb/istqb.module';
     ContentModule,
     BillingModule,
     IstqbModule,
+    LabsModule,
   ],
 })
 export class AppModule {}
