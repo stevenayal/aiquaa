@@ -11,7 +11,7 @@ export default function LabsPage() {
     {
       id: 'formacion',
       name: '🎓 Formación y Certificación',
-      description: 'Prepárate para certificaciones ISTQB',
+      description: 'Prepárate para certificaciones y evalúa tus conocimientos técnicos',
       tools: [
         {
           id: 'istqb',
@@ -22,6 +22,16 @@ export default function LabsPage() {
           href: '/labs/istqb',
           featured: true,
           implementedDate: 'Sep 2025'
+        },
+        {
+          id: 'git',
+          name: 'Examen Técnico GIT',
+          description: 'Evalúa tus conocimientos de Git con 40 preguntas de fundamentos de control de versiones',
+          icon: '🔀',
+          color: 'from-orange-500 to-orange-600',
+          href: '/labs/git',
+          featured: true,
+          implementedDate: 'Nov 2025'
         }
       ]
     },
