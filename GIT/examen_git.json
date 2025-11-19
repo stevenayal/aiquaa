@@ -1,0 +1,442 @@
+[
+  {
+    "id": 1,
+    "question": "¿Qué es un sistema de control de versiones?",
+    "options": {
+      "A": "Un sistema para ejecutar software",
+      "B": "Un sistema para registrar cambios en un proyecto",
+      "C": "Un sistema para compilar código",
+      "D": "Un sistema para generar documentación"
+    },
+    "answer": "B"
+  },
+  {
+    "id": 2,
+    "question": "¿Qué tipo de arquitectura utiliza Git?",
+    "options": {
+      "A": "Centralizada",
+      "B": "Híbrida",
+      "C": "Distribuida",
+      "D": "Paralela"
+    },
+    "answer": "C"
+  },
+  {
+    "id": 3,
+    "question": "¿Quién creó Git?",
+    "options": {
+      "A": "Steve Jobs",
+      "B": "Dennis Ritchie",
+      "C": "Linus Torvalds",
+      "D": "Bjarne Stroustrup"
+    },
+    "answer": "C"
+  },
+  {
+    "id": 4,
+    "question": "¿Qué comando configura el correo del usuario?",
+    "options": {
+      "A": "git email --set",
+      "B": "git user.email",
+      "C": "git config --global user.email",
+      "D": "git set email"
+    },
+    "answer": "C"
+  },
+  {
+    "id": 5,
+    "question": "¿Qué crea 'git init'?",
+    "options": {
+      "A": "Un repositorio remoto",
+      "B": "Un repositorio nuevo con carpeta .git",
+      "C": "Un archivo README",
+      "D": "Una rama principal"
+    },
+    "answer": "B"
+  },
+  {
+    "id": 6,
+    "question": "¿Qué hace 'git clone <url>'?",
+    "options": {
+      "A": "Duplica un repositorio dentro de GitHub",
+      "B": "Crea una copia local independiente del repositorio remoto",
+      "C": "Mueve un repositorio",
+      "D": "Comprime un repositorio"
+    },
+    "answer": "B"
+  },
+  {
+    "id": 7,
+    "question": "¿Cuál NO es uno de los tres estados de Git?",
+    "options": {
+      "A": "Working directory",
+      "B": "Staging area",
+      "C": "Repository",
+      "D": "Backup zone"
+    },
+    "answer": "D"
+  },
+  {
+    "id": 8,
+    "question": "¿Qué hace 'git add .'?",
+    "options": {
+      "A": "Elimina todos los archivos",
+      "B": "Agrega todos los cambios al staging",
+      "C": "Hace commit automático",
+      "D": "Crea un backup"
+    },
+    "answer": "B"
+  },
+  {
+    "id": 9,
+    "question": "'git commit -m \"mensaje\"' ¿qué hace?",
+    "options": {
+      "A": "Elimina archivos",
+      "B": "Confirma cambios del staging",
+      "C": "Restaura archivos",
+      "D": "Muestra diferencias"
+    },
+    "answer": "B"
+  },
+  {
+    "id": 10,
+    "question": "¿Qué modifica 'git commit --amend'?",
+    "options": {
+      "A": "El hash del repo",
+      "B": "El mensaje del último commit",
+      "C": "El autor del repositorio",
+      "D": "La configuración global"
+    },
+    "answer": "B"
+  },
+  {
+    "id": 11,
+    "question": "Un commit contiene:",
+    "options": {
+      "A": "Hash, autor, fecha, mensaje, árbol y blobs",
+      "B": "Solo código",
+      "C": "Solo el mensaje",
+      "D": "Solo archivos cambiados"
+    },
+    "answer": "A"
+  },
+  {
+    "id": 12,
+    "question": "¿Qué representa un blob?",
+    "options": {
+      "A": "El historial entero",
+      "B": "Una captura del contenido de un archivo",
+      "C": "La descripción del repositorio",
+      "D": "La rama principal"
+    },
+    "answer": "B"
+  },
+  {
+    "id": 13,
+    "question": "HEAD representa:",
+    "options": {
+      "A": "El primer commit",
+      "B": "El último commit",
+      "C": "La rama remota",
+      "D": "La carpeta .git"
+    },
+    "answer": "B"
+  },
+  {
+    "id": 14,
+    "question": "HEAD~1 refiere a:",
+    "options": {
+      "A": "El último commit",
+      "B": "El commit anterior al actual",
+      "C": "El primer commit",
+      "D": "Un commit remoto"
+    },
+    "answer": "B"
+  },
+  {
+    "id": 15,
+    "question": "¿Qué comando muestra el estado del repositorio?",
+    "options": {
+      "A": "git log",
+      "B": "git show",
+      "C": "git status",
+      "D": "git diff"
+    },
+    "answer": "C"
+  },
+  {
+    "id": 16,
+    "question": "¿Qué muestra 'git log --oneline'?",
+    "options": {
+      "A": "Todos los archivos",
+      "B": "Historial compacto de commits",
+      "C": "Solo merges",
+      "D": "Solo ramas"
+    },
+    "answer": "B"
+  },
+  {
+    "id": 17,
+    "question": "¿Qué hace 'git show'?",
+    "options": {
+      "A": "Instala Git",
+      "B": "Muestra diferencias del último commit",
+      "C": "Elimina cambios",
+      "D": "Fusiona ramas"
+    },
+    "answer": "B"
+  },
+  {
+    "id": 18,
+    "question": "¿Para qué se usa 'git annotate'?",
+    "options": {
+      "A": "Mostrar commits abreviados",
+      "B": "Ver quién cambió cada línea de un archivo",
+      "C": "Crear ramas",
+      "D": "Editar mensajes de commit"
+    },
+    "answer": "B"
+  },
+  {
+    "id": 19,
+    "question": "'git diff' compara:",
+    "options": {
+      "A": "Repositorio remoto vs local",
+      "B": "Working directory vs staging",
+      "C": "Commits antiguos",
+      "D": "Blobs vs trees"
+    },
+    "answer": "B"
+  },
+  {
+    "id": 20,
+    "question": "'git diff --cached' compara:",
+    "options": {
+      "A": "Último commit vs staging",
+      "B": "Staging vs directorio de trabajo",
+      "C": "Ramas remotas",
+      "D": "Ramas eliminadas"
+    },
+    "answer": "A"
+  },
+  {
+    "id": 21,
+    "question": "¿Qué hace 'git checkout HEAD -- archivo'?",
+    "options": {
+      "A": "Elimina el archivo",
+      "B": "Restaura el archivo a su última versión confirmada",
+      "C": "Hace merge",
+      "D": "Borra el commit"
+    },
+    "answer": "B"
+  },
+  {
+    "id": 22,
+    "question": "¿Qué hace 'git reset archivo'?",
+    "options": {
+      "A": "Borra el archivo del disco",
+      "B": "Quita el archivo del staging",
+      "C": "Elimina el último commit",
+      "D": "Desinstala Git"
+    },
+    "answer": "B"
+  },
+  {
+    "id": 23,
+    "question": "'git reset --hard' es peligroso porque:",
+    "options": {
+      "A": "Borra GitHub",
+      "B": "Destruye cambios no confirmados",
+      "C": "Elimina la configuración",
+      "D": "Elimina ramas remotas"
+    },
+    "answer": "B"
+  },
+  {
+    "id": 24,
+    "question": "¿Qué crea 'git branch nueva-rama'?",
+    "options": {
+      "A": "Un repo remoto",
+      "B": "Una rama sin activarla",
+      "C": "Una rama activa",
+      "D": "Una rama fusionada"
+    },
+    "answer": "B"
+  },
+  {
+    "id": 25,
+    "question": "¿Qué hace 'git checkout rama'?",
+    "options": {
+      "A": "Cambia a esa rama",
+      "B": "Borra la rama",
+      "C": "Fusiona ramas",
+      "D": "Sube cambios"
+    },
+    "answer": "A"
+  },
+  {
+    "id": 26,
+    "question": "¿Qué hace 'git checkout -b nueva'?",
+    "options": {
+      "A": "Solo crea la rama",
+      "B": "Crea y cambia a la nueva rama",
+      "C": "Fusiona la rama",
+      "D": "La elimina"
+    },
+    "answer": "B"
+  },
+  {
+    "id": 27,
+    "question": "¿Qué hace 'git merge rama'?",
+    "options": {
+      "A": "Elimina la rama",
+      "B": "Crea una nueva rama",
+      "C": "Fusiona la rama indicada en la rama actual",
+      "D": "Descarga cambios remotos"
+    },
+    "answer": "C"
+  },
+  {
+    "id": 28,
+    "question": "Los conflictos de merge ocurren cuando:",
+    "options": {
+      "A": "Se borran archivos",
+      "B": "Dos ramas modifican la misma parte del archivo",
+      "C": "No existen commits",
+      "D": "Se hace push sin permisos"
+    },
+    "answer": "B"
+  },
+  {
+    "id": 29,
+    "question": "¿Para qué sirve 'git rebase'?",
+    "options": {
+      "A": "Eliminar repositorios",
+      "B": "Reorganizar commits y eliminar bifurcaciones",
+      "C": "Crear ramas",
+      "D": "Subir cambios"
+    },
+    "answer": "B"
+  },
+  {
+    "id": 30,
+    "question": "¿Cuándo 'git branch -d rama' eliminará la rama?",
+    "options": {
+      "A": "Cuando tiene commits",
+      "B": "Cuando fue fusionada previamente",
+      "C": "Cuando es la rama principal",
+      "D": "Cuando tiene conflictos"
+    },
+    "answer": "B"
+  },
+  {
+    "id": 31,
+    "question": "¿Qué hace 'git branch -D rama'?",
+    "options": {
+      "A": "Solo elimina ramas remotas",
+      "B": "Elimina la rama aunque no esté fusionada",
+      "C": "Solo elimina ramas vacías",
+      "D": "Solo elimina ramas locales protegidas"
+    },
+    "answer": "B"
+  },
+  {
+    "id": 32,
+    "question": "¿Qué es un repositorio remoto?",
+    "options": {
+      "A": "Un backup manual",
+      "B": "Un repositorio hospedado en un servidor",
+      "C": "Un archivo zip",
+      "D": "Una rama protegida"
+    },
+    "answer": "B"
+  },
+  {
+    "id": 33,
+    "question": "¿Qué hace 'git remote add origin <url>'?",
+    "options": {
+      "A": "Crea un repositorio remoto nuevo",
+      "B": "Enlaza el repositorio local con uno remoto",
+      "C": "Elimina remotos",
+      "D": "Sincroniza cambios"
+    },
+    "answer": "B"
+  },
+  {
+    "id": 34,
+    "question": "¿Qué muestra 'git remote -v'?",
+    "options": {
+      "A": "Ramas",
+      "B": "Hashes",
+      "C": "URLs de los remotos",
+      "D": "Conflictos"
+    },
+    "answer": "C"
+  },
+  {
+    "id": 35,
+    "question": "¿Qué hace 'git fetch'?",
+    "options": {
+      "A": "Descarga cambios sin integrarlos",
+      "B": "Combina cambios",
+      "C": "Hace push automático",
+      "D": "Restaura commits"
+    },
+    "answer": "A"
+  },
+  {
+    "id": 36,
+    "question": "¿Qué hace 'git pull'?",
+    "options": {
+      "A": "Borra archivos",
+      "B": "Descarga e integra cambios remotos",
+      "C": "Crea repositorios",
+      "D": "Mueve commits"
+    },
+    "answer": "B"
+  },
+  {
+    "id": 37,
+    "question": "¿Qué hace 'git push'?",
+    "options": {
+      "A": "Sube cambios al remoto",
+      "B": "Descarga cambios",
+      "C": "Crea ramas remotas automáticamente",
+      "D": "Elimina commits"
+    },
+    "answer": "A"
+  },
+  {
+    "id": 38,
+    "question": "¿Qué es un fork en GitHub?",
+    "options": {
+      "A": "Un commit nuevo",
+      "B": "Una copia remota independiente del proyecto original",
+      "C": "Una rama protegida",
+      "D": "Un conflicto"
+    },
+    "answer": "B"
+  },
+  {
+    "id": 39,
+    "question": "¿Qué se necesita para colaborar como colaborador oficial?",
+    "options": {
+      "A": "Crear un fork",
+      "B": "Permiso de la persona propietaria",
+      "C": "Pagar GitHub",
+      "D": "Tener 100 commits"
+    },
+    "answer": "B"
+  },
+  {
+    "id": 40,
+    "question": "En un flujo con fork, los cambios se envían mediante:",
+    "options": {
+      "A": "Merge automático",
+      "B": "Rebase directo",
+      "C": "Pull request",
+      "D": "Commit remoto"
+    },
+    "answer": "C"
+  }
+]
