@@ -54,6 +54,8 @@ export interface ExamAttempt {
 export interface ExamResult {
   participantName: string;
   githubProfile: string;
+  examPurpose: 'capacitacion' | 'postulacion' | 'practica' | 'otro';
+  companyName?: string;
   score: number;
   totalQuestions: number;
   correctAnswers: number;

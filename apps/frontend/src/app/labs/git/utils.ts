@@ -85,6 +85,8 @@ export function calculateScore(
 export function generateExamResult(
   participantName: string,
   githubProfile: string,
+  examPurpose: 'capacitacion' | 'postulacion' | 'practica' | 'otro',
+  companyName: string | undefined,
   questions: ExamQuestion[],
   answers: Map<number, string[]>,
   timeSpent: number,
@@ -119,6 +121,8 @@ export function generateExamResult(
   return {
     participantName,
     githubProfile,
+    examPurpose,
+    companyName,
     score,
     totalQuestions: questions.length,
     correctAnswers,
@@ -265,6 +269,22 @@ export async function exportToPDF(result: ExamResult): Promise<void> {
 
   doc.text(`GitHub: ${result.githubProfile}`, margin, yPosition);
   yPosition += 6;
+
+  // Motivo del examen
+  const purposeLabels = {
+    capacitacion: 'Capacitación',
+    postulacion: 'Postulación / Proceso de Selección',
+    practica: 'Práctica',
+    otro: 'Otro'
+  };
+  doc.text(`Motivo: ${purposeLabels[result.examPurpose]}`, margin, yPosition);
+  yPosition += 6;
+
+  // Empresa (solo si el motivo es postulación)
+  if (result.examPurpose === 'postulacion' && result.companyName) {
+    doc.text(`Empresa: ${result.companyName}`, margin, yPosition);
+    yPosition += 6;
+  }
 
   const timeFormatted = formatTime(result.timeSpent);
   doc.text(`Tiempo Empleado: ${timeFormatted}`, margin, yPosition);

@@ -84,6 +84,17 @@ export default function ResultsScreen({
                 <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
                   Modo: {mode === 'exam' ? 'Examen' : 'Entrenamiento'}
                 </p>
+                <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
+                  Motivo: {
+                    result.examPurpose === 'capacitacion' ? 'Capacitación' :
+                    result.examPurpose === 'postulacion' ? 'Postulación / Proceso de Selección' :
+                    result.examPurpose === 'practica' ? 'Práctica' :
+                    'Otro'
+                  }
+                  {result.examPurpose === 'postulacion' && result.companyName && (
+                    <span className="font-medium"> ({result.companyName})</span>
+                  )}
+                </p>
               </div>
               <div className="flex flex-wrap gap-2 w-full md:w-auto">
                 <button

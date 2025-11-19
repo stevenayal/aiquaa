@@ -10,6 +10,8 @@ export default function GitExamPage() {
   const { isDarkMode } = useTheme();
   const [participantName, setParticipantName] = useState('');
   const [githubProfile, setGithubProfile] = useState('');
+  const [examPurpose, setExamPurpose] = useState<'capacitacion' | 'postulacion' | 'practica' | 'otro'>('capacitacion');
+  const [companyName, setCompanyName] = useState('');
   const [examMode, setExamMode] = useState<'exam' | 'training' | null>(null);
   const [hasStarted, setHasStarted] = useState(false);
   const [error, setError] = useState('');
@@ -34,6 +36,12 @@ export default function GitExamPage() {
       return;
     }
 
+    // Validate company name when purpose is "postulacion"
+    if (examPurpose === 'postulacion' && !companyName.trim()) {
+      setError('Por favor, ingrese el nombre de la empresa a la que se postula');
+      return;
+    }
+
     setError('');
     setExamMode(mode);
     setHasStarted(true);
@@ -44,6 +52,8 @@ export default function GitExamPage() {
     setExamMode(null);
     setParticipantName('');
     setGithubProfile('');
+    setExamPurpose('capacitacion');
+    setCompanyName('');
     setError('');
   };
 
@@ -52,6 +62,8 @@ export default function GitExamPage() {
       <ExamSimulator
         participantName={participantName}
         githubProfile={githubProfile}
+        examPurpose={examPurpose}
+        companyName={companyName}
         mode={examMode}
         examData={examData}
         onReset={handleReset}
@@ -168,11 +180,6 @@ export default function GitExamPage() {
                 placeholder="https://github.com/tu-usuario"
                 value={githubProfile}
                 onChange={(e) => setGithubProfile(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && participantName.trim() && githubProfile.trim()) {
-                    handleStartExam('exam');
-                  }
-                }}
                 className={`w-full px-4 py-2 rounded-lg border ${
                   isDarkMode
                     ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
@@ -183,6 +190,58 @@ export default function GitExamPage() {
                 Ingresa la URL de tu perfil de GitHub para identificarte
               </p>
             </div>
+
+            <div className="space-y-2">
+              <label htmlFor="examPurpose" className={`block text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                Motivo de la Prueba *
+              </label>
+              <select
+                id="examPurpose"
+                value={examPurpose}
+                onChange={(e) => {
+                  setExamPurpose(e.target.value as 'capacitacion' | 'postulacion' | 'practica' | 'otro');
+                  if (e.target.value !== 'postulacion') {
+                    setCompanyName('');
+                  }
+                }}
+                className={`w-full px-4 py-2 rounded-lg border ${
+                  isDarkMode
+                    ? 'bg-slate-700 border-slate-600 text-white'
+                    : 'bg-white border-gray-300 text-gray-900'
+                } focus:outline-none focus:ring-2 focus:ring-amber-500`}
+              >
+                <option value="capacitacion">Capacitación</option>
+                <option value="postulacion">Postulación / Proceso de Selección</option>
+                <option value="practica">Práctica</option>
+                <option value="otro">Otro</option>
+              </select>
+              <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
+                Selecciona el motivo por el cual estás realizando esta prueba
+              </p>
+            </div>
+
+            {examPurpose === 'postulacion' && (
+              <div className="space-y-2">
+                <label htmlFor="companyName" className={`block text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  Nombre de la Empresa *
+                </label>
+                <input
+                  id="companyName"
+                  type="text"
+                  placeholder="Ej: AIQUAA, Google, Microsoft"
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                  className={`w-full px-4 py-2 rounded-lg border ${
+                    isDarkMode
+                      ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
+                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                  } focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                />
+                <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
+                  Ingresa el nombre de la empresa a la que te estás postulando
+                </p>
+              </div>
+            )}
 
             {error && (
               <Alert type="error" message={error} onClose={() => setError('')} />

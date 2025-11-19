@@ -785,6 +785,25 @@ private getGitExamReportTemplate(examResult: any, examDate: string): string {
                 <td style="padding: 8px 0; color: #1F2937;"><a href="${examResult.githubProfile}" style="color: #F97316; text-decoration: none; font-weight: 600;">${examResult.githubProfile}</a></td>
               </tr>
               <tr>
+                <td style="padding: 8px 0; color: #6B7280; font-weight: 600;">Motivo del Examen:</td>
+                <td style="padding: 8px 0; color: #1F2937;">
+                  <span style="background: ${examResult.examPurpose === 'postulacion' ? '#DBEAFE' : examResult.examPurpose === 'capacitacion' ? '#FEF3C7' : '#F3F4F6'};
+                               color: ${examResult.examPurpose === 'postulacion' ? '#1E40AF' : examResult.examPurpose === 'capacitacion' ? '#92400E' : '#374151'};
+                               padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                    ${examResult.examPurpose === 'capacitacion' ? 'Capacitación' :
+                      examResult.examPurpose === 'postulacion' ? 'Postulación / Proceso de Selección' :
+                      examResult.examPurpose === 'practica' ? 'Práctica' :
+                      'Otro'}
+                  </span>
+                </td>
+              </tr>
+              ${examResult.examPurpose === 'postulacion' && examResult.companyName ? `
+              <tr>
+                <td style="padding: 8px 0; color: #6B7280; font-weight: 600;">Empresa:</td>
+                <td style="padding: 8px 0; color: #1F2937; font-weight: bold;">${examResult.companyName}</td>
+              </tr>
+              ` : ''}
+              <tr>
                 <td style="padding: 8px 0; color: #6B7280; font-weight: 600;">Fecha y Hora:</td>
                 <td style="padding: 8px 0; color: #1F2937;">${examDate}</td>
               </tr>

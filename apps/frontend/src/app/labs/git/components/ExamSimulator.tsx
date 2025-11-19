@@ -10,6 +10,8 @@ import ResultsScreen from './ResultsScreen';
 interface ExamSimulatorProps {
   participantName: string;
   githubProfile: string;
+  examPurpose: 'capacitacion' | 'postulacion' | 'practica' | 'otro';
+  companyName?: string;
   mode: 'exam' | 'training';
   examData: ExamData;
   onReset: () => void;
@@ -18,6 +20,8 @@ interface ExamSimulatorProps {
 export default function ExamSimulator({
   participantName,
   githubProfile,
+  examPurpose,
+  companyName,
   mode,
   examData,
   onReset,
@@ -134,6 +138,8 @@ export default function ExamSimulator({
     const result = generateExamResult(
       participantName,
       githubProfile,
+      examPurpose,
+      companyName,
       questions,
       answers,
       timeSpent,
