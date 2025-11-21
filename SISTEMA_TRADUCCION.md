@@ -2,7 +2,7 @@
 
 ## Resumen Ejecutivo
 
-Se ha implementado un **sistema completo de internacionalización (i18n)** para AIQUAA que permite cambiar entre **Español (Paraguay 🇵🇾)** e **Inglés (EEUU 🇺🇸)** de forma dinámica.
+Se ha implementado un **sistema completo de internacionalización (i18n)** para AIQUAA que permite cambiar entre **Español (Paraguay)** e **Inglés (EEUU)** de forma dinámica con **banderas SVG** visuales.
 
 ---
 
@@ -42,29 +42,42 @@ translations = {
 **Archivo:** `apps/frontend/src/components/LanguageSelector.tsx`
 
 **Características:**
-- 🇵🇾 Bandera de Paraguay para Español
-- 🇺🇸 Bandera de EEUU para Inglés
-- 🎨 Diseño responsive con soporte para dark mode
+- 🎨 **Banderas SVG** - Renderizado vectorial de banderas de Paraguay (rojo/blanco/azul con estrella) y EEUU (barras y estrellas)
+- 🖥️ Diseño responsive con soporte para dark mode
 - ✨ Animaciones suaves de transición
 - 🔄 Cambio instantáneo de idioma
 - 💾 Guardado automático en localStorage
+- ♿ Accesible con aria-labels
+
+**Nota sobre las banderas:**
+Las banderas están implementadas como SVG inline para garantizar:
+- ✅ Renderizado consistente en todos los navegadores y sistemas operativos
+- ✅ Escalado perfecto sin pérdida de calidad
+- ✅ No depende de emojis Unicode que pueden verse diferentes según el sistema
+- ✅ Control total sobre los colores y diseño
 
 **Diseño visual:**
 ```
-┌─────────────────────────────┐
-│  🇵🇾 ES   |   🇺🇸 EN       │
-│  [activo]  |  [inactivo]    │
-└─────────────────────────────┘
+┌───────────────────────────────────┐
+│  [🇵🇾 SVG] ES | [🇺🇸 SVG] EN    │
+│   [activo]    |   [inactivo]      │
+└───────────────────────────────────┘
 ```
 
 ### 3. Integración en Layout
 **Archivos modificados:**
 - `apps/frontend/src/app/layout.tsx` - Agregado LanguageProvider
-- `apps/frontend/src/components/Header.tsx` - Agregado LanguageSelector
+- `apps/frontend/src/components/Header.tsx` - Agregado LanguageSelector y traducciones de navegación
+- `apps/frontend/src/app/page.tsx` - Página de inicio traducida
 
 **Ubicación:**
 - **Desktop:** En el header, entre la navegación y el botón de dark mode
 - **Mobile:** Primera opción en el menú hamburguesa
+
+**Páginas ya traducidas:**
+- ✅ Header (navegación principal)
+- ✅ Página de inicio (hero section, banner, títulos principales)
+- 📝 Resto de páginas: Listas para traducir siguiendo el mismo patrón
 
 ---
 

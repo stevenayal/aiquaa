@@ -30,7 +30,10 @@ const translations: Record<Language, Record<string, string>> = {
   es: {
     // Navigation
     'nav.home': 'Inicio',
+    'nav.blog': 'Blog',
     'nav.labs': 'Labs',
+    'nav.community': 'Comunidad',
+    'nav.about': 'Acerca de',
     'nav.dashboard': 'Dashboard',
     'nav.forum': 'Foro',
     'nav.courses': 'Cursos',
@@ -62,6 +65,18 @@ const translations: Record<Language, Record<string, string>> = {
     'labs.git': 'Examen Técnico GIT',
     'labs.report': 'Generador de Informes',
 
+    // Home page
+    'home.hero.title': 'AIQUAA: Comunidad y Herramientas de QA en Paraguay',
+    'home.hero.subtitle': 'Transformamos el testing en Paraguay con IA, herramientas y comunidad',
+    'home.hero.description': 'Validá tus APIs y datos, genera casos de prueba y participá en workshops y mentorías. Únete a nuestra comunidad open-source de QA.',
+    'home.hero.explore': 'Explorar Herramientas',
+    'home.hero.join': 'Unirse a la Comunidad',
+    'home.hero.free': '100% Gratis y Open Source',
+    'home.hero.spanish': 'En Español',
+    'home.hero.paraguay': 'Hecho en Paraguay',
+    'home.banner': 'Más que herramientas: una comunidad de QA que crece con vos',
+    'home.what.title': '¿Qué es AIQUAA?',
+
     // Footer
     'footer.rights': 'Todos los derechos reservados',
     'footer.about': 'Acerca de',
@@ -72,7 +87,10 @@ const translations: Record<Language, Record<string, string>> = {
   en: {
     // Navigation
     'nav.home': 'Home',
+    'nav.blog': 'Blog',
     'nav.labs': 'Labs',
+    'nav.community': 'Community',
+    'nav.about': 'About',
     'nav.dashboard': 'Dashboard',
     'nav.forum': 'Forum',
     'nav.courses': 'Courses',
@@ -103,6 +121,18 @@ const translations: Record<Language, Record<string, string>> = {
     'labs.allpairs': 'All Pairs Generator',
     'labs.git': 'GIT Technical Exam',
     'labs.report': 'Report Generator',
+
+    // Home page
+    'home.hero.title': 'AIQUAA: QA Community and Tools in Paraguay',
+    'home.hero.subtitle': 'We transform testing in Paraguay with AI, tools and community',
+    'home.hero.description': 'Validate your APIs and data, generate test cases and participate in workshops and mentoring. Join our open-source QA community.',
+    'home.hero.explore': 'Explore Tools',
+    'home.hero.join': 'Join the Community',
+    'home.hero.free': '100% Free and Open Source',
+    'home.hero.spanish': 'In Spanish',
+    'home.hero.paraguay': 'Made in Paraguay',
+    'home.banner': 'More than tools: a QA community that grows with you',
+    'home.what.title': 'What is AIQUAA?',
 
     // Footer
     'footer.rights': 'All rights reserved',

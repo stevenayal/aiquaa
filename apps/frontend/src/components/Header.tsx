@@ -4,11 +4,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import LanguageSelector from './LanguageSelector';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { isDarkMode, toggleDarkMode } = useTheme();
+  const { t } = useLanguage();
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -48,7 +50,7 @@ const Header = () => {
                 isDarkMode ? 'text-dark-text' : 'text-brand-light'
               }`}
             >
-              Inicio
+              {t('nav.home')}
             </Link>
             <Link
               href="/blog"
@@ -57,7 +59,7 @@ const Header = () => {
               }`}
             >
               <span className="mr-1">📝</span>
-              Blog
+              {t('nav.blog')}
             </Link>
             <Link
               href="/labs"
@@ -66,7 +68,7 @@ const Header = () => {
               }`}
             >
               <span className="mr-1">🧪</span>
-              Labs
+              {t('nav.labs')}
             </Link>
             <Link
               href="/comunidad"
@@ -75,7 +77,7 @@ const Header = () => {
               }`}
             >
               <span className="mr-1">💬</span>
-              Comunidad
+              {t('nav.community')}
             </Link>
             <Link
               href="/about"
@@ -83,7 +85,7 @@ const Header = () => {
                 isDarkMode ? 'text-dark-text' : 'text-brand-light'
               }`}
             >
-              Acerca de
+              {t('nav.about')}
             </Link>
           </nav>
 
@@ -144,7 +146,7 @@ const Header = () => {
                 }`}
                 onClick={closeMobileMenu}
               >
-                Inicio
+                {t('nav.home')}
               </Link>
               <Link
                 href="/blog"
@@ -154,7 +156,7 @@ const Header = () => {
                 onClick={closeMobileMenu}
               >
                 <span className="mr-1">📝</span>
-                Blog
+                {t('nav.blog')}
               </Link>
               <Link
                 href="/labs"
@@ -164,7 +166,7 @@ const Header = () => {
                 onClick={closeMobileMenu}
               >
                 <span className="mr-1">🧪</span>
-                Labs
+                {t('nav.labs')}
               </Link>
               <Link
                 href="/comunidad"
@@ -174,7 +176,7 @@ const Header = () => {
                 onClick={closeMobileMenu}
               >
                 <span className="mr-1">💬</span>
-                Comunidad
+                {t('nav.community')}
               </Link>
               <Link
                 href="/about"
@@ -183,7 +185,7 @@ const Header = () => {
                 }`}
                 onClick={closeMobileMenu}
               >
-                Acerca de
+                {t('nav.about')}
               </Link>
             </div>
           </div>

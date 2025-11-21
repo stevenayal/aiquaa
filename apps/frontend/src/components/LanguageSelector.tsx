@@ -7,9 +7,41 @@ export default function LanguageSelector() {
   const { language, setLanguage } = useLanguage();
   const { isDarkMode } = useTheme();
 
-  const languages: { code: Language; flag: string; label: string }[] = [
-    { code: 'es', flag: '🇵🇾', label: 'Español' },
-    { code: 'en', flag: '🇺🇸', label: 'English' },
+  const languages: { code: Language; flag: JSX.Element; label: string }[] = [
+    {
+      code: 'es',
+      flag: (
+        <svg className="w-6 h-6" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg">
+          <rect width="900" height="600" fill="#D52B1E"/>
+          <rect y="200" width="900" height="200" fill="#FFF"/>
+          <rect y="400" width="900" height="200" fill="#0038A8"/>
+          <g transform="translate(450,300)">
+            <circle r="60" fill="#FFE000"/>
+            <path d="M 0,-50 L 10,0 L 50,-15 L 15,15 L 25,50 L 0,25 L -25,50 L -15,15 L -50,-15 L -10,0 Z" fill="#FFE000"/>
+          </g>
+        </svg>
+      ),
+      label: 'Español'
+    },
+    {
+      code: 'en',
+      flag: (
+        <svg className="w-6 h-6" viewBox="0 0 7410 3900" xmlns="http://www.w3.org/2000/svg">
+          <rect width="7410" height="3900" fill="#b22234"/>
+          <path d="M 0,450 h 7410 m 0,600 H 0 m 0,600 h 7410 m 0,600 H 0 m 0,600 h 7410 m 0,600 H 0" stroke="#fff" strokeWidth="300"/>
+          <rect width="2964" height="2100" fill="#3c3b6e"/>
+          <g fill="#fff">
+            {[...Array(9)].map((_, row) => [...Array(11)].map((_, col) => {
+              if ((row % 2 === 0 && col % 2 === 0) || (row % 2 === 1 && col % 2 === 1)) {
+                return <circle key={`${row}-${col}`} cx={247.4 * (col + 1)} cy={210 * (row + 1)} r="85"/>;
+              }
+              return null;
+            }))}
+          </g>
+        </svg>
+      ),
+      label: 'English'
+    },
   ];
 
   return (
@@ -32,8 +64,9 @@ export default function LanguageSelector() {
               }
             `}
             title={lang.label}
+            aria-label={`Cambiar idioma a ${lang.label}`}
           >
-            <span className="text-2xl">{lang.flag}</span>
+            <span className="flex items-center">{lang.flag}</span>
             <span
               className={`text-sm font-medium ${
                 language === lang.code

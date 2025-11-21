@@ -2,11 +2,13 @@
 
 import Link from 'next/link';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import FeaturedMember from '@/components/Team/FeaturedMember';
 import FAQSection from '@/components/FAQSection';
 
 export default function HomePage() {
   const { isDarkMode } = useTheme();
+  const { t } = useLanguage();
 
   return (
     <div className={isDarkMode ? 'dark' : ''}>
@@ -14,14 +16,13 @@ export default function HomePage() {
       <section className="py-20 bg-gradient-to-b from-slate-900 via-slate-950 to-indigo-950 text-white text-center">
         <div className="max-w-4xl mx-auto px-6">
           <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-6">
-            AIQUAA: Comunidad y Herramientas de QA en Paraguay
+            {t('home.hero.title')}
           </h1>
           <p className="mt-4 text-xl md:text-2xl text-gray-200 font-medium mb-4">
-            Transformamos el testing en Paraguay con IA, herramientas y comunidad
+            {t('home.hero.subtitle')}
           </p>
           <p className="text-base md:text-lg text-gray-300 max-w-3xl mx-auto">
-            Validá tus APIs y datos, genera casos de prueba y participá en workshops y mentorías.
-            Únete a nuestra comunidad open-source de QA.
+            {t('home.hero.description')}
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4">
@@ -29,28 +30,28 @@ export default function HomePage() {
               href="/labs"
               className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition shadow-lg hover:shadow-xl"
             >
-              🧪 Explorar Herramientas
+              🧪 {t('home.hero.explore')}
             </Link>
             <Link
               href="/comunidad"
               className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition shadow-lg hover:shadow-xl"
             >
-              💬 Unirse a la Comunidad
+              💬 {t('home.hero.join')}
             </Link>
           </div>
 
           <div className="mt-10 flex flex-col sm:flex-row justify-center items-center gap-6 text-sm text-gray-300">
             <div className="flex items-center gap-2">
               <span className="text-green-400 text-xl">✓</span>
-              <span>100% Gratis y Open Source</span>
+              <span>{t('home.hero.free')}</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-green-400 text-xl">✓</span>
-              <span>En Español</span>
+              <span>{t('home.hero.spanish')}</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-green-400 text-xl">✓</span>
-              <span>Hecho en Paraguay 🇵🇾</span>
+              <span>{t('home.hero.paraguay')} 🇵🇾</span>
             </div>
           </div>
         </div>
@@ -64,7 +65,7 @@ export default function HomePage() {
       }`}>
         <span className="inline-flex items-center gap-2">
           <span className="text-lg">🌟</span>
-          <span>Más que herramientas: una comunidad de QA que crece con vos</span>
+          <span>{t('home.banner')}</span>
         </span>
       </div>
 
@@ -76,7 +77,7 @@ export default function HomePage() {
       }`}>
         <h2 className={`text-2xl md:text-3xl font-bold mb-6 ${
           isDarkMode ? 'text-blue-400' : 'text-brand-accent'
-        }`}>¿Qué es AIQUAA?</h2>
+        }`}>{t('home.what.title')}</h2>
 
         <p className={`text-lg md:text-xl max-w-3xl mx-auto mb-8 px-4 leading-relaxed ${
           isDarkMode ? 'text-slate-200' : 'text-brand-text'
