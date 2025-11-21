@@ -63,16 +63,30 @@ http://localhost:3001/labs/test-app/admin?key=aiquaa-test-admin-2024
 - Reseed de datos con nuevo Candidate ID
 - Reset de sesión (limpiar carrito, órdenes, etc.)
 
-### 5. **Exportar Evidencias**
+### 5. **Generar Informe Técnico**
 
-Al finalizar las pruebas, accede a:
+Una vez finalizadas las pruebas, accede al generador de informes:
+
+```
+/labs/test-app/report
+```
+
+**Funcionalidades del generador:**
+
+- Documentar bugs encontrados con formato estructurado
+- Carga automática del audit log desde localStorage
+- Cálculo automático de puntuación (30 puntos)
+- Generación de PDF profesional con todos los detalles
+- Exportación a JSON para revisión posterior
+
+**Alternativa: Exportar Evidencias Manualmente**
 
 ```
 /labs/test-app/evidence
 ```
 
 - Descarga o copia el JSON con el audit log completo
-- Incluye este archivo junto con tu reporte de bugs
+- Usa este archivo junto con tu reporte de bugs manual
 
 ---
 

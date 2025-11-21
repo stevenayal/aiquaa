@@ -49,6 +49,16 @@ export default function LabsPage() {
           href: '/labs/test-app',
           featured: true,
           implementedDate: 'Oct 2025'
+        },
+        {
+          id: 'test-report',
+          name: 'Generador de Informe Técnico',
+          description: 'Crea informes profesionales en PDF de pruebas de Bug Hunting con puntuación automática',
+          icon: '📋',
+          color: 'from-purple-500 to-purple-600',
+          href: '/labs/test-app/report',
+          featured: true,
+          implementedDate: 'Nov 2025'
         }
       ]
     },
