@@ -1,4 +1,43 @@
-import type { TechnicalReport, BugReport, ScoreCriteria } from './types';
+import type { TechnicalReport, BugReport, ScoreCriteria, ImageEvidence } from './types';
+
+// Helper function to convert file to base64
+export async function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });
+}
+
+// Helper function to validate image file
+export function validateImageFile(file: File): { valid: boolean; error?: string } {
+  const maxSize = 5 * 1024 * 1024; // 5MB
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+
+  if (!allowedTypes.includes(file.type)) {
+    return {
+      valid: false,
+      error: 'Formato no soportado. Use: JPG, PNG, GIF o WebP',
+    };
+  }
+
+  if (file.size > maxSize) {
+    return {
+      valid: false,
+      error: 'Imagen muy grande. Máximo 5MB',
+    };
+  }
+
+  return { valid: true };
+}
+
+// Helper function to format file size
+export function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
 
 export const SCORE_CRITERIA: ScoreCriteria = {
   bugsFound: {
@@ -165,6 +204,28 @@ export async function generatePDF(report: TechnicalReport): Promise<void> {
     return false;
   };
 
+  // Load and add AIQUAA logo
+  try {
+    const logoResponse = await fetch('/images/aiquaa-logo.png');
+    const logoBlob = await logoResponse.blob();
+    const logoBase64 = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(logoBlob);
+    });
+
+    // Add logo centered at the top
+    const logoWidth = 40;
+    const logoHeight = 15;
+    const logoX = (pageWidth - logoWidth) / 2;
+    doc.addImage(logoBase64, 'PNG', logoX, yPosition, logoWidth, logoHeight);
+    yPosition += logoHeight + 5;
+  } catch (error) {
+    console.error('Error loading logo:', error);
+    // Continue without logo if it fails
+  }
+
   // Title
   doc.setFontSize(24);
   doc.setTextColor(249, 115, 22); // Orange
@@ -322,7 +383,54 @@ export async function generatePDF(report: TechnicalReport): Promise<void> {
       doc.text(line, margin + 10, yPosition);
       yPosition += 5;
     });
-    yPosition += 10;
+    yPosition += 3;
+
+    // Embed images if any
+    if (bug.images && bug.images.length > 0) {
+      checkPageBreak(30);
+      doc.setFontSize(10);
+      doc.setTextColor(0, 0, 0);
+      doc.text('Capturas de Pantalla:', margin + 5, yPosition);
+      yPosition += 7;
+
+      for (const image of bug.images) {
+        try {
+          checkPageBreak(60);
+
+          // Extract format from mimeType or base64 data
+          let format = 'JPEG';
+          if (image.mimeType.includes('png')) format = 'PNG';
+          else if (image.mimeType.includes('gif')) format = 'GIF';
+          else if (image.mimeType.includes('webp')) format = 'WEBP';
+
+          // Calculate image dimensions (max width: 160, maintain aspect ratio)
+          const maxWidth = pageWidth - margin * 2 - 20;
+          const maxHeight = 80;
+
+          // Add image
+          doc.addImage(image.base64Data, format, margin + 10, yPosition, maxWidth, maxHeight);
+          yPosition += maxHeight + 5;
+
+          // Image caption
+          doc.setFontSize(8);
+          doc.setTextColor(100, 100, 100);
+          const caption = `${image.fileName} (${formatFileSize(image.size)})`;
+          doc.text(caption, margin + 10, yPosition);
+          yPosition += 7;
+        } catch (error) {
+          console.error(`Error embedding image ${image.fileName}:`, error);
+          // Continue with next image if one fails
+          doc.setFontSize(8);
+          doc.setTextColor(220, 38, 38);
+          doc.text(`[Error al cargar imagen: ${image.fileName}]`, margin + 10, yPosition);
+          yPosition += 7;
+        }
+      }
+
+      yPosition += 5;
+    } else {
+      yPosition += 10;
+    }
   });
 
   // Footer

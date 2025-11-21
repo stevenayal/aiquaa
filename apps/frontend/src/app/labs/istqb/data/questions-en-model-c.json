@@ -1,0 +1,59 @@
+{
+    "examInfo": {
+        "title": "CTFL - V4.0 - EN - SAMPLE EXAM - MODEL C",
+        "version": "V001.00",
+        "totalQuestions": 40,
+        "passingScore": 26,
+        "timeLimit": 60,
+        "pointsPerQuestion": 1
+    },
+    "questions": [
+        {
+            "id": 1,
+            "questionText": "Which of the following is a good testing practice that applies to all software development lifecycles?",
+            "options": [
+                {
+                    "label": "a",
+                    "text": "Test execution should begin only after development is complete."
+                },
+                {
+                    "label": "b",
+                    "text": "For every development activity, there is a corresponding test activity."
+                },
+                {
+                    "label": "c",
+                    "text": "Testers should be involved only during the testing phase."
+                },
+                {
+                    "label": "d",
+                    "text": "Test planning should be done at the end of the project."
+                }
+            ],
+            "correctAnswer": [
+                "b"
+            ],
+            "learningObjective": "FL-2.1.1",
+            "kLevel": "K2",
+            "points": 1,
+            "type": "single",
+            "explanations": {
+                "a": {
+                    "correct": false,
+                    "explanation": "Early testing is better."
+                },
+                "b": {
+                    "correct": true,
+                    "explanation": "This is a fundamental principle."
+                },
+                "c": {
+                    "correct": false,
+                    "explanation": "Early involvement is key."
+                },
+                "d": {
+                    "correct": false,
+                    "explanation": "Planning should start early."
+                }
+            }
+        }
+    ]
+}

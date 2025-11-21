@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
-import type { TechnicalReport, BugReport, CandidateInfo, TestSession } from './types';
-import { calculateScore, generatePDF, exportToJSON } from './utils';
+import type { TechnicalReport, BugReport, CandidateInfo, TestSession, ImageEvidence } from './types';
+import { calculateScore, generatePDF, exportToJSON, fileToBase64, validateImageFile, formatFileSize } from './utils';
 
 export default function TechnicalReportPage() {
   const { isDarkMode } = useTheme();
@@ -38,6 +38,7 @@ export default function TechnicalReportPage() {
     severity: 'Medium',
     category: '',
     evidence: '',
+    images: [],
     foundAt: new Date(),
   });
 
@@ -91,6 +92,60 @@ export default function TechnicalReportPage() {
     }));
   };
 
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    const newImages: ImageEvidence[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+
+      // Validate file
+      const validation = validateImageFile(file);
+      if (!validation.valid) {
+        alert(`Error en ${file.name}: ${validation.error}`);
+        continue;
+      }
+
+      try {
+        // Convert to base64
+        const base64Data = await fileToBase64(file);
+
+        const imageEvidence: ImageEvidence = {
+          id: `img-${Date.now()}-${i}`,
+          fileName: file.name,
+          base64Data,
+          mimeType: file.type,
+          size: file.size,
+          uploadedAt: new Date(),
+        };
+
+        newImages.push(imageEvidence);
+      } catch (error) {
+        console.error(`Error uploading ${file.name}:`, error);
+        alert(`Error al cargar ${file.name}`);
+      }
+    }
+
+    if (newImages.length > 0) {
+      setCurrentBug((prev) => ({
+        ...prev,
+        images: [...(prev.images || []), ...newImages],
+      }));
+    }
+
+    // Reset file input
+    event.target.value = '';
+  };
+
+  const handleRemoveImage = (imageId: string) => {
+    setCurrentBug((prev) => ({
+      ...prev,
+      images: prev.images?.filter((img) => img.id !== imageId) || [],
+    }));
+  };
+
   const handleSaveBug = () => {
     if (!currentBug.title || !currentBug.expectedResult || !currentBug.actualResult) {
       alert('Por favor, completa todos los campos obligatorios');
@@ -107,6 +162,7 @@ export default function TechnicalReportPage() {
       severity: currentBug.severity || 'Medium',
       category: currentBug.category || 'General',
       evidence: currentBug.evidence || '',
+      images: currentBug.images || [],
       foundAt: currentBug.foundAt || new Date(),
     };
 
@@ -128,6 +184,7 @@ export default function TechnicalReportPage() {
       severity: 'Medium',
       category: '',
       evidence: '',
+      images: [],
       foundAt: new Date(),
     });
     setShowBugForm(false);
@@ -532,6 +589,61 @@ export default function TechnicalReportPage() {
                   />
                 </div>
 
+                {/* Image Upload Section */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                    Capturas de Pantalla (opcional)
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                    multiple
+                    onChange={handleImageUpload}
+                    className={`w-full px-4 py-2 rounded-lg border ${
+                      isDarkMode
+                        ? 'bg-slate-600 border-slate-500 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    } focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                  />
+                  <p className={`text-xs mt-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
+                    Formatos: JPG, PNG, GIF, WebP. Máximo: 5MB por imagen
+                  </p>
+
+                  {/* Image Previews */}
+                  {currentBug.images && currentBug.images.length > 0 && (
+                    <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {currentBug.images.map((image) => (
+                        <div
+                          key={image.id}
+                          className={`relative rounded-lg overflow-hidden border-2 ${
+                            isDarkMode ? 'border-slate-500' : 'border-gray-300'
+                          }`}
+                        >
+                          <img
+                            src={image.base64Data}
+                            alt={image.fileName}
+                            className="w-full h-32 object-cover"
+                          />
+                          <div className={`p-2 ${isDarkMode ? 'bg-slate-700' : 'bg-gray-100'}`}>
+                            <p className={`text-xs truncate ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}>
+                              {image.fileName}
+                            </p>
+                            <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
+                              {formatFileSize(image.size)}
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => handleRemoveImage(image.id)}
+                            className="absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 <div className="flex gap-2">
                   <button
                     onClick={handleSaveBug}
@@ -553,6 +665,7 @@ export default function TechnicalReportPage() {
                         severity: 'Medium',
                         category: '',
                         evidence: '',
+                        images: [],
                         foundAt: new Date(),
                       });
                     }}

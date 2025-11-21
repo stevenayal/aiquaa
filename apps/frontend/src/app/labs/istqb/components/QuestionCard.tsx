@@ -10,6 +10,7 @@ interface QuestionCardProps {
   onAnswerChange: (_questionId: number, _selectedAnswers: string[]) => void;
   isMarked: boolean;
   showFeedback: boolean;
+  language: 'es' | 'en';
 }
 
 export default function QuestionCard({
@@ -18,10 +19,46 @@ export default function QuestionCard({
   onAnswerChange,
   isMarked,
   showFeedback,
+  language,
 }: QuestionCardProps) {
   const { isDarkMode } = useTheme();
   const isMultiple = question.type === 'multiple';
   const hasAnswered = selectedAnswers.length > 0;
+
+  const t = {
+    es: {
+      question: 'Pregunta',
+      marked: '(Marcada 🚩)',
+      selectTwo: 'Seleccionar DOS opciones',
+      selectOne: 'Seleccionar UNA opción',
+      selected: 'seleccionadas',
+      of: 'de',
+      correct: 'Correcto:',
+      incorrect: 'Incorrecto:',
+      wasCorrect: 'Esta era correcta:',
+      correctAnswerWas: 'La respuesta correcta era:',
+      correctTitle: '¡Respuesta Correcta!',
+      incorrectTitle: 'Respuesta Incorrecta',
+      correctAnswers: 'La(s) respuesta(s) correcta(s):',
+    },
+    en: {
+      question: 'Question',
+      marked: '(Marked 🚩)',
+      selectTwo: 'Select TWO options',
+      selectOne: 'Select ONE option',
+      selected: 'selected',
+      of: 'of',
+      correct: 'Correct:',
+      incorrect: 'Incorrect:',
+      wasCorrect: 'This was correct:',
+      correctAnswerWas: 'The correct answer was:',
+      correctTitle: 'Correct Answer!',
+      incorrectTitle: 'Incorrect Answer',
+      correctAnswers: 'The correct answer(s):',
+    },
+  };
+
+  const text = t[language];
 
   // Para preguntas múltiples, solo evaluar cuando se haya seleccionado el número correcto de opciones
   const isSelectionComplete = isMultiple
@@ -83,9 +120,9 @@ export default function QuestionCard({
       <div className={`p-6 border-b ${isDarkMode ? 'border-slate-700' : 'border-gray-200'}`}>
         <div className="flex justify-between items-start gap-4">
           <h2 className={`text-lg font-bold ${isDarkMode ? 'text-slate-100' : 'text-gray-900'}`}>
-            Pregunta {question.id}
+            {text.question} {question.id}
             {isMarked && (
-              <span className={`ml-2 text-sm font-semibold ${isDarkMode ? 'text-amber-400' : 'text-amber-600'}`}>(Marcada 🚩)</span>
+              <span className={`ml-2 text-sm font-semibold ${isDarkMode ? 'text-amber-400' : 'text-amber-600'}`}>{text.marked}</span>
             )}
           </h2>
           <div className="flex gap-2 text-sm flex-shrink-0">
@@ -107,17 +144,16 @@ export default function QuestionCard({
                 <span className="text-blue-600 dark:text-blue-400">ℹ️</span>
                 <p className={`font-semibold ${isDarkMode ? 'text-blue-300' : 'text-blue-900'}`}>
                   {isMultiple
-                    ? 'Seleccionar DOS opciones'
-                    : 'Seleccionar UNA opción'}
+                    ? text.selectTwo
+                    : text.selectOne}
                 </p>
               </div>
               {isMultiple && hasAnswered && !showFeedback && (
-                <span className={`text-sm font-medium px-3 py-1 rounded-full ${
-                  isSelectionComplete
+                <span className={`text-sm font-medium px-3 py-1 rounded-full ${isSelectionComplete
                     ? isDarkMode ? 'bg-green-900/40 text-green-300 border border-green-700' : 'bg-green-100 text-green-800 border border-green-200'
                     : isDarkMode ? 'bg-amber-900/40 text-amber-300 border border-amber-700' : 'bg-amber-100 text-amber-800 border border-amber-200'
-                }`}>
-                  {selectedAnswers.length} de {question.correctAnswer.length} seleccionadas
+                  }`}>
+                  {selectedAnswers.length} {text.of} {question.correctAnswer.length} {text.selected}
                 </span>
               )}
             </div>
@@ -141,11 +177,10 @@ export default function QuestionCard({
                     checked={isSelected}
                     onChange={(e) => handleMultipleAnswer(option.label, e.target.checked)}
                     disabled={showFeedback && isSelectionComplete}
-                    className={`mt-1 h-5 w-5 text-amber-600 focus:ring-amber-500 rounded transition-colors ${
-                      isDarkMode
+                    className={`mt-1 h-5 w-5 text-amber-600 focus:ring-amber-500 rounded transition-colors ${isDarkMode
                         ? 'bg-slate-700 border-slate-500 checked:bg-amber-600 checked:border-amber-600'
                         : 'bg-white border-gray-300'
-                    }`}
+                      }`}
                   />
                   <div className="flex-1">
                     <label
@@ -161,7 +196,7 @@ export default function QuestionCard({
                           <div className="flex items-start gap-2 text-green-700 dark:text-green-300">
                             <span className="flex-shrink-0">✓</span>
                             <span>
-                              <strong>Correcto:</strong>{' '}
+                              <strong>{text.correct}</strong>{' '}
                               {question.explanations[option.label]?.explanation}
                             </span>
                           </div>
@@ -170,7 +205,7 @@ export default function QuestionCard({
                           <div className="flex items-start gap-2 text-red-700 dark:text-red-300">
                             <span className="flex-shrink-0">✗</span>
                             <span>
-                              <strong>Incorrecto:</strong>{' '}
+                              <strong>{text.incorrect}</strong>{' '}
                               {question.explanations[option.label]?.explanation}
                             </span>
                           </div>
@@ -179,7 +214,7 @@ export default function QuestionCard({
                           <div className="flex items-start gap-2 text-green-700 dark:text-green-300">
                             <span className="flex-shrink-0">ℹ️</span>
                             <span>
-                              <strong>Esta era correcta:</strong>{' '}
+                              <strong>{text.wasCorrect}</strong>{' '}
                               {question.explanations[option.label]?.explanation}
                             </span>
                           </div>
@@ -208,11 +243,10 @@ export default function QuestionCard({
                     checked={isSelected}
                     onChange={() => handleSingleAnswer(option.label)}
                     disabled={showFeedback && isSelectionComplete}
-                    className={`mt-1 h-5 w-5 text-amber-600 focus:ring-amber-500 transition-colors ${
-                      isDarkMode
+                    className={`mt-1 h-5 w-5 text-amber-600 focus:ring-amber-500 transition-colors ${isDarkMode
                         ? 'bg-slate-700 border-slate-500 checked:bg-amber-600 checked:border-amber-600'
                         : 'bg-white border-gray-300'
-                    }`}
+                      }`}
                   />
                   <div className="flex-1">
                     <label
@@ -228,7 +262,7 @@ export default function QuestionCard({
                           <div className="flex items-start gap-2 text-green-700 dark:text-green-300">
                             <span className="flex-shrink-0">✓</span>
                             <span>
-                              <strong>Correcto:</strong>{' '}
+                              <strong>{text.correct}</strong>{' '}
                               {question.explanations[option.label]?.explanation}
                             </span>
                           </div>
@@ -237,7 +271,7 @@ export default function QuestionCard({
                           <div className="flex items-start gap-2 text-red-700 dark:text-red-300">
                             <span className="flex-shrink-0">✗</span>
                             <span>
-                              <strong>Incorrecto:</strong>{' '}
+                              <strong>{text.incorrect}</strong>{' '}
                               {question.explanations[option.label]?.explanation}
                             </span>
                           </div>
@@ -246,7 +280,7 @@ export default function QuestionCard({
                           <div className="flex items-start gap-2 text-green-700 dark:text-green-300">
                             <span className="flex-shrink-0">ℹ️</span>
                             <span>
-                              <strong>La respuesta correcta era:</strong>{' '}
+                              <strong>{text.correctAnswerWas}</strong>{' '}
                               {question.explanations[option.label]?.explanation}
                             </span>
                           </div>
@@ -261,28 +295,27 @@ export default function QuestionCard({
         </div>
 
         {showFeedback && isSelectionComplete && (
-          <div className={`p-4 rounded-lg border-2 ${
-            isCorrect
+          <div className={`p-4 rounded-lg border-2 ${isCorrect
               ? isDarkMode
                 ? 'bg-green-900/30 border-green-700'
                 : 'bg-green-50 border-green-300'
               : isDarkMode
-              ? 'bg-red-900/30 border-red-700'
-              : 'bg-red-50 border-red-300'
-          }`}>
+                ? 'bg-red-900/30 border-red-700'
+                : 'bg-red-50 border-red-300'
+            }`}>
             <div className="flex items-center gap-3">
               {isCorrect ? (
                 <>
                   <span className={`text-2xl ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>✓</span>
-                  <strong className={`text-base ${isDarkMode ? 'text-green-200' : 'text-green-900'}`}>¡Respuesta Correcta!</strong>
+                  <strong className={`text-base ${isDarkMode ? 'text-green-200' : 'text-green-900'}`}>{text.correctTitle}</strong>
                 </>
               ) : (
                 <>
                   <span className={`text-2xl ${isDarkMode ? 'text-red-400' : 'text-red-600'}`}>✗</span>
                   <div className={isDarkMode ? 'text-red-200' : 'text-red-900'}>
-                    <strong className="text-base block mb-1">Respuesta Incorrecta</strong>
+                    <strong className="text-base block mb-1">{text.incorrectTitle}</strong>
                     <span className="text-sm">
-                      La(s) respuesta(s) correcta(s): <strong>{question.correctAnswer.join(', ')}</strong>
+                      {text.correctAnswers} <strong>{question.correctAnswer.join(', ')}</strong>
                     </span>
                   </div>
                 </>

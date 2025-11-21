@@ -6,9 +6,30 @@ import type {
   LearningObjectiveResult,
 } from './types';
 
-export function loadExamData(): ExamData {
-  const data = require('./data/questions-modelo-a.json');
-  return data;
+import questionsModelA from './data/questions-modelo-a.json';
+import questionsEnModelA from './data/questions-en-model-a.json';
+import questionsEnModelB from './data/questions-en-model-b.json';
+import questionsEnModelC from './data/questions-en-model-c.json';
+import questionsEsModelB from './data/questions-es-model-b.json';
+import questionsEsModelC from './data/questions-es-model-c.json';
+
+export function loadExamData(examId: string = 'es-model-a'): ExamData {
+  switch (examId) {
+    case 'es-model-a':
+      return questionsModelA as unknown as ExamData;
+    case 'es-model-b':
+      return questionsEsModelB as unknown as ExamData;
+    case 'es-model-c':
+      return questionsEsModelC as unknown as ExamData;
+    case 'en-model-a':
+      return questionsEnModelA as unknown as ExamData;
+    case 'en-model-b':
+      return questionsEnModelB as unknown as ExamData;
+    case 'en-model-c':
+      return questionsEnModelC as unknown as ExamData;
+    default:
+      return questionsModelA as unknown as ExamData;
+  }
 }
 
 export function shuffleArray<T>(array: T[]): T[] {

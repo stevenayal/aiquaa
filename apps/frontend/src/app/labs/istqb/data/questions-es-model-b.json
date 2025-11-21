@@ -1,0 +1,59 @@
+{
+    "examInfo": {
+        "title": "CTFL - V4.0 - ES - EJEMPLO DE EXAMEN - MODELO B",
+        "version": "V001.00",
+        "totalQuestions": 40,
+        "passingScore": 26,
+        "timeLimit": 60,
+        "pointsPerQuestion": 1
+    },
+    "questions": [
+        {
+            "id": 1,
+            "questionText": "¿Cuál de las siguientes es una ventaja del enfoque de equipo completo (whole-team approach)?",
+            "options": [
+                {
+                    "label": "a",
+                    "text": "Permite a los probadores trabajar aislados de los desarrolladores."
+                },
+                {
+                    "label": "b",
+                    "text": "Promueve la colaboración y la responsabilidad compartida por la calidad."
+                },
+                {
+                    "label": "c",
+                    "text": "Reduce la necesidad de documentación."
+                },
+                {
+                    "label": "d",
+                    "text": "Asegura que solo los desarrolladores sean responsables de las pruebas."
+                }
+            ],
+            "correctAnswer": [
+                "b"
+            ],
+            "learningObjective": "FL-1.x.x",
+            "kLevel": "K2",
+            "points": 1,
+            "type": "single",
+            "explanations": {
+                "a": {
+                    "correct": false,
+                    "explanation": "El enfoque de equipo completo desalienta el aislamiento."
+                },
+                "b": {
+                    "correct": true,
+                    "explanation": "La colaboración es un beneficio clave."
+                },
+                "c": {
+                    "correct": false,
+                    "explanation": "La documentación sigue siendo necesaria."
+                },
+                "d": {
+                    "correct": false,
+                    "explanation": "Todos son responsables de la calidad."
+                }
+            }
+        }
+    ]
+}

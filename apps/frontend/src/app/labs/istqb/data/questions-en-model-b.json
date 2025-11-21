@@ -1,0 +1,59 @@
+{
+    "examInfo": {
+        "title": "CTFL - V4.0 - EN - SAMPLE EXAM - MODEL B",
+        "version": "V001.00",
+        "totalQuestions": 40,
+        "passingScore": 26,
+        "timeLimit": 60,
+        "pointsPerQuestion": 1
+    },
+    "questions": [
+        {
+            "id": 1,
+            "questionText": "Which of the following is an advantage of the whole-team approach?",
+            "options": [
+                {
+                    "label": "a",
+                    "text": "It allows testers to work in isolation from developers."
+                },
+                {
+                    "label": "b",
+                    "text": "It promotes collaboration and shared responsibility for quality."
+                },
+                {
+                    "label": "c",
+                    "text": "It reduces the need for documentation."
+                },
+                {
+                    "label": "d",
+                    "text": "It ensures that only developers are responsible for testing."
+                }
+            ],
+            "correctAnswer": [
+                "b"
+            ],
+            "learningObjective": "FL-1.x.x",
+            "kLevel": "K2",
+            "points": 1,
+            "type": "single",
+            "explanations": {
+                "a": {
+                    "correct": false,
+                    "explanation": "Whole-team approach discourages isolation."
+                },
+                "b": {
+                    "correct": true,
+                    "explanation": "Collaboration is a key benefit."
+                },
+                "c": {
+                    "correct": false,
+                    "explanation": "Documentation is still needed."
+                },
+                "d": {
+                    "correct": false,
+                    "explanation": "Everyone is responsible for quality."
+                }
+            }
+        }
+    ]
+}

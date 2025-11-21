@@ -104,6 +104,7 @@ Una vez finalizadas las pruebas, accede al generador de informes:
 | `/labs/test-app/history`         | Historial de pedidos              |
 | `/labs/test-app/profile`         | Perfil del usuario                |
 | `/labs/test-app/support`         | Crear tickets de soporte          |
+| `/labs/test-app/report`          | Generador de informe técnico      |
 | `/labs/test-app/evidence`        | Exportar audit log                |
 | `/labs/test-app/admin?key=...`   | Panel de administración (oculto)  |
 

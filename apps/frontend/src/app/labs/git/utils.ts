@@ -230,6 +230,28 @@ export async function exportToPDF(result: ExamResult): Promise<void> {
   const margin = 20;
   let yPosition = 20;
 
+  // Load and add AIQUAA logo
+  try {
+    const logoResponse = await fetch('/images/aiquaa-logo.png');
+    const logoBlob = await logoResponse.blob();
+    const logoBase64 = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(logoBlob);
+    });
+
+    // Add logo centered at the top
+    const logoWidth = 40;
+    const logoHeight = 15;
+    const logoX = (pageWidth - logoWidth) / 2;
+    doc.addImage(logoBase64, 'PNG', logoX, yPosition, logoWidth, logoHeight);
+    yPosition += logoHeight + 5;
+  } catch (error) {
+    console.error('Error loading logo:', error);
+    // Continue without logo if it fails
+  }
+
   // Title
   doc.setFontSize(20);
   doc.setTextColor(249, 115, 22); // Orange color

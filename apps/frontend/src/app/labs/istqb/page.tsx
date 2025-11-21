@@ -12,12 +12,117 @@ export default function ISTQBSimulatorPage() {
   const [examMode, setExamMode] = useState<'exam' | 'training' | null>(null);
   const [hasStarted, setHasStarted] = useState(false);
   const [error, setError] = useState('');
+  const [language, setLanguage] = useState<'es' | 'en'>('es');
+  const [model, setModel] = useState<'A' | 'B' | 'C'>('A');
 
-  const examData = loadExamData();
+  const t = {
+    es: {
+      title: 'AIQUAA | Simulacro CTFL v4.0',
+      subtitle: 'Certified Tester Foundation Level - Versión 4.0',
+      configTitle: 'Configuración del Examen',
+      languageLabel: 'Idioma / Language',
+      modelLabel: 'Modelo de Examen',
+      model: 'Modelo',
+      totalQuestions: 'Total de Preguntas',
+      timeLimit: 'Tiempo Límite',
+      minutes: 'minutos',
+      pointsPerQuestion: 'Puntos por Pregunta',
+      passingScore: 'Puntaje Mínimo',
+      rulesTitle: 'Reglas del Examen:',
+      rules: [
+        '40 preguntas seleccionadas aleatoriamente de un banco de preguntas',
+        'Cada pregunta vale 1 punto, sin penalización por respuestas incorrectas',
+        'Puntaje de aprobación: ≥ 26/40 (65%)',
+        'Preguntas de selección única y múltiple (se indica en cada pregunta)',
+        'Para preguntas de múltiple selección, todas las respuestas deben ser correctas',
+        'Tiempo límite de 60 minutos con envío automático al terminar el tiempo',
+        'Puede navegar entre preguntas y marcar para revisar',
+      ],
+      participantDataTitle: 'Datos del Participante',
+      participantDataSubtitle: 'Complete la información antes de iniciar el simulacro',
+      nameLabel: 'Nombre Completo *',
+      namePlaceholder: 'Ej: Juan Pérez González',
+      enterNameError: 'Por favor, ingrese su nombre completo',
+      selectModeTitle: 'Seleccione el Modo:',
+      examModeTitle: 'Modo Examen',
+      examModeSubtitle: 'Simula el examen real sin feedback inmediato',
+      examModeFeatures: [
+        '• Timer de 60 minutos',
+        '• 40 preguntas aleatorias',
+        '• Sin retroalimentación durante el examen',
+        '• Informe completo al finalizar',
+      ],
+      startExam: 'Iniciar Modo Examen',
+      trainingModeTitle: 'Modo Entrenamiento',
+      trainingModeSubtitle: 'Practica con feedback inmediato en cada pregunta',
+      trainingModeFeatures: [
+        '• Sin límite de tiempo',
+        '• 40 preguntas aleatorias',
+        '• Retroalimentación inmediata',
+        '• Explicaciones detalladas',
+      ],
+      startTraining: 'Iniciar Modo Entrenamiento',
+    },
+    en: {
+      title: 'AIQUAA | CTFL v4.0 Simulator',
+      subtitle: 'Certified Tester Foundation Level - Version 4.0',
+      configTitle: 'Exam Configuration',
+      languageLabel: 'Language / Idioma',
+      modelLabel: 'Exam Model',
+      model: 'Model',
+      totalQuestions: 'Total Questions',
+      timeLimit: 'Time Limit',
+      minutes: 'minutes',
+      pointsPerQuestion: 'Points per Question',
+      passingScore: 'Passing Score',
+      rulesTitle: 'Exam Rules:',
+      rules: [
+        '40 questions randomly selected from a question bank',
+        'Each question is worth 1 point, no penalty for incorrect answers',
+        'Passing score: ≥ 26/40 (65%)',
+        'Single and multiple choice questions (indicated on each question)',
+        'For multiple choice questions, all answers must be correct',
+        '60-minute time limit with automatic submission when time expires',
+        'You can navigate between questions and mark for review',
+      ],
+      participantDataTitle: 'Participant Details',
+      participantDataSubtitle: 'Complete the information before starting the simulation',
+      nameLabel: 'Full Name *',
+      namePlaceholder: 'Ex: John Doe',
+      enterNameError: 'Please enter your full name',
+      selectModeTitle: 'Select Mode:',
+      examModeTitle: 'Exam Mode',
+      examModeSubtitle: 'Simulates the real exam without immediate feedback',
+      examModeFeatures: [
+        '• 60-minute timer',
+        '• 40 random questions',
+        '• No feedback during the exam',
+        '• Full report upon completion',
+      ],
+      startExam: 'Start Exam Mode',
+      trainingModeTitle: 'Training Mode',
+      trainingModeSubtitle: 'Practice with immediate feedback on each question',
+      trainingModeFeatures: [
+        '• No time limit',
+        '• 40 random questions',
+        '• Immediate feedback',
+        '• Detailed explanations',
+      ],
+      startTraining: 'Start Training Mode',
+    },
+  };
+
+  const text = t[language];
+
+  const examId = `${language}-model-${model.toLowerCase()}`;
+  // Handle legacy naming for Spanish Model A
+  const finalExamId = examId === 'es-model-a' ? 'es-model-a' : examId;
+
+  const examData = loadExamData(finalExamId);
 
   const handleStartExam = (mode: 'exam' | 'training') => {
     if (!participantName.trim()) {
-      setError('Por favor, ingrese su nombre completo');
+      setError(text.enterNameError);
       return;
     }
 
@@ -40,6 +145,7 @@ export default function ISTQBSimulatorPage() {
         mode={examMode}
         examData={examData}
         onReset={handleReset}
+        language={language}
       />
     );
   }
@@ -49,28 +155,85 @@ export default function ISTQBSimulatorPage() {
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="mb-8 text-center">
           <h1 className={`text-4xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-            AIQUAA | Simulacro CTFL v4.0
+            {text.title}
           </h1>
           <p className={`${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
-            Certified Tester Foundation Level - Versión 4.0
+            {text.subtitle}
           </p>
         </div>
 
         <div className={`rounded-lg shadow-lg mb-6 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
           <div className="p-6 border-b border-gray-200 dark:border-gray-700">
             <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-              Información del Examen
+              {text.configTitle}
             </h2>
             <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
               {examData.examInfo.title} - {examData.examInfo.version}
             </p>
+          </div>
+          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className={`block text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  {text.languageLabel}
+                </label>
+                <div className="flex rounded-lg shadow-sm">
+                  <button
+                    onClick={() => setLanguage('es')}
+                    className={`flex-1 px-4 py-2 text-sm font-medium rounded-l-lg border ${language === 'es'
+                      ? 'bg-amber-600 text-white border-amber-600'
+                      : isDarkMode
+                        ? 'bg-slate-700 text-slate-300 border-slate-600 hover:bg-slate-600'
+                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                      }`}
+                  >
+                    Español
+                  </button>
+                  <button
+                    onClick={() => setLanguage('en')}
+                    className={`flex-1 px-4 py-2 text-sm font-medium rounded-r-lg border-t border-r border-b ${language === 'en'
+                      ? 'bg-amber-600 text-white border-amber-600'
+                      : isDarkMode
+                        ? 'bg-slate-700 text-slate-300 border-slate-600 hover:bg-slate-600'
+                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                      }`}
+                  >
+                    English
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className={`block text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  {text.modelLabel}
+                </label>
+                <div className="flex rounded-lg shadow-sm">
+                  {['A', 'B', 'C'].map((m) => (
+                    <button
+                      key={m}
+                      onClick={() => setModel(m as 'A' | 'B' | 'C')}
+                      className={`flex-1 px-4 py-2 text-sm font-medium border-t border-b ${m === 'A' ? 'rounded-l-lg border-l' : ''
+                        } ${m === 'C' ? 'rounded-r-lg border-r' : ''} ${m !== 'A' && m !== 'C' ? 'border-r' : ''
+                        } ${model === m
+                          ? 'bg-amber-600 text-white border-amber-600'
+                          : isDarkMode
+                            ? 'bg-slate-700 text-slate-300 border-slate-600 hover:bg-slate-600'
+                            : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                        }`}
+                    >
+                      {text.model} {m}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex items-center gap-3">
                 <span className="text-3xl">📚</span>
                 <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total de Preguntas</p>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{text.totalQuestions}</p>
                   <p className="text-2xl font-bold">{examData.examInfo.totalQuestions}</p>
                 </div>
               </div>
@@ -78,15 +241,15 @@ export default function ISTQBSimulatorPage() {
               <div className="flex items-center gap-3">
                 <span className="text-3xl">⏱️</span>
                 <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Tiempo Límite</p>
-                  <p className="text-2xl font-bold">{examData.examInfo.timeLimit} minutos</p>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{text.timeLimit}</p>
+                  <p className="text-2xl font-bold">{examData.examInfo.timeLimit} {text.minutes}</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-3">
                 <span className="text-3xl">🎯</span>
                 <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Puntos por Pregunta</p>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{text.pointsPerQuestion}</p>
                   <p className="text-2xl font-bold">{examData.examInfo.pointsPerQuestion}</p>
                 </div>
               </div>
@@ -94,22 +257,18 @@ export default function ISTQBSimulatorPage() {
               <div className="flex items-center gap-3">
                 <span className="text-3xl">🏆</span>
                 <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Puntaje Mínimo</p>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{text.passingScore}</p>
                   <p className="text-2xl font-bold">{examData.examInfo.passingScore}/{examData.examInfo.totalQuestions}</p>
                 </div>
               </div>
             </div>
 
             <div className="mt-6 space-y-3">
-              <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Reglas del Examen:</h3>
+              <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{text.rulesTitle}</h3>
               <ul className={`list-disc list-inside space-y-2 text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
-                <li>40 preguntas seleccionadas aleatoriamente de un banco de preguntas</li>
-                <li>Cada pregunta vale 1 punto, sin penalización por respuestas incorrectas</li>
-                <li>Puntaje de aprobación: ≥ 26/40 (65%)</li>
-                <li>Preguntas de selección única y múltiple (se indica en cada pregunta)</li>
-                <li>Para preguntas de múltiple selección, todas las respuestas deben ser correctas</li>
-                <li>Tiempo límite de 60 minutos con envío automático al terminar el tiempo</li>
-                <li>Puede navegar entre preguntas y marcar para revisar</li>
+                {text.rules.map((rule, index) => (
+                  <li key={index}>{rule}</li>
+                ))}
               </ul>
             </div>
           </div>
@@ -118,21 +277,21 @@ export default function ISTQBSimulatorPage() {
         <div className={`rounded-lg shadow-lg ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
           <div className="p-6 border-b border-gray-200 dark:border-gray-700">
             <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-              Datos del Participante
+              {text.participantDataTitle}
             </h2>
             <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
-              Complete la información antes de iniciar el simulacro
+              {text.participantDataSubtitle}
             </p>
           </div>
           <div className="p-6 space-y-6">
             <div className="space-y-2">
               <label htmlFor="participantName" className={`block text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                Nombre Completo *
+                {text.nameLabel}
               </label>
               <input
                 id="participantName"
                 type="text"
-                placeholder="Ej: Juan Pérez González"
+                placeholder={text.namePlaceholder}
                 value={participantName}
                 onChange={(e) => setParticipantName(e.target.value)}
                 onKeyDown={(e) => {
@@ -140,11 +299,10 @@ export default function ISTQBSimulatorPage() {
                     handleStartExam('exam');
                   }
                 }}
-                className={`w-full px-4 py-2 rounded-lg border ${
-                  isDarkMode
-                    ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
-                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                } focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                className={`w-full px-4 py-2 rounded-lg border ${isDarkMode
+                  ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
+                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                  } focus:outline-none focus:ring-2 focus:ring-amber-500`}
               />
             </div>
 
@@ -153,63 +311,58 @@ export default function ISTQBSimulatorPage() {
             )}
 
             <div className="space-y-3">
-              <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Seleccione el Modo:</h3>
+              <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{text.selectModeTitle}</h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className={`rounded-lg border-2 transition-all hover:border-amber-500 ${
-                  isDarkMode ? 'bg-slate-700 border-slate-600' : 'bg-white border-gray-200'
-                }`}>
+                <div className={`rounded-lg border-2 transition-all hover:border-amber-500 ${isDarkMode ? 'bg-slate-700 border-slate-600' : 'bg-white border-gray-200'
+                  }`}>
                   <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                     <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                      Modo Examen
+                      {text.examModeTitle}
                     </h3>
                     <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
-                      Simula el examen real sin feedback inmediato
+                      {text.examModeSubtitle}
                     </p>
                   </div>
                   <div className="p-4 space-y-4">
                     <ul className={`text-sm space-y-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
-                      <li>• Timer de 60 minutos</li>
-                      <li>• 40 preguntas aleatorias</li>
-                      <li>• Sin retroalimentación durante el examen</li>
-                      <li>• Informe completo al finalizar</li>
+                      {text.examModeFeatures.map((feature, index) => (
+                        <li key={index}>{feature}</li>
+                      ))}
                     </ul>
                     <button
                       onClick={() => handleStartExam('exam')}
                       className="w-full px-4 py-3 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-lg transition-colors"
                     >
-                      Iniciar Modo Examen
+                      {text.startExam}
                     </button>
                   </div>
                 </div>
 
-                <div className={`rounded-lg border-2 transition-all hover:border-amber-500 ${
-                  isDarkMode ? 'bg-slate-700 border-slate-600' : 'bg-white border-gray-200'
-                }`}>
+                <div className={`rounded-lg border-2 transition-all hover:border-amber-500 ${isDarkMode ? 'bg-slate-700 border-slate-600' : 'bg-white border-gray-200'
+                  }`}>
                   <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                     <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                      Modo Entrenamiento
+                      {text.trainingModeTitle}
                     </h3>
                     <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
-                      Practica con feedback inmediato en cada pregunta
+                      {text.trainingModeSubtitle}
                     </p>
                   </div>
                   <div className="p-4 space-y-4">
                     <ul className={`text-sm space-y-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
-                      <li>• Sin límite de tiempo</li>
-                      <li>• 40 preguntas aleatorias</li>
-                      <li>• Retroalimentación inmediata</li>
-                      <li>• Explicaciones detalladas</li>
+                      {text.trainingModeFeatures.map((feature, index) => (
+                        <li key={index}>{feature}</li>
+                      ))}
                     </ul>
                     <button
                       onClick={() => handleStartExam('training')}
-                      className={`w-full px-4 py-3 font-semibold rounded-lg transition-colors ${
-                        isDarkMode
-                          ? 'bg-slate-600 hover:bg-slate-500 text-white border-2 border-slate-500'
-                          : 'bg-white hover:bg-gray-50 text-gray-900 border-2 border-gray-300'
-                      }`}
+                      className={`w-full px-4 py-3 font-semibold rounded-lg transition-colors ${isDarkMode
+                        ? 'bg-slate-600 hover:bg-slate-500 text-white border-2 border-slate-500'
+                        : 'bg-white hover:bg-gray-50 text-gray-900 border-2 border-gray-300'
+                        }`}
                     >
-                      Iniciar Modo Entrenamiento
+                      {text.startTraining}
                     </button>
                   </div>
                 </div>

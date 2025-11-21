@@ -1,0 +1,59 @@
+{
+    "examInfo": {
+        "title": "CTFL - V4.0 - ES - EJEMPLO DE EXAMEN - MODELO C",
+        "version": "V001.00",
+        "totalQuestions": 40,
+        "passingScore": 26,
+        "timeLimit": 60,
+        "pointsPerQuestion": 1
+    },
+    "questions": [
+        {
+            "id": 1,
+            "questionText": "¿Cuál de las siguientes es una buena práctica de prueba que se aplica a todos los ciclos de vida de desarrollo de software?",
+            "options": [
+                {
+                    "label": "a",
+                    "text": "La ejecución de pruebas debe comenzar solo después de que se complete el desarrollo."
+                },
+                {
+                    "label": "b",
+                    "text": "Para cada actividad de desarrollo, hay una actividad de prueba correspondiente."
+                },
+                {
+                    "label": "c",
+                    "text": "Los probadores deben participar solo durante la fase de prueba."
+                },
+                {
+                    "label": "d",
+                    "text": "La planificación de pruebas debe hacerse al final del proyecto."
+                }
+            ],
+            "correctAnswer": [
+                "b"
+            ],
+            "learningObjective": "FL-2.1.1",
+            "kLevel": "K2",
+            "points": 1,
+            "type": "single",
+            "explanations": {
+                "a": {
+                    "correct": false,
+                    "explanation": "Las pruebas tempranas son mejores."
+                },
+                "b": {
+                    "correct": true,
+                    "explanation": "Este es un principio fundamental."
+                },
+                "c": {
+                    "correct": false,
+                    "explanation": "La participación temprana es clave."
+                },
+                "d": {
+                    "correct": false,
+                    "explanation": "La planificación debe comenzar temprano."
+                }
+            }
+        }
+    ]
+}

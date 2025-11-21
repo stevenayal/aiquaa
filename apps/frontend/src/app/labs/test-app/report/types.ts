@@ -1,3 +1,12 @@
+export interface ImageEvidence {
+  id: string;
+  fileName: string;
+  base64Data: string;
+  mimeType: string;
+  size: number;
+  uploadedAt: Date;
+}
+
 export interface BugReport {
   id: string;
   title: string;
@@ -8,6 +17,7 @@ export interface BugReport {
   severity: 'Critical' | 'High' | 'Medium' | 'Low';
   category: string;
   evidence: string;
+  images: ImageEvidence[];
   foundAt: Date;
 }
 

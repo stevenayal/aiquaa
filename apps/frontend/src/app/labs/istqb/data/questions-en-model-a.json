@@ -1,0 +1,106 @@
+{
+    "examInfo": {
+        "title": "CTFL - V4.0 - EN - SAMPLE EXAM - MODEL A",
+        "version": "V001.00",
+        "totalQuestions": 40,
+        "passingScore": 26,
+        "timeLimit": 60,
+        "pointsPerQuestion": 1
+    },
+    "questions": [
+        {
+            "id": 1,
+            "questionText": "Which of the following statements describes a valid test objective?",
+            "options": [
+                {
+                    "label": "a",
+                    "text": "To prove that there are no unfixed defects in the system under test."
+                },
+                {
+                    "label": "b",
+                    "text": "To prove that there will be no failures after the implementation of the system into production."
+                },
+                {
+                    "label": "c",
+                    "text": "To reduce the risk level of the test object and to build confidence in the quality level."
+                },
+                {
+                    "label": "d",
+                    "text": "To verify that there are no untested combinations of inputs."
+                }
+            ],
+            "correctAnswer": [
+                "c"
+            ],
+            "learningObjective": "FL-1.1.1",
+            "kLevel": "K1",
+            "points": 1,
+            "type": "single",
+            "explanations": {
+                "a": {
+                    "correct": false,
+                    "explanation": "Testing cannot prove the absence of defects."
+                },
+                "b": {
+                    "correct": false,
+                    "explanation": "Testing cannot prove that there will be no failures in production."
+                },
+                "c": {
+                    "correct": true,
+                    "explanation": "Testing finds defects and failures, which reduces the level of risk and builds confidence in the quality level of the test object."
+                },
+                "d": {
+                    "correct": false,
+                    "explanation": "It is impossible to test all combinations of inputs."
+                }
+            }
+        },
+        {
+            "id": 2,
+            "questionText": "Which of the following is a benefit of early and frequent stakeholder feedback?",
+            "options": [
+                {
+                    "label": "a",
+                    "text": "It ensures that the system requirements are perfect before development begins."
+                },
+                {
+                    "label": "b",
+                    "text": "It allows for early validation of requirements and helps to avoid misunderstandings."
+                },
+                {
+                    "label": "c",
+                    "text": "It eliminates the need for testing during the development phase."
+                },
+                {
+                    "label": "d",
+                    "text": "It guarantees that the project will be completed ahead of schedule."
+                }
+            ],
+            "correctAnswer": [
+                "b"
+            ],
+            "learningObjective": "FL-1.1.1",
+            "kLevel": "K2",
+            "points": 1,
+            "type": "single",
+            "explanations": {
+                "a": {
+                    "correct": false,
+                    "explanation": "Requirements are rarely perfect initially."
+                },
+                "b": {
+                    "correct": true,
+                    "explanation": "Early feedback helps align expectations and catch issues early."
+                },
+                "c": {
+                    "correct": false,
+                    "explanation": "Testing is still required."
+                },
+                "d": {
+                    "correct": false,
+                    "explanation": "It doesn't guarantee schedule adherence, though it helps."
+                }
+            }
+        }
+    ]
+}

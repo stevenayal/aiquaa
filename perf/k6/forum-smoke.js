@@ -1,5 +1,6 @@
 import http from 'k6/http';
 import { check, sleep } from 'k6';
+import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 
 export const options = {
   stages: [
@@ -13,7 +14,7 @@ export const options = {
   },
 };
 
-const BASE_URL = __ENV.BACKEND_URL || 'http://localhost:3000';
+const BASE_URL = __ENV.BACKEND_URL || 'http://localhost:3001';
 
 export default function () {
   // Test 1: Get health check
