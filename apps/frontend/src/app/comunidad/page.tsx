@@ -1,10 +1,12 @@
 'use client';
 
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Comments from '@/components/Comments';
 
 export default function ComunidadPage() {
   const { isDarkMode } = useTheme();
+  const { t } = useLanguage();
 
   const pastEvents = [
     {
@@ -67,13 +69,12 @@ export default function ComunidadPage() {
           <h1 className={`text-4xl md:text-5xl font-bold mb-6 ${
             isDarkMode ? 'text-white' : 'text-brand-text'
           }`}>
-            💬 Comunidad AIQUAA
+            💬 {t('community.title')}
           </h1>
           <p className={`text-xl max-w-3xl mx-auto ${
             isDarkMode ? 'text-slate-300' : 'text-brand-muted'
           }`}>
-            Tu opinión es fundamental para mejorar AIQUAA. Comparte ideas, reporta bugs,
-            sugiere nuevas herramientas o simplemente charla con la comunidad.
+            {t('community.subtitle')}
           </p>
         </div>
 
@@ -84,7 +85,7 @@ export default function ComunidadPage() {
           <h2 className={`text-3xl font-bold mb-8 text-center ${
             isDarkMode ? 'text-white' : 'text-brand-text'
           }`}>
-            📅 Línea de Tiempo AIQUAA
+            📅 {t('community.timeline.title')}
           </h2>
           <div className="space-y-6">
             {milestones.map((milestone, index) => (
@@ -143,12 +144,12 @@ export default function ComunidadPage() {
           <h2 className={`text-3xl font-bold mb-6 text-center ${
             isDarkMode ? 'text-white' : 'text-brand-text'
           }`}>
-            🎥 Eventos Pasados
+            🎥 {t('community.events.title')}
           </h2>
           <p className={`text-center mb-8 ${
             isDarkMode ? 'text-slate-300' : 'text-brand-muted'
           }`}>
-            Revive las grabaciones de nuestros eventos anteriores
+            {t('community.events.subtitle')}
           </p>
 
           <div className="grid gap-6">
@@ -204,7 +205,7 @@ export default function ComunidadPage() {
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                           <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" />
                         </svg>
-                        Ver Grabación
+                        {t('community.events.watch')}
                       </a>
                     </div>
                   </div>
@@ -214,7 +215,7 @@ export default function ComunidadPage() {
               <p className={`text-center py-8 ${
                 isDarkMode ? 'text-slate-400' : 'text-gray-500'
               }`}>
-                Próximamente agregaremos grabaciones de eventos pasados
+                {t('community.events.none')}
               </p>
             )}
           </div>
@@ -235,12 +236,12 @@ export default function ComunidadPage() {
               <h2 className={`text-2xl font-bold mb-3 ${
                 isDarkMode ? 'text-white' : 'text-brand-text'
               }`}>
-                Reportar Issues
+                {t('community.issues.title')}
               </h2>
               <p className={`mb-6 ${
                 isDarkMode ? 'text-slate-300' : 'text-brand-muted'
               }`}>
-                ¿Encontraste un bug? ¿Tenés una idea para una nueva feature? Creá un issue en GitHub.
+                {t('community.issues.desc')}
               </p>
             </div>
 
@@ -271,7 +272,7 @@ export default function ComunidadPage() {
               rel="noopener noreferrer"
               className="block w-full text-center px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition-colors"
             >
-              Crear Issue
+              {t('community.issues.button')}
             </a>
           </div>
 
@@ -288,12 +289,12 @@ export default function ComunidadPage() {
               <h2 className={`text-2xl font-bold mb-3 ${
                 isDarkMode ? 'text-white' : 'text-brand-text'
               }`}>
-                GitHub Discussions
+                {t('community.discussions.title')}
               </h2>
               <p className={`mb-6 ${
                 isDarkMode ? 'text-slate-300' : 'text-brand-muted'
               }`}>
-                Participa en conversaciones, comparte experiencias y conecta con la comunidad.
+                {t('community.discussions.desc')}
               </p>
             </div>
 
@@ -324,7 +325,7 @@ export default function ComunidadPage() {
               rel="noopener noreferrer"
               className="block w-full text-center px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg transition-colors"
             >
-              Ver Discussions
+              {t('community.discussions.button')}
             </a>
           </div>
         </div>
@@ -339,12 +340,12 @@ export default function ComunidadPage() {
             <h3 className={`text-lg font-semibold mb-2 ${
               isDarkMode ? 'text-purple-200' : 'text-purple-900'
             }`}>
-              🌟 Proyecto Open Source
+              🌟 {t('community.opensource.title')}
             </h3>
             <p className={`text-sm ${
               isDarkMode ? 'text-purple-300' : 'text-purple-700'
             }`}>
-              AIQUAA es de código abierto. Todo el código está disponible en{' '}
+              {t('community.opensource.desc').split('GitHub')[0]}
               <a
                 href="https://github.com/stevenayal/aiquaa"
                 target="_blank"
@@ -353,7 +354,7 @@ export default function ComunidadPage() {
               >
                 GitHub
               </a>
-              . ¡Las contribuciones son bienvenidas!
+              {t('community.opensource.desc').split('GitHub')[1] || '.'}
             </p>
           </div>
         </div>
@@ -366,13 +367,12 @@ export default function ComunidadPage() {
             <h2 className={`text-3xl font-bold mb-4 ${
               isDarkMode ? 'text-white' : 'text-brand-text'
             }`}>
-              Comentarios de la Comunidad
+              {t('community.comments.title')}
             </h2>
             <p className={`text-lg ${
               isDarkMode ? 'text-slate-300' : 'text-brand-muted'
             }`}>
-              Comparte tu experiencia, haz preguntas o simplemente saluda.
-              Estos comentarios se sincronizan automáticamente con GitHub Discussions.
+              {t('community.comments.subtitle')}
             </p>
           </div>
 
@@ -386,26 +386,26 @@ export default function ComunidadPage() {
           <h3 className={`text-lg font-semibold mb-3 ${
             isDarkMode ? 'text-white' : 'text-brand-text'
           }`}>
-            📋 Guía para contribuir
+            📋 {t('community.guide.title')}
           </h3>
           <ul className={`space-y-2 text-sm ${
             isDarkMode ? 'text-slate-300' : 'text-gray-600'
           }`}>
             <li className="flex items-start gap-2">
               <span className="text-blue-500 font-bold">•</span>
-              <span><strong>Issues</strong>: Para bugs, features específicas o problemas técnicos</span>
+              <span><strong>{t('community.guide.issues').split(':')[0]}</strong>: {t('community.guide.issues').split(':')[1]}</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-blue-500 font-bold">•</span>
-              <span><strong>Discussions</strong>: Para preguntas, ideas generales o conversaciones</span>
+              <span><strong>{t('community.guide.discussions').split(':')[0]}</strong>: {t('community.guide.discussions').split(':')[1]}</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-blue-500 font-bold">•</span>
-              <span><strong>Comentarios abajo</strong>: Para feedback rápido sobre la página o el proyecto</span>
+              <span><strong>{t('community.guide.comments').split(':')[0]}</strong>: {t('community.guide.comments').split(':')[1]}</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-blue-500 font-bold">•</span>
-              <span>Sé respetuoso y constructivo. Este es un espacio para aprender y crecer juntos.</span>
+              <span>{t('community.guide.respect')}</span>
             </li>
           </ul>
         </div>

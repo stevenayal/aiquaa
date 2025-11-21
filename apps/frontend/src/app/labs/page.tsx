@@ -2,10 +2,12 @@
 
 import Link from 'next/link';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import BugReportWidget from '@/components/BugReportWidget';
 
 export default function LabsPage() {
   const { isDarkMode } = useTheme();
+  const { t } = useLanguage();
 
   const toolCategories = [
     {
@@ -195,13 +197,12 @@ export default function LabsPage() {
           <h1 className={`text-4xl md:text-5xl font-bold mb-6 ${
             isDarkMode ? 'text-white' : 'text-brand-text'
           }`}>
-            🧪 AIQUAA Labs
+            🧪 {t('labs.page.title')}
           </h1>
           <p className={`text-xl max-w-3xl mx-auto ${
             isDarkMode ? 'text-slate-300' : 'text-brand-muted'
           }`}>
-            Herramientas gratuitas para testers funcionales, automatizadores y QA manual.
-            Todo en español y diseñado específicamente para la comunidad de testing en Paraguay.
+            {t('labs.page.subtitle')}
           </p>
         </div>
 
@@ -217,12 +218,12 @@ export default function LabsPage() {
               <h2 className={`text-2xl font-bold ${
                 isDarkMode ? 'text-white' : 'text-brand-text'
               }`}>
-                Destacadas del Mes
+                {t('labs.featured.title')}
               </h2>
               <p className={`text-sm ${
                 isDarkMode ? 'text-slate-300' : 'text-brand-muted'
               }`}>
-                Las herramientas más utilizadas por la comunidad
+                {t('labs.featured.subtitle')}
               </p>
             </div>
           </div>
@@ -329,7 +330,7 @@ export default function LabsPage() {
                       <div className="flex items-center justify-between">
                         <span className={`text-sm ${
                           isDarkMode ? 'text-slate-400' : 'text-brand-muted'
-                        }`}>Hacer click para usar</span>
+                        }`}>{t('labs.action')}</span>
                         <svg
                           className={`w-5 h-5 transition-colors ${
                             isDarkMode
@@ -359,13 +360,12 @@ export default function LabsPage() {
             <h2 className={`text-3xl font-bold mb-4 ${
               isDarkMode ? 'text-white' : 'text-brand-text'
             }`}>
-              ¿Por qué usar AIQUAA Labs?
+              {t('labs.why.title')}
             </h2>
             <p className={`text-lg max-w-2xl mx-auto ${
               isDarkMode ? 'text-slate-300' : 'text-brand-muted'
             }`}>
-              Nuestras herramientas están diseñadas específicamente para testers,
-              con interfaz en español y funcionalidades que realmente necesitas en tu día a día.
+              {t('labs.why.subtitle')}
             </p>
           </div>
 
@@ -374,27 +374,27 @@ export default function LabsPage() {
               <div className="text-4xl mb-4">🚀</div>
               <h3 className={`text-xl font-bold mb-3 ${
                 isDarkMode ? 'text-white' : 'text-brand-text'
-              }`}>Gratis y Abierto</h3>
+              }`}>{t('labs.why.free')}</h3>
               <p className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>
-                Todas las herramientas son completamente gratuitas y de código abierto.
+                {t('labs.why.free.desc')}
               </p>
             </div>
             <div className="text-center">
               <div className="text-4xl mb-4">🇵🇾</div>
               <h3 className={`text-xl font-bold mb-3 ${
                 isDarkMode ? 'text-white' : 'text-brand-text'
-              }`}>Hecho en Paraguay</h3>
+              }`}>{t('labs.why.local')}</h3>
               <p className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>
-                Desarrollado por testers locales para testers locales.
+                {t('labs.why.local.desc')}
               </p>
             </div>
             <div className="text-center">
               <div className="text-4xl mb-4">💡</div>
               <h3 className={`text-xl font-bold mb-3 ${
                 isDarkMode ? 'text-white' : 'text-brand-text'
-              }`}>Siempre Actualizado</h3>
+              }`}>{t('labs.why.updated')}</h3>
               <p className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>
-                Nuevas herramientas y mejoras constantes basadas en feedback real.
+                {t('labs.why.updated.desc')}
               </p>
             </div>
           </div>
@@ -408,10 +408,10 @@ export default function LabsPage() {
               : 'bg-gradient-to-r from-brand-accent to-brand-primary'
           }`}>
             <h2 className="text-3xl font-bold mb-4">
-              ¿Tienes una idea para una nueva herramienta?
+              {t('labs.cta.title')}
             </h2>
             <p className="text-xl mb-6 opacity-90">
-              ¡Comparte tu feedback, reporta bugs o sugiere mejoras en nuestra página de comunidad!
+              {t('labs.cta.subtitle')}
             </p>
             <Link
               href="/comunidad"
@@ -422,7 +422,7 @@ export default function LabsPage() {
               }`}
             >
               <span className="text-xl">💬</span>
-              Ir a Comunidad
+              {t('labs.cta.button')}
             </Link>
           </div>
         </div>

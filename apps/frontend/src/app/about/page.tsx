@@ -2,9 +2,11 @@
 
 import Image from 'next/image';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function AboutPage() {
   const { isDarkMode } = useTheme();
+  const { t } = useLanguage();
 
   return (
     <div className={`min-h-screen py-12 md:py-16 transition-colors duration-300 ${
@@ -15,12 +17,12 @@ export default function AboutPage() {
           <h1 className={`text-4xl md:text-5xl font-bold mb-6 ${
             isDarkMode ? 'text-white' : 'text-brand-text'
           }`}>
-            Acerca de AIQUAA
+            {t('about.title')}
           </h1>
           <p className={`text-xl max-w-3xl mx-auto ${
             isDarkMode ? 'text-slate-300' : 'text-brand-muted'
           }`}>
-            Saber es Calidad. Inspirados por el conocimiento, impulsados por la comunidad.
+            {t('about.tagline')}
           </p>
         </div>
 
@@ -29,21 +31,17 @@ export default function AboutPage() {
             <h2 className={`text-3xl font-bold mb-6 ${
               isDarkMode ? 'text-white' : 'text-brand-text'
             }`}>
-              ¿Qué es AIQUAA?
+              {t('about.what.title')}
             </h2>
             <p className={`text-lg mb-4 ${
               isDarkMode ? 'text-slate-300' : 'text-brand-text'
             }`}>
-              AIQUAA es una iniciativa paraguaya que fusiona conocimiento local con innovación global
-              en testing de software. Inspirada en el término guaraní &ldquo;aikuaa&rdquo; —que significa
-              saber o conocer—, nuestra misión es construir una comunidad comprometida con la calidad,
-              la capacitación constante y la excelencia profesional.
+              {t('about.what.desc1')}
             </p>
             <p className={`text-lg ${
               isDarkMode ? 'text-slate-300' : 'text-brand-text'
             }`}>
-              Combinamos inteligencia artificial (AI) con aseguramiento de calidad (QA) para transformar
-              el testing en Paraguay y en la región.
+              {t('about.what.desc2')}
             </p>
           </div>
           <div className="text-center">
@@ -69,10 +67,9 @@ export default function AboutPage() {
             <div className="text-4xl mb-4">🎯</div>
             <h3 className={`text-xl font-bold mb-3 ${
               isDarkMode ? 'text-white' : 'text-brand-text'
-            }`}>Misión</h3>
+            }`}>{t('about.mission.title')}</h3>
             <p className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>
-              Construir la comunidad de QA más fuerte de Paraguay, brindando herramientas,
-              recursos y capacitación de calidad.
+              {t('about.mission.desc')}
             </p>
           </div>
           <div className={`text-center p-6 rounded-lg shadow-lg transition-colors duration-300 ${
@@ -81,10 +78,9 @@ export default function AboutPage() {
             <div className="text-4xl mb-4">🌟</div>
             <h3 className={`text-xl font-bold mb-3 ${
               isDarkMode ? 'text-white' : 'text-brand-text'
-            }`}>Visión</h3>
+            }`}>{t('about.vision.title')}</h3>
             <p className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>
-              Ser el referente en testing y calidad de software en Paraguay,
-              impulsando la innovación y el desarrollo profesional.
+              {t('about.vision.desc')}
             </p>
           </div>
           <div className={`text-center p-6 rounded-lg shadow-lg transition-colors duration-300 ${
@@ -93,10 +89,9 @@ export default function AboutPage() {
             <div className="text-4xl mb-4">💡</div>
             <h3 className={`text-xl font-bold mb-3 ${
               isDarkMode ? 'text-white' : 'text-brand-text'
-            }`}>Valores</h3>
+            }`}>{t('about.values.title')}</h3>
             <p className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>
-              Calidad, innovación, comunidad, aprendizaje continuo y excelencia
-              en todo lo que hacemos.
+              {t('about.values.desc')}
             </p>
           </div>
         </div>
@@ -107,44 +102,44 @@ export default function AboutPage() {
           <h2 className={`text-3xl font-bold mb-6 text-center ${
             isDarkMode ? 'text-white' : 'text-brand-text'
           }`}>
-            Nuestras Herramientas
+            {t('about.tools.title')}
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="text-center p-4">
               <div className="text-3xl mb-2">🔍</div>
               <h4 className={`font-semibold ${
                 isDarkMode ? 'text-white' : 'text-brand-text'
-              }`}>Validador JSON</h4>
+              }`}>{t('about.tools.validator')}</h4>
               <p className={`text-sm ${
                 isDarkMode ? 'text-slate-400' : 'text-brand-muted'
-              }`}>Valida y formatea JSON</p>
+              }`}>{t('about.tools.validator.desc')}</p>
             </div>
             <div className="text-center p-4">
               <div className="text-3xl mb-2">📊</div>
               <h4 className={`font-semibold ${
                 isDarkMode ? 'text-white' : 'text-brand-text'
-              }`}>Generador de Datos</h4>
+              }`}>{t('about.tools.generator')}</h4>
               <p className={`text-sm ${
                 isDarkMode ? 'text-slate-400' : 'text-brand-muted'
-              }`}>Crea datos de prueba</p>
+              }`}>{t('about.tools.generator.desc')}</p>
             </div>
             <div className="text-center p-4">
               <div className="text-3xl mb-2">✅</div>
               <h4 className={`font-semibold ${
                 isDarkMode ? 'text-white' : 'text-brand-text'
-              }`}>Checklist</h4>
+              }`}>{t('about.tools.checklist')}</h4>
               <p className={`text-sm ${
                 isDarkMode ? 'text-slate-400' : 'text-brand-muted'
-              }`}>Listas de verificación</p>
+              }`}>{t('about.tools.checklist.desc')}</p>
             </div>
             <div className="text-center p-4">
               <div className="text-3xl mb-2">🔐</div>
               <h4 className={`font-semibold ${
                 isDarkMode ? 'text-white' : 'text-brand-text'
-              }`}>Decodificador JWT</h4>
+              }`}>{t('about.tools.jwt')}</h4>
               <p className={`text-sm ${
                 isDarkMode ? 'text-slate-400' : 'text-brand-muted'
-              }`}>Analiza tokens JWT</p>
+              }`}>{t('about.tools.jwt.desc')}</p>
             </div>
           </div>
         </div>
