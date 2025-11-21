@@ -2,37 +2,24 @@
 
 import { useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface FAQItem {
-  question: string;
-  answer: string;
+  questionKey: string;
+  answerKey: string;
 }
 
 const FAQSection = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const { isDarkMode } = useTheme();
+  const { t } = useLanguage();
 
   const faqs: FAQItem[] = [
-    {
-      question: "¿Qué es AIQUAA?",
-      answer: "AIQUAA es una comunidad de testing y calidad de software en Paraguay. Brindamos recursos, herramientas gratuitas, mentorías y eventos para testers funcionales, automatizadores y QA manual."
-    },
-    {
-      question: "¿Las herramientas son realmente gratuitas?",
-      answer: "Sí, todas nuestras herramientas son 100% gratuitas. No hay costos ocultos ni limitaciones. Creemos en democratizar el acceso a herramientas de calidad para la comunidad de QA."
-    },
-    {
-      question: "¿Puedo contribuir al proyecto?",
-      answer: "¡Absolutamente! AIQUAA es un proyecto de código abierto. Podés contribuir reportando bugs, sugiriendo nuevas funcionalidades, o enviando pull requests en nuestro repositorio de GitHub."
-    },
-    {
-      question: "¿Ofrecen capacitaciones o mentorías?",
-      answer: "Sí, organizamos eventos, workshops y mentorías tanto presenciales como virtuales. Seguinos en nuestras redes sociales para estar al tanto de las próximas actividades."
-    },
-    {
-      question: "¿Las herramientas funcionan en móviles?",
-      answer: "Todas nuestras herramientas están optimizadas para funcionar en dispositivos móviles, tablets y desktop. La experiencia es responsive y se adapta a cualquier pantalla."
-    }
+    { questionKey: 'home.faq.q1', answerKey: 'home.faq.a1' },
+    { questionKey: 'home.faq.q2', answerKey: 'home.faq.a2' },
+    { questionKey: 'home.faq.q3', answerKey: 'home.faq.a3' },
+    { questionKey: 'home.faq.q4', answerKey: 'home.faq.a4' },
+    { questionKey: 'home.faq.q5', answerKey: 'home.faq.a5' },
   ];
 
   const toggleFAQ = (index: number) => {
@@ -48,10 +35,10 @@ const FAQSection = () => {
           <h2 className={`text-2xl md:text-3xl font-bold mb-4 ${
             isDarkMode ? 'text-white' : 'text-brand-text'
           }`}>
-            ❓ Preguntas Frecuentes
+            ❓ {t('home.faq.title')}
           </h2>
           <p className={isDarkMode ? 'text-slate-300' : 'text-brand-muted'}>
-            Resolvemos las dudas más comunes sobre AIQUAA
+            {t('home.faq.subtitle')}
           </p>
         </div>
 
@@ -74,7 +61,7 @@ const FAQSection = () => {
                 <span className={`font-semibold ${
                   isDarkMode ? 'text-white' : 'text-brand-text'
                 }`}>
-                  {faq.question}
+                  {t(faq.questionKey)}
                 </span>
                 <span className={isDarkMode ? 'text-blue-400' : 'text-brand-accent'}>
                   {openIndex === index ? '−' : '+'}
@@ -83,7 +70,7 @@ const FAQSection = () => {
               {openIndex === index && (
                 <div className="px-6 pb-4">
                   <p className={isDarkMode ? 'text-slate-300' : 'text-brand-muted'}>
-                    {faq.answer}
+                    {t(faq.answerKey)}
                   </p>
                 </div>
               )}

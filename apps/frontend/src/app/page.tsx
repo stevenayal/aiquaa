@@ -82,37 +82,37 @@ export default function HomePage() {
         <p className={`text-lg md:text-xl max-w-3xl mx-auto mb-8 px-4 leading-relaxed ${
           isDarkMode ? 'text-slate-200' : 'text-brand-text'
         }`}>
-          <strong className={isDarkMode ? 'text-white' : ''}>Una comunidad de testing y calidad de software en Paraguay.</strong>
+          <strong className={isDarkMode ? 'text-white' : ''}>{t('home.what.description')}</strong>
         </p>
 
         <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto px-4">
           <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-slate-700/50' : 'bg-white'}`}>
             <div className="text-4xl mb-4">🛠️</div>
             <h3 className={`text-xl font-bold mb-3 ${isDarkMode ? 'text-white' : 'text-brand-text'}`}>
-              Recursos Gratuitos
+              {t('home.what.resources.title')}
             </h3>
             <p className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}>
-              Herramientas web, generación de datos, checklist, blog y guías prácticas para testers.
+              {t('home.what.resources.description')}
             </p>
           </div>
 
           <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-slate-700/50' : 'bg-white'}`}>
             <div className="text-4xl mb-4">🎓</div>
             <h3 className={`text-xl font-bold mb-3 ${isDarkMode ? 'text-white' : 'text-brand-text'}`}>
-              Eventos y Mentorías
+              {t('home.what.events.title')}
             </h3>
             <p className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}>
-              Workshops, charlas y guía de expertos sobre automatización y buenas prácticas de QA.
+              {t('home.what.events.description')}
             </p>
           </div>
 
           <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-slate-700/50' : 'bg-white'}`}>
             <div className="text-4xl mb-4">🤝</div>
             <h3 className={`text-xl font-bold mb-3 ${isDarkMode ? 'text-white' : 'text-brand-text'}`}>
-              Open Source
+              {t('home.what.opensource.title')}
             </h3>
             <p className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}>
-              Todo el código es abierto. Hecho en Paraguay para testers latinoamericanos.
+              {t('home.what.opensource.description')}
             </p>
           </div>
         </div>
@@ -120,9 +120,7 @@ export default function HomePage() {
         <p className={`text-sm md:text-base max-w-3xl mx-auto mt-8 px-4 italic ${
           isDarkMode ? 'text-slate-400' : 'text-gray-500'
         }`}>
-          Inspirada en el término guaraní <strong>&ldquo;aikuaa&rdquo;</strong> (saber, conocer),
-          AIQUAA combina inteligencia artificial (AI) con aseguramiento de calidad (QA)
-          para transformar el testing en la región.
+          {t('home.what.mission')}
         </p>
       </section>
 
@@ -135,12 +133,12 @@ export default function HomePage() {
             <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${
               isDarkMode ? 'text-white' : 'text-brand-text'
             }`}>
-              Aprendé, Colaborá y Crecé con AIQUAA
+              {t('home.grow.title')}
             </h2>
             <p className={`text-lg ${
               isDarkMode ? 'text-slate-300' : 'text-gray-600'
             }`}>
-              Un laboratorio de utilidades y una comunidad de aprendizaje y colaboración
+              {t('home.grow.subtitle')}
             </p>
           </div>
 
@@ -158,17 +156,17 @@ export default function HomePage() {
               <h3 className={`text-2xl font-bold mb-3 ${
                 isDarkMode ? 'text-white' : 'text-brand-text'
               }`}>
-                Blog de QA
+                {t('home.blog.title')}
               </h3>
               <p className={`mb-4 ${
                 isDarkMode ? 'text-purple-200' : 'text-gray-700'
               }`}>
-                Artículos sobre testing, automatización, IA y buenas prácticas. Casos reales de Paraguay y LATAM.
+                {t('home.blog.description')}
               </p>
               <div className={`inline-flex items-center gap-2 font-semibold ${
                 isDarkMode ? 'text-purple-300' : 'text-purple-700'
               }`}>
-                Leer artículos
+                {t('home.blog.action')}
                 <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
@@ -194,17 +192,17 @@ export default function HomePage() {
               <h3 className={`text-2xl font-bold mb-3 ${
                 isDarkMode ? 'text-white' : 'text-brand-text'
               }`}>
-                Open Source
+                {t('home.what.opensource.title')}
               </h3>
               <p className={`mb-4 ${
                 isDarkMode ? 'text-blue-200' : 'text-gray-700'
               }`}>
-                Contribuí al código, reportá bugs, sugiere features. Todo es público y transparente.
+                {t('home.opensource.description')}
               </p>
               <div className={`inline-flex items-center gap-2 font-semibold ${
                 isDarkMode ? 'text-blue-300' : 'text-blue-700'
               }`}>
-                Ver en GitHub
+                {t('home.opensource.action')}
                 <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
@@ -224,17 +222,17 @@ export default function HomePage() {
               <h3 className={`text-2xl font-bold mb-3 ${
                 isDarkMode ? 'text-white' : 'text-brand-text'
               }`}>
-                Mentorías y Eventos
+                {t('home.mentoring.title')}
               </h3>
               <p className={`mb-4 ${
                 isDarkMode ? 'text-green-200' : 'text-gray-700'
               }`}>
-                Workshops, charlas, mentorías 1-on-1 y un espacio para compartir experiencias con otros testers.
+                {t('home.mentoring.description')}
               </p>
               <div className={`inline-flex items-center gap-2 font-semibold ${
                 isDarkMode ? 'text-green-300' : 'text-green-700'
               }`}>
-                Unirse ahora
+                {t('home.mentoring.action')}
                 <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
@@ -251,12 +249,12 @@ export default function HomePage() {
             <p className={`text-xl md:text-2xl font-semibold mb-2 ${
               isDarkMode ? 'text-white' : 'text-brand-text'
             }`}>
-              ¿Listo para empezar?
+              {t('home.cta.title')}
             </p>
             <p className={`text-base ${
               isDarkMode ? 'text-slate-300' : 'text-gray-600'
             }`}>
-              Explorá las herramientas, lee el blog, colabora en GitHub y únete a la comunidad
+              {t('home.cta.description')}
             </p>
           </div>
         </div>
@@ -271,12 +269,12 @@ export default function HomePage() {
             <h2 className={`text-2xl md:text-3xl font-bold mb-4 ${
               isDarkMode ? 'text-white' : 'text-brand-text'
             }`}>
-              💡 Herramientas Gratuitas para Testers
+              💡 {t('home.tools.title')}
             </h2>
             <p className={`text-base md:text-lg px-4 ${
               isDarkMode ? 'text-slate-300' : 'text-brand-text'
             }`}>
-              Explorá nuestras utilidades web para testers funcionales, automatizadores y QA manual
+              {t('home.tools.subtitle')}
             </p>
           </div>
 
@@ -287,20 +285,20 @@ export default function HomePage() {
             }`}>
               <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-4 md:p-6 text-white">
                 <div className="text-2xl md:text-3xl mb-2">🔍</div>
-                <h3 className="text-lg md:text-xl font-bold">Validador de JSON</h3>
-                <p className="text-blue-100 text-sm">Valida y formatea JSON de forma instantánea</p>
+                <h3 className="text-lg md:text-xl font-bold">{t('home.tools.validator.title')}</h3>
+                <p className="text-blue-100 text-sm">{t('home.tools.validator.subtitle')}</p>
               </div>
               <div className="p-4 md:p-6">
                 <p className={`text-sm mb-4 ${
                   isDarkMode ? 'text-slate-300' : 'text-brand-text'
                 }`}>
-                  Herramienta esencial para validar respuestas de API, configuraciones y datos JSON.
+                  {t('home.tools.validator.description')}
                 </p>
                 <Link
                   href="/labs/json-validator"
                   className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition"
                 >
-                  Usar Validador →
+                  {t('home.tools.validator.action')} →
                 </Link>
               </div>
             </div>
@@ -311,20 +309,20 @@ export default function HomePage() {
             }`}>
               <div className="bg-gradient-to-r from-green-500 to-green-600 p-4 md:p-6 text-white">
                 <div className="text-2xl md:text-3xl mb-2">🎲</div>
-                <h3 className="text-lg md:text-xl font-bold">Generador de Datos</h3>
-                <p className="text-green-100 text-sm">Genera datos de prueba realistas</p>
+                <h3 className="text-lg md:text-xl font-bold">{t('home.tools.generator.title')}</h3>
+                <p className="text-green-100 text-sm">{t('home.tools.generator.subtitle')}</p>
               </div>
               <div className="p-4 md:p-6">
                 <p className={`text-sm mb-4 ${
                   isDarkMode ? 'text-slate-300' : 'text-brand-text'
                 }`}>
-                  Crea datos de prueba para formularios, APIs y bases de datos de forma rápida.
+                  {t('home.tools.generator.description')}
                 </p>
                 <Link
                   href="/labs/data-generator"
                   className="inline-block bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition"
                 >
-                  Generar Datos →
+                  {t('home.tools.generator.action')} →
                 </Link>
               </div>
             </div>
@@ -335,20 +333,20 @@ export default function HomePage() {
             }`}>
               <div className="bg-gradient-to-r from-purple-500 to-purple-600 p-4 md:p-6 text-white">
                 <div className="text-2xl md:text-3xl mb-2">✅</div>
-                <h3 className="text-lg md:text-xl font-bold">Checklist de Pruebas</h3>
-                <p className="text-purple-100 text-sm">Organiza y gestiona tus pruebas</p>
+                <h3 className="text-lg md:text-xl font-bold">{t('home.tools.checklist.title')}</h3>
+                <p className="text-purple-100 text-sm">{t('home.tools.checklist.subtitle')}</p>
               </div>
               <div className="p-4 md:p-6">
                 <p className={`text-sm mb-4 ${
                   isDarkMode ? 'text-slate-300' : 'text-brand-text'
                 }`}>
-                  Crea y gestiona listas de verificación para diferentes tipos de pruebas.
+                  {t('home.tools.checklist.description')}
                 </p>
                 <Link
                   href="/labs/checklist"
                   className="inline-block bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 transition"
                 >
-                  Crear Checklist →
+                  {t('home.tools.checklist.action')} →
                 </Link>
               </div>
             </div>
