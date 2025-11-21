@@ -64,7 +64,7 @@ export default function TechnicalReportPage() {
             sections.add(entry.page);
           }
         });
-        setTestSession((prev) => ({ ...prev, exploredSections: Array.from(sections) }));
+        setTestSession((prev: TestSession) => ({ ...prev, exploredSections: Array.from(sections) }));
       }
     } catch (error) {
       console.error('Error loading audit log:', error);
@@ -72,23 +72,23 @@ export default function TechnicalReportPage() {
   }, []);
 
   const handleAddStep = () => {
-    setCurrentBug((prev) => ({
+    setCurrentBug((prev: Partial<BugReport>) => ({
       ...prev,
       stepsToReproduce: [...(prev.stepsToReproduce || ['']), ''],
     }));
   };
 
   const handleRemoveStep = (index: number) => {
-    setCurrentBug((prev) => ({
+    setCurrentBug((prev: Partial<BugReport>) => ({
       ...prev,
-      stepsToReproduce: prev.stepsToReproduce?.filter((_, i) => i !== index) || [''],
+      stepsToReproduce: prev.stepsToReproduce?.filter((_: string, i: number) => i !== index) || [''],
     }));
   };
 
   const handleUpdateStep = (index: number, value: string) => {
-    setCurrentBug((prev) => ({
+    setCurrentBug((prev: Partial<BugReport>) => ({
       ...prev,
-      stepsToReproduce: prev.stepsToReproduce?.map((step, i) => (i === index ? value : step)) || [''],
+      stepsToReproduce: prev.stepsToReproduce?.map((step: string, i: number) => (i === index ? value : step)) || [''],
     }));
   };
 
@@ -129,7 +129,7 @@ export default function TechnicalReportPage() {
     }
 
     if (newImages.length > 0) {
-      setCurrentBug((prev) => ({
+      setCurrentBug((prev: Partial<BugReport>) => ({
         ...prev,
         images: [...(prev.images || []), ...newImages],
       }));
@@ -140,9 +140,9 @@ export default function TechnicalReportPage() {
   };
 
   const handleRemoveImage = (imageId: string) => {
-    setCurrentBug((prev) => ({
+    setCurrentBug((prev: Partial<BugReport>) => ({
       ...prev,
-      images: prev.images?.filter((img) => img.id !== imageId) || [],
+      images: prev.images?.filter((img: ImageEvidence) => img.id !== imageId) || [],
     }));
   };
 
@@ -156,7 +156,7 @@ export default function TechnicalReportPage() {
       id: currentBug.id || `bug-${Date.now()}`,
       title: currentBug.title || '',
       description: currentBug.description || '',
-      stepsToReproduce: (currentBug.stepsToReproduce || ['']).filter((step) => step.trim() !== ''),
+      stepsToReproduce: (currentBug.stepsToReproduce || ['']).filter((step: string) => step.trim() !== ''),
       expectedResult: currentBug.expectedResult || '',
       actualResult: currentBug.actualResult || '',
       severity: currentBug.severity || 'Medium',
@@ -167,10 +167,10 @@ export default function TechnicalReportPage() {
     };
 
     if (editingBugId) {
-      setBugs((prev) => prev.map((bug) => (bug.id === editingBugId ? bugToSave : bug)));
+      setBugs((prev: BugReport[]) => prev.map((bug: BugReport) => (bug.id === editingBugId ? bugToSave : bug)));
       setEditingBugId(null);
     } else {
-      setBugs((prev) => [...prev, bugToSave]);
+      setBugs((prev: BugReport[]) => [...prev, bugToSave]);
     }
 
     // Reset form
@@ -198,7 +198,7 @@ export default function TechnicalReportPage() {
 
   const handleDeleteBug = (bugId: string) => {
     if (confirm('¿Estás seguro de que deseas eliminar este bug?')) {
-      setBugs((prev) => prev.filter((bug) => bug.id !== bugId));
+      setBugs((prev: BugReport[]) => prev.filter((bug: BugReport) => bug.id !== bugId));
     }
   };
 
@@ -302,11 +302,10 @@ export default function TechnicalReportPage() {
                 type="text"
                 value={candidateInfo.fullName}
                 onChange={(e) => setCandidateInfo((prev) => ({ ...prev, fullName: e.target.value }))}
-                className={`w-full px-4 py-2 rounded-lg border ${
-                  isDarkMode
-                    ? 'bg-slate-700 border-slate-600 text-white'
-                    : 'bg-white border-gray-300 text-gray-900'
-                } focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                className={`w-full px-4 py-2 rounded-lg border ${isDarkMode
+                  ? 'bg-slate-700 border-slate-600 text-white'
+                  : 'bg-white border-gray-300 text-gray-900'
+                  } focus:outline-none focus:ring-2 focus:ring-amber-500`}
                 placeholder="Ej: Juan Pérez"
               />
             </div>
@@ -318,11 +317,10 @@ export default function TechnicalReportPage() {
                 type="email"
                 value={candidateInfo.email}
                 onChange={(e) => setCandidateInfo((prev) => ({ ...prev, email: e.target.value }))}
-                className={`w-full px-4 py-2 rounded-lg border ${
-                  isDarkMode
-                    ? 'bg-slate-700 border-slate-600 text-white'
-                    : 'bg-white border-gray-300 text-gray-900'
-                } focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                className={`w-full px-4 py-2 rounded-lg border ${isDarkMode
+                  ? 'bg-slate-700 border-slate-600 text-white'
+                  : 'bg-white border-gray-300 text-gray-900'
+                  } focus:outline-none focus:ring-2 focus:ring-amber-500`}
                 placeholder="juan@example.com"
               />
             </div>
@@ -334,11 +332,10 @@ export default function TechnicalReportPage() {
                 type="text"
                 value={candidateInfo.githubProfile}
                 onChange={(e) => setCandidateInfo((prev) => ({ ...prev, githubProfile: e.target.value }))}
-                className={`w-full px-4 py-2 rounded-lg border ${
-                  isDarkMode
-                    ? 'bg-slate-700 border-slate-600 text-white'
-                    : 'bg-white border-gray-300 text-gray-900'
-                } focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                className={`w-full px-4 py-2 rounded-lg border ${isDarkMode
+                  ? 'bg-slate-700 border-slate-600 text-white'
+                  : 'bg-white border-gray-300 text-gray-900'
+                  } focus:outline-none focus:ring-2 focus:ring-amber-500`}
                 placeholder="https://github.com/username"
               />
             </div>
@@ -350,11 +347,10 @@ export default function TechnicalReportPage() {
                 type="text"
                 value={candidateInfo.candidateId}
                 onChange={(e) => setCandidateInfo((prev) => ({ ...prev, candidateId: e.target.value }))}
-                className={`w-full px-4 py-2 rounded-lg border ${
-                  isDarkMode
-                    ? 'bg-slate-700 border-slate-600 text-white'
-                    : 'bg-white border-gray-300 text-gray-900'
-                } focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                className={`w-full px-4 py-2 rounded-lg border ${isDarkMode
+                  ? 'bg-slate-700 border-slate-600 text-white'
+                  : 'bg-white border-gray-300 text-gray-900'
+                  } focus:outline-none focus:ring-2 focus:ring-amber-500`}
                 placeholder="candidate-123"
               />
             </div>
@@ -375,11 +371,10 @@ export default function TechnicalReportPage() {
                 type="number"
                 value={testSession.duration}
                 onChange={(e) => setTestSession((prev) => ({ ...prev, duration: parseInt(e.target.value) || 0 }))}
-                className={`w-full px-4 py-2 rounded-lg border ${
-                  isDarkMode
-                    ? 'bg-slate-700 border-slate-600 text-white'
-                    : 'bg-white border-gray-300 text-gray-900'
-                } focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                className={`w-full px-4 py-2 rounded-lg border ${isDarkMode
+                  ? 'bg-slate-700 border-slate-600 text-white'
+                  : 'bg-white border-gray-300 text-gray-900'
+                  } focus:outline-none focus:ring-2 focus:ring-amber-500`}
                 placeholder="30"
               />
             </div>
@@ -391,11 +386,10 @@ export default function TechnicalReportPage() {
                 type="text"
                 value={testSession.exploredSections.length}
                 disabled
-                className={`w-full px-4 py-2 rounded-lg border ${
-                  isDarkMode
-                    ? 'bg-slate-700 border-slate-600 text-slate-400'
-                    : 'bg-gray-100 border-gray-300 text-gray-600'
-                }`}
+                className={`w-full px-4 py-2 rounded-lg border ${isDarkMode
+                  ? 'bg-slate-700 border-slate-600 text-slate-400'
+                  : 'bg-gray-100 border-gray-300 text-gray-600'
+                  }`}
               />
               <p className={`text-xs mt-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
                 Auto-detectado desde audit log
@@ -409,11 +403,10 @@ export default function TechnicalReportPage() {
                 type="text"
                 value={auditLog.length}
                 disabled
-                className={`w-full px-4 py-2 rounded-lg border ${
-                  isDarkMode
-                    ? 'bg-slate-700 border-slate-600 text-slate-400'
-                    : 'bg-gray-100 border-gray-300 text-gray-600'
-                }`}
+                className={`w-full px-4 py-2 rounded-lg border ${isDarkMode
+                  ? 'bg-slate-700 border-slate-600 text-slate-400'
+                  : 'bg-gray-100 border-gray-300 text-gray-600'
+                  }`}
               />
             </div>
           </div>
@@ -449,11 +442,10 @@ export default function TechnicalReportPage() {
                     type="text"
                     value={currentBug.title}
                     onChange={(e) => setCurrentBug((prev) => ({ ...prev, title: e.target.value }))}
-                    className={`w-full px-4 py-2 rounded-lg border ${
-                      isDarkMode
-                        ? 'bg-slate-600 border-slate-500 text-white'
-                        : 'bg-white border-gray-300 text-gray-900'
-                    } focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                    className={`w-full px-4 py-2 rounded-lg border ${isDarkMode
+                      ? 'bg-slate-600 border-slate-500 text-white'
+                      : 'bg-white border-gray-300 text-gray-900'
+                      } focus:outline-none focus:ring-2 focus:ring-amber-500`}
                     placeholder="Ej: Total del carrito no recalcula impuestos"
                   />
                 </div>
@@ -471,11 +463,10 @@ export default function TechnicalReportPage() {
                           severity: e.target.value as BugReport['severity'],
                         }))
                       }
-                      className={`w-full px-4 py-2 rounded-lg border ${
-                        isDarkMode
-                          ? 'bg-slate-600 border-slate-500 text-white'
-                          : 'bg-white border-gray-300 text-gray-900'
-                      } focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                      className={`w-full px-4 py-2 rounded-lg border ${isDarkMode
+                        ? 'bg-slate-600 border-slate-500 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                        } focus:outline-none focus:ring-2 focus:ring-amber-500`}
                     >
                       <option value="Critical">Critical</option>
                       <option value="High">High</option>
@@ -492,11 +483,10 @@ export default function TechnicalReportPage() {
                       type="text"
                       value={currentBug.category}
                       onChange={(e) => setCurrentBug((prev) => ({ ...prev, category: e.target.value }))}
-                      className={`w-full px-4 py-2 rounded-lg border ${
-                        isDarkMode
-                          ? 'bg-slate-600 border-slate-500 text-white'
-                          : 'bg-white border-gray-300 text-gray-900'
-                      } focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                      className={`w-full px-4 py-2 rounded-lg border ${isDarkMode
+                        ? 'bg-slate-600 border-slate-500 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                        } focus:outline-none focus:ring-2 focus:ring-amber-500`}
                       placeholder="Ej: Carrito, Checkout, UI"
                     />
                   </div>
@@ -513,11 +503,10 @@ export default function TechnicalReportPage() {
                         type="text"
                         value={step}
                         onChange={(e) => handleUpdateStep(index, e.target.value)}
-                        className={`flex-1 px-4 py-2 rounded-lg border ${
-                          isDarkMode
-                            ? 'bg-slate-600 border-slate-500 text-white'
-                            : 'bg-white border-gray-300 text-gray-900'
-                        } focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                        className={`flex-1 px-4 py-2 rounded-lg border ${isDarkMode
+                          ? 'bg-slate-600 border-slate-500 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                          } focus:outline-none focus:ring-2 focus:ring-amber-500`}
                         placeholder="Describe el paso..."
                       />
                       {(currentBug.stepsToReproduce?.length || 0) > 1 && (
@@ -546,11 +535,10 @@ export default function TechnicalReportPage() {
                     value={currentBug.expectedResult}
                     onChange={(e) => setCurrentBug((prev) => ({ ...prev, expectedResult: e.target.value }))}
                     rows={2}
-                    className={`w-full px-4 py-2 rounded-lg border ${
-                      isDarkMode
-                        ? 'bg-slate-600 border-slate-500 text-white'
-                        : 'bg-white border-gray-300 text-gray-900'
-                    } focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                    className={`w-full px-4 py-2 rounded-lg border ${isDarkMode
+                      ? 'bg-slate-600 border-slate-500 text-white'
+                      : 'bg-white border-gray-300 text-gray-900'
+                      } focus:outline-none focus:ring-2 focus:ring-amber-500`}
                     placeholder="¿Qué debería pasar?"
                   />
                 </div>
@@ -563,11 +551,10 @@ export default function TechnicalReportPage() {
                     value={currentBug.actualResult}
                     onChange={(e) => setCurrentBug((prev) => ({ ...prev, actualResult: e.target.value }))}
                     rows={2}
-                    className={`w-full px-4 py-2 rounded-lg border ${
-                      isDarkMode
-                        ? 'bg-slate-600 border-slate-500 text-white'
-                        : 'bg-white border-gray-300 text-gray-900'
-                    } focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                    className={`w-full px-4 py-2 rounded-lg border ${isDarkMode
+                      ? 'bg-slate-600 border-slate-500 text-white'
+                      : 'bg-white border-gray-300 text-gray-900'
+                      } focus:outline-none focus:ring-2 focus:ring-amber-500`}
                     placeholder="¿Qué pasa actualmente?"
                   />
                 </div>
@@ -580,11 +567,10 @@ export default function TechnicalReportPage() {
                     value={currentBug.evidence}
                     onChange={(e) => setCurrentBug((prev) => ({ ...prev, evidence: e.target.value }))}
                     rows={2}
-                    className={`w-full px-4 py-2 rounded-lg border ${
-                      isDarkMode
-                        ? 'bg-slate-600 border-slate-500 text-white'
-                        : 'bg-white border-gray-300 text-gray-900'
-                    } focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                    className={`w-full px-4 py-2 rounded-lg border ${isDarkMode
+                      ? 'bg-slate-600 border-slate-500 text-white'
+                      : 'bg-white border-gray-300 text-gray-900'
+                      } focus:outline-none focus:ring-2 focus:ring-amber-500`}
                     placeholder="Screenshots, logs, referencias al audit log, etc."
                   />
                 </div>
@@ -599,11 +585,10 @@ export default function TechnicalReportPage() {
                     accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
                     multiple
                     onChange={handleImageUpload}
-                    className={`w-full px-4 py-2 rounded-lg border ${
-                      isDarkMode
-                        ? 'bg-slate-600 border-slate-500 text-white'
-                        : 'bg-white border-gray-300 text-gray-900'
-                    } focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                    className={`w-full px-4 py-2 rounded-lg border ${isDarkMode
+                      ? 'bg-slate-600 border-slate-500 text-white'
+                      : 'bg-white border-gray-300 text-gray-900'
+                      } focus:outline-none focus:ring-2 focus:ring-amber-500`}
                   />
                   <p className={`text-xs mt-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
                     Formatos: JPG, PNG, GIF, WebP. Máximo: 5MB por imagen
@@ -615,9 +600,8 @@ export default function TechnicalReportPage() {
                       {currentBug.images.map((image) => (
                         <div
                           key={image.id}
-                          className={`relative rounded-lg overflow-hidden border-2 ${
-                            isDarkMode ? 'border-slate-500' : 'border-gray-300'
-                          }`}
+                          className={`relative rounded-lg overflow-hidden border-2 ${isDarkMode ? 'border-slate-500' : 'border-gray-300'
+                            }`}
                         >
                           <img
                             src={image.base64Data}
@@ -669,11 +653,10 @@ export default function TechnicalReportPage() {
                         foundAt: new Date(),
                       });
                     }}
-                    className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-                      isDarkMode
-                        ? 'bg-slate-600 hover:bg-slate-500 text-white'
-                        : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
-                    }`}
+                    className={`px-6 py-2 rounded-lg font-medium transition-colors ${isDarkMode
+                      ? 'bg-slate-600 hover:bg-slate-500 text-white'
+                      : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
+                      }`}
                   >
                     Cancelar
                   </button>
@@ -685,16 +668,15 @@ export default function TechnicalReportPage() {
           {/* Bugs List */}
           {bugs.length === 0 ? (
             <p className={`text-center py-8 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
-              No se han agregado bugs aún. Haz clic en "Agregar Bug" para comenzar.
+              No se han agregado bugs aún. Haz clic en &quot;Agregar Bug&quot; para comenzar.
             </p>
           ) : (
             <div className="space-y-4">
               {bugs.map((bug, index) => (
                 <div
                   key={bug.id}
-                  className={`p-4 rounded-lg border-2 ${
-                    isDarkMode ? 'bg-slate-700 border-slate-600' : 'bg-gray-50 border-gray-200'
-                  }`}
+                  className={`p-4 rounded-lg border-2 ${isDarkMode ? 'bg-slate-700 border-slate-600' : 'bg-gray-50 border-gray-200'
+                    }`}
                 >
                   <div className="flex justify-between items-start mb-2">
                     <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -726,9 +708,8 @@ export default function TechnicalReportPage() {
                       {bug.severity}
                     </span>
                     {bug.category && (
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        isDarkMode ? 'bg-slate-600 text-slate-200' : 'bg-gray-200 text-gray-700'
-                      }`}>
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${isDarkMode ? 'bg-slate-600 text-slate-200' : 'bg-gray-200 text-gray-700'
+                        }`}>
                         {bug.category}
                       </span>
                     )}
@@ -762,11 +743,10 @@ export default function TechnicalReportPage() {
             </button>
             <a
               href="/labs/test-app"
-              className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-                isDarkMode
-                  ? 'bg-slate-700 hover:bg-slate-600 text-white'
-                  : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
-              }`}
+              className={`px-6 py-3 rounded-lg font-medium transition-colors ${isDarkMode
+                ? 'bg-slate-700 hover:bg-slate-600 text-white'
+                : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
+                }`}
             >
               ← Volver al Test App
             </a>

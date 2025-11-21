@@ -7,7 +7,7 @@ import { checkAnswer } from '../utils';
 interface QuestionCardProps {
   question: ExamQuestion;
   selectedAnswers: string[];
-  onAnswerChange: (_questionId: number, _selectedAnswers: string[]) => void;
+  onAnswerChange: (questionId: number, selectedAnswers: string[]) => void;
   isMarked: boolean;
   showFeedback: boolean;
   language: 'es' | 'en';

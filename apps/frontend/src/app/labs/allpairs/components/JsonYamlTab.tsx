@@ -5,7 +5,7 @@ import { PairwiseInput } from '@aiquaa/allpairs-core';
 
 interface JsonYamlTabProps {
   input: PairwiseInput;
-  onChange: (input: PairwiseInput) => void;
+  onChange: (newValue: PairwiseInput) => void;
 }
 
 export default function JsonYamlTab({ input, onChange }: JsonYamlTabProps) {
@@ -99,7 +99,7 @@ export default function JsonYamlTab({ input, onChange }: JsonYamlTabProps) {
           <div>
             <strong>Formato directo:</strong>
             <pre className="mt-1 bg-white dark:bg-gray-800 p-2 rounded text-xs overflow-x-auto">
-{`{
+              {`{
   "labels": ["A", "B"],
   "parameters": [["1", "2"], ["X", "Y"]]
 }`}
@@ -108,7 +108,7 @@ export default function JsonYamlTab({ input, onChange }: JsonYamlTabProps) {
           <div>
             <strong>Formato de objeto:</strong>
             <pre className="mt-1 bg-white dark:bg-gray-800 p-2 rounded text-xs overflow-x-auto">
-{`{
+              {`{
   "Navegador": ["Chrome", "Firefox"],
   "OS": ["Windows", "Mac"]
 }`}

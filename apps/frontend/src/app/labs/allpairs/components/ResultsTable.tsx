@@ -5,8 +5,8 @@ import { PairwiseResult } from '@aiquaa/allpairs-core';
 
 interface ResultsTableProps {
   result: PairwiseResult;
-  onExport: (includeCounter: boolean) => void;
-  onCopy: (includeCounter: boolean) => void;
+  onExport: (_includeCounter: boolean) => void;
+  onCopy: (_includeCounter: boolean) => void;
 }
 
 export default function ResultsTable({ result, onExport, onCopy }: ResultsTableProps) {

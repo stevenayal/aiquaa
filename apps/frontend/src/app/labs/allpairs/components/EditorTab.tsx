@@ -4,7 +4,7 @@ import { PairwiseInput } from '@aiquaa/allpairs-core';
 
 interface EditorTabProps {
   input: PairwiseInput;
-  onChange: (input: PairwiseInput) => void;
+  onChange: (newValue: PairwiseInput) => void;
 }
 
 export default function EditorTab({ input, onChange }: EditorTabProps) {

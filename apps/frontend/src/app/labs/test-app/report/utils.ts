@@ -1,4 +1,4 @@
-import type { TechnicalReport, BugReport, ScoreCriteria, ImageEvidence } from './types';
+import type { TechnicalReport, BugReport, ScoreCriteria } from './types';
 
 // Helper function to convert file to base64
 export async function fileToBase64(file: File): Promise<string> {

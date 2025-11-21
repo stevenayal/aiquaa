@@ -7,7 +7,7 @@ import { checkAnswer } from '../utils';
 interface QuestionCardProps {
   question: ExamQuestion;
   selectedAnswers: string[];
-  onAnswerChange: (_questionId: number, _selectedAnswers: string[]) => void;
+  onAnswerChange: (questionId: number, selectedAnswers: string[]) => void;
   isMarked: boolean;
   showFeedback: boolean;
 }
@@ -112,11 +112,10 @@ export default function QuestionCard({
                 </p>
               </div>
               {isMultiple && hasAnswered && !showFeedback && (
-                <span className={`text-sm font-medium px-3 py-1 rounded-full ${
-                  isSelectionComplete
+                <span className={`text-sm font-medium px-3 py-1 rounded-full ${isSelectionComplete
                     ? isDarkMode ? 'bg-green-900/40 text-green-300 border border-green-700' : 'bg-green-100 text-green-800 border border-green-200'
                     : isDarkMode ? 'bg-amber-900/40 text-amber-300 border border-amber-700' : 'bg-amber-100 text-amber-800 border border-amber-200'
-                }`}>
+                  }`}>
                   {selectedAnswers.length} de {question.correctAnswer.length} seleccionadas
                 </span>
               )}
@@ -141,11 +140,10 @@ export default function QuestionCard({
                     checked={isSelected}
                     onChange={(e) => handleMultipleAnswer(option.label, e.target.checked)}
                     disabled={showFeedback && isSelectionComplete}
-                    className={`mt-1 h-5 w-5 text-amber-600 focus:ring-amber-500 rounded transition-colors ${
-                      isDarkMode
+                    className={`mt-1 h-5 w-5 text-amber-600 focus:ring-amber-500 rounded transition-colors ${isDarkMode
                         ? 'bg-slate-700 border-slate-500 checked:bg-amber-600 checked:border-amber-600'
                         : 'bg-white border-gray-300'
-                    }`}
+                      }`}
                   />
                   <div className="flex-1">
                     <label
@@ -208,11 +206,10 @@ export default function QuestionCard({
                     checked={isSelected}
                     onChange={() => handleSingleAnswer(option.label)}
                     disabled={showFeedback && isSelectionComplete}
-                    className={`mt-1 h-5 w-5 text-amber-600 focus:ring-amber-500 transition-colors ${
-                      isDarkMode
+                    className={`mt-1 h-5 w-5 text-amber-600 focus:ring-amber-500 transition-colors ${isDarkMode
                         ? 'bg-slate-700 border-slate-500 checked:bg-amber-600 checked:border-amber-600'
                         : 'bg-white border-gray-300'
-                    }`}
+                      }`}
                   />
                   <div className="flex-1">
                     <label
@@ -261,15 +258,14 @@ export default function QuestionCard({
         </div>
 
         {showFeedback && isSelectionComplete && (
-          <div className={`p-4 rounded-lg border-2 ${
-            isCorrect
+          <div className={`p-4 rounded-lg border-2 ${isCorrect
               ? isDarkMode
                 ? 'bg-green-900/30 border-green-700'
                 : 'bg-green-50 border-green-300'
               : isDarkMode
-              ? 'bg-red-900/30 border-red-700'
-              : 'bg-red-50 border-red-300'
-          }`}>
+                ? 'bg-red-900/30 border-red-700'
+                : 'bg-red-50 border-red-300'
+            }`}>
             <div className="flex items-center gap-3">
               {isCorrect ? (
                 <>
