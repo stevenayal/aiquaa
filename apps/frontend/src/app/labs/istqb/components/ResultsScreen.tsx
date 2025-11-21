@@ -104,7 +104,7 @@ export default function ResultsScreen({
     },
   };
 
-  const text = t[language];
+  const text = t[language as keyof typeof t];
 
   const handleExportCSV = () => {
     const csv = exportToCSV(result);
@@ -140,8 +140,8 @@ export default function ResultsScreen({
                 <button
                   onClick={handleExportCSV}
                   className={`px-4 py-2 rounded-lg font-medium transition-colors flex-1 md:flex-none ${isDarkMode
-                      ? 'bg-slate-700 hover:bg-slate-600 text-white border border-slate-600'
-                      : 'bg-white hover:bg-gray-50 text-gray-900 border border-gray-300'
+                    ? 'bg-slate-700 hover:bg-slate-600 text-white border border-slate-600'
+                    : 'bg-white hover:bg-gray-50 text-gray-900 border border-gray-300'
                     }`}
                 >
                   {text.exportCSV}
@@ -149,8 +149,8 @@ export default function ResultsScreen({
                 <button
                   onClick={handleExportPDF}
                   className={`px-4 py-2 rounded-lg font-medium transition-colors flex-1 md:flex-none ${isDarkMode
-                      ? 'bg-red-700 hover:bg-red-600 text-white border border-red-600'
-                      : 'bg-red-600 hover:bg-red-700 text-white border border-red-700'
+                    ? 'bg-red-700 hover:bg-red-600 text-white border border-red-600'
+                    : 'bg-red-600 hover:bg-red-700 text-white border border-red-700'
                     }`}
                 >
                   {text.exportPDF}
@@ -166,19 +166,19 @@ export default function ResultsScreen({
           </div>
           <div className="p-6">
             <div className={`mb-6 p-4 rounded-lg border-2 ${result.passed
-                ? isDarkMode
-                  ? 'bg-green-900/20 border-green-700'
-                  : 'bg-green-50 border-green-300'
-                : isDarkMode
-                  ? 'bg-red-900/20 border-red-700'
-                  : 'bg-red-50 border-red-300'
+              ? isDarkMode
+                ? 'bg-green-900/20 border-green-700'
+                : 'bg-green-50 border-green-300'
+              : isDarkMode
+                ? 'bg-red-900/20 border-red-700'
+                : 'bg-red-50 border-red-300'
               }`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="text-2xl">{result.passed ? '🏆' : '✗'}</span>
                   <span className={`text-lg font-semibold ${result.passed
-                      ? isDarkMode ? 'text-green-300' : 'text-green-900'
-                      : isDarkMode ? 'text-red-300' : 'text-red-900'
+                    ? isDarkMode ? 'text-green-300' : 'text-green-900'
+                    : isDarkMode ? 'text-red-300' : 'text-red-900'
                     }`}>
                     {result.passed ? text.passed : text.failed}
                   </span>
@@ -191,8 +191,8 @@ export default function ResultsScreen({
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className={`text-center p-5 rounded-xl border-2 shadow-sm ${isDarkMode
-                  ? 'bg-amber-900/30 border-amber-700'
-                  : 'bg-amber-50 border-amber-200'
+                ? 'bg-amber-900/30 border-amber-700'
+                : 'bg-amber-50 border-amber-200'
                 }`}>
                 <span className="text-4xl block mb-2">🏆</span>
                 <p className={`text-sm font-medium mb-1 ${isDarkMode ? 'text-amber-300' : 'text-amber-700'}`}>{text.score}</p>
@@ -200,8 +200,8 @@ export default function ResultsScreen({
               </div>
 
               <div className={`text-center p-5 rounded-xl border-2 shadow-sm ${isDarkMode
-                  ? 'bg-green-900/30 border-green-700'
-                  : 'bg-green-50 border-green-200'
+                ? 'bg-green-900/30 border-green-700'
+                : 'bg-green-50 border-green-200'
                 }`}>
                 <span className="text-4xl block mb-2">✓</span>
                 <p className={`text-sm font-medium mb-1 ${isDarkMode ? 'text-green-300' : 'text-green-700'}`}>{text.correct}</p>
@@ -209,8 +209,8 @@ export default function ResultsScreen({
               </div>
 
               <div className={`text-center p-5 rounded-xl border-2 shadow-sm ${isDarkMode
-                  ? 'bg-red-900/30 border-red-700'
-                  : 'bg-red-50 border-red-200'
+                ? 'bg-red-900/30 border-red-700'
+                : 'bg-red-50 border-red-200'
                 }`}>
                 <span className="text-4xl block mb-2">✗</span>
                 <p className={`text-sm font-medium mb-1 ${isDarkMode ? 'text-red-300' : 'text-red-700'}`}>{text.incorrect}</p>
@@ -218,8 +218,8 @@ export default function ResultsScreen({
               </div>
 
               <div className={`text-center p-5 rounded-xl border-2 shadow-sm ${isDarkMode
-                  ? 'bg-slate-700 border-slate-600'
-                  : 'bg-slate-50 border-slate-200'
+                ? 'bg-slate-700 border-slate-600'
+                : 'bg-slate-50 border-slate-200'
                 }`}>
                 <span className="text-4xl block mb-2">⏱️</span>
                 <p className={`text-sm font-medium mb-1 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>{text.time}</p>
@@ -235,8 +235,8 @@ export default function ResultsScreen({
               <div className={`w-full rounded-full h-3 shadow-inner ${isDarkMode ? 'bg-slate-700' : 'bg-gray-200'}`}>
                 <div
                   className={`h-3 rounded-full transition-all shadow-sm ${result.passed
-                      ? isDarkMode ? 'bg-green-500' : 'bg-green-600'
-                      : isDarkMode ? 'bg-red-500' : 'bg-red-600'
+                    ? isDarkMode ? 'bg-green-500' : 'bg-green-600'
+                    : isDarkMode ? 'bg-red-500' : 'bg-red-600'
                     }`}
                   style={{ width: `${result.percentage}%` }}
                 />
@@ -251,12 +251,12 @@ export default function ResultsScreen({
               <button
                 onClick={() => setActiveTab('summary')}
                 className={`flex-1 px-4 py-3 font-medium transition-colors ${activeTab === 'summary'
-                    ? isDarkMode
-                      ? 'bg-slate-700 text-white border-b-2 border-amber-500'
-                      : 'bg-white text-gray-900 border-b-2 border-amber-600'
-                    : isDarkMode
-                      ? 'text-slate-400 hover:text-white'
-                      : 'text-gray-600 hover:text-gray-900'
+                  ? isDarkMode
+                    ? 'bg-slate-700 text-white border-b-2 border-amber-500'
+                    : 'bg-white text-gray-900 border-b-2 border-amber-600'
+                  : isDarkMode
+                    ? 'text-slate-400 hover:text-white'
+                    : 'text-gray-600 hover:text-gray-900'
                   }`}
               >
                 {text.tabSummary}
@@ -264,12 +264,12 @@ export default function ResultsScreen({
               <button
                 onClick={() => setActiveTab('learning-objectives')}
                 className={`flex-1 px-4 py-3 font-medium transition-colors ${activeTab === 'learning-objectives'
-                    ? isDarkMode
-                      ? 'bg-slate-700 text-white border-b-2 border-amber-500'
-                      : 'bg-white text-gray-900 border-b-2 border-amber-600'
-                    : isDarkMode
-                      ? 'text-slate-400 hover:text-white'
-                      : 'text-gray-600 hover:text-gray-900'
+                  ? isDarkMode
+                    ? 'bg-slate-700 text-white border-b-2 border-amber-500'
+                    : 'bg-white text-gray-900 border-b-2 border-amber-600'
+                  : isDarkMode
+                    ? 'text-slate-400 hover:text-white'
+                    : 'text-gray-600 hover:text-gray-900'
                   }`}
               >
                 {text.tabLO}
@@ -277,12 +277,12 @@ export default function ResultsScreen({
               <button
                 onClick={() => setActiveTab('details')}
                 className={`flex-1 px-4 py-3 font-medium transition-colors ${activeTab === 'details'
-                    ? isDarkMode
-                      ? 'bg-slate-700 text-white border-b-2 border-amber-500'
-                      : 'bg-white text-gray-900 border-b-2 border-amber-600'
-                    : isDarkMode
-                      ? 'text-slate-400 hover:text-white'
-                      : 'text-gray-600 hover:text-gray-900'
+                  ? isDarkMode
+                    ? 'bg-slate-700 text-white border-b-2 border-amber-500'
+                    : 'bg-white text-gray-900 border-b-2 border-amber-600'
+                  : isDarkMode
+                    ? 'text-slate-400 hover:text-white'
+                    : 'text-gray-600 hover:text-gray-900'
                   }`}
               >
                 {text.tabDetails}
@@ -307,8 +307,8 @@ export default function ResultsScreen({
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
                   <div className={`p-5 rounded-xl border-2 shadow-sm ${isDarkMode
-                      ? 'border-green-700 bg-green-900/20'
-                      : 'border-green-200 bg-green-50/50'
+                    ? 'border-green-700 bg-green-900/20'
+                    : 'border-green-200 bg-green-50/50'
                     }`}>
                     <h4 className={`font-semibold mb-3 flex items-center gap-2 ${isDarkMode ? 'text-green-300' : 'text-green-900'
                       }`}>
@@ -336,8 +336,8 @@ export default function ResultsScreen({
                   </div>
 
                   <div className={`p-5 rounded-xl border-2 shadow-sm ${isDarkMode
-                      ? 'border-amber-700 bg-amber-900/20'
-                      : 'border-amber-200 bg-amber-50/50'
+                    ? 'border-amber-700 bg-amber-900/20'
+                    : 'border-amber-200 bg-amber-50/50'
                     }`}>
                     <h4 className={`font-semibold mb-3 flex items-center gap-2 ${isDarkMode ? 'text-amber-300' : 'text-amber-900'
                       }`}>
@@ -380,20 +380,20 @@ export default function ResultsScreen({
                 </div>
                 {result.learningObjectiveAnalysis.map((lo) => (
                   <div key={lo.learningObjective} className={`p-4 rounded-xl border-2 shadow-sm space-y-2 ${lo.percentage >= 70
-                      ? isDarkMode ? 'border-green-700 bg-green-900/10' : 'border-green-200 bg-green-50/30'
-                      : lo.percentage >= 50
-                        ? isDarkMode ? 'border-amber-700 bg-amber-900/10' : 'border-amber-200 bg-amber-50/30'
-                        : isDarkMode ? 'border-red-700 bg-red-900/10' : 'border-red-200 bg-red-50/30'
+                    ? isDarkMode ? 'border-green-700 bg-green-900/10' : 'border-green-200 bg-green-50/30'
+                    : lo.percentage >= 50
+                      ? isDarkMode ? 'border-amber-700 bg-amber-900/10' : 'border-amber-200 bg-amber-50/30'
+                      : isDarkMode ? 'border-red-700 bg-red-900/10' : 'border-red-200 bg-red-50/30'
                     }`}>
                     <div className="flex justify-between items-center">
                       <span className={`font-semibold ${isDarkMode ? 'text-slate-100' : 'text-gray-900'}`}>
                         {lo.learningObjective}
                       </span>
                       <span className={`text-sm font-bold px-3 py-1 rounded-full ${lo.percentage >= 70
-                          ? isDarkMode ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-800'
-                          : lo.percentage >= 50
-                            ? isDarkMode ? 'bg-amber-900/40 text-amber-300' : 'bg-amber-100 text-amber-800'
-                            : isDarkMode ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-800'
+                        ? isDarkMode ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-800'
+                        : lo.percentage >= 50
+                          ? isDarkMode ? 'bg-amber-900/40 text-amber-300' : 'bg-amber-100 text-amber-800'
+                          : isDarkMode ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-800'
                         }`}>
                         {lo.correctAnswers} / {lo.totalQuestions} ({lo.percentage.toFixed(0)}%)
                       </span>
@@ -401,10 +401,10 @@ export default function ResultsScreen({
                     <div className={`w-full rounded-full h-3 shadow-inner ${isDarkMode ? 'bg-slate-700' : 'bg-gray-200'}`}>
                       <div
                         className={`h-3 rounded-full transition-all shadow-sm ${lo.percentage >= 70
-                            ? isDarkMode ? 'bg-green-500' : 'bg-green-600'
-                            : lo.percentage >= 50
-                              ? isDarkMode ? 'bg-amber-500' : 'bg-amber-600'
-                              : isDarkMode ? 'bg-red-500' : 'bg-red-600'
+                          ? isDarkMode ? 'bg-green-500' : 'bg-green-600'
+                          : lo.percentage >= 50
+                            ? isDarkMode ? 'bg-amber-500' : 'bg-amber-600'
+                            : isDarkMode ? 'bg-red-500' : 'bg-red-600'
                           }`}
                         style={{ width: `${lo.percentage}%` }}
                       />
@@ -420,12 +420,12 @@ export default function ResultsScreen({
                   <div
                     key={answer.questionId}
                     className={`rounded-xl border-2 shadow-sm ${answer.isCorrect
-                        ? isDarkMode
-                          ? 'border-green-700 bg-green-900/10'
-                          : 'border-green-300 bg-green-50/30'
-                        : isDarkMode
-                          ? 'border-red-700 bg-red-900/10'
-                          : 'border-red-300 bg-red-50/30'
+                      ? isDarkMode
+                        ? 'border-green-700 bg-green-900/10'
+                        : 'border-green-300 bg-green-50/30'
+                      : isDarkMode
+                        ? 'border-red-700 bg-red-900/10'
+                        : 'border-red-300 bg-red-50/30'
                       }`}
                   >
                     <div className={`p-4 border-b ${isDarkMode ? 'border-slate-700' : 'border-gray-200'}`}>
@@ -440,14 +440,14 @@ export default function ResultsScreen({
                         </h3>
                         <div className="flex gap-2 text-sm flex-shrink-0">
                           <span className={`px-3 py-1 rounded-full font-medium border ${isDarkMode
-                              ? 'bg-blue-900/40 text-blue-300 border-blue-700'
-                              : 'bg-blue-100 text-blue-800 border-blue-200'
+                            ? 'bg-blue-900/40 text-blue-300 border-blue-700'
+                            : 'bg-blue-100 text-blue-800 border-blue-200'
                             }`}>
                             {answer.learningObjective}
                           </span>
                           <span className={`px-3 py-1 rounded-full font-semibold border ${isDarkMode
-                              ? 'bg-amber-900/40 text-amber-300 border-amber-700'
-                              : 'bg-amber-100 text-amber-800 border-amber-200'
+                            ? 'bg-amber-900/40 text-amber-300 border-amber-700'
+                            : 'bg-amber-100 text-amber-800 border-amber-200'
                             }`}>
                             {answer.kLevel}
                           </span>
@@ -469,12 +469,12 @@ export default function ResultsScreen({
                           </h4>
                           <p
                             className={`p-3 rounded-lg font-medium border-2 ${answer.isCorrect
-                                ? isDarkMode
-                                  ? 'bg-green-900/30 text-green-300 border-green-700'
-                                  : 'bg-green-100 text-green-900 border-green-300'
-                                : isDarkMode
-                                  ? 'bg-red-900/30 text-red-300 border-red-700'
-                                  : 'bg-red-100 text-red-900 border-red-300'
+                              ? isDarkMode
+                                ? 'bg-green-900/30 text-green-300 border-green-700'
+                                : 'bg-green-100 text-green-900 border-green-300'
+                              : isDarkMode
+                                ? 'bg-red-900/30 text-red-300 border-red-700'
+                                : 'bg-red-100 text-red-900 border-red-300'
                               }`}
                           >
                             {answer.userAnswer.join(', ') || text.noAnswer}
@@ -488,8 +488,8 @@ export default function ResultsScreen({
                               {text.correctAnswer}
                             </h4>
                             <p className={`p-3 rounded-lg font-medium border-2 ${isDarkMode
-                                ? 'bg-green-900/30 text-green-300 border-green-700'
-                                : 'bg-green-100 text-green-900 border-green-300'
+                              ? 'bg-green-900/30 text-green-300 border-green-700'
+                              : 'bg-green-100 text-green-900 border-green-300'
                               }`}>
                               {answer.correctAnswer.join(', ')}
                             </p>
@@ -508,23 +508,23 @@ export default function ResultsScreen({
                               <div
                                 key={label}
                                 className={`p-3 rounded-lg border-l-4 ${exp.correct
-                                    ? isDarkMode
-                                      ? 'bg-green-900/20 border-green-500'
-                                      : 'bg-green-50 border-green-500'
-                                    : isDarkMode
-                                      ? 'bg-slate-700/50 border-slate-600'
-                                      : 'bg-gray-50 border-gray-300'
+                                  ? isDarkMode
+                                    ? 'bg-green-900/20 border-green-500'
+                                    : 'bg-green-50 border-green-500'
+                                  : isDarkMode
+                                    ? 'bg-slate-700/50 border-slate-600'
+                                    : 'bg-gray-50 border-gray-300'
                                   }`}
                               >
                                 <span className={`font-semibold ${exp.correct
-                                    ? isDarkMode ? 'text-green-300' : 'text-green-900'
-                                    : isDarkMode ? 'text-slate-200' : 'text-gray-900'
+                                  ? isDarkMode ? 'text-green-300' : 'text-green-900'
+                                  : isDarkMode ? 'text-slate-200' : 'text-gray-900'
                                   }`}>
                                   {text.option} {label}: {exp.correct ? text.correctOption : text.incorrectOption}
                                 </span>
                                 <p className={`mt-1 ${exp.correct
-                                    ? isDarkMode ? 'text-green-200' : 'text-green-800'
-                                    : isDarkMode ? 'text-slate-300' : 'text-gray-700'
+                                  ? isDarkMode ? 'text-green-200' : 'text-green-800'
+                                  : isDarkMode ? 'text-slate-300' : 'text-gray-700'
                                   }`}>{exp.explanation}</p>
                               </div>
                             ))}

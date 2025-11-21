@@ -112,7 +112,7 @@ export default function ISTQBSimulatorPage() {
     },
   };
 
-  const text = t[language];
+  const text = t[language as keyof typeof t];
 
   const examId = `${language}-model-${model.toLowerCase()}`;
   // Handle legacy naming for Spanish Model A
@@ -266,7 +266,7 @@ export default function ISTQBSimulatorPage() {
             <div className="mt-6 space-y-3">
               <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{text.rulesTitle}</h3>
               <ul className={`list-disc list-inside space-y-2 text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
-                {text.rules.map((rule, index) => (
+                {text.rules.map((rule: string, index: number) => (
                   <li key={index}>{rule}</li>
                 ))}
               </ul>
@@ -326,7 +326,7 @@ export default function ISTQBSimulatorPage() {
                   </div>
                   <div className="p-4 space-y-4">
                     <ul className={`text-sm space-y-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
-                      {text.examModeFeatures.map((feature, index) => (
+                      {text.examModeFeatures.map((feature: string, index: number) => (
                         <li key={index}>{feature}</li>
                       ))}
                     </ul>
@@ -351,7 +351,7 @@ export default function ISTQBSimulatorPage() {
                   </div>
                   <div className="p-4 space-y-4">
                     <ul className={`text-sm space-y-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
-                      {text.trainingModeFeatures.map((feature, index) => (
+                      {text.trainingModeFeatures.map((feature: string, index: number) => (
                         <li key={index}>{feature}</li>
                       ))}
                     </ul>

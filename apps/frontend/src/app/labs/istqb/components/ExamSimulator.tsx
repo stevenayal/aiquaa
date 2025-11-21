@@ -88,7 +88,7 @@ export default function ExamSimulator({
     },
   };
 
-  const text = t[language];
+  const text = t[language as keyof typeof t];
 
   const handleSubmitExam = useCallback(
     (autoSubmit = false) => {

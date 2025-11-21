@@ -4,6 +4,7 @@ import './globals.css';
 import ErrorBoundary from '../components/ErrorBoundary';
 import Layout from '../components/Layout';
 import { ThemeProvider } from '../contexts/ThemeContext';
+import { LanguageProvider } from '../contexts/LanguageContext';
 import { NextAuthProvider } from '../contexts/NextAuthContext';
 import { AuthProvider } from '../contexts/AuthContext';
 import { initializeSentry } from '../lib/observability';
@@ -31,15 +32,17 @@ export default function RootLayout({
       <body className={inter.className}>
         <ErrorBoundary>
           <Providers>
-            <ThemeProvider>
-              <NextAuthProvider>
-                <AuthProvider>
-                  <Layout>
-                    {children}
-                  </Layout>
-                </AuthProvider>
-              </NextAuthProvider>
-            </ThemeProvider>
+            <LanguageProvider>
+              <ThemeProvider>
+                <NextAuthProvider>
+                  <AuthProvider>
+                    <Layout>
+                      {children}
+                    </Layout>
+                  </AuthProvider>
+                </NextAuthProvider>
+              </ThemeProvider>
+            </LanguageProvider>
           </Providers>
         </ErrorBoundary>
       </body>

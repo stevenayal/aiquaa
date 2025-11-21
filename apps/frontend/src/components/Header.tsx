@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
+import LanguageSelector from './LanguageSelector';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -86,8 +87,9 @@ const Header = () => {
             </Link>
           </nav>
 
-          {/* Desktop Theme Toggle */}
+          {/* Desktop Language Selector & Theme Toggle */}
           <div className="hidden md:flex items-center space-x-3">
+            <LanguageSelector />
             <button
               onClick={toggleDarkMode}
               className={`p-2 rounded-lg transition-colors duration-200 ${
@@ -130,6 +132,11 @@ const Header = () => {
         {isMobileMenuOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1">
+              {/* Language Selector Mobile */}
+              <div className="px-3 py-2">
+                <LanguageSelector />
+              </div>
+
               <Link
                 href="/"
                 className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
