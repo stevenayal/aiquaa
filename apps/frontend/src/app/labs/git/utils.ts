@@ -341,20 +341,35 @@ export async function exportToPDF(result: ExamResult): Promise<void> {
 
 export async function sendResultByEmail(result: ExamResult): Promise<void> {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+  const fullUrl = `${apiUrl}/api/v1/labs/git/send-result`;
 
-  const response = await fetch(`${apiUrl}/api/v1/labs/git/send-result`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      examResult: result,
-    }),
-  });
+  console.log('Enviando resultado al endpoint:', fullUrl);
+  console.log('Datos a enviar:', { examResult: result });
 
-  if (!response.ok) {
-    throw new Error('Error al enviar el correo');
+  try {
+    const response = await fetch(fullUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        examResult: result,
+      }),
+    });
+
+    console.log('Respuesta del servidor:', response.status, response.statusText);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error del servidor:', errorText);
+      throw new Error(`Error al enviar el correo: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    console.log('Correo enviado exitosamente:', data);
+    return data;
+  } catch (error) {
+    console.error('Error en sendResultByEmail:', error);
+    throw error;
   }
-
-  return response.json();
 }

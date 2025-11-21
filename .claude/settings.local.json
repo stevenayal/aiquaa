@@ -43,7 +43,9 @@
       "Bash(timeout 15 pnpm dev:*)",
       "Bash(pnpm exec eslint:*)",
       "Bash(make dev-front:*)",
-      "Bash(npx:*)"
+      "Bash(npx:*)",
+      "Bash(pnpm run start:dev)",
+      "Bash(make dev-back:*)"
     ],
     "deny": [],
     "ask": []
