@@ -46,7 +46,8 @@
       "Bash(npx:*)",
       "Bash(pnpm run start:dev)",
       "Bash(make dev-back:*)",
-      "Bash(pnpm dev)"
+      "Bash(pnpm dev)",
+      "Bash(pnpm install)"
     ],
     "deny": [],
     "ask": []
