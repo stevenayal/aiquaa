@@ -1,0 +1,727 @@
+{
+  "metadata": {
+    "id": "PT-JMETER-AIQUAA-001",
+    "title": "Prueba Técnica de Apache JMeter – AIQUAA Labs",
+    "description": "Evaluación completa basada en la documentación oficial de JMeter y el syllabus PtU CPTJM. Evalúa conocimientos teóricos y prácticos sobre performance testing con Apache JMeter.",
+    "version": "1.0.0",
+    "level": "Intermedio-Avanzado",
+    "estimated_duration_minutes": 90,
+    "passing_score_percentage": 70,
+    "tags": ["jmeter", "performance testing", "ptu-cptjm", "qa", "load testing", "http"],
+    "author": "AIQUAA Labs",
+    "certification_reference": "PtU Certified Performance Tester with JMeter (CPTJM)",
+    "official_docs": "https://jmeter.apache.org/"
+  },
+  "sections": [
+    {
+      "id": "teoria",
+      "title": "Parte 1 – Teoría y Conceptos Clave",
+      "description": "Preguntas teóricas K1/K2 sobre fundamentos de performance testing, HTTP/HTTPS y componentes de JMeter.",
+      "weight": 30,
+      "questions": [
+        {
+          "id": "Q1",
+          "type": "single_choice",
+          "title": "Tipos de Pruebas de Rendimiento",
+          "prompt": "¿Cuál de los siguientes tipos de prueba tiene como objetivo identificar el punto de quiebre del sistema mediante el incremento gradual de la carga hasta que el sistema falla?",
+          "options": [
+            "Load Testing",
+            "Stress Testing",
+            "Spike Testing",
+            "Endurance Testing",
+            "Scalability Testing"
+          ],
+          "correct_answer": ["Stress Testing"],
+          "weight": 1,
+          "tags": ["K1", "performance-types"],
+          "explanation": "Stress Testing busca identificar el punto de quiebre del sistema incrementando la carga más allá de los límites normales hasta que falla. Load Testing verifica el comportamiento bajo carga esperada, Spike Testing evalúa cambios súbitos, Endurance Testing valida estabilidad en el tiempo, y Scalability Testing mide la capacidad de crecimiento.",
+          "evaluation_criteria": "Comprensión correcta de los objetivos de cada tipo de prueba de rendimiento."
+        },
+        {
+          "id": "Q2",
+          "type": "multiple_choice",
+          "title": "Características del Protocolo HTTP",
+          "prompt": "Selecciona TODAS las afirmaciones correctas sobre el protocolo HTTP:",
+          "options": [
+            "HTTP es un protocolo stateless (sin estado) por defecto",
+            "Las cookies permiten mantener el estado de sesión en HTTP",
+            "HTTPS encripta todo el tráfico usando SSL/TLS",
+            "Los métodos GET y POST son idénticos en funcionalidad",
+            "Los headers HTTP pueden contener información de autenticación"
+          ],
+          "correct_answer": [
+            "HTTP es un protocolo stateless (sin estado) por defecto",
+            "Las cookies permiten mantener el estado de sesión en HTTP",
+            "HTTPS encripta todo el tráfico usando SSL/TLS",
+            "Los headers HTTP pueden contener información de autenticación"
+          ],
+          "weight": 2,
+          "tags": ["K2", "http-protocol"],
+          "explanation": "HTTP es stateless, pero las cookies permiten simular estado. HTTPS usa SSL/TLS para encriptación. Los headers pueden llevar tokens de autenticación. GET y POST son diferentes: GET recupera datos y POST envía datos al servidor.",
+          "evaluation_criteria": "Conocimiento profundo del protocolo HTTP y sus mecanismos de estado y seguridad."
+        },
+        {
+          "id": "Q3",
+          "type": "single_choice",
+          "title": "Componentes Esenciales de JMeter",
+          "prompt": "En JMeter, ¿cuál es el elemento MÍNIMO requerido para crear un test plan funcional que envíe una petición HTTP?",
+          "options": [
+            "Test Plan + Thread Group + HTTP Request + Listener",
+            "Test Plan + Thread Group + HTTP Request",
+            "Test Plan + HTTP Request + Listener",
+            "Thread Group + HTTP Request + Timer",
+            "Test Plan + Thread Group + HTTP Request + Assertion"
+          ],
+          "correct_answer": ["Test Plan + Thread Group + HTTP Request"],
+          "weight": 1,
+          "tags": ["K1", "jmeter-basics"],
+          "explanation": "Los elementos mínimos son: Test Plan (contenedor raíz), Thread Group (define usuarios virtuales) y HTTP Request Sampler (realiza la petición). Los Listeners son útiles para ver resultados pero no obligatorios para ejecutar el test.",
+          "evaluation_criteria": "Comprensión de la jerarquía básica y elementos esenciales de un test plan."
+        },
+        {
+          "id": "Q4",
+          "type": "single_choice",
+          "title": "Métricas Clave - Response Time",
+          "prompt": "En un test de performance, el percentil 90 (p90) del tiempo de respuesta es 2500ms. ¿Qué significa esto?",
+          "options": [
+            "El 90% de las peticiones tardaron exactamente 2500ms",
+            "El 90% de las peticiones tardaron 2500ms o menos",
+            "El 10% de las peticiones tardaron más de 2500ms",
+            "El promedio de tiempos de respuesta es 2500ms",
+            "Las opciones B y C son correctas"
+          ],
+          "correct_answer": ["Las opciones B y C son correctas"],
+          "weight": 1,
+          "tags": ["K2", "metrics"],
+          "explanation": "El percentil 90 indica que el 90% de las peticiones completaron en 2500ms o menos, lo que implica que el 10% restante tardó más de 2500ms. No es un promedio ni un valor exacto.",
+          "evaluation_criteria": "Comprensión correcta de percentiles y su interpretación."
+        },
+        {
+          "id": "Q5",
+          "type": "multiple_choice",
+          "title": "KPIs Esenciales en Performance Testing",
+          "prompt": "¿Cuáles de los siguientes son KPIs (Key Performance Indicators) típicamente evaluados en pruebas de rendimiento?",
+          "options": [
+            "Response Time (Tiempo de respuesta)",
+            "Throughput (Rendimiento en peticiones/segundo)",
+            "Error Rate (Tasa de errores)",
+            "Code Coverage (Cobertura de código)",
+            "CPU y Memory utilization del servidor"
+          ],
+          "correct_answer": [
+            "Response Time (Tiempo de respuesta)",
+            "Throughput (Rendimiento en peticiones/segundo)",
+            "Error Rate (Tasa de errores)",
+            "CPU y Memory utilization del servidor"
+          ],
+          "weight": 1,
+          "tags": ["K1", "kpis"],
+          "explanation": "Los KPIs de performance incluyen tiempos de respuesta, throughput, errores y uso de recursos. Code Coverage es una métrica de testing funcional, no de performance.",
+          "evaluation_criteria": "Identificación correcta de métricas relevantes para pruebas de rendimiento."
+        },
+        {
+          "id": "Q6",
+          "type": "single_choice",
+          "title": "Thread Group - Configuración",
+          "prompt": "En un Thread Group de JMeter configurado con: Number of Threads = 100, Ramp-up period = 50 segundos, Loop Count = 10. ¿Cuántas peticiones TOTALES se enviarán si cada thread ejecuta 1 HTTP Request por iteración?",
+          "options": [
+            "100 peticiones",
+            "500 peticiones",
+            "1000 peticiones",
+            "5000 peticiones",
+            "Depende del tiempo de respuesta"
+          ],
+          "correct_answer": ["1000 peticiones"],
+          "weight": 1,
+          "tags": ["K2", "thread-group"],
+          "explanation": "Total de peticiones = Number of Threads × Loop Count × Samplers por iteración = 100 × 10 × 1 = 1000 peticiones. El ramp-up solo afecta el tiempo de inicio, no la cantidad total.",
+          "evaluation_criteria": "Capacidad de calcular el volumen total de carga basado en configuración del Thread Group."
+        },
+        {
+          "id": "Q7",
+          "type": "single_choice",
+          "title": "Samplers en JMeter",
+          "prompt": "¿Cuál de los siguientes NO es un tipo de Sampler válido en Apache JMeter?",
+          "options": [
+            "HTTP Request",
+            "JDBC Request",
+            "FTP Request",
+            "WebSocket Sampler",
+            "REST API Validator"
+          ],
+          "correct_answer": ["REST API Validator"],
+          "weight": 1,
+          "tags": ["K1", "samplers"],
+          "explanation": "JMeter incluye samplers para HTTP, JDBC, FTP, WebSocket, SOAP, SMTP, etc. 'REST API Validator' no es un sampler de JMeter; las APIs REST se prueban con HTTP Request Sampler.",
+          "evaluation_criteria": "Conocimiento de los tipos de samplers disponibles en JMeter."
+        },
+        {
+          "id": "Q8",
+          "type": "single_choice",
+          "title": "Línea Base (Baseline)",
+          "prompt": "En el contexto de performance testing, ¿qué es una 'baseline' o línea base?",
+          "options": [
+            "El número mínimo de usuarios concurrentes que el sistema puede soportar",
+            "Un conjunto de métricas de referencia del sistema bajo condiciones normales que se usa para comparaciones futuras",
+            "El tiempo máximo aceptable de respuesta definido en los SLAs",
+            "La configuración inicial del test plan antes de cualquier optimización",
+            "El throughput promedio del sistema durante horarios pico"
+          ],
+          "correct_answer": ["Un conjunto de métricas de referencia del sistema bajo condiciones normales que se usa para comparaciones futuras"],
+          "weight": 1,
+          "tags": ["K2", "baseline"],
+          "explanation": "La baseline es un punto de referencia que captura el comportamiento normal del sistema. Se usa para detectar degradaciones de performance al comparar tests posteriores contra esta referencia inicial.",
+          "evaluation_criteria": "Comprensión del concepto y propósito de una línea base en performance testing."
+        },
+        {
+          "id": "Q9",
+          "type": "multiple_choice",
+          "title": "Listeners - Reportes y Gráficos",
+          "prompt": "¿Cuáles de los siguientes Listeners son recomendados para generar reportes finales en pruebas de gran volumen?",
+          "options": [
+            "Aggregate Report",
+            "View Results Tree",
+            "Summary Report",
+            "Graph Results (gráfico en tiempo real)",
+            "Backend Listener (InfluxDB/Grafana)"
+          ],
+          "correct_answer": [
+            "Aggregate Report",
+            "Summary Report",
+            "Backend Listener (InfluxDB/Grafana)"
+          ],
+          "weight": 1,
+          "tags": ["K2", "listeners"],
+          "explanation": "Para tests de gran volumen, se recomienda Aggregate/Summary Report (bajo consumo de memoria) y Backend Listener para monitoreo externo. View Results Tree y Graph Results consumen mucha memoria y ralentizan la ejecución en tests largos.",
+          "evaluation_criteria": "Conocimiento de mejores prácticas al elegir listeners según el tipo de test."
+        },
+        {
+          "id": "Q10",
+          "type": "single_choice",
+          "title": "Timers - Control de Pausas",
+          "prompt": "¿Cuál es la función principal de un Timer en JMeter?",
+          "options": [
+            "Medir el tiempo de respuesta de las peticiones",
+            "Introducir pausas/delays entre peticiones para simular comportamiento real de usuarios",
+            "Configurar timeouts para peticiones HTTP",
+            "Controlar el tiempo total de ejecución del test",
+            "Sincronizar threads en ejecución distribuida"
+          ],
+          "correct_answer": ["Introducir pausas/delays entre peticiones para simular comportamiento real de usuarios"],
+          "weight": 1,
+          "tags": ["K1", "timers"],
+          "explanation": "Los Timers añaden pausas entre peticiones para simular el 'think time' de usuarios reales. Esto previene sobrecargar el servidor artificialmente y hace el test más realista.",
+          "evaluation_criteria": "Comprensión del propósito de los timers en la simulación de carga realista."
+        },
+        {
+          "id": "Q11",
+          "type": "single_choice",
+          "title": "Endurance Testing",
+          "prompt": "Un Endurance Test (Soak Test) tiene como objetivo principal:",
+          "options": [
+            "Identificar memory leaks y problemas de estabilidad durante períodos prolongados",
+            "Medir el throughput máximo del sistema",
+            "Evaluar el comportamiento ante picos súbitos de carga",
+            "Determinar el número máximo de usuarios concurrentes",
+            "Verificar la correctitud funcional bajo carga"
+          ],
+          "correct_answer": ["Identificar memory leaks y problemas de estabilidad durante períodos prolongados"],
+          "weight": 1,
+          "tags": ["K2", "performance-types"],
+          "explanation": "Endurance/Soak Testing ejecuta carga sostenida durante horas/días para detectar degradación de performance, memory leaks, conexiones no cerradas, y otros problemas que solo aparecen con el tiempo.",
+          "evaluation_criteria": "Comprensión de los objetivos específicos del endurance testing."
+        },
+        {
+          "id": "Q12",
+          "type": "single_choice",
+          "title": "HTTP Cookies en JMeter",
+          "prompt": "En JMeter, ¿qué elemento se utiliza para manejar automáticamente las cookies HTTP como lo haría un navegador?",
+          "options": [
+            "HTTP Header Manager",
+            "HTTP Cookie Manager",
+            "HTTP Cache Manager",
+            "HTTP Authorization Manager",
+            "User Defined Variables"
+          ],
+          "correct_answer": ["HTTP Cookie Manager"],
+          "weight": 1,
+          "tags": ["K1", "config-elements"],
+          "explanation": "HTTP Cookie Manager almacena y envía automáticamente cookies en las peticiones, simulando el comportamiento de un navegador. Es esencial para manejar sesiones web.",
+          "evaluation_criteria": "Conocimiento de los config elements para manejo de cookies."
+        },
+        {
+          "id": "Q13",
+          "type": "multiple_choice",
+          "title": "Mejores Prácticas en JMeter",
+          "prompt": "Selecciona las mejores prácticas recomendadas al diseñar y ejecutar tests de performance con JMeter:",
+          "options": [
+            "Usar modo GUI solo para diseño y debug, NO para ejecución de tests de carga",
+            "Ejecutar JMeter en modo non-GUI (CLI) para tests de performance reales",
+            "Usar todos los listeners disponibles para obtener información completa",
+            "Parametrizar datos de entrada usando CSV Data Set Config",
+            "Deshabilitar listeners innecesarios durante ejecución para reducir overhead"
+          ],
+          "correct_answer": [
+            "Usar modo GUI solo para diseño y debug, NO para ejecución de tests de carga",
+            "Ejecutar JMeter en modo non-GUI (CLI) para tests de performance reales",
+            "Parametrizar datos de entrada usando CSV Data Set Config",
+            "Deshabilitar listeners innecesarios durante ejecución para reducir overhead"
+          ],
+          "weight": 2,
+          "tags": ["K2", "best-practices"],
+          "explanation": "Las mejores prácticas incluyen: usar GUI solo para diseño, ejecutar en CLI para carga real, parametrizar datos, y minimizar listeners. Usar TODOS los listeners incrementa el overhead y afecta los resultados.",
+          "evaluation_criteria": "Conocimiento de las mejores prácticas oficiales de Apache JMeter."
+        },
+        {
+          "id": "Q14",
+          "type": "single_choice",
+          "title": "Distributed Testing - Arquitectura",
+          "prompt": "En JMeter Distributed Testing, ¿cuál es el rol del 'Master' (Controller)?",
+          "options": [
+            "Ejecutar los threads y samplers del test plan",
+            "Coordinar la ejecución y recolectar resultados de los Remote Servers (Slaves)",
+            "Almacenar los resultados en una base de datos",
+            "Generar la carga simulada de usuarios",
+            "Monitorear los recursos del servidor bajo prueba"
+          ],
+          "correct_answer": ["Coordinar la ejecución y recolectar resultados de los Remote Servers (Slaves)"],
+          "weight": 1,
+          "tags": ["K2", "distributed-testing"],
+          "explanation": "En modo distribuido, el Master/Controller coordina la ejecución en múltiples Remote Servers (Slaves) y consolida los resultados. Los Slaves son quienes realmente ejecutan los threads y generan la carga.",
+          "evaluation_criteria": "Comprensión de la arquitectura master-slave en JMeter distribuido."
+        },
+        {
+          "id": "Q15",
+          "type": "single_choice",
+          "title": "Assertions - Validación de Respuestas",
+          "prompt": "¿Cuál es el propósito principal de las Assertions en JMeter?",
+          "options": [
+            "Extraer datos de las respuestas para uso posterior",
+            "Validar que las respuestas cumplan con criterios específicos (ej: código 200, texto esperado)",
+            "Modificar las peticiones antes de enviarlas",
+            "Configurar headers HTTP",
+            "Controlar el flujo de ejecución del test"
+          ],
+          "correct_answer": ["Validar que las respuestas cumplan con criterios específicos (ej: código 200, texto esperado)"],
+          "weight": 1,
+          "tags": ["K1", "assertions"],
+          "explanation": "Las Assertions verifican que las respuestas cumplan condiciones definidas (código HTTP, texto, tamaño, JSON path, etc.). Si fallan, marcan la petición como error.",
+          "evaluation_criteria": "Comprensión del rol de assertions en la validación de respuestas."
+        }
+      ]
+    },
+    {
+      "id": "scripting",
+      "title": "Parte 2 – Scripting y Configuración en JMeter",
+      "description": "Preguntas prácticas K3 sobre configuración de test plans, parametrización, correlación y elementos avanzados.",
+      "weight": 40,
+      "questions": [
+        {
+          "id": "Q16",
+          "type": "practical_task",
+          "title": "CSV Data Set Config - Parametrización",
+          "prompt": "Tienes un archivo CSV llamado 'users.csv' con la estructura:\n\nusername,password,email\nuser1,pass123,user1@test.com\nuser2,pass456,user2@test.com\nuser3,pass789,user3@test.com\n\nCONFIGURA un CSV Data Set Config para:\n1. Leer el archivo users.csv\n2. Usar diferentes credenciales en cada iteración\n3. Asegurar que cuando se acaben las líneas, el test se detenga (no reciclar datos)\n\nProporciona la configuración de los siguientes campos:\n- Filename\n- Variable Names\n- Recycle on EOF?\n- Stop thread on EOF?\n- Sharing mode",
+          "options": [],
+          "correct_answer": [],
+          "weight": 3,
+          "tags": ["K3", "csv-parametrization"],
+          "explanation": "Configuración correcta:\n- Filename: users.csv (o ruta completa)\n- Variable Names: username,password,email\n- Recycle on EOF?: False\n- Stop thread on EOF?: True\n- Sharing mode: All threads (para compartir entre todos los threads)\n\nEsto asegura que cada thread use credenciales únicas y el test se detenga cuando se agoten.",
+          "evaluation_criteria": "Configuración correcta del CSV Data Set Config incluyendo: nombre de archivo, variables, manejo de EOF, y modo de compartición.",
+          "expected_artifacts": [
+            "Configuración completa del CSV Data Set Config",
+            "Explicación del comportamiento esperado con esta configuración"
+          ]
+        },
+        {
+          "id": "Q17",
+          "type": "practical_task",
+          "title": "Regular Expression Extractor - Correlación",
+          "prompt": "Recibes la siguiente respuesta HTML de un login:\n\n<html>\n<body>\n<form action='/submit'>\n  <input type='hidden' name='csrf_token' value='abc123xyz789'>\n  <input type='text' name='username'>\n  <input type='password' name='pwd'>\n</form>\n</body>\n</html>\n\nNecesitas EXTRAER el valor del csrf_token para usarlo en la siguiente petición.\n\nConfigura un Regular Expression Extractor con:\n- Field to check\n- Name of created variable\n- Regular Expression\n- Template\n- Match No.\n- Default Value",
+          "options": [],
+          "correct_answer": [],
+          "weight": 3,
+          "tags": ["K3", "correlation", "regex"],
+          "explanation": "Configuración correcta:\n- Field to check: Body\n- Name of created variable: csrf_token\n- Regular Expression: name='csrf_token' value='(.+?)'\n- Template: $1$\n- Match No.: 1 (primera coincidencia)\n- Default Value: TOKEN_NOT_FOUND (para debug)\n\nEsto captura el valor dinámico del token y lo almacena en la variable ${csrf_token}.",
+          "evaluation_criteria": "Configuración correcta del regex extractor incluyendo: campo, nombre de variable, expresión regular válida, template, y valores por defecto.",
+          "expected_artifacts": [
+            "Configuración completa del Regular Expression Extractor",
+            "Expresión regular funcional que capture correctamente el token",
+            "Explicación de cómo usar la variable extraída"
+          ]
+        },
+        {
+          "id": "Q18",
+          "type": "practical_task",
+          "title": "JSON Extractor - API REST",
+          "prompt": "Recibes la siguiente respuesta JSON de una API:\n\n{\n  \"status\": \"success\",\n  \"data\": {\n    \"userId\": 12345,\n    \"sessionToken\": \"xyz-789-abc\",\n    \"profile\": {\n      \"name\": \"John Doe\",\n      \"roles\": [\"admin\", \"user\"]\n    }\n  }\n}\n\nNecesitas EXTRAER:\n1. El sessionToken para usarlo en headers de peticiones posteriores\n2. El primer rol del array roles\n\nConfigura DOS JSON Extractors (JSON Path Extractor) para extraer estos valores.",
+          "options": [],
+          "correct_answer": [],
+          "weight": 3,
+          "tags": ["K3", "correlation", "json-extractor"],
+          "explanation": "Configuración correcta:\n\nExtractor 1 (Session Token):\n- Names of created variables: sessionToken\n- JSON Path expressions: $.data.sessionToken\n- Match No.: 0 (primera coincidencia)\n- Default Values: TOKEN_NOT_FOUND\n\nExtractor 2 (Primer Rol):\n- Names of created variables: userRole\n- JSON Path expressions: $.data.profile.roles[0]\n- Match No.: 0\n- Default Values: ROLE_NOT_FOUND\n\nLos valores se usan como: ${sessionToken} y ${userRole}",
+          "evaluation_criteria": "Configuración correcta de JSON Path Extractors con: nombre de variables, expresiones JSON Path válidas, match number, y valores por defecto.",
+          "expected_artifacts": [
+            "Dos configuraciones completas de JSON Extractor",
+            "JSON Path expressions correctas",
+            "Explicación de cómo usar las variables extraídas en peticiones posteriores"
+          ]
+        },
+        {
+          "id": "Q19",
+          "type": "single_choice",
+          "title": "Controllers - If Controller",
+          "prompt": "Tienes una variable ${status} que puede ser 'active' o 'inactive'. Quieres ejecutar un HTTP Request SOLO si status == 'active'.\n\n¿Cuál condición usarías en un If Controller?",
+          "options": [
+            "${status} == 'active'",
+            "\"${status}\" == \"active\"",
+            "${__groovy(vars.get(\"status\") == \"active\")}",
+            "'${status}'.equals('active')",
+            "Las opciones B y C son correctas"
+          ],
+          "correct_answer": ["Las opciones B y C son correctas"],
+          "weight": 2,
+          "tags": ["K3", "controllers"],
+          "explanation": "En If Controller, las condiciones se evalúan con sintaxis JavaScript o Groovy. Las formas correctas son:\n- \"${status}\" == \"active\" (comparación de strings)\n- ${__groovy(vars.get(\"status\") == \"active\")} (función Groovy)\n\nLa opción A falla porque compara sin comillas y puede dar error de sintaxis.",
+          "evaluation_criteria": "Conocimiento de sintaxis correcta para condiciones en If Controller."
+        },
+        {
+          "id": "Q20",
+          "type": "multiple_choice",
+          "title": "Assertions Avanzadas",
+          "prompt": "¿Cuáles de las siguientes Assertions están disponibles en JMeter?",
+          "options": [
+            "Response Assertion (validar texto/código HTTP)",
+            "JSON Assertion (validar estructura JSON)",
+            "Duration Assertion (validar tiempo de respuesta máximo)",
+            "Size Assertion (validar tamaño de respuesta)",
+            "Database Assertion (validar queries SQL)"
+          ],
+          "correct_answer": [
+            "Response Assertion (validar texto/código HTTP)",
+            "JSON Assertion (validar estructura JSON)",
+            "Duration Assertion (validar tiempo de respuesta máximo)",
+            "Size Assertion (validar tamaño de respuesta)"
+          ],
+          "weight": 1,
+          "tags": ["K2", "assertions"],
+          "explanation": "JMeter incluye: Response, JSON, Duration, Size, XPath, XML, HTML, MD5Hex, entre otras assertions. No existe 'Database Assertion' como tal, aunque puedes validar resultados JDBC con Response Assertion.",
+          "evaluation_criteria": "Conocimiento de los tipos de assertions disponibles en JMeter."
+        },
+        {
+          "id": "Q21",
+          "type": "practical_task",
+          "title": "HTTP Header Manager - Autenticación",
+          "prompt": "Necesitas configurar un test que envíe un token de autenticación en TODAS las peticiones HTTP del Thread Group.\n\nEl header debe ser:\nAuthorization: Bearer abc123xyz789token\n\n¿Dónde colocarías el HTTP Header Manager y cómo lo configurarías?\n\nProporciona:\n1. Ubicación del elemento en el test plan\n2. Configuración del header (Name y Value)\n3. Explicación del scope de aplicación",
+          "options": [],
+          "correct_answer": [],
+          "weight": 2,
+          "tags": ["K3", "config-elements", "http-headers"],
+          "explanation": "Configuración correcta:\n\n1. Ubicación: Añadir HTTP Header Manager como child del Thread Group (a nivel raíz, para que aplique a TODOS los samplers del grupo)\n\n2. Configuración:\n   Name: Authorization\n   Value: Bearer abc123xyz789token\n\n3. Scope: Al estar a nivel Thread Group, el header se añade automáticamente a TODAS las peticiones HTTP dentro de ese grupo. Si solo quisieras aplicarlo a un sampler específico, lo colocarías como child de ese sampler.\n\nPara parametrizar el token: Value: Bearer ${token}",
+          "evaluation_criteria": "Correcta ubicación del elemento, configuración del header, y comprensión del scope de aplicación.",
+          "expected_artifacts": [
+            "Ubicación correcta en la jerarquía del test plan",
+            "Configuración Name/Value del header",
+            "Explicación del comportamiento y scope"
+          ]
+        },
+        {
+          "id": "Q22",
+          "type": "single_choice",
+          "title": "Timers - Constant Timer vs Uniform Random Timer",
+          "prompt": "Necesitas simular usuarios que piensan entre 2 y 5 segundos antes de cada acción. ¿Qué timer usarías?",
+          "options": [
+            "Constant Timer con 3500ms",
+            "Uniform Random Timer con offset 2000ms y random delay 3000ms",
+            "Gaussian Random Timer",
+            "Synchronizing Timer",
+            "Constant Throughput Timer"
+          ],
+          "correct_answer": ["Uniform Random Timer con offset 2000ms y random delay 3000ms"],
+          "weight": 1,
+          "tags": ["K3", "timers"],
+          "explanation": "Uniform Random Timer con offset=2000ms y random=3000ms genera pausas entre 2000ms y 5000ms (2000 + random(0-3000)). Constant Timer siempre pausa lo mismo. Gaussian usa distribución normal. Synchronizing Timer coordina threads. Constant Throughput Timer controla rate, no pausas individuales.",
+          "evaluation_criteria": "Capacidad de seleccionar el timer apropiado según el comportamiento deseado."
+        },
+        {
+          "id": "Q23",
+          "type": "practical_task",
+          "title": "Loop Controller - Escenarios Repetitivos",
+          "prompt": "Diseña un escenario donde:\n1. Un usuario hace login (1 vez)\n2. Luego busca productos (5 veces)\n3. Finalmente hace logout (1 vez)\n\n¿Cómo estructurarías el test plan usando controllers?\n\nProporciona la jerarquía de elementos (Test Plan, Thread Group, Controllers, Samplers).",
+          "options": [],
+          "correct_answer": [],
+          "weight": 2,
+          "tags": ["K3", "controllers", "test-design"],
+          "explanation": "Estructura correcta:\n\nTest Plan\n└── Thread Group (1 usuario, 1 iteración)\n    ├── HTTP Request: Login\n    ├── Loop Controller (Count: 5)\n    │   └── HTTP Request: Buscar Producto\n    └── HTTP Request: Logout\n\nAlternativamente, usando Simple Controller para organización:\n\nTest Plan\n└── Thread Group\n    ├── Simple Controller: Login Flow\n    │   └── HTTP Request: Login\n    ├── Loop Controller (Count: 5)\n    │   └── Simple Controller: Search Flow\n    │       └── HTTP Request: Buscar Producto\n    └── Simple Controller: Logout Flow\n        └── HTTP Request: Logout\n\nEl Loop Controller repite solo lo que está dentro, mientras Login y Logout se ejecutan una vez.",
+          "evaluation_criteria": "Correcta estructuración del test plan usando controllers para controlar el flujo y repeticiones.",
+          "expected_artifacts": [
+            "Jerarquía completa del test plan",
+            "Uso correcto de Loop Controller",
+            "Explicación del flujo de ejecución"
+          ]
+        },
+        {
+          "id": "Q24",
+          "type": "single_choice",
+          "title": "Recording - HTTP(S) Test Script Recorder",
+          "prompt": "Al usar el HTTP(S) Test Script Recorder de JMeter para grabar un test, ¿qué configuración del navegador es necesaria?",
+          "options": [
+            "Instalar una extensión específica de JMeter en el navegador",
+            "Configurar el navegador para usar JMeter como proxy (localhost:8888 por defecto)",
+            "Desactivar JavaScript en el navegador",
+            "Usar modo incógnito obligatoriamente",
+            "No requiere configuración, JMeter captura automáticamente el tráfico"
+          ],
+          "correct_answer": ["Configurar el navegador para usar JMeter como proxy (localhost:8888 por defecto)"],
+          "weight": 1,
+          "tags": ["K2", "recording"],
+          "explanation": "JMeter actúa como proxy HTTP. Debes configurar el navegador para usar localhost:8888 (puerto por defecto) como proxy. Para HTTPS, necesitas instalar el certificado de JMeter (ApacheJMeterTemporaryRootCA.crt).",
+          "evaluation_criteria": "Conocimiento del proceso de configuración para grabar scripts con JMeter."
+        },
+        {
+          "id": "Q25",
+          "type": "practical_task",
+          "title": "User Defined Variables vs CSV - Cuándo usar cada uno",
+          "prompt": "Explica cuándo es apropiado usar User Defined Variables (UDV) vs CSV Data Set Config.\n\nProporciona:\n1. Casos de uso ideales para UDV\n2. Casos de uso ideales para CSV\n3. Un ejemplo práctico de cada uno",
+          "options": [],
+          "correct_answer": [],
+          "weight": 2,
+          "tags": ["K3", "config-elements", "parametrization"],
+          "explanation": "User Defined Variables (UDV):\n- Casos de uso: Constantes del test (URLs base, timeouts), parámetros de configuración que no cambian, valores compartidos globalmente\n- Ejemplo: \n  BASE_URL = https://api.test.com\n  API_VERSION = v2\n  TIMEOUT = 5000\n\nCSV Data Set Config:\n- Casos de uso: Datos que varían por usuario/iteración (credenciales, datos de test), grandes volúmenes de datos, data-driven testing\n- Ejemplo:\n  users.csv con múltiples credenciales para simular diferentes usuarios\n  products.csv con catálogo de productos para búsquedas variadas\n\nDiferencia clave: UDV para constantes, CSV para datos variables y dinámicos.",
+          "evaluation_criteria": "Comprensión clara de cuándo usar cada método de parametrización según las necesidades del test.",
+          "expected_artifacts": [
+            "Explicación de casos de uso para UDV",
+            "Explicación de casos de uso para CSV",
+            "Ejemplos prácticos de ambos"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ejecucion_analisis",
+      "title": "Parte 3 – Ejecución, Métricas y Análisis",
+      "description": "Preguntas K2/K3 sobre interpretación de resultados, ejecución CLI/distribuida, análisis de métricas, baseline y monitoreo.",
+      "weight": 30,
+      "questions": [
+        {
+          "id": "Q26",
+          "type": "single_choice",
+          "title": "Ejecución CLI - Comando Básico",
+          "prompt": "¿Cuál es el comando correcto para ejecutar un test plan en modo non-GUI y guardar los resultados en un archivo JTL?",
+          "options": [
+            "jmeter -t test.jmx -l results.jtl",
+            "jmeter -n -t test.jmx -l results.jtl",
+            "jmeter --run test.jmx --output results.jtl",
+            "jmeter -gui test.jmx -results results.jtl",
+            "jmeter execute test.jmx > results.jtl"
+          ],
+          "correct_answer": ["jmeter -n -t test.jmx -l results.jtl"],
+          "weight": 1,
+          "tags": ["K2", "cli-execution"],
+          "explanation": "La sintaxis correcta es: jmeter -n (non-GUI mode) -t <test plan file> -l <log file>. El flag -n es crítico para ejecución en modo CLI sin interfaz gráfica.",
+          "evaluation_criteria": "Conocimiento de la sintaxis básica para ejecutar JMeter en modo non-GUI."
+        },
+        {
+          "id": "Q27",
+          "type": "multiple_choice",
+          "title": "Parámetros CLI Avanzados",
+          "prompt": "¿Cuáles de los siguientes parámetros CLI de JMeter son válidos y útiles?",
+          "options": [
+            "-J<property>=<value> (definir propiedades Java)",
+            "-G<property>=<value> (definir propiedades globales para remote servers)",
+            "-e (generar dashboard HTML al final del test)",
+            "-o <folder> (carpeta para dashboard HTML)",
+            "-r (ejecutar test en TODOS los remote servers configurados)"
+          ],
+          "correct_answer": [
+            "-J<property>=<value> (definir propiedades Java)",
+            "-G<property>=<value> (definir propiedades globales para remote servers)",
+            "-e (generar dashboard HTML al final del test)",
+            "-o <folder> (carpeta para dashboard HTML)",
+            "-r (ejecutar test en TODOS los remote servers configurados)"
+          ],
+          "weight": 2,
+          "tags": ["K2", "cli-execution"],
+          "explanation": "Todos son parámetros válidos:\n-J: propiedades Java/JMeter locales\n-G: propiedades para distributed testing\n-e y -o: generación automática de dashboard HTML\n-r: ejecutar en todos los remote servers\n\nEjemplo completo: jmeter -n -t test.jmx -l results.jtl -e -o dashboard -Jusers=100",
+          "evaluation_criteria": "Conocimiento de parámetros CLI avanzados para diferentes escenarios de ejecución."
+        },
+        {
+          "id": "Q28",
+          "type": "practical_task",
+          "title": "Análisis de Aggregate Report",
+          "prompt": "Analiza los siguientes datos de un Aggregate Report:\n\nLabel: Login API\nSamples: 1000\nAverage: 450ms\nMedian: 380ms\nMin: 120ms\nMax: 3500ms\n90% Line (p90): 780ms\n95% Line (p95): 1200ms\n99% Line (p99): 2800ms\nError %: 2.5%\nThroughput: 45.2/sec\n\nRESPONDE:\n1. ¿El sistema cumple si el SLA es p95 < 1000ms?\n2. ¿Hay evidencia de outliers problemáticos?\n3. ¿La tasa de error es aceptable para producción?\n4. ¿Qué métrica adicional necesitarías para validar la capacidad del servidor?",
+          "options": [],
+          "correct_answer": [],
+          "weight": 3,
+          "tags": ["K3", "metrics-analysis"],
+          "explanation": "Análisis correcto:\n\n1. SLA: NO cumple. El p95 es 1200ms, superior al SLA de 1000ms. Aunque la mediana es buena (380ms), el 5% de las peticiones más lentas exceden el umbral.\n\n2. Outliers: SÍ. Existe una gran diferencia entre p95 (1200ms) y max (3500ms). El p99 (2800ms) también es muy alto comparado con la mediana, indicando que el 1% de peticiones tienen problemas graves.\n\n3. Error rate: 2.5% es generalmente INACEPTABLE para producción. Lo ideal es < 1%, y crítico sería < 0.1%. Necesitas investigar los errores específicos.\n\n4. Métricas adicionales necesarias:\n   - CPU, RAM, I/O del servidor durante el test\n   - Network bandwidth utilization\n   - Database query times (si aplica)\n   - Connection pool metrics\n   - Garbage collection activity (para apps Java)\n   Estas métricas del servidor ayudan a identificar cuellos de botella.",
+          "evaluation_criteria": "Capacidad de analizar métricas, identificar problemas de performance, evaluar cumplimiento de SLAs, y determinar métricas adicionales necesarias.",
+          "expected_artifacts": [
+            "Evaluación correcta del cumplimiento de SLA",
+            "Identificación de outliers y problemas",
+            "Análisis de error rate",
+            "Lista de métricas adicionales de servidor con justificación"
+          ]
+        },
+        {
+          "id": "Q29",
+          "type": "practical_task",
+          "title": "Distributed Testing - Configuración",
+          "prompt": "Necesitas configurar JMeter Distributed Testing con:\n- 1 Controller/Master (IP: 192.168.1.10)\n- 3 Remote Servers/Slaves (IPs: 192.168.1.20, 192.168.1.21, 192.168.1.22)\n\nExplica:\n1. ¿Qué archivo de configuración se modifica en el Master?\n2. ¿Qué parámetro se añade y con qué valor?\n3. ¿Cómo se inicia el test distribuido desde CLI?\n4. ¿Dónde se generan los resultados (Master o Slaves)?",
+          "options": [],
+          "correct_answer": [],
+          "weight": 3,
+          "tags": ["K3", "distributed-testing"],
+          "explanation": "Configuración correcta:\n\n1. Archivo: jmeter.properties (en el Master)\n\n2. Parámetro modificar:\n   remote_hosts=192.168.1.20,192.168.1.21,192.168.1.22\n\n3. Iniciar test distribuido:\n   Opción A (todos los servers): jmeter -n -t test.jmx -r -l results.jtl\n   Opción B (servers específicos): jmeter -n -t test.jmx -R 192.168.1.20,192.168.1.21 -l results.jtl\n\n4. Resultados: Se consolidan en el MASTER. Cada slave ejecuta su porción del test y envía resultados al master, quien los agrega en un único archivo results.jtl.\n\nNota importante: Los slaves deben tener jmeter-server corriendo (jmeter-server o jmeter-server.bat).",
+          "evaluation_criteria": "Conocimiento completo de la configuración y ejecución de JMeter en modo distribuido.",
+          "expected_artifacts": [
+            "Archivo y parámetro de configuración correctos",
+            "Sintaxis CLI para ejecución distribuida",
+            "Explicación de dónde se consolidan resultados",
+            "Consideraciones adicionales (jmeter-server)"
+          ]
+        },
+        {
+          "id": "Q30",
+          "type": "open_text",
+          "title": "Baseline - Establecimiento y Uso",
+          "prompt": "Explica el proceso completo para establecer y utilizar una baseline de performance:\n\n1. ¿Qué condiciones deben cumplirse antes de crear una baseline?\n2. ¿Qué métricas clave deberías capturar?\n3. ¿Cómo usarías la baseline para detectar regresiones de performance?\n4. ¿Con qué frecuencia se debería actualizar una baseline?",
+          "options": [],
+          "correct_answer": [],
+          "weight": 3,
+          "tags": ["K3", "baseline", "performance-analysis"],
+          "explanation": "Respuesta modelo:\n\n1. Condiciones previas:\n   - Sistema estable y funcional (sin bugs críticos)\n   - Ambiente de test que replique producción (hardware, configuración, datos)\n   - Carga representativa de uso normal (no pico ni mínimo)\n   - Sin cambios recientes en código o infraestructura\n   - Múltiples ejecuciones para confirmar consistencia\n\n2. Métricas clave a capturar:\n   - Response times (avg, median, p90, p95, p99)\n   - Throughput (requests/sec)\n   - Error rate (%)\n   - Recursos del servidor (CPU %, RAM %, Disk I/O, Network)\n   - Database metrics (query time, connections, locks)\n   - JVM metrics si aplica (heap, GC pauses)\n\n3. Uso para detectar regresiones:\n   - Ejecutar el mismo test bajo las mismas condiciones\n   - Comparar métricas actuales vs baseline\n   - Alertar si degradación > umbral (ej: p95 incrementa > 10%)\n   - Investigar causas: cambios de código, configuración, datos, o ambiente\n   - Documentar y trackear tendencias en el tiempo\n\n4. Frecuencia de actualización:\n   - Después de cambios mayores de infraestructura/arquitectura\n   - Cuando se optimiza intencionalmente el sistema\n   - Periódicamente (ej: cada release mayor)\n   - Mantener historial de baselines para trazabilidad\n   - NO actualizar solo porque empeoró (eso sería esconder el problema)",
+          "evaluation_criteria": "Comprensión completa del concepto de baseline, su establecimiento, uso para detección de regresiones, y mantenimiento.",
+          "expected_artifacts": [
+            "Condiciones claras para crear baseline",
+            "Lista comprensiva de métricas a capturar",
+            "Proceso detallado de uso para detectar regresiones",
+            "Criterios para actualización de baseline"
+          ]
+        },
+        {
+          "id": "Q31",
+          "type": "multiple_choice",
+          "title": "Monitoreo de Recursos del Servidor",
+          "prompt": "¿Qué herramientas/métodos puedes usar para monitorear recursos del servidor bajo prueba DURANTE la ejecución de un test de JMeter?",
+          "options": [
+            "PerfMon Server Agent + PerfMon Metrics Collector (JMeter Plugin)",
+            "Backend Listener enviando datos a InfluxDB + Grafana",
+            "SSH al servidor y ejecutar comandos top/htop/iostat manualmente",
+            "Herramientas APM como New Relic, Dynatrace, AppDynamics",
+            "AWS CloudWatch / Azure Monitor (para ambientes cloud)"
+          ],
+          "correct_answer": [
+            "PerfMon Server Agent + PerfMon Metrics Collector (JMeter Plugin)",
+            "Backend Listener enviando datos a InfluxDB + Grafana",
+            "Herramientas APM como New Relic, Dynatrace, AppDynamics",
+            "AWS CloudWatch / Azure Monitor (para ambientes cloud)"
+          ],
+          "weight": 2,
+          "tags": ["K2", "monitoring"],
+          "explanation": "Métodos efectivos:\n- PerfMon: Plugin de JMeter que colecta métricas del servidor (CPU, RAM, Network, Disk)\n- Backend Listener + InfluxDB/Grafana: Stack moderno para monitoreo en tiempo real\n- APM tools: Monitoreo profundo de aplicaciones (código, queries, traces)\n- Cloud monitoring: CloudWatch/Azure Monitor para infraestructura cloud\n\nSSH manual no es práctico para tests largos y no captura datos históricos automáticamente.",
+          "evaluation_criteria": "Conocimiento de herramientas de monitoreo integradas con JMeter y externas."
+        },
+        {
+          "id": "Q32",
+          "type": "single_choice",
+          "title": "Dashboard HTML Report",
+          "prompt": "Para generar un Dashboard HTML Report a partir de un archivo JTL existente (results.jtl), ¿qué comando usarías?",
+          "options": [
+            "jmeter -g results.jtl -o dashboard",
+            "jmeter -n -t test.jmx -l results.jtl -e -o dashboard",
+            "jmeter --generate-dashboard results.jtl dashboard",
+            "jmeter -html results.jtl -output dashboard",
+            "jmeter -dashboard results.jtl > dashboard"
+          ],
+          "correct_answer": ["jmeter -g results.jtl -o dashboard"],
+          "weight": 1,
+          "tags": ["K2", "reporting"],
+          "explanation": "Para generar dashboard desde JTL existente: jmeter -g <jtl file> -o <output folder>\n\nLa opción B genera dashboard DURANTE la ejecución del test. Las otras opciones no son sintaxis válida de JMeter.",
+          "evaluation_criteria": "Conocimiento de comandos para generación de reportes HTML."
+        },
+        {
+          "id": "Q33",
+          "type": "practical_task",
+          "title": "Documentación de Test Plan",
+          "prompt": "Diseña la estructura de un documento de test plan de performance que incluya:\n\n1. Información esencial que debe contener\n2. Secciones obligatorias\n3. Formato de presentación de resultados\n4. Elementos de trazabilidad\n\nProporciona un outline/índice completo del documento.",
+          "options": [],
+          "correct_answer": [],
+          "weight": 3,
+          "tags": ["K3", "documentation", "best-practices"],
+          "explanation": "Outline de Documento de Test Plan de Performance:\n\n1. INFORMACIÓN DEL DOCUMENTO\n   - Título del proyecto\n   - Versión del documento\n   - Fecha de creación/actualización\n   - Autor(es)\n   - Aprobadores\n\n2. OBJETIVOS DEL TEST\n   - Propósito de la prueba\n   - Alcance (funcionalidades a probar)\n   - Fuera de alcance\n\n3. ESCENARIOS DE PRUEBA\n   - Descripción de cada escenario\n   - Carga esperada (usuarios, transacciones)\n   - Condiciones de aceptación/SLAs\n\n4. AMBIENTE DE PRUEBA\n   - Arquitectura de la aplicación\n   - Servidores (specs de hardware)\n   - Configuración de red\n   - Datos de prueba\n\n5. DISEÑO DEL TEST\n   - Estructura del Test Plan de JMeter\n   - Configuración de Thread Groups\n   - Ramp-up y duración\n   - Datos parametrizados\n\n6. MÉTRICAS Y KPIS\n   - Response time (thresholds)\n   - Throughput objetivo\n   - Error rate aceptable\n   - Recursos del servidor (límites)\n\n7. EJECUCIÓN\n   - Fecha y hora de ejecución\n   - Configuración de JMeter (versión, flags CLI)\n   - Responsables\n   - Incidentes durante ejecución\n\n8. RESULTADOS\n   - Aggregate Report\n   - Gráficos de throughput y response time\n   - Recursos del servidor (CPU, RAM)\n   - Análisis de errores\n   - Comparación vs baseline (si existe)\n\n9. ANÁLISIS Y CONCLUSIONES\n   - Cumplimiento de SLAs (✓/✗)\n   - Cuellos de botella identificados\n   - Recomendaciones de optimización\n   - Riesgos para producción\n\n10. ANEXOS\n    - Scripts de JMeter (.jmx)\n    - Archivos de datos (CSV)\n    - Logs completos\n    - Configuraciones de servidor\n\n11. TRAZABILIDAD\n    - Referencias a requisitos de negocio\n    - User stories o casos de uso relacionados\n    - Defectos encontrados (IDs de Jira/bugs)\n    - Versión del código bajo prueba (commit/tag)",
+          "evaluation_criteria": "Capacidad de estructurar documentación profesional de performance testing con todas las secciones críticas.",
+          "expected_artifacts": [
+            "Outline completo y estructurado del documento",
+            "Inclusión de todas las secciones esenciales",
+            "Consideración de trazabilidad y anexos",
+            "Formato profesional y claro"
+          ]
+        },
+        {
+          "id": "Q34",
+          "type": "open_text",
+          "title": "Análisis de Throughput vs Latencia",
+          "prompt": "Durante un test de escalabilidad, observas el siguiente comportamiento:\n\n- Con 50 usuarios: Throughput = 200 req/s, Avg Response Time = 250ms\n- Con 100 usuarios: Throughput = 350 req/s, Avg Response Time = 450ms\n- Con 200 usuarios: Throughput = 380 req/s, Avg Response Time = 1200ms\n- Con 400 usuarios: Throughput = 385 req/s, Avg Response Time = 3500ms\n\nAnaliza:\n1. ¿En qué punto el sistema alcanza saturación?\n2. ¿Qué indica la relación throughput-latencia?\n3. ¿Qué investigarías en el servidor para identificar la causa?",
+          "options": [],
+          "correct_answer": [],
+          "weight": 3,
+          "tags": ["K3", "performance-analysis", "scalability"],
+          "explanation": "Análisis correcto:\n\n1. Saturación: El sistema alcanza saturación entre 100-200 usuarios. Evidencia:\n   - El throughput crece significativamente de 50 a 100 usuarios (200→350)\n   - De 100 a 200 usuarios, throughput solo aumenta +30 (350→380), casi plano\n   - De 200 a 400 usuarios, throughput solo +5 (380→385), prácticamente estancado\n   - Esto indica que el sistema no puede procesar más de ~385 req/s sin importar los usuarios\n\n2. Relación throughput-latencia:\n   - A medida que se acerca a saturación, la latencia crece exponencialmente mientras throughput se estanca\n   - Esto es típico: peticiones se encolan, tiempo de espera aumenta, pero capacidad de procesamiento está al límite\n   - El sistema está saturado cuando añadir más usuarios solo incrementa latencia, no throughput\n   - El punto óptimo parece ser ~100 usuarios (buen balance entre throughput y latencia aceptable)\n\n3. Investigación en servidor:\n   a) CPU utilization: ¿Está al 100%? Indica bottleneck de procesamiento\n   b) Memory: ¿Alto uso de RAM? ¿Swapping? Causa lentitud severa\n   c) Database:\n      - Connection pool saturado (max connections alcanzado)\n      - Queries lentas o locks\n      - Disk I/O en base de datos\n   d) Thread pool: ¿Todos los threads en uso? ¿Peticiones encoladas?\n   e) Network: ¿Bandwidth saturado? (menos probable si es solo 385 req/s)\n   f) Garbage Collection (si es Java): ¿GC pauses largos?\n   g) Logs de la aplicación: ¿Errores, warnings, timeouts?\n\nAcción recomendada: Usar profiling tools (VisualVM, YourKit, New Relic) para identificar el bottleneck específico.",
+          "evaluation_criteria": "Capacidad de analizar datos de escalabilidad, identificar puntos de saturación, interpretar relaciones entre métricas, y proponer investigación de causa raíz.",
+          "expected_artifacts": [
+            "Identificación correcta del punto de saturación con evidencia",
+            "Análisis de la relación throughput-latencia",
+            "Lista detallada de áreas a investigar en el servidor",
+            "Recomendaciones de herramientas de análisis"
+          ]
+        },
+        {
+          "id": "Q35",
+          "type": "single_choice",
+          "title": "Ejecución Remota - Troubleshooting",
+          "prompt": "Al ejecutar JMeter en modo distribuido, el Master no puede conectarse a un Remote Server. ¿Cuál NO es una causa probable?",
+          "options": [
+            "Firewall bloqueando puerto 1099 (RMI)",
+            "Versiones diferentes de JMeter entre Master y Slave",
+            "El jmeter-server no está corriendo en el Remote Server",
+            "IP del Remote Server mal configurada en remote_hosts",
+            "El test plan (.jmx) contiene un CSV Data Set Config"
+          ],
+          "correct_answer": ["El test plan (.jmx) contiene un CSV Data Set Config"],
+          "weight": 1,
+          "tags": ["K2", "distributed-testing", "troubleshooting"],
+          "explanation": "Causas comunes de problemas de conexión distribuida:\n- Puerto RMI (1099) bloqueado por firewall\n- Versiones incompatibles de JMeter\n- jmeter-server no iniciado en slave\n- IP incorrecta en remote_hosts\n\nCSV Data Set Config es válido en modo distribuido (cada slave necesita acceso al archivo CSV en su máquina local).",
+          "evaluation_criteria": "Conocimiento de problemas comunes en distributed testing."
+        }
+      ]
+    }
+  ],
+  "scoring": {
+    "total_points": 50,
+    "breakdown": {
+      "teoria": 15,
+      "scripting": 20,
+      "ejecucion_analisis": 15
+    },
+    "grading_scale": {
+      "excellent": { "min": 90, "max": 100, "label": "Excelente - Nivel Certificación" },
+      "good": { "min": 75, "max": 89, "label": "Bueno - Conocimientos Sólidos" },
+      "pass": { "min": 70, "max": 74, "label": "Aprobado" },
+      "needs_improvement": { "min": 0, "max": 69, "label": "Requiere Mejorar" }
+    }
+  },
+  "instructions": {
+    "es": "Esta evaluación técnica de Apache JMeter consta de 35 preguntas distribuidas en 3 secciones. Lee cuidadamente cada pregunta. Para preguntas prácticas, proporciona respuestas detalladas y justificadas. Tiempo estimado: 90 minutos. Puntuación mínima de aprobación: 70%.",
+    "en": "This Apache JMeter technical assessment consists of 35 questions distributed across 3 sections. Read each question carefully. For practical questions, provide detailed and justified answers. Estimated time: 90 minutes. Minimum passing score: 70%."
+  },
+  "resources": {
+    "official_documentation": "https://jmeter.apache.org/usermanual/index.html",
+    "best_practices": "https://jmeter.apache.org/usermanual/best-practices.html",
+    "ptu_syllabus": "PtU Certified Performance Tester with JMeter (CPTJM)",
+    "recommended_reading": [
+      "JMeter User Manual - Components Reference",
+      "JMeter Distributed Testing Guide",
+      "Performance Testing Best Practices"
+    ]
+  }
+}

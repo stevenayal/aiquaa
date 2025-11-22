@@ -71,6 +71,15 @@ const Header = () => {
               {t('nav.labs')}
             </Link>
             <Link
+              href="/recursos"
+              className={`hover:text-brand-muted px-2 lg:px-3 py-2 text-sm lg:text-base font-medium transition-colors duration-200 flex items-center ${
+                isDarkMode ? 'text-dark-text' : 'text-brand-light'
+              }`}
+            >
+              <span className="mr-1">📚</span>
+              {t('nav.resources')}
+            </Link>
+            <Link
               href="/comunidad"
               className={`hover:text-brand-muted px-2 lg:px-3 py-2 text-sm lg:text-base font-medium transition-colors duration-200 flex items-center ${
                 isDarkMode ? 'text-dark-text' : 'text-brand-light'
@@ -167,6 +176,16 @@ const Header = () => {
               >
                 <span className="mr-1">🧪</span>
                 {t('nav.labs')}
+              </Link>
+              <Link
+                href="/recursos"
+                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                  isDarkMode ? 'text-dark-text hover:bg-dark-secondary' : 'text-brand-light hover:bg-brand-accent/20'
+                }`}
+                onClick={closeMobileMenu}
+              >
+                <span className="mr-1">📚</span>
+                {t('nav.resources')}
               </Link>
               <Link
                 href="/comunidad"
