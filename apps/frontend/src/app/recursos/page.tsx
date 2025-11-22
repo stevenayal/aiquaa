@@ -2,7 +2,6 @@
 
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { FileText, Download, Eye, Calendar, FileIcon } from 'lucide-react';
 
 interface Resource {
   id: string;
@@ -132,9 +131,7 @@ export default function RecursosPage() {
                       <div className={`p-4 rounded-lg ${
                         isDarkMode ? 'bg-slate-700' : 'bg-brand-light'
                       }`}>
-                        <FileText className={`w-12 h-12 ${
-                          isDarkMode ? 'text-slate-300' : 'text-brand-primary'
-                        }`} />
+                        <span className="text-5xl">📄</span>
                       </div>
                     </div>
 
@@ -155,11 +152,11 @@ export default function RecursosPage() {
                       isDarkMode ? 'text-slate-500' : 'text-brand-muted'
                     }`}>
                       <div className="flex items-center gap-1">
-                        <FileIcon className="w-4 h-4" />
+                        <span>📄</span>
                         <span>{resource.pages} {t('resources.pages')}</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Calendar className="w-4 h-4" />
+                        <span>📅</span>
                         <span>{t('resources.updated')}: {new Date(resource.lastUpdated).toLocaleDateString()}</span>
                       </div>
                     </div>
@@ -176,7 +173,7 @@ export default function RecursosPage() {
                             : 'bg-brand-primary hover:bg-brand-primary/90 text-white'
                         }`}
                       >
-                        <Eye className="w-4 h-4" />
+                        <span>👁️</span>
                         {t('resources.view')}
                       </a>
                       <a
@@ -188,7 +185,7 @@ export default function RecursosPage() {
                             : 'bg-brand-dark hover:bg-brand-dark/90 text-white'
                         }`}
                       >
-                        <Download className="w-4 h-4" />
+                        <span>⬇️</span>
                       </a>
                     </div>
                   </div>
@@ -203,9 +200,7 @@ export default function RecursosPage() {
           <div className={`text-center py-12 rounded-lg ${
             isDarkMode ? 'bg-slate-800' : 'bg-white'
           }`}>
-            <FileText className={`w-16 h-16 mx-auto mb-4 ${
-              isDarkMode ? 'text-slate-600' : 'text-brand-muted'
-            }`} />
+            <div className="text-6xl mb-4">📚</div>
             <p className={`text-lg ${
               isDarkMode ? 'text-slate-400' : 'text-brand-muted'
             }`}>
