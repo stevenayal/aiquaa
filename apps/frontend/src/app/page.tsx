@@ -5,7 +5,6 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import FeaturedMember from '@/components/Team/FeaturedMember';
 import FAQSection from '@/components/FAQSection';
-import YouTubeSection from '@/components/YouTubeSection';
 import ISTQBHighlight from '@/components/ISTQBHighlight';
 
 export default function HomePage() {
@@ -207,9 +206,6 @@ export default function HomePage() {
 
       {/* ISTQB Simulator Highlight */}
       <ISTQBHighlight />
-
-      {/* YouTube Section */}
-      <YouTubeSection />
 
       {/* Community Engagement Section */}
       <section className={`py-16 md:py-20 transition-colors duration-300 ${

@@ -4,6 +4,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Comments from '@/components/Comments';
 import CollaborationSection from '@/components/CollaborationSection';
+import YouTubeSection from '@/components/YouTubeSection';
 
 export default function ComunidadPage() {
   const { isDarkMode } = useTheme();
@@ -221,6 +222,9 @@ export default function ComunidadPage() {
             )}
           </div>
         </div>
+
+        {/* YouTube Section */}
+        <YouTubeSection />
 
         {/* GitHub Integration Cards */}
         <div className="grid md:grid-cols-2 gap-6 mb-12">

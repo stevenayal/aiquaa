@@ -250,6 +250,11 @@ const translations: Record<Language, Record<string, string>> = {
     'about.tools.jwt': 'Decodificador JWT',
     'about.tools.jwt.desc': 'Analiza tokens JWT',
 
+    // Founder
+    'about.founder.title': 'Fundador',
+    'about.founder.role': 'Fundador y Creador de AIQUAA',
+    'about.founder.bio': 'QA Engineer apasionado por la educación, las pruebas de software y la comunidad tech en Paraguay. Creador de AIQUAA con la visión de democratizar el acceso a herramientas y conocimiento de QA en español.',
+
     // Footer
     'footer.rights': 'Todos los derechos reservados',
     'footer.about': 'Acerca de',
@@ -479,6 +484,11 @@ const translations: Record<Language, Record<string, string>> = {
     'about.tools.checklist.desc': 'Verification lists',
     'about.tools.jwt': 'JWT Decoder',
     'about.tools.jwt.desc': 'Analyze JWT tokens',
+
+    // Founder
+    'about.founder.title': 'Founder',
+    'about.founder.role': 'Founder and Creator of AIQUAA',
+    'about.founder.bio': 'QA Engineer passionate about education, software testing, and the tech community in Paraguay. Creator of AIQUAA with the vision to democratize access to QA tools and knowledge in Spanish.',
 
     // Footer
     'footer.rights': 'All rights reserved',
