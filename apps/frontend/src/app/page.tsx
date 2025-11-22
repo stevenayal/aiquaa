@@ -14,49 +14,128 @@ export default function HomePage() {
 
   return (
     <div className={isDarkMode ? 'dark' : ''}>
-      {/* Hero Section - Redesigned */}
-      <section className="py-20 bg-gradient-to-b from-slate-900 via-slate-950 to-indigo-950 text-white text-center">
-        <div className="max-w-4xl mx-auto px-6">
-          <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-6">
-            {t('home.hero.title')}
-          </h1>
-          <p className="mt-4 text-xl md:text-2xl text-gray-200 font-medium mb-4">
-            {t('home.hero.subtitle')}
-          </p>
-          <p className="text-base md:text-lg text-gray-300 max-w-3xl mx-auto">
-            {t('home.hero.description')}
-          </p>
+      {/* Hero Section - Optimized for Conversion */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
 
-          <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4">
-            <Link
-              href="/labs"
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition shadow-lg hover:shadow-xl"
-            >
-              🧪 {t('home.hero.explore')}
-            </Link>
-            <Link
-              href="/comunidad"
-              className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition shadow-lg hover:shadow-xl"
-            >
-              💬 {t('home.hero.join')}
-            </Link>
-          </div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="py-16 md:py-24 lg:py-28">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
 
-          <div className="mt-10 flex flex-col sm:flex-row justify-center items-center gap-6 text-sm text-gray-300">
-            <div className="flex items-center gap-2">
-              <span className="text-green-400 text-xl">✓</span>
-              <span>{t('home.hero.free')}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-green-400 text-xl">✓</span>
-              <span>{t('home.hero.spanish')}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-green-400 text-xl">✓</span>
-              <span>{t('home.hero.paraguay')} 🇵🇾</span>
+              {/* Left Column - Content */}
+              <div className="text-center lg:text-left space-y-8">
+                {/* Headline - Benefit-focused */}
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight">
+                  {t('home.hero.title')}
+                </h1>
+
+                {/* Subtitle - 1-2 sentences explaining value */}
+                <p className="text-lg sm:text-xl text-slate-300 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                  {t('home.hero.subtitle')}
+                </p>
+
+                {/* CTA Buttons - Primary prominent, Secondary subtle */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                  {/* Primary CTA - High contrast */}
+                  <Link
+                    href="/comunidad"
+                    className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl shadow-2xl hover:shadow-indigo-500/50 transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-500/50"
+                  >
+                    <span className="relative z-10">{t('home.hero.cta.primary')}</span>
+                    <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+                  </Link>
+
+                  {/* Secondary CTA - Less prominent */}
+                  <Link
+                    href="/labs"
+                    className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-slate-300 border-2 border-slate-600 rounded-xl hover:bg-slate-800/50 hover:border-slate-500 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-slate-500/50"
+                  >
+                    {t('home.hero.cta.secondary')}
+                  </Link>
+                </div>
+
+                {/* Trust Badges - Discrete */}
+                <div className="flex flex-wrap justify-center lg:justify-start gap-6 pt-4">
+                  <div className="flex items-center gap-2 text-slate-400 text-sm">
+                    <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                    </svg>
+                    <span>{t('home.hero.trust.free')}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-slate-400 text-sm">
+                    <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                    </svg>
+                    <span>{t('home.hero.trust.opensource')}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-slate-400 text-sm">
+                    <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                    </svg>
+                    <span>{t('home.hero.trust.spanish')}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-slate-400 text-sm">
+                    <span className="text-green-400">🇵🇾</span>
+                    <span>{t('home.hero.trust.paraguay')}</span>
+                  </div>
+                </div>
+
+                {/* Quick Stats */}
+                <div className="grid grid-cols-3 gap-6 pt-8 max-w-lg mx-auto lg:mx-0">
+                  <div className="text-center lg:text-left">
+                    <div className="text-3xl font-bold text-white">10+</div>
+                    <div className="text-sm text-slate-400 mt-1">{t('home.hero.stats.tools')}</div>
+                  </div>
+                  <div className="text-center lg:text-left">
+                    <div className="text-3xl font-bold text-white">50+</div>
+                    <div className="text-sm text-slate-400 mt-1">{t('home.hero.stats.resources')}</div>
+                  </div>
+                  <div className="text-center lg:text-left">
+                    <div className="text-3xl font-bold text-white">100+</div>
+                    <div className="text-sm text-slate-400 mt-1">{t('home.hero.stats.community')}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column - Visual Support */}
+              <div className="hidden lg:flex justify-center items-center">
+                <div className="relative">
+                  {/* Glow effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/30 to-purple-500/30 rounded-full blur-3xl"></div>
+
+                  {/* Main visual - Logo */}
+                  <div className="relative bg-slate-800/50 backdrop-blur-sm rounded-2xl p-12 border border-slate-700/50 shadow-2xl">
+                    <div className="relative z-10">
+                      <img
+                        src="/images/logo1.png"
+                        alt="AIQUAA Logo"
+                        className="w-64 h-64 object-contain"
+                        loading="eager"
+                      />
+                    </div>
+
+                    {/* Floating badges around logo */}
+                    <div className="absolute -top-4 -right-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg animate-bounce">
+                      ISTQB Ready
+                    </div>
+                    <div className="absolute -bottom-4 -left-4 bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg animate-bounce" style={{animationDelay: '0.5s'}}>
+                      JMeter Pro
+                    </div>
+                  </div>
+
+                  {/* Decorative elements */}
+                  <div className="absolute -top-8 -left-8 w-24 h-24 bg-indigo-500/20 rounded-full blur-2xl"></div>
+                  <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-purple-500/20 rounded-full blur-2xl"></div>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
+
+        {/* Bottom wave separator */}
+        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-slate-900/80 to-transparent"></div>
       </section>
 
       {/* Community Banner */}
