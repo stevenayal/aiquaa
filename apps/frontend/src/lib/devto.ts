@@ -6,6 +6,15 @@
 const DEV_API_BASE = 'https://dev.to/api';
 const USERNAME = 'stevenayal';
 
+/**
+ * Posts to exclude from the blog list
+ * Add post titles or slugs here to hide them from the site
+ */
+const EXCLUDED_POSTS = [
+  'Diseño Modular en QA: el camino hacia equipos escalables, mantenibles y sostenibles',
+  '🧩 Diseño Modular en QA: el camino hacia equipos escalables, mantenibles y sostenibles',
+];
+
 export type DevPost = {
   id: number;
   title: string;
@@ -95,7 +104,17 @@ export async function listPosts(perPage = 20): Promise<DevPostPreview[]> {
 
     const data = await response.json();
     const posts = Array.isArray(data) ? data : [];
-    return posts.map(post => normalizePreviewPost(post));
+
+    // Filter out excluded posts
+    const filteredPosts = posts.filter(post => {
+      return !EXCLUDED_POSTS.some(excludedTitle =>
+        post.title === excludedTitle ||
+        post.title.includes(excludedTitle) ||
+        excludedTitle.includes(post.title)
+      );
+    });
+
+    return filteredPosts.map(post => normalizePreviewPost(post));
   } catch (error) {
     console.error('Error fetching posts from DEV.to:', error);
     return [];
@@ -136,7 +155,21 @@ export async function getPost(slug: string): Promise<DevPost | null> {
     }
 
     const data = await response.json();
-    return normalizePost(data);
+    const post = normalizePost(data);
+
+    // Check if post is excluded
+    const isExcluded = EXCLUDED_POSTS.some(excludedTitle =>
+      post.title === excludedTitle ||
+      post.title.includes(excludedTitle) ||
+      excludedTitle.includes(post.title)
+    );
+
+    // Return null if post is excluded (same as 404)
+    if (isExcluded) {
+      return null;
+    }
+
+    return post;
   } catch (error) {
     console.error(`Error fetching post ${slug} from DEV.to:`, error);
     return null;
