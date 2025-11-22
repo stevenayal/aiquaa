@@ -87,6 +87,20 @@ const translations: Record<Language, Record<string, string>> = {
     'home.hero.subtitle': 'Transformamos el testing en Paraguay con IA, herramientas y comunidad',
     'home.hero.description': 'Validá tus APIs y datos, genera casos de prueba y participá en workshops y mentorías. Únete a nuestra comunidad open-source de QA.',
     'home.hero.explore': 'Explorar Herramientas',
+    'home.hero.join': 'Unirse a la Comunidad',
+    'home.hero.free': '100% Gratis y Open Source',
+    'home.hero.spanish': 'En Español',
+    'home.hero.paraguay': 'Hecho en Paraguay',
+    'home.banner': 'Más que herramientas: una comunidad de QA que crece con vos',
+    'home.what.title': '¿Qué es AIQUAA?',
+    'home.what.description': 'Una comunidad de testing y aseguramiento de calidad de software en Paraguay.',
+    'home.what.resources.title': 'Recursos Gratuitos',
+    'home.what.resources.description': 'Herramientas web, generación de datos, checklists, blog y guías prácticas para testers.',
+    'home.what.events.title': 'Eventos y Mentorías',
+    'home.what.events.description': 'Workshops, charlas y orientación experta sobre automatización y buenas prácticas de QA.',
+    'home.what.opensource.title': 'Open Source',
+    'home.what.opensource.description': 'Todo el código es abierto. Hecho en Paraguay para testers de Latinoamérica.',
+    'home.what.mission': 'Inspirado en el término guaraní "aikuaa" (saber, conocer), AIQUAA combina inteligencia artificial (IA) con aseguramiento de calidad (QA) para transformar el testing en la región.',
     'home.grow.title': 'Aprendé, Colaborá y Crecé con AIQUAA',
     'home.grow.subtitle': 'Un laboratorio de utilidades y una comunidad de aprendizaje y colaboración',
     'home.blog.title': 'Blog de QA',
@@ -137,6 +151,37 @@ const translations: Record<Language, Record<string, string>> = {
     'home.faq.a4': 'Sí, organizamos eventos, workshops y mentorías tanto presenciales como virtuales. Seguinos en nuestras redes sociales para estar al tanto de las próximas actividades.',
     'home.faq.q5': '¿Las herramientas funcionan en móviles?',
     'home.faq.a5': 'Todas nuestras herramientas están optimizadas para funcionar en dispositivos móviles, tablets y desktop. La experiencia es responsive y se adapta a cualquier pantalla.',
+
+    // YouTube Section
+    'youtube.title': 'Aprende con Nuestros Videos',
+    'youtube.subtitle': 'Serie completa de tutoriales sobre testing, ISTQB, JMeter y más. Nuevos videos cada semana.',
+    'youtube.subscribe': 'Suscribirse al Canal',
+    'youtube.watch': 'Ver Video',
+    'youtube.playlist': 'Ver Lista Completa',
+    'youtube.chapter': 'Capítulo',
+    'youtube.duration': 'Duración',
+    'youtube.new': 'Nuevo',
+
+    // Collaboration Section
+    'collaboration.title': '¿Qué problema de testing te gustaría resolver?',
+    'collaboration.description': '¿Qué problema de testing te gustaría resolver con una herramienta? Comparte tus ideas en la comunidad de AIQUAA y colabora con nosotros para crearla. Inspírate en los videos de nuestro canal y en las necesidades de tu día a día como tester. Tu propuesta puede convertirse en la próxima herramienta gratuita para la comunidad.',
+    'collaboration.cta': 'Proponer Nueva Herramienta',
+    'collaboration.examples.title': 'Ejemplos de ideas que buscamos',
+    'collaboration.examples.1': 'Generador de datos de prueba para formularios específicos',
+    'collaboration.examples.2': 'Comparador de respuestas JSON entre ambientes',
+    'collaboration.examples.3': 'Calculadora de cobertura de pruebas',
+    'collaboration.examples.4': 'Validador de accesibilidad web',
+
+    // ISTQB Simulator Highlight
+    'istqb.simulator.title': 'Practica con el Simulador ISTQB',
+    'istqb.simulator.description': 'Prepárate para tu certificación ISTQB CTFL v4.0 con nuestros exámenes de práctica. Descarga el syllabus, practica con los modelos A y B, y refuerza lo aprendido con nuestros videos.',
+    'istqb.simulator.practice': 'Practicar Ahora',
+    'istqb.simulator.resources': 'Ver Recursos ISTQB',
+    'istqb.simulator.videos': 'Ver Videos ISTQB',
+    'istqb.simulator.features.1': 'Exámenes oficiales Modelo A y B',
+    'istqb.simulator.features.2': 'Programa de estudio completo v4.0',
+    'istqb.simulator.features.3': 'Videos explicativos de cada tema',
+    'istqb.simulator.features.4': 'Respuestas con justificaciones detalladas',
 
     // Community
     'community.title': 'Comunidad AIQUAA',
@@ -333,6 +378,37 @@ const translations: Record<Language, Record<string, string>> = {
     'home.faq.a4': 'Yes, we organize events, workshops and mentoring both in-person and virtual. Follow us on social media to stay informed about upcoming activities.',
     'home.faq.q5': 'Do the tools work on mobile devices?',
     'home.faq.a5': 'All our tools are optimized to work on mobile devices, tablets and desktop. The experience is responsive and adapts to any screen size.',
+
+    // YouTube Section
+    'youtube.title': 'Learn with Our Videos',
+    'youtube.subtitle': 'Complete series of tutorials on testing, ISTQB, JMeter and more. New videos every week.',
+    'youtube.subscribe': 'Subscribe to Channel',
+    'youtube.watch': 'Watch Video',
+    'youtube.playlist': 'View Full Playlist',
+    'youtube.chapter': 'Chapter',
+    'youtube.duration': 'Duration',
+    'youtube.new': 'New',
+
+    // Collaboration Section
+    'collaboration.title': 'What testing problem would you like to solve?',
+    'collaboration.description': 'What testing problem would you like to solve with a tool? Share your ideas in the AIQUAA community and collaborate with us to create it. Get inspired by the videos on our channel and the needs of your daily work as a tester. Your proposal could become the next free tool for the community.',
+    'collaboration.cta': 'Propose New Tool',
+    'collaboration.examples.title': 'Examples of ideas we are looking for',
+    'collaboration.examples.1': 'Test data generator for specific forms',
+    'collaboration.examples.2': 'JSON response comparator between environments',
+    'collaboration.examples.3': 'Test coverage calculator',
+    'collaboration.examples.4': 'Web accessibility validator',
+
+    // ISTQB Simulator Highlight
+    'istqb.simulator.title': 'Practice with the ISTQB Simulator',
+    'istqb.simulator.description': 'Prepare for your ISTQB CTFL v4.0 certification with our practice exams. Download the syllabus, practice with models A and B, and reinforce what you learned with our videos.',
+    'istqb.simulator.practice': 'Practice Now',
+    'istqb.simulator.resources': 'View ISTQB Resources',
+    'istqb.simulator.videos': 'Watch ISTQB Videos',
+    'istqb.simulator.features.1': 'Official exams Model A and B',
+    'istqb.simulator.features.2': 'Complete study program v4.0',
+    'istqb.simulator.features.3': 'Explanatory videos for each topic',
+    'istqb.simulator.features.4': 'Answers with detailed justifications',
 
     // Community
     'community.title': 'AIQUAA Community',

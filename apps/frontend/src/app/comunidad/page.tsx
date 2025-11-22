@@ -3,6 +3,7 @@
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Comments from '@/components/Comments';
+import CollaborationSection from '@/components/CollaborationSection';
 
 export default function ComunidadPage() {
   const { isDarkMode } = useTheme();
@@ -358,6 +359,9 @@ export default function ComunidadPage() {
             </p>
           </div>
         </div>
+
+        {/* Collaboration Section */}
+        <CollaborationSection />
 
         {/* Comments Section */}
         <div className={`rounded-lg p-8 shadow-lg transition-colors duration-300 ${
