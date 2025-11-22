@@ -28,7 +28,7 @@ const FAQSection = () => {
 
   return (
     <section className={`py-12 md:py-16 transition-colors duration-300 ${
-      isDarkMode ? 'bg-slate-900' : 'bg-brand-light'
+      isDarkMode ? 'bg-transparent' : 'bg-transparent'
     }`}>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8">

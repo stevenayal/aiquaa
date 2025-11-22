@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import FAQSection from '@/components/FAQSection';
 
 export default function AboutPage() {
   const { isDarkMode } = useTheme();
@@ -169,7 +170,7 @@ export default function AboutPage() {
               <h3 className={`text-2xl font-bold mb-2 ${
                 isDarkMode ? 'text-white' : 'text-brand-text'
               }`}>
-                Steven Ayal
+                Steven Ayala
               </h3>
               <p className={`text-lg mb-4 ${
                 isDarkMode ? 'text-slate-300' : 'text-brand-text'
@@ -233,6 +234,9 @@ export default function AboutPage() {
             </div>
           </div>
         </div>
+
+        {/* FAQ Section */}
+        <FAQSection />
       </div>
     </div>
   );
