@@ -34,6 +34,16 @@ export default function LabsPage() {
           href: '/labs/git',
           featured: true,
           implementedDate: 'Nov 2025'
+        },
+        {
+          id: 'performance',
+          name: 'Examen de Performance Testing',
+          description: 'Prueba técnica de 30 preguntas sobre fundamentos, métricas y herramientas de pruebas de rendimiento',
+          icon: '⚡',
+          color: 'from-cyan-500 to-blue-600',
+          href: '/labs/performance',
+          featured: true,
+          implementedDate: 'Nov 2025'
         }
       ]
     },

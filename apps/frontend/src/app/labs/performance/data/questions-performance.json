@@ -1,0 +1,652 @@
+{
+  "metadata": {
+    "id": "PT-PERFORMANCE-AIQUAA-001",
+    "title": "Prueba Técnica de Performance Testing – AIQUAA Labs",
+    "description": "Evaluación completa de conocimientos fundamentales en pruebas de rendimiento. Cubre conceptos teóricos, métricas, herramientas, análisis y mejores prácticas basado en documentación PtU CPTJM.",
+    "version": "1.0.0",
+    "level": "Intermedio",
+    "estimated_duration_minutes": 60,
+    "passing_score_percentage": 70,
+    "tags": ["performance testing", "load testing", "stress testing", "qa", "metrics", "kpis"],
+    "author": "AIQUAA Labs",
+    "certification_reference": "PtU Certified Performance Tester with JMeter (CPTJM)",
+    "official_docs": "Performance Testing Body of Knowledge"
+  },
+  "sections": [
+    {
+      "id": "fundamentos",
+      "title": "Parte 1 – Fundamentos de Performance Testing",
+      "description": "Conceptos básicos, tipos de pruebas de rendimiento, objetivos y terminología fundamental.",
+      "weight": 35,
+      "questions": [
+        {
+          "id": "Q1",
+          "type": "single_choice",
+          "title": "Definición de Performance Testing",
+          "prompt": "¿Cuál es el objetivo PRINCIPAL de las pruebas de rendimiento (Performance Testing)?",
+          "options": [
+            "Encontrar bugs funcionales en la aplicación",
+            "Evaluar el comportamiento y capacidad del sistema bajo diferentes condiciones de carga",
+            "Validar la seguridad de la aplicación contra ataques",
+            "Verificar la compatibilidad con diferentes navegadores",
+            "Automatizar casos de prueba funcionales"
+          ],
+          "correct_answer": ["Evaluar el comportamiento y capacidad del sistema bajo diferentes condiciones de carga"],
+          "weight": 1,
+          "tags": ["K1", "fundamentals"],
+          "explanation": "El objetivo principal del Performance Testing es evaluar cómo se comporta el sistema bajo condiciones específicas de carga, incluyendo tiempos de respuesta, throughput, uso de recursos y estabilidad. No se enfoca en bugs funcionales ni seguridad.",
+          "evaluation_criteria": "Comprensión del propósito fundamental de las pruebas de rendimiento."
+        },
+        {
+          "id": "Q2",
+          "type": "multiple_choice",
+          "title": "Tipos de Performance Testing",
+          "prompt": "Selecciona TODOS los tipos válidos de pruebas de rendimiento:",
+          "options": [
+            "Load Testing (Prueba de Carga)",
+            "Stress Testing (Prueba de Estrés)",
+            "Spike Testing (Prueba de Picos)",
+            "Endurance/Soak Testing (Prueba de Resistencia)",
+            "Unit Testing (Prueba Unitaria)"
+          ],
+          "correct_answer": [
+            "Load Testing (Prueba de Carga)",
+            "Stress Testing (Prueba de Estrés)",
+            "Spike Testing (Prueba de Picos)",
+            "Endurance/Soak Testing (Prueba de Resistencia)"
+          ],
+          "weight": 2,
+          "tags": ["K1", "test-types"],
+          "explanation": "Los tipos principales de performance testing incluyen: Load (carga esperada), Stress (punto de quiebre), Spike (cambios súbitos), Endurance (resistencia prolongada), Scalability (capacidad de crecimiento), y Volume Testing. Unit Testing NO es un tipo de performance testing.",
+          "evaluation_criteria": "Identificación correcta de los tipos de pruebas de rendimiento."
+        },
+        {
+          "id": "Q3",
+          "type": "single_choice",
+          "title": "Load Testing vs Stress Testing",
+          "prompt": "¿Cuál es la DIFERENCIA principal entre Load Testing y Stress Testing?",
+          "options": [
+            "Load Testing usa carga esperada, Stress Testing excede los límites hasta el punto de fallo",
+            "Load Testing es para web, Stress Testing es para bases de datos",
+            "Load Testing es manual, Stress Testing es automático",
+            "No hay diferencia, son términos sinónimos",
+            "Load Testing es más costoso que Stress Testing"
+          ],
+          "correct_answer": ["Load Testing usa carga esperada, Stress Testing excede los límites hasta el punto de fallo"],
+          "weight": 1,
+          "tags": ["K2", "test-types"],
+          "explanation": "Load Testing valida el comportamiento del sistema bajo condiciones de carga normales o esperadas. Stress Testing incrementa la carga más allá de los límites operacionales para identificar el punto de quiebre y comportamiento bajo condiciones extremas.",
+          "evaluation_criteria": "Comprensión de las diferencias clave entre tipos de pruebas."
+        },
+        {
+          "id": "Q4",
+          "type": "single_choice",
+          "title": "Spike Testing",
+          "prompt": "¿Qué caracteriza a un Spike Test?",
+          "options": [
+            "Incremento gradual de carga durante horas",
+            "Carga constante sostenida por días",
+            "Incremento súbito y drástico de usuarios en corto tiempo",
+            "Reducción progresiva de usuarios virtuales",
+            "Distribución uniforme de carga a lo largo del día"
+          ],
+          "correct_answer": ["Incremento súbito y drástico de usuarios en corto tiempo"],
+          "weight": 1,
+          "tags": ["K2", "test-types"],
+          "explanation": "Spike Testing simula picos repentinos de carga (ej: ventas flash, eventos virales) para evaluar cómo el sistema maneja cambios abruptos en el tráfico. Es diferente al incremento gradual del Stress Testing.",
+          "evaluation_criteria": "Comprensión del propósito y características del Spike Testing."
+        },
+        {
+          "id": "Q5",
+          "type": "single_choice",
+          "title": "Endurance Testing / Soak Testing",
+          "prompt": "Un Endurance Test (Soak Test) tiene una duración típica de:",
+          "options": [
+            "5-10 minutos",
+            "30-60 minutos",
+            "Varias horas o días",
+            "Solo unos segundos",
+            "Depende del tamaño del equipo QA"
+          ],
+          "correct_answer": ["Varias horas o días"],
+          "weight": 1,
+          "tags": ["K1", "test-types"],
+          "explanation": "Endurance/Soak Testing ejecuta carga sostenida durante períodos prolongados (horas o días) para detectar memory leaks, degradación de performance, saturación de recursos y otros problemas que solo aparecen con el tiempo.",
+          "evaluation_criteria": "Conocimiento de las características temporales del Endurance Testing."
+        },
+        {
+          "id": "Q6",
+          "type": "multiple_choice",
+          "title": "Objetivos de Performance Testing",
+          "prompt": "¿Cuáles son objetivos válidos de las pruebas de rendimiento?",
+          "options": [
+            "Identificar cuellos de botella (bottlenecks) en el sistema",
+            "Validar que el sistema cumple con SLAs y requisitos de performance",
+            "Establecer una baseline de performance para comparaciones futuras",
+            "Optimizar el código fuente automáticamente",
+            "Evaluar la capacidad de escalabilidad del sistema"
+          ],
+          "correct_answer": [
+            "Identificar cuellos de botella (bottlenecks) en el sistema",
+            "Validar que el sistema cumple con SLAs y requisitos de performance",
+            "Establecer una baseline de performance para comparaciones futuras",
+            "Evaluar la capacidad de escalabilidad del sistema"
+          ],
+          "weight": 2,
+          "tags": ["K2", "objectives"],
+          "explanation": "Performance Testing busca: identificar bottlenecks, validar SLAs, establecer baselines, evaluar escalabilidad, detectar degradación y optimizar recursos. NO optimiza código automáticamente, solo identifica problemas para que desarrolladores los solucionen.",
+          "evaluation_criteria": "Comprensión de los objetivos y alcance del performance testing."
+        },
+        {
+          "id": "Q7",
+          "type": "single_choice",
+          "title": "Usuarios Virtuales (Virtual Users)",
+          "prompt": "¿Qué son los 'Virtual Users' o 'VUsers' en el contexto de performance testing?",
+          "options": [
+            "Usuarios reales que participan manualmente en el test",
+            "Scripts automatizados que simulan el comportamiento de usuarios concurrentes",
+            "Bots maliciosos que atacan la aplicación",
+            "Cuentas de prueba en la base de datos",
+            "Desarrolladores ejecutando pruebas unitarias"
+          ],
+          "correct_answer": ["Scripts automatizados que simulan el comportamiento de usuarios concurrentes"],
+          "weight": 1,
+          "tags": ["K1", "fundamentals"],
+          "explanation": "Virtual Users (VUsers) son scripts automatizados que simulan el comportamiento de usuarios reales interactuando con el sistema de forma concurrente. Permiten simular miles de usuarios sin necesidad de personas reales.",
+          "evaluation_criteria": "Comprensión del concepto de usuarios virtuales."
+        },
+        {
+          "id": "Q8",
+          "type": "single_choice",
+          "title": "Think Time",
+          "prompt": "¿Qué es el 'Think Time' en un test de performance?",
+          "options": [
+            "El tiempo que tarda el servidor en procesar una petición",
+            "La pausa simulada entre acciones de un usuario virtual para emular comportamiento humano",
+            "El tiempo total de ejecución del test",
+            "El tiempo que toma analizar los resultados",
+            "La latencia de red entre cliente y servidor"
+          ],
+          "correct_answer": ["La pausa simulada entre acciones de un usuario virtual para emular comportamiento humano"],
+          "weight": 1,
+          "tags": ["K1", "fundamentals"],
+          "explanation": "Think Time es el retraso intencional entre acciones de un usuario virtual, simulando el tiempo que un usuario real tomaría para leer, pensar o decidir antes de la siguiente acción. Hace el test más realista.",
+          "evaluation_criteria": "Comprensión del concepto y propósito del Think Time."
+        },
+        {
+          "id": "Q9",
+          "type": "single_choice",
+          "title": "Ramp-up Period",
+          "prompt": "¿Cuál es el propósito del 'Ramp-up Period' en un test de carga?",
+          "options": [
+            "Incrementar gradualmente los usuarios virtuales para evitar sobrecarga inicial repentina",
+            "Reducir el número de usuarios al final del test",
+            "Aumentar la velocidad de procesamiento del servidor",
+            "Configurar los parámetros del test antes de ejecutar",
+            "Calentar la JVM de la aplicación"
+          ],
+          "correct_answer": ["Incrementar gradualmente los usuarios virtuales para evitar sobrecarga inicial repentina"],
+          "weight": 1,
+          "tags": ["K2", "test-design"],
+          "explanation": "El Ramp-up Period es el tiempo durante el cual los usuarios virtuales se agregan gradualmente al sistema, evitando un inicio repentino que podría causar un pico artificial. Permite un aumento realista de la carga.",
+          "evaluation_criteria": "Comprensión del concepto y propósito del ramp-up."
+        },
+        {
+          "id": "Q10",
+          "type": "multiple_choice",
+          "title": "Componentes de un Test de Performance",
+          "prompt": "¿Cuáles son componentes esenciales al diseñar un test de performance?",
+          "options": [
+            "Escenarios de usuario (User scenarios)",
+            "Carga objetivo (Target load - número de usuarios concurrentes)",
+            "Duración del test (Test duration)",
+            "Datos de prueba (Test data)",
+            "Código fuente de la aplicación"
+          ],
+          "correct_answer": [
+            "Escenarios de usuario (User scenarios)",
+            "Carga objetivo (Target load - número de usuarios concurrentes)",
+            "Duración del test (Test duration)",
+            "Datos de prueba (Test data)"
+          ],
+          "weight": 2,
+          "tags": ["K2", "test-design"],
+          "explanation": "Un test de performance requiere: escenarios de usuario (qué hacen), carga objetivo (cuántos usuarios), duración (cuánto tiempo), datos de prueba, criterios de aceptación, y configuración del ambiente. No requiere acceso al código fuente.",
+          "evaluation_criteria": "Conocimiento de componentes fundamentales en diseño de tests."
+        }
+      ]
+    },
+    {
+      "id": "metricas",
+      "title": "Parte 2 – Métricas y KPIs de Rendimiento",
+      "description": "Indicadores clave de rendimiento, interpretación de métricas y análisis de resultados.",
+      "weight": 35,
+      "questions": [
+        {
+          "id": "Q11",
+          "type": "single_choice",
+          "title": "Response Time (Tiempo de Respuesta)",
+          "prompt": "El 'Response Time' en performance testing mide:",
+          "options": [
+            "El tiempo que tarda el servidor en responder solo (sin red)",
+            "El tiempo total desde que el cliente envía una petición hasta que recibe la respuesta completa",
+            "El tiempo de procesamiento de la base de datos únicamente",
+            "El ancho de banda de la conexión de red",
+            "El tiempo que toma renderizar la página en el navegador"
+          ],
+          "correct_answer": ["El tiempo total desde que el cliente envía una petición hasta que recibe la respuesta completa"],
+          "weight": 1,
+          "tags": ["K1", "metrics"],
+          "explanation": "Response Time (tiempo de respuesta) es el tiempo total end-to-end desde que se envía la petición hasta que se recibe la última byte de la respuesta. Incluye: latencia de red, procesamiento del servidor, consultas DB, y transferencia de datos.",
+          "evaluation_criteria": "Comprensión correcta de la definición de Response Time."
+        },
+        {
+          "id": "Q12",
+          "type": "single_choice",
+          "title": "Throughput (Rendimiento)",
+          "prompt": "Throughput en performance testing se mide típicamente en:",
+          "options": [
+            "Milisegundos (ms)",
+            "Peticiones por segundo (requests/sec) o Transacciones por segundo (TPS)",
+            "Gigabytes (GB)",
+            "Porcentaje (%)",
+            "Usuarios concurrentes"
+          ],
+          "correct_answer": ["Peticiones por segundo (requests/sec) o Transacciones por segundo (TPS)"],
+          "weight": 1,
+          "tags": ["K1", "metrics"],
+          "explanation": "Throughput mide la capacidad de procesamiento del sistema, expresada como número de peticiones o transacciones completadas por unidad de tiempo (requests/sec, TPS, hits/sec). Indica cuánto trabajo puede manejar el sistema.",
+          "evaluation_criteria": "Conocimiento de la unidad de medida y significado de Throughput."
+        },
+        {
+          "id": "Q13",
+          "type": "multiple_choice",
+          "title": "Percentiles en Performance Testing",
+          "prompt": "¿Cuáles de las siguientes afirmaciones sobre percentiles son CORRECTAS?",
+          "options": [
+            "El percentil 90 (p90) indica que el 90% de las peticiones completaron en ese tiempo o menos",
+            "El percentil 50 (p50) es equivalente a la mediana",
+            "Los percentiles altos (p95, p99) ayudan a identificar outliers y peor caso",
+            "El percentil 100 es siempre igual al promedio (average)",
+            "Percentiles son más útiles que el promedio para entender la distribución real de tiempos"
+          ],
+          "correct_answer": [
+            "El percentil 90 (p90) indica que el 90% de las peticiones completaron en ese tiempo o menos",
+            "El percentil 50 (p50) es equivalente a la mediana",
+            "Los percentiles altos (p95, p99) ayudan a identificar outliers y peor caso",
+            "Percentiles son más útiles que el promedio para entender la distribución real de tiempos"
+          ],
+          "weight": 2,
+          "tags": ["K2", "metrics"],
+          "explanation": "Percentiles son esenciales para entender la distribución de tiempos de respuesta. p50=mediana, p90/p95/p99 muestran experiencia de usuarios más lentos. Son mejores que el promedio porque no se distorsionan por outliers extremos. p100 es el máximo, no el promedio.",
+          "evaluation_criteria": "Comprensión profunda de percentiles y su interpretación."
+        },
+        {
+          "id": "Q14",
+          "type": "single_choice",
+          "title": "Error Rate (Tasa de Error)",
+          "prompt": "Una tasa de error del 5% en un test de performance significa que:",
+          "options": [
+            "El 5% de los usuarios experimentaron lentitud",
+            "El 5% de las peticiones fallaron o retornaron errores",
+            "El servidor estuvo disponible solo el 95% del tiempo",
+            "El test duró 5% más de lo planificado",
+            "El 5% del código tiene bugs"
+          ],
+          "correct_answer": ["El 5% de las peticiones fallaron o retornaron errores"],
+          "weight": 1,
+          "tags": ["K1", "metrics"],
+          "explanation": "Error Rate (tasa de error) es el porcentaje de peticiones que fallaron, retornaron códigos de error HTTP (4xx, 5xx), timeout, o excepciones. Un 5% de error rate indica que 5 de cada 100 peticiones fallaron.",
+          "evaluation_criteria": "Comprensión del significado de Error Rate."
+        },
+        {
+          "id": "Q15",
+          "type": "practical_task",
+          "title": "Análisis de Métricas",
+          "prompt": "Analiza los siguientes resultados de un test de carga:\n\n- Average Response Time: 500ms\n- Median (p50): 350ms\n- p90: 800ms\n- p95: 1500ms\n- p99: 4000ms\n- Max: 15000ms\n- Throughput: 200 req/sec\n- Error Rate: 0.5%\n\n¿Qué conclusiones puedes extraer? Identifica:\n1. ¿El sistema tiene outliers significativos?\n2. ¿La diferencia entre promedio y mediana qué indica?\n3. ¿El error rate es aceptable para producción?",
+          "options": [],
+          "correct_answer": [],
+          "weight": 3,
+          "tags": ["K3", "analysis"],
+          "explanation": "Análisis correcto:\n\n1. Outliers significativos: SÍ. Existe una gran diferencia entre p95 (1500ms) y max (15000ms). También p99 (4000ms) vs p95 muestra que el 1% peor de peticiones tarda 2.6x más. El max de 15s indica peticiones extremadamente lentas que requieren investigación.\n\n2. Promedio (500ms) > Mediana (350ms): Esto indica que la distribución está sesgada hacia la derecha (right-skewed), con algunos valores muy altos que elevan el promedio. La mayoría de peticiones (50%) completan en 350ms o menos, pero outliers lentos incrementan el promedio.\n\n3. Error rate 0.5%: ACEPTABLE pero no ideal. Para sistemas críticos, se busca < 0.1%. Para sistemas no críticos, < 1% puede ser aceptable. Depende de los requisitos del negocio. Se debe monitorear y analizar tipos de errores.\n\nRecomendación: Investigar las peticiones en p95-p99 y el max para identificar causas (queries lentas, timeouts, recursos insuficientes).",
+          "evaluation_criteria": "Capacidad de analizar métricas, identificar patrones, y extraer conclusiones accionables.",
+          "expected_artifacts": [
+            "Identificación de outliers con evidencia numérica",
+            "Interpretación de la diferencia promedio vs mediana",
+            "Evaluación de aceptabilidad del error rate",
+            "Recomendaciones basadas en los datos"
+          ]
+        },
+        {
+          "id": "Q16",
+          "type": "multiple_choice",
+          "title": "Métricas de Servidor",
+          "prompt": "¿Cuáles métricas del SERVIDOR deberías monitorear durante un test de performance?",
+          "options": [
+            "CPU Utilization (%)",
+            "Memory Usage (RAM)",
+            "Disk I/O (lectura/escritura)",
+            "Network Bandwidth",
+            "Número de bugs en el código"
+          ],
+          "correct_answer": [
+            "CPU Utilization (%)",
+            "Memory Usage (RAM)",
+            "Disk I/O (lectura/escritura)",
+            "Network Bandwidth"
+          ],
+          "weight": 2,
+          "tags": ["K2", "metrics"],
+          "explanation": "Métricas clave del servidor incluyen: CPU%, RAM, Disk I/O, Network, conexiones activas, thread pool, garbage collection (para Java), database connections, query times. Estas ayudan a identificar cuellos de botella de recursos. Bugs no son una métrica de performance.",
+          "evaluation_criteria": "Conocimiento de métricas de infraestructura relevantes."
+        },
+        {
+          "id": "Q17",
+          "type": "single_choice",
+          "title": "Latency vs Response Time",
+          "prompt": "¿Cuál es la DIFERENCIA entre Latency (Latencia) y Response Time (Tiempo de Respuesta)?",
+          "options": [
+            "Son términos sinónimos, no hay diferencia",
+            "Latency es el tiempo de red, Response Time incluye procesamiento del servidor",
+            "Latency es para APIs, Response Time es para web",
+            "Latency se mide en segundos, Response Time en milisegundos",
+            "Latency es un término de seguridad, no de performance"
+          ],
+          "correct_answer": ["Latency es el tiempo de red, Response Time incluye procesamiento del servidor"],
+          "weight": 1,
+          "tags": ["K2", "metrics"],
+          "explanation": "Latency (latencia) típicamente refiere al tiempo de transmisión en la red (ida y vuelta). Response Time (tiempo de respuesta) es end-to-end: incluye latencia de red + tiempo de procesamiento del servidor + tiempo de transferencia de datos. Response Time ≥ Latency.",
+          "evaluation_criteria": "Comprensión de la diferencia entre latencia y tiempo de respuesta."
+        },
+        {
+          "id": "Q18",
+          "type": "single_choice",
+          "title": "SLA (Service Level Agreement)",
+          "prompt": "Un SLA especifica: 'p95 de Response Time debe ser < 1 segundo'. ¿Qué significa?",
+          "options": [
+            "El 95% de TODAS las peticiones deben completar en menos de 1 segundo",
+            "El promedio de tiempos debe ser menor a 1 segundo",
+            "Solo 95 peticiones por segundo deben completar en menos de 1 segundo",
+            "El sistema debe estar disponible el 95% del tiempo",
+            "El throughput debe ser de 95 req/sec como mínimo"
+          ],
+          "correct_answer": ["El 95% de TODAS las peticiones deben completar en menos de 1 segundo"],
+          "weight": 1,
+          "tags": ["K2", "sla"],
+          "explanation": "SLA con p95 < 1s significa que el 95% de todas las peticiones deben responder en 1 segundo o menos. Esto garantiza que solo el 5% de usuarios experimentará tiempos mayores. Es más estricto que un promedio porque protege contra outliers.",
+          "evaluation_criteria": "Comprensión de SLAs basados en percentiles."
+        },
+        {
+          "id": "Q19",
+          "type": "single_choice",
+          "title": "Concurrency vs Throughput",
+          "prompt": "¿Cuál afirmación es CORRECTA sobre la relación entre concurrencia y throughput?",
+          "options": [
+            "Mayor concurrencia SIEMPRE resulta en mayor throughput",
+            "Throughput puede estancarse o decrecer si la concurrencia excede la capacidad del sistema",
+            "Concurrencia y throughput son la misma métrica",
+            "Throughput solo importa en pruebas de estrés, no en pruebas de carga",
+            "La concurrencia no afecta al throughput en absoluto"
+          ],
+          "correct_answer": ["Throughput puede estancarse o decrecer si la concurrencia excede la capacidad del sistema"],
+          "weight": 1,
+          "tags": ["K2", "metrics"],
+          "explanation": "Inicialmente, incrementar concurrencia aumenta throughput hasta alcanzar la capacidad máxima del sistema. Más allá de ese punto, el sistema se satura: throughput se estanca o decrece mientras latencia incrementa exponencialmente debido a colas, contención de recursos, etc.",
+          "evaluation_criteria": "Comprensión de la relación no lineal entre concurrencia y throughput."
+        },
+        {
+          "id": "Q20",
+          "type": "single_choice",
+          "title": "Apdex Score",
+          "prompt": "¿Qué es el Apdex (Application Performance Index) score?",
+          "options": [
+            "Una métrica estándar que mide la satisfacción de usuarios basado en tiempos de respuesta",
+            "El número total de errores en el test",
+            "La velocidad de procesamiento de la CPU",
+            "Un tipo de assertion para validar JSON",
+            "El throughput máximo alcanzado"
+          ],
+          "correct_answer": ["Una métrica estándar que mide la satisfacción de usuarios basado en tiempos de respuesta"],
+          "weight": 1,
+          "tags": ["K1", "metrics"],
+          "explanation": "Apdex (Application Performance Index) es un estándar de la industria que convierte tiempos de respuesta en una métrica de satisfacción de usuarios (0 a 1). Categoriza respuestas en: Satisfied (rápido), Tolerating (aceptable), Frustrated (muy lento). Score cercano a 1 indica mejor experiencia.",
+          "evaluation_criteria": "Conocimiento del concepto de Apdex score."
+        }
+      ]
+    },
+    {
+      "id": "herramientas",
+      "title": "Parte 3 – Herramientas y Mejores Prácticas",
+      "description": "Herramientas de performance testing, diseño de tests, análisis de resultados y recomendaciones.",
+      "weight": 30,
+      "questions": [
+        {
+          "id": "Q21",
+          "type": "multiple_choice",
+          "title": "Herramientas de Performance Testing",
+          "prompt": "¿Cuáles de las siguientes son herramientas válidas para performance testing?",
+          "options": [
+            "Apache JMeter",
+            "Gatling",
+            "k6",
+            "Selenium WebDriver",
+            "Locust"
+          ],
+          "correct_answer": [
+            "Apache JMeter",
+            "Gatling",
+            "k6",
+            "Locust"
+          ],
+          "weight": 2,
+          "tags": ["K1", "tools"],
+          "explanation": "Herramientas populares de performance testing incluyen: JMeter (Java, open source), Gatling (Scala, DSL), k6 (JavaScript, cloud-native), Locust (Python), LoadRunner (comercial), BlazeMeter, Artillery, etc. Selenium WebDriver es para testing funcional/UI, no performance.",
+          "evaluation_criteria": "Conocimiento de herramientas de performance testing."
+        },
+        {
+          "id": "Q22",
+          "type": "single_choice",
+          "title": "Baseline de Performance",
+          "prompt": "¿Qué es una 'baseline' en el contexto de performance testing?",
+          "options": [
+            "El tiempo de respuesta más lento registrado",
+            "Un conjunto de métricas de referencia del sistema bajo condiciones normales para comparaciones futuras",
+            "El número mínimo de usuarios que el sistema puede soportar",
+            "La configuración de hardware del servidor",
+            "El código fuente original antes de optimizaciones"
+          ],
+          "correct_answer": ["Un conjunto de métricas de referencia del sistema bajo condiciones normales para comparaciones futuras"],
+          "weight": 1,
+          "tags": ["K1", "best-practices"],
+          "explanation": "Una baseline es un conjunto de métricas capturadas bajo condiciones controladas que sirve como punto de referencia. Se usa para detectar regresiones de performance al comparar tests posteriores contra esta referencia estable.",
+          "evaluation_criteria": "Comprensión del concepto y propósito de una baseline."
+        },
+        {
+          "id": "Q23",
+          "type": "multiple_choice",
+          "title": "Mejores Prácticas en Performance Testing",
+          "prompt": "Selecciona las mejores prácticas recomendadas en performance testing:",
+          "options": [
+            "Ejecutar tests en ambientes que repliquen producción lo más posible",
+            "Probar solo en la máquina del desarrollador para ahorrar costos",
+            "Monitorear tanto métricas del cliente (response time) como del servidor (CPU, RAM)",
+            "Establecer objetivos y criterios de aceptación claros ANTES de ejecutar tests",
+            "Ejecutar tests de performance solo al final del proyecto"
+          ],
+          "correct_answer": [
+            "Ejecutar tests en ambientes que repliquen producción lo más posible",
+            "Monitorear tanto métricas del cliente (response time) como del servidor (CPU, RAM)",
+            "Establecer objetivos y criterios de aceptación claros ANTES de ejecutar tests"
+          ],
+          "weight": 2,
+          "tags": ["K2", "best-practices"],
+          "explanation": "Mejores prácticas: ambiente realista, monitoreo completo (cliente + servidor), objetivos claros, testing temprano y continuo, datos de prueba realistas, análisis de causa raíz, documentación. Evitar: testing solo local o solo al final del proyecto.",
+          "evaluation_criteria": "Conocimiento de prácticas recomendadas en la industria."
+        },
+        {
+          "id": "Q24",
+          "type": "single_choice",
+          "title": "Bottleneck (Cuello de Botella)",
+          "prompt": "Un 'bottleneck' en performance testing es:",
+          "options": [
+            "Un error de sintaxis en el script de test",
+            "Un componente o recurso que limita la capacidad total del sistema",
+            "Un usuario virtual mal configurado",
+            "Una herramienta de monitoreo",
+            "Un tipo de assertion"
+          ],
+          "correct_answer": ["Un componente o recurso que limita la capacidad total del sistema"],
+          "weight": 1,
+          "tags": ["K1", "analysis"],
+          "explanation": "Un bottleneck (cuello de botella) es un componente o recurso que limita el rendimiento general del sistema. Puede ser: CPU saturado, memoria insuficiente, disco lento, base de datos, network, thread pool, connection pool, etc. Identificarlos es clave para optimización.",
+          "evaluation_criteria": "Comprensión del concepto de bottleneck."
+        },
+        {
+          "id": "Q25",
+          "type": "practical_task",
+          "title": "Diseño de Test de Carga",
+          "prompt": "Diseña un test de carga para un sitio de e-commerce que debe soportar:\n- 10,000 usuarios concurrentes\n- Durante Black Friday (pico de tráfico)\n- SLA: p95 < 2 segundos\n\nEspecifica:\n1. Tipo de test (Load, Stress, Spike, etc.)\n2. Escenarios de usuario principales (mínimo 3)\n3. Duración recomendada del test\n4. Estrategia de ramp-up\n5. Métricas clave a monitorear",
+          "options": [],
+          "correct_answer": [],
+          "weight": 3,
+          "tags": ["K3", "test-design"],
+          "explanation": "Diseño modelo:\n\n1. Tipo de test: Combinación de LOAD TEST (validar 10k usuarios) + SPIKE TEST (simular picos Black Friday) + ENDURANCE TEST (validar estabilidad prolongada)\n\n2. Escenarios de usuario:\n   a) Navegación y búsqueda (40% de usuarios): Home → Búsqueda → Ver productos\n   b) Compra completa (30%): Búsqueda → Ver producto → Agregar al carrito → Checkout → Pago\n   c) Registro y login (20%): Registro → Login → Ver perfil\n   d) Solo navegación (10%): Ver categorías → Ver ofertas\n\n3. Duración: \n   - Ramp-up: 30-60 minutos (gradual)\n   - Carga sostenida: 2-4 horas (simular pico Black Friday)\n   - Ramp-down: 15-30 minutos\n   Total: 3-5 horas\n\n4. Estrategia de ramp-up:\n   - 0-10 min: 0 → 2,000 usuarios (20%)\n   - 10-20 min: 2,000 → 5,000 usuarios (50%)\n   - 20-40 min: 5,000 → 10,000 usuarios (100%)\n   - 40-240 min: Mantener 10,000 usuarios (carga sostenida)\n   - Picos: Incrementar a 15,000 por 15 min cada hora (spike test)\n\n5. Métricas clave:\n   Cliente:\n   - Response time (avg, median, p90, p95, p99)\n   - Throughput (TPS, requests/sec)\n   - Error rate (%)\n   - Successful transactions\n   \n   Servidor:\n   - CPU utilization (%)\n   - Memory usage (RAM, heap si es Java)\n   - Disk I/O\n   - Network bandwidth\n   - Database query times\n   - Connection pool usage\n   - Application server threads\n   \n   Validación SLA:\n   - p95 < 2s (requisito crítico)\n   - Error rate < 1%\n   - Availability > 99.9%",
+          "evaluation_criteria": "Capacidad de diseñar un test completo con escenarios realistas, estrategia de carga, y métricas apropiadas.",
+          "expected_artifacts": [
+            "Tipo de test justificado",
+            "Escenarios de usuario representativos",
+            "Duración y estrategia de ramp-up detallada",
+            "Métricas de cliente y servidor",
+            "Consideración de SLA"
+          ]
+        },
+        {
+          "id": "Q26",
+          "type": "single_choice",
+          "title": "Monitoreo APM (Application Performance Monitoring)",
+          "prompt": "¿Cuál es el beneficio principal de usar herramientas APM (como New Relic, Dynatrace, AppDynamics) durante performance testing?",
+          "options": [
+            "Ejecutar los tests de carga automáticamente",
+            "Proporcionar visibilidad profunda del código, queries SQL, traces y cuellos de botella a nivel de aplicación",
+            "Generar usuarios virtuales",
+            "Reemplazar completamente JMeter o Gatling",
+            "Escribir scripts de test automáticamente"
+          ],
+          "correct_answer": ["Proporcionar visibilidad profunda del código, queries SQL, traces y cuellos de botella a nivel de aplicación"],
+          "weight": 1,
+          "tags": ["K2", "tools"],
+          "explanation": "APM (Application Performance Monitoring) tools proporcionan visibilidad detallada dentro de la aplicación: ejecución de código, queries SQL lentas, traces de requests, memory leaks, GC pauses, etc. Complementan herramientas de load testing mostrando QUÉ está causando problemas.",
+          "evaluation_criteria": "Comprensión del rol y beneficios de herramientas APM."
+        },
+        {
+          "id": "Q27",
+          "type": "single_choice",
+          "title": "Shift-Left Performance Testing",
+          "prompt": "El concepto 'Shift-Left' en performance testing significa:",
+          "options": [
+            "Ejecutar tests de performance solo al inicio del proyecto",
+            "Integrar performance testing temprano en el ciclo de desarrollo, no solo al final",
+            "Mover el servidor de tests a la izquierda del datacenter",
+            "Ejecutar tests en modo non-GUI exclusivamente",
+            "Reducir el número de usuarios virtuales"
+          ],
+          "correct_answer": ["Integrar performance testing temprano en el ciclo de desarrollo, no solo al final"],
+          "weight": 1,
+          "tags": ["K2", "best-practices"],
+          "explanation": "Shift-Left es la práctica de integrar performance testing desde las etapas tempranas del desarrollo (unit perf tests, API tests), no solo al final antes de producción. Permite detectar y corregir problemas antes, reduciendo costos y riesgos.",
+          "evaluation_criteria": "Comprensión del concepto shift-left."
+        },
+        {
+          "id": "Q28",
+          "type": "multiple_choice",
+          "title": "Análisis de Causas Raíz",
+          "prompt": "Al identificar un problema de performance, ¿qué técnicas ayudan a encontrar la causa raíz?",
+          "options": [
+            "Profiling de la aplicación (YourKit, VisualVM, etc.)",
+            "Análisis de logs de aplicación y servidor",
+            "Revisión de queries SQL lentas (slow query log)",
+            "Simplemente incrementar recursos del servidor sin investigar",
+            "Correlación de métricas de cliente y servidor en timeline"
+          ],
+          "correct_answer": [
+            "Profiling de la aplicación (YourKit, VisualVM, etc.)",
+            "Análisis de logs de aplicación y servidor",
+            "Revisión de queries SQL lentas (slow query log)",
+            "Correlación de métricas de cliente y servidor en timeline"
+          ],
+          "weight": 2,
+          "tags": ["K3", "analysis"],
+          "explanation": "Para análisis de causa raíz: profiling (identifica código lento), logs (errores y warnings), slow query logs (DB bottlenecks), correlación temporal de métricas, análisis de threads/heap dumps. Simplemente agregar recursos sin investigar no resuelve el problema subyacente.",
+          "evaluation_criteria": "Conocimiento de técnicas de análisis de causa raíz."
+        },
+        {
+          "id": "Q29",
+          "type": "open_text",
+          "title": "Reporte de Performance Testing",
+          "prompt": "Enumera las secciones principales que debe contener un reporte profesional de performance testing.\n\nIncluye al menos 6 secciones clave con breve descripción de cada una.",
+          "options": [],
+          "correct_answer": [],
+          "weight": 2,
+          "tags": ["K2", "documentation"],
+          "explanation": "Secciones principales de un reporte de performance testing:\n\n1. RESUMEN EJECUTIVO\n   - Resultado general (Pass/Fail)\n   - Cumplimiento de SLAs\n   - Issues críticos encontrados\n   - Recomendaciones principales\n\n2. OBJETIVOS Y ALCANCE\n   - Propósito del test\n   - Escenarios probados\n   - Ambiente de prueba\n   - Criterios de aceptación\n\n3. CONFIGURACIÓN DEL TEST\n   - Herramientas utilizadas\n   - Número de usuarios virtuales\n   - Duración y ramp-up\n   - Datos de prueba\n\n4. RESULTADOS DE MÉTRICAS\n   - Response times (avg, median, percentiles)\n   - Throughput\n   - Error rate\n   - Gráficos de tendencias\n\n5. ANÁLISIS DE SERVIDOR\n   - CPU, RAM, Disk I/O\n   - Database performance\n   - Network utilization\n   - Identificación de bottlenecks\n\n6. ISSUES Y OBSERVACIONES\n   - Problemas encontrados\n   - Errores y excepciones\n   - Degradación de performance\n   - Comparación con baseline (si existe)\n\n7. CONCLUSIONES Y RECOMENDACIONES\n   - Cumplimiento de objetivos\n   - Recomendaciones de optimización\n   - Próximos pasos\n   - Riesgos para producción\n\n8. ANEXOS\n   - Scripts de test\n   - Logs detallados\n   - Configuraciones\n   - Datos raw",
+          "evaluation_criteria": "Capacidad de estructurar un reporte profesional con secciones completas y relevantes.",
+          "expected_artifacts": [
+            "Mínimo 6 secciones principales",
+            "Descripción clara de cada sección",
+            "Estructura lógica y profesional"
+          ]
+        },
+        {
+          "id": "Q30",
+          "type": "single_choice",
+          "title": "Performance Testing en CI/CD",
+          "prompt": "¿Cuál es un desafío principal al integrar performance testing en pipelines CI/CD?",
+          "options": [
+            "Los tests funcionales son más importantes",
+            "Performance tests suelen tardar más tiempo que el pipeline tolera, requieren optimización o tests más ligeros",
+            "Las herramientas de performance testing no se pueden automatizar",
+            "CI/CD solo soporta pruebas unitarias",
+            "No hay desafíos, es exactamente igual que testing funcional"
+          ],
+          "correct_answer": ["Performance tests suelen tardar más tiempo que el pipeline tolera, requieren optimización o tests más ligeros"],
+          "weight": 1,
+          "tags": ["K2", "ci-cd"],
+          "explanation": "Desafíos de performance testing en CI/CD: duración (tests completos tardan horas), recursos (necesitan servidores dedicados), datos de prueba, estabilidad del ambiente, y análisis de resultados. Soluciones: smoke performance tests (cortos), tests programados nocturnos, o uso de métricas sintéticas.",
+          "evaluation_criteria": "Comprensión de desafíos de integración con CI/CD."
+        }
+      ]
+    }
+  ],
+  "scoring": {
+    "total_points": 40,
+    "breakdown": {
+      "fundamentos": 14,
+      "metricas": 14,
+      "herramientas": 12
+    },
+    "grading_scale": {
+      "excellent": { "min": 90, "max": 100, "label": "Excelente - Dominio Avanzado" },
+      "good": { "min": 75, "max": 89, "label": "Bueno - Conocimientos Sólidos" },
+      "pass": { "min": 70, "max": 74, "label": "Aprobado" },
+      "needs_improvement": { "min": 0, "max": 69, "label": "Requiere Mejorar" }
+    }
+  },
+  "instructions": {
+    "es": "Esta evaluación técnica de Performance Testing consta de 30 preguntas distribuidas en 3 secciones: Fundamentos, Métricas/KPIs, y Herramientas/Mejores Prácticas. Lee cuidadamente cada pregunta. Para preguntas prácticas, proporciona respuestas detalladas y justificadas. Tiempo estimado: 60 minutos. Puntuación mínima de aprobación: 70%.",
+    "en": "This Performance Testing technical assessment consists of 30 questions distributed across 3 sections: Fundamentals, Metrics/KPIs, and Tools/Best Practices. Read each question carefully. For practical questions, provide detailed and justified answers. Estimated time: 60 minutes. Minimum passing score: 70%."
+  },
+  "resources": {
+    "recommended_reading": [
+      "Performance Testing Body of Knowledge (TMap)",
+      "The Art of Application Performance Testing (O'Reilly)",
+      "PtU Certified Performance Tester with JMeter Syllabus",
+      "Google SRE Book - Performance Chapter"
+    ],
+    "tools_documentation": [
+      "Apache JMeter User Manual",
+      "Gatling Documentation",
+      "k6 Documentation",
+      "Locust Documentation"
+    ]
+  }
+}
