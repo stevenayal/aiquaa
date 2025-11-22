@@ -7,8 +7,8 @@ export type Language = 'es' | 'en';
 
 interface LanguageContextType {
   language: Language;
-  setLanguage: (lang: Language) => void;
-  t: (key: string) => string;
+  setLanguage: (_lang: Language) => void;
+  t: (_key: string) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);

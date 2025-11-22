@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 
