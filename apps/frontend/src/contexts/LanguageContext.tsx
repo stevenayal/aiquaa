@@ -261,6 +261,24 @@ const translations: Record<Language, Record<string, string>> = {
     'footer.contact': 'Contacto',
     'footer.privacy': 'Privacidad',
     'footer.terms': 'Términos',
+
+    // Suru Mascot
+    'suru.welcome': '¡Hola! Soy Suru, tu guía en AIQUAA',
+    'suru.onboarding.welcome': '¡Hola! Soy Suru, tu compañero en el mundo del QA. Estoy aquí para guiarte en tu camino hacia la excelencia en testing.',
+    'suru.onboarding.explore': 'AIQUAA tiene herramientas gratuitas, recursos de estudio y una comunidad activa. Explora todo lo que tenemos para ofrecerte.',
+    'suru.onboarding.learn': 'Prepárate para certificaciones ISTQB y JMeter, practica con exámenes técnicos y mejora tus habilidades de testing.',
+    'suru.onboarding.ready': '¡Estás listo para comenzar! Recuerda que siempre estaré aquí si necesitas ayuda navegando por el sitio.',
+    'suru.onboarding.next': 'Siguiente',
+    'suru.onboarding.previous': 'Anterior',
+    'suru.onboarding.skip': 'Saltar introducción',
+    'suru.onboarding.start': '¡Empecemos!',
+    'suru.tooltip.labs': 'Descubre nuestras herramientas de testing',
+    'suru.tooltip.istqb': 'Practica para tu certificación ISTQB',
+    'suru.tooltip.community': 'Únete a la comunidad QA',
+    'suru.error.404': 'Ups, parece que esta página se perdió en el río Paraguay...',
+    'suru.error.500': 'Estoy trabajando en arreglar esto, dame un momento',
+    'suru.loading': 'Nadando por los datos...',
+    'suru.success': '¡Excelente trabajo! Test aprobado',
   },
   en: {
     // Navigation
@@ -496,6 +514,24 @@ const translations: Record<Language, Record<string, string>> = {
     'footer.contact': 'Contact',
     'footer.privacy': 'Privacy',
     'footer.terms': 'Terms',
+
+    // Suru Mascot
+    'suru.welcome': 'Hi! I\'m Suru, your guide at AIQUAA',
+    'suru.onboarding.welcome': 'Hi! I\'m Suru, your companion in the QA world. I\'m here to guide you on your path to testing excellence.',
+    'suru.onboarding.explore': 'AIQUAA has free tools, study resources, and an active community. Explore everything we have to offer.',
+    'suru.onboarding.learn': 'Prepare for ISTQB and JMeter certifications, practice with technical exams, and improve your testing skills.',
+    'suru.onboarding.ready': 'You\'re ready to start! Remember, I\'ll always be here if you need help navigating the site.',
+    'suru.onboarding.next': 'Next',
+    'suru.onboarding.previous': 'Previous',
+    'suru.onboarding.skip': 'Skip intro',
+    'suru.onboarding.start': 'Let\'s go!',
+    'suru.tooltip.labs': 'Discover our testing tools',
+    'suru.tooltip.istqb': 'Practice for your ISTQB certification',
+    'suru.tooltip.community': 'Join the QA community',
+    'suru.error.404': 'Oops, it seems this page got lost in the Paraguay River...',
+    'suru.error.500': 'I\'m working on fixing this, give me a moment',
+    'suru.loading': 'Swimming through the data...',
+    'suru.success': 'Excellent work! Test passed',
   },
 };
 
