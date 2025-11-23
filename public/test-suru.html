@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suru Test Page</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #333;
+        }
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+        .dark {
+            background: #1e293b;
+            color: white;
+        }
+        .light {
+            background: white;
+            color: #333;
+        }
+        .suru-container {
+            display: inline-block;
+            margin: 20px;
+        }
+        .size-label {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐟 Suru SVG Test Page</h1>
+
+        <div class="test-section light">
+            <h2>Test 1: Suru en fondo blanco</h2>
+            <div class="suru-container">
+                <div class="size-label">Welcome (512px)</div>
+                <img src="/images/suru/suru-welcome.svg" alt="Suru Welcome" width="512" height="512">
+            </div>
+        </div>
+
+        <div class="test-section dark">
+            <h2>Test 2: Suru en fondo oscuro</h2>
+            <div class="suru-container">
+                <div class="size-label">Welcome (512px)</div>
+                <img src="/images/suru/suru-welcome.svg" alt="Suru Welcome" width="512" height="512">
+            </div>
+        </div>
+
+        <div class="test-section light">
+            <h2>Test 3: Diferentes tamaños</h2>
+            <div class="suru-container">
+                <div class="size-label">Mini (64px)</div>
+                <img src="/images/suru/suru-welcome.svg" alt="Suru Mini" width="64" height="64">
+            </div>
+            <div class="suru-container">
+                <div class="size-label">Small (128px)</div>
+                <img src="/images/suru/suru-welcome.svg" alt="Suru Small" width="128" height="128">
+            </div>
+            <div class="suru-container">
+                <div class="size-label">Medium (256px)</div>
+                <img src="/images/suru/suru-welcome.svg" alt="Suru Medium" width="256" height="256">
+            </div>
+        </div>
+
+        <div class="test-section light">
+            <h2>Test 4: Información del SVG</h2>
+            <ul>
+                <li><strong>Archivo:</strong> /images/suru/suru-welcome.svg</li>
+                <li><strong>Tamaño:</strong> 208KB</li>
+                <li><strong>Dimensiones originales:</strong> 598px × 546px</li>
+                <li><strong>Formato:</strong> SVG 1.1</li>
+            </ul>
+            <p><strong>Problema detectado:</strong> El SVG tiene un path de fondo blanco (#fdfdfd) que cubre todo el viewbox.</p>
+        </div>
+
+        <div class="test-section light">
+            <h2>Test 5: ¿El SVG se carga?</h2>
+            <div id="svg-test"></div>
+            <script>
+                fetch('/images/suru/suru-welcome.svg')
+                    .then(response => {
+                        if (response.ok) {
+                            document.getElementById('svg-test').innerHTML =
+                                '<p style="color: green;">✅ El SVG existe y se carga correctamente</p>';
+                            return response.text();
+                        } else {
+                            throw new Error('SVG no encontrado');
+                        }
+                    })
+                    .then(svgText => {
+                        const hasColor = svgText.includes('fill="#') && !svgText.replace(/#fdfdfd|#ffffff|#fff/gi, '').includes('fill="#');
+                        const colorInfo = hasColor ?
+                            '<p style="color: orange;">⚠️ El SVG contiene principalmente colores blancos/claros</p>' :
+                            '<p style="color: green;">✅ El SVG tiene colores variados</p>';
+                        document.getElementById('svg-test').innerHTML += colorInfo;
+
+                        // Show file size
+                        document.getElementById('svg-test').innerHTML +=
+                            `<p>📦 Tamaño: ${(svgText.length / 1024).toFixed(2)} KB</p>`;
+                    })
+                    .catch(error => {
+                        document.getElementById('svg-test').innerHTML =
+                            `<p style="color: red;">❌ Error: ${error.message}</p>`;
+                    });
+            </script>
+        </div>
+    </div>
+</body>
+</html>
