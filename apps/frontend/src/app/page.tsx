@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ISTQBHighlight from '@/components/ISTQBHighlight';
+import { SuruMascot } from '@/components/Suru';
 
 export default function HomePage() {
   const { isDarkMode } = useTheme();
@@ -129,24 +130,24 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Right Column - Visual Support */}
+              {/* Right Column - Visual Support with Suru */}
               <div className="hidden lg:flex justify-center items-center">
                 <div className="relative">
                   {/* Glow effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/30 to-purple-500/30 rounded-full blur-3xl"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/30 to-emerald-500/30 rounded-full blur-3xl"></div>
 
-                  {/* Main visual - Logo */}
-                  <div className="relative bg-slate-800/50 backdrop-blur-sm rounded-2xl p-12 border border-slate-700/50 shadow-2xl">
-                    <div className="relative z-10">
-                      <img
-                        src="/images/logo1.png"
-                        alt="AIQUAA Logo"
-                        className="w-64 h-64 object-contain"
-                        loading="eager"
+                  {/* Main visual - Suru Mascot */}
+                  <div className="relative bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-700/50 shadow-2xl">
+                    <div className="relative z-10 flex justify-center">
+                      <SuruMascot
+                        pose="welcome"
+                        size="large"
+                        animated
+                        message={t('home.hero.suru.message')}
                       />
                     </div>
 
-                    {/* Floating badges around logo */}
+                    {/* Floating badges around Suru */}
                     <div className="absolute -top-4 -right-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg animate-bounce">
                       ISTQB Ready
                     </div>
@@ -156,8 +157,8 @@ export default function HomePage() {
                   </div>
 
                   {/* Decorative elements */}
-                  <div className="absolute -top-8 -left-8 w-24 h-24 bg-indigo-500/20 rounded-full blur-2xl"></div>
-                  <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-purple-500/20 rounded-full blur-2xl"></div>
+                  <div className="absolute -top-8 -left-8 w-24 h-24 bg-cyan-500/20 rounded-full blur-2xl"></div>
+                  <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-emerald-500/20 rounded-full blur-2xl"></div>
                 </div>
               </div>
 
