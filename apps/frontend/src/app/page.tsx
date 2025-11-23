@@ -136,8 +136,8 @@ export default function HomePage() {
                   {/* Glow effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/30 to-emerald-500/30 rounded-full blur-3xl"></div>
 
-                  {/* Main visual - Suru Mascot */}
-                  <div className="relative bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-700/50 shadow-2xl">
+                  {/* Main visual - Suru Mascot with white background for visibility */}
+                  <div className="relative bg-white rounded-2xl p-8 border-2 border-cyan-500 shadow-2xl">
                     <div className="relative z-10 flex justify-center">
                       <SuruMascot
                         pose="welcome"

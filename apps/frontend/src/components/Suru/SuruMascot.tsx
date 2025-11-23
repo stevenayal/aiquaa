@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
 
 export type SuruPose =
   | 'welcome'
@@ -98,13 +97,14 @@ export default function SuruMascot({
           height: pixelSize,
         }}
       >
-        <Image
+        {/* Using img tag for SVG support */}
+        <img
           src={`/images/suru/suru-${pose}.svg`}
           alt={`Suru - ${pose}`}
           width={pixelSize}
           height={pixelSize}
           className="w-full h-full object-contain"
-          priority={size === 'hero'}
+          loading={size === 'hero' ? 'eager' : 'lazy'}
         />
 
         {/* Hover glow effect */}
