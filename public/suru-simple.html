@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Suru Simple Test</title>
+    <style>
+        body {
+            margin: 40px;
+            font-family: Arial;
+            background: #1e293b;
+            color: white;
+        }
+        .box {
+            background: white;
+            border-radius: 50%;
+            padding: 20px;
+            display: inline-block;
+            margin: 20px;
+        }
+        img {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>🐟 Test Simple de Suru</h1>
+
+    <h2>Test 1: SVG con fondo blanco (como en SuruFloating)</h2>
+    <div class="box">
+        <img src="/images/suru/suru-welcome.svg" width="256" height="256" alt="Suru Welcome">
+    </div>
+
+    <h2>Test 2: Verificación de carga</h2>
+    <div id="status">Cargando...</div>
+
+    <script>
+        fetch('/images/suru/suru-welcome.svg')
+            .then(r => {
+                if (r.ok) {
+                    document.getElementById('status').innerHTML = '✅ SVG cargó correctamente';
+                    document.getElementById('status').style.color = 'lightgreen';
+                } else {
+                    document.getElementById('status').innerHTML = '❌ Error ' + r.status + ': ' + r.statusText;
+                    document.getElementById('status').style.color = 'red';
+                }
+            })
+            .catch(e => {
+                document.getElementById('status').innerHTML = '❌ Error: ' + e.message;
+                document.getElementById('status').style.color = 'red';
+            });
+    </script>
+</body>
+</html>

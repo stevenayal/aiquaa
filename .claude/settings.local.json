@@ -48,7 +48,8 @@
       "Bash(make dev-back:*)",
       "Bash(pnpm dev)",
       "Bash(pnpm install)",
-      "Bash(public/images/suru/suru-welcome-temp.svg)"
+      "Bash(public/images/suru/suru-welcome-temp.svg)",
+      "Bash(ls:*)"
     ],
     "deny": [],
     "ask": []
