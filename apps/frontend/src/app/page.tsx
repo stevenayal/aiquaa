@@ -55,8 +55,26 @@ export default function HomePage() {
           <div className="py-16 md:py-24 lg:py-28">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
 
-              {/* Left Column - Content */}
-              <div className="text-center lg:text-left space-y-8">
+              {/* Left Column - Suru Mascot */}
+              <div className="hidden lg:flex justify-center items-center order-2 lg:order-1">
+                <div className="relative">
+                  {/* Glow effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-emerald-500/20 rounded-full blur-3xl"></div>
+
+                  {/* Suru Mascot */}
+                  <div className="relative">
+                    <SuruMascot
+                      pose="welcome"
+                      size="large"
+                      animated
+                      message={t('home.hero.suru.message')}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column - Content */}
+              <div className="text-center lg:text-left space-y-8 order-1 lg:order-2">
                 {/* Headline - Benefit-focused */}
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight">
                   {t('home.hero.title')}
@@ -127,38 +145,6 @@ export default function HomePage() {
                     <div className="text-3xl font-bold text-white">100+</div>
                     <div className="text-sm text-slate-400 mt-1">{t('home.hero.stats.community')}</div>
                   </div>
-                </div>
-              </div>
-
-              {/* Right Column - Visual Support with Suru */}
-              <div className="hidden lg:flex justify-center items-center">
-                <div className="relative">
-                  {/* Glow effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/30 to-emerald-500/30 rounded-full blur-3xl"></div>
-
-                  {/* Main visual - Suru Mascot with white background for visibility */}
-                  <div className="relative bg-white rounded-2xl p-8 border-2 border-cyan-500 shadow-2xl">
-                    <div className="relative z-10 flex justify-center">
-                      <SuruMascot
-                        pose="welcome"
-                        size="large"
-                        animated
-                        message={t('home.hero.suru.message')}
-                      />
-                    </div>
-
-                    {/* Floating badges around Suru */}
-                    <div className="absolute -top-4 -right-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg animate-bounce">
-                      ISTQB Ready
-                    </div>
-                    <div className="absolute -bottom-4 -left-4 bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg animate-bounce" style={{animationDelay: '0.5s'}}>
-                      JMeter Pro
-                    </div>
-                  </div>
-
-                  {/* Decorative elements */}
-                  <div className="absolute -top-8 -left-8 w-24 h-24 bg-cyan-500/20 rounded-full blur-2xl"></div>
-                  <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-emerald-500/20 rounded-full blur-2xl"></div>
                 </div>
               </div>
 

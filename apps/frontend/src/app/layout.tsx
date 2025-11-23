@@ -7,7 +7,7 @@ import { ThemeProvider } from '../contexts/ThemeContext';
 import { LanguageProvider } from '../contexts/LanguageContext';
 import { NextAuthProvider } from '../contexts/NextAuthContext';
 import { AuthProvider } from '../contexts/AuthContext';
-import { initializeSentry } from '../lib/observability';
+// import { initializeSentry } from '../lib/observability'; // Temporarily disabled for Server Components
 import Providers from './providers';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -60,10 +60,10 @@ export const metadata: Metadata = {
   },
 };
 
-// Initialize Sentry
-if (typeof window !== 'undefined') {
-  initializeSentry();
-}
+// Initialize Sentry - Temporarily disabled for Server Components compatibility
+// if (typeof window !== 'undefined') {
+//   initializeSentry();
+// }
 
 export default function RootLayout({
   children,
