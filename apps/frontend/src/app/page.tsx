@@ -290,6 +290,13 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Suru Floating Mascot */}
+      <SuruFloating
+        position="bottom-right"
+        pose="welcome"
+        initialMessage={t('home.hero.suru.message')}
+      />
     </div>
   );
 }
