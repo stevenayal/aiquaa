@@ -145,8 +145,11 @@ export default function SuruFloating({
         {isMinimized ? '↑' : '↓'}
       </button>
 
-      {/* Suru Mascot */}
-      <div className="transition-transform hover:scale-110 duration-300">
+      {/* Suru Mascot with background for visibility */}
+      <div className="relative transition-transform hover:scale-110 duration-300">
+        {/* White background circle for visibility */}
+        <div className="absolute inset-0 bg-white rounded-full opacity-90 -z-10"></div>
+
         <SuruMascot
           pose={pose}
           size="medium"

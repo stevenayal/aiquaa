@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Suru Direct Test</title>
+    <style>
+        body { margin: 20px; font-family: Arial, sans-serif; }
+        .test-box {
+            margin: 20px 0;
+            padding: 20px;
+            border: 3px solid red;
+        }
+        .dark { background: #1e293b; color: white; }
+        .light { background: white; color: black; }
+    </style>
+</head>
+<body>
+    <h1>🐟 Suru Direct SVG Test</h1>
+
+    <div class="test-box light">
+        <h2>Test 1: IMG tag en fondo blanco (256px)</h2>
+        <img src="/images/suru/suru-welcome.svg" alt="Suru" width="256" height="256" style="border: 2px solid blue;">
+    </div>
+
+    <div class="test-box dark">
+        <h2>Test 2: IMG tag en fondo oscuro (256px)</h2>
+        <img src="/images/suru/suru-welcome.svg" alt="Suru" width="256" height="256" style="border: 2px solid cyan;">
+    </div>
+
+    <div class="test-box light">
+        <h2>Test 3: SVG directo inline (pequeño)</h2>
+        <svg width="128" height="128" viewBox="0 0 598 546" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="300" cy="273" r="100" fill="#0EA5E9" />
+            <text x="300" y="273" text-anchor="middle" fill="white" font-size="40">SURU</text>
+        </svg>
+        <p>Si ves un círculo azul con "SURU", SVG funciona</p>
+    </div>
+
+    <div class="test-box light">
+        <h2>Test 4: Información de carga</h2>
+        <div id="info"></div>
+        <script>
+            const img = new Image();
+            img.onload = function() {
+                document.getElementById('info').innerHTML += '<p style="color: green;">✅ SVG cargó correctamente</p>';
+                document.getElementById('info').innerHTML += `<p>Dimensiones: ${this.naturalWidth}x${this.naturalHeight}px</p>`;
+            };
+            img.onerror = function() {
+                document.getElementById('info').innerHTML += '<p style="color: red;">❌ Error al cargar SVG</p>';
+            };
+            img.src = '/images/suru/suru-welcome.svg';
+
+            // Check file
+            fetch('/images/suru/suru-welcome.svg')
+                .then(r => r.text())
+                .then(svg => {
+                    const colors = svg.match(/fill="#[^"]+"/g) || [];
+                    const uniqueColors = [...new Set(colors)];
+                    document.getElementById('info').innerHTML += `<p>Colores encontrados: ${uniqueColors.length}</p>`;
+                    document.getElementById('info').innerHTML += `<pre>${uniqueColors.slice(0, 10).join('\n')}</pre>`;
+                })
+                .catch(e => {
+                    document.getElementById('info').innerHTML += `<p style="color: red;">Error: ${e.message}</p>`;
+                });
+        </script>
+    </div>
+</body>
+</html>
