@@ -112,8 +112,15 @@ export default function SuruFloating({
   }, [isVisible]);
 
   const handleInteraction = () => {
-    // Cycle through different messages
+    // Cycle through different messages including motivational phrases
     const messages = [
+      t('suru.intro'),
+      t('suru.motivation.basicoite'),
+      t('suru.motivation.afallapa'),
+      t('suru.motivation.competition'),
+      t('suru.motivation.discipline'),
+      t('suru.motivation.growth'),
+      t('suru.motivation.community'),
       t('suru.tooltip.labs'),
       t('suru.tooltip.istqb'),
       t('suru.tooltip.community'),
@@ -122,10 +129,10 @@ export default function SuruFloating({
     const randomMessage = messages[Math.floor(Math.random() * messages.length)];
     setCurrentMessage(randomMessage);
 
-    // Clear message after 5 seconds
+    // Clear message after 7 seconds (longer for motivational phrases)
     setTimeout(() => {
       setCurrentMessage(undefined);
-    }, 5000);
+    }, 7000);
   };
 
   const handleClose = () => {
