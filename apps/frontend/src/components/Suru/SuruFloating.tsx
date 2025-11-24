@@ -160,14 +160,11 @@ export default function SuruFloating({
         {isMinimized ? '↑' : '↓'}
       </button>
 
-      {/* Suru Mascot with background for visibility - Smaller on mobile */}
+      {/* Suru Mascot - Smaller on all devices */}
       <div className="relative transition-transform hover:scale-110 duration-300">
-        {/* White background circle for visibility */}
-        <div className="absolute inset-0 bg-white rounded-full opacity-90 -z-10"></div>
-
         <SuruMascot
           pose={pose}
-          size={isMobile ? 'small' : 'medium'}
+          size={isMobile ? 'mini' : 'small'}
           animated
           message={currentMessage}
           onInteraction={handleInteraction}
