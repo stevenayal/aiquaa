@@ -280,6 +280,15 @@ const translations: Record<Language, Record<string, string>> = {
     'suru.error.500': 'Estoy trabajando en arreglar esto, dame un momento',
     'suru.loading': 'Nadando por los datos...',
     'suru.success': '¡Excelente trabajo! Test aprobado',
+
+    // Suru - Motivational phrases
+    'suru.intro': '¡Hola! Soy Suru, el personaje que va a apoyarte en la salida de tu zona de confort y aprendizaje',
+    'suru.motivation.basicoite': 'Básicamente, el testing es encontrar lo que otros no vieron',
+    'suru.motivation.afallapa': 'En ese sentido, afallapaite nomás, que de los errores se aprende',
+    'suru.motivation.competition': 'La única competencia que tenés que derrotar es a vos mismo',
+    'suru.motivation.discipline': 'La disciplina vence al solo talento, por consistencia y forma',
+    'suru.motivation.growth': 'Cada bug encontrado es un paso más hacia la excelencia',
+    'suru.motivation.community': 'Juntos crecemos más fuerte. La comunidad QA está aquí para vos',
   },
   en: {
     // Navigation
@@ -534,6 +543,15 @@ const translations: Record<Language, Record<string, string>> = {
     'suru.error.500': 'I\'m working on fixing this, give me a moment',
     'suru.loading': 'Swimming through the data...',
     'suru.success': 'Excellent work! Test passed',
+
+    // Suru - Motivational phrases
+    'suru.intro': 'Hi! I\'m Suru, the character that will support you in stepping out of your comfort zone and learning',
+    'suru.motivation.basicoite': 'Basically, testing is finding what others didn\'t see',
+    'suru.motivation.afallapa': 'In that sense, just go ahead and fail, you learn from mistakes',
+    'suru.motivation.competition': 'The only competition you have to beat is yourself',
+    'suru.motivation.discipline': 'Discipline beats talent alone, through consistency and form',
+    'suru.motivation.growth': 'Every bug found is one more step towards excellence',
+    'suru.motivation.community': 'Together we grow stronger. The QA community is here for you',
   },
 };
 
