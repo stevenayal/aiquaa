@@ -17,7 +17,12 @@ export type SuruPose =
   | 'success'
   | '404'
   | 'error'
-  | 'thinking';
+  | 'thinking'
+  | 'happy'
+  | 'working'
+  | 'celebration'
+  | 'sleeping'
+  | 'confused';
 
 export type SuruSize = 'mini' | 'small' | 'medium' | 'large' | 'hero';
 
