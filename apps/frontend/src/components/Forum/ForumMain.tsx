@@ -7,6 +7,7 @@ import ForumThreadList from './ForumThreadList';
 import ForumCreateThread from './ForumCreateThread';
 import ForumFiltersComponent from './ForumFiltersComponent';
 import ForumStats from './ForumStats';
+import { SuruFloating } from '@/components/Suru';
 
 export default function ForumMain() {
   const { user, isAuthenticated } = useAuth();
@@ -202,6 +203,9 @@ export default function ForumMain() {
           </div>
         </div>
       </div>
+
+      {/* Suru mascot explaining in forum */}
+      <SuruFloating pose="explaining" position="bottom-right" />
     </div>
   );
 }

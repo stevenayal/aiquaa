@@ -2,6 +2,7 @@
 
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { SuruFloating } from '@/components/Suru';
 
 interface Resource {
   id: string;
@@ -280,6 +281,9 @@ export default function RecursosPage() {
           </div>
         )}
       </div>
+
+      {/* Suru mascot teaching in resources */}
+      <SuruFloating pose="teacher" position="bottom-right" />
     </div>
   );
 }

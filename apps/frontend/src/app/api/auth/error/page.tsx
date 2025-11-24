@@ -3,6 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Alert } from '@/components/common';
+import { SuruFloating } from '@/components/Suru';
 
 export default function AuthErrorPage() {
   const searchParams = useSearchParams();
@@ -111,6 +112,9 @@ export default function AuthErrorPage() {
           </div>
         )}
       </div>
+
+      {/* Suru mascot showing error */}
+      <SuruFloating pose="confused" position="bottom-right" />
     </div>
   );
 }

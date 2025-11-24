@@ -5,6 +5,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { Alert } from '@/components/common';
 import ExamSimulator from './components/ExamSimulator';
 import { loadExamData } from './utils';
+import { SuruFloating } from '@/components/Suru';
 
 export default function ISTQBSimulatorPage() {
   const { isDarkMode } = useTheme();
@@ -371,6 +372,9 @@ export default function ISTQBSimulatorPage() {
           </div>
         </div>
       </div>
+
+      {/* Suru mascot teaching ISTQB */}
+      <SuruFloating pose="teacher" position="bottom-right" />
     </div>
   );
 }

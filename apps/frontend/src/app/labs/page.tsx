@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import BugReportWidget from '@/components/BugReportWidget';
+import { SuruFloating } from '@/components/Suru';
 
 export default function LabsPage() {
   const { isDarkMode } = useTheme();
@@ -440,6 +441,9 @@ export default function LabsPage() {
 
       {/* Bug Report Widget */}
       <BugReportWidget />
+
+      {/* Suru mascot working on labs */}
+      <SuruFloating pose="working" position="bottom-right" />
     </div>
   );
 }

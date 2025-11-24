@@ -142,19 +142,19 @@ export default function SuruFloating({
         isMinimized ? 'scale-75 opacity-50' : 'scale-100 opacity-100'
       }`}
     >
-      {/* Close button - Bigger size */}
+      {/* Close button - Bigger size - On left side */}
       <button
         onClick={handleClose}
-        className="absolute -top-2 -right-2 w-10 h-10 bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-800 rounded-full flex items-center justify-center shadow-lg hover:bg-slate-700 dark:hover:bg-slate-300 transition-colors z-10 font-bold text-xl"
+        className="absolute -top-2 -left-2 w-10 h-10 bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-800 rounded-full flex items-center justify-center shadow-lg hover:bg-slate-700 dark:hover:bg-slate-300 transition-colors z-10 font-bold text-xl"
         aria-label="Cerrar Suru"
       >
         ×
       </button>
 
-      {/* Minimize/Maximize button */}
+      {/* Minimize/Maximize button - On left side */}
       <button
         onClick={() => setIsMinimized(!isMinimized)}
-        className="absolute -top-2 -right-14 w-10 h-10 bg-cyan-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-cyan-600 transition-colors z-10 text-sm"
+        className="absolute -top-2 -left-14 w-10 h-10 bg-cyan-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-cyan-600 transition-colors z-10 text-sm"
         aria-label={isMinimized ? 'Maximizar Suru' : 'Minimizar Suru'}
       >
         {isMinimized ? '↑' : '↓'}

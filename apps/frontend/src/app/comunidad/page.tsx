@@ -5,6 +5,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import Comments from '@/components/Comments';
 import CollaborationSection from '@/components/CollaborationSection';
 import YouTubeSection from '@/components/YouTubeSection';
+import { SuruFloating } from '@/components/Suru';
 
 export default function ComunidadPage() {
   const { isDarkMode } = useTheme();
@@ -418,6 +419,9 @@ export default function ComunidadPage() {
           </ul>
         </div>
       </div>
+
+      {/* Suru mascot happy in community page */}
+      <SuruFloating pose="happy" position="bottom-right" />
     </div>
   );
 }

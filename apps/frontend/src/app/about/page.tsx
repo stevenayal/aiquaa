@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import FAQSection from '@/components/FAQSection';
+import { SuruFloating } from '@/components/Suru';
 
 export default function AboutPage() {
   const { isDarkMode } = useTheme();
@@ -238,6 +239,9 @@ export default function AboutPage() {
         {/* FAQ Section */}
         <FAQSection />
       </div>
+
+      {/* Suru mascot explaining about AIQUAA */}
+      <SuruFloating pose="explaining" position="bottom-right" />
     </div>
   );
 }
