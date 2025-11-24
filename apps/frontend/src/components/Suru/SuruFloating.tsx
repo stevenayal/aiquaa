@@ -21,6 +21,7 @@ export default function SuruFloating({
 }: SuruFloatingProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [currentMessage, setCurrentMessage] = useState<string | undefined>(
     initialMessage
   );
@@ -32,6 +33,20 @@ export default function SuruFloating({
     'top-right': 'top-20 right-6',
     'top-left': 'top-20 left-6',
   };
+
+  // Detect mobile screen size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // Tailwind md breakpoint
+    };
+
+    // Check on mount
+    checkMobile();
+
+    // Listen for resize
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Check if Suru should be visible on this page
   useEffect(() => {
@@ -127,10 +142,10 @@ export default function SuruFloating({
         isMinimized ? 'scale-75 opacity-50' : 'scale-100 opacity-100'
       }`}
     >
-      {/* Close button */}
+      {/* Close button - Bigger size */}
       <button
         onClick={handleClose}
-        className="absolute -top-2 -right-2 w-7 h-7 bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-800 rounded-full flex items-center justify-center shadow-lg hover:bg-slate-700 dark:hover:bg-slate-300 transition-colors z-10 font-bold text-sm"
+        className="absolute -top-2 -right-2 w-10 h-10 bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-800 rounded-full flex items-center justify-center shadow-lg hover:bg-slate-700 dark:hover:bg-slate-300 transition-colors z-10 font-bold text-xl"
         aria-label="Cerrar Suru"
       >
         ×
@@ -139,20 +154,20 @@ export default function SuruFloating({
       {/* Minimize/Maximize button */}
       <button
         onClick={() => setIsMinimized(!isMinimized)}
-        className="absolute -top-2 -right-10 w-7 h-7 bg-cyan-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-cyan-600 transition-colors z-10 text-xs"
+        className="absolute -top-2 -right-14 w-10 h-10 bg-cyan-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-cyan-600 transition-colors z-10 text-sm"
         aria-label={isMinimized ? 'Maximizar Suru' : 'Minimizar Suru'}
       >
         {isMinimized ? '↑' : '↓'}
       </button>
 
-      {/* Suru Mascot with background for visibility */}
+      {/* Suru Mascot with background for visibility - Smaller on mobile */}
       <div className="relative transition-transform hover:scale-110 duration-300">
         {/* White background circle for visibility */}
         <div className="absolute inset-0 bg-white rounded-full opacity-90 -z-10"></div>
 
         <SuruMascot
           pose={pose}
-          size="medium"
+          size={isMobile ? 'small' : 'medium'}
           animated
           message={currentMessage}
           onInteraction={handleInteraction}
