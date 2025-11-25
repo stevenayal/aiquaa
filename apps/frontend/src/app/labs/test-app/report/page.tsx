@@ -3,7 +3,18 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import type { TechnicalReport, BugReport, CandidateInfo, TestSession, ImageEvidence } from './types';
-import { calculateScore, generatePDF, exportToJSON, fileToBase64, validateImageFile, formatFileSize } from './utils';
+import {
+  calculateScore,
+  generatePDF,
+  exportToJSON,
+  fileToBase64,
+  validateImageFile,
+  formatFileSize,
+  saveReportToCache,
+  loadReportFromCache,
+  clearReportCache,
+  formatLastSaved,
+} from './utils';
 
 export default function TechnicalReportPage() {
   const { isDarkMode } = useTheme();
@@ -48,10 +59,13 @@ export default function TechnicalReportPage() {
   // UI State
   const [showBugForm, setShowBugForm] = useState(false);
   const [editingBugId, setEditingBugId] = useState<string | null>(null);
+  const [lastSaved, setLastSaved] = useState<string | null>(null);
+  const [isLoadingCache, setIsLoadingCache] = useState(true);
 
-  // Load audit log from localStorage on mount
+  // Load audit log and cached report from localStorage on mount
   useEffect(() => {
     try {
+      // Load audit log
       const storedLog = localStorage.getItem('testAppAuditLog');
       if (storedLog) {
         const log = JSON.parse(storedLog);
@@ -66,10 +80,32 @@ export default function TechnicalReportPage() {
         });
         setTestSession((prev: TestSession) => ({ ...prev, exploredSections: Array.from(sections) }));
       }
+
+      // Load cached report
+      const cachedReport = loadReportFromCache();
+      if (cachedReport) {
+        setCandidateInfo(cachedReport.candidateInfo);
+        setTestSession((prev: TestSession) => ({
+          ...prev,
+          ...cachedReport.testSession,
+        }));
+        setBugs(cachedReport.bugs);
+        setLastSaved(cachedReport.lastSaved);
+      }
     } catch (error) {
-      console.error('Error loading audit log:', error);
+      console.error('Error loading from localStorage:', error);
+    } finally {
+      setIsLoadingCache(false);
     }
   }, []);
+
+  // Auto-save to cache when state changes
+  useEffect(() => {
+    if (!isLoadingCache) {
+      saveReportToCache(candidateInfo, testSession, bugs);
+      setLastSaved(new Date().toISOString());
+    }
+  }, [candidateInfo, testSession, bugs, isLoadingCache]);
 
   const handleAddStep = () => {
     setCurrentBug((prev: Partial<BugReport>) => ({
@@ -231,6 +267,47 @@ export default function TechnicalReportPage() {
     exportToJSON(report);
   };
 
+  const handleClearCache = () => {
+    if (
+      confirm(
+        '¿Estás seguro de que deseas limpiar todos los datos guardados? Esta acción no se puede deshacer.',
+      )
+    ) {
+      clearReportCache();
+      setCandidateInfo({
+        fullName: '',
+        email: '',
+        githubProfile: '',
+        linkedinProfile: '',
+        candidateId: '',
+        testDate: new Date(),
+      });
+      setTestSession({
+        startTime: new Date(),
+        endTime: new Date(),
+        duration: 30,
+        exploredSections: [],
+      });
+      setBugs([]);
+      setLastSaved(null);
+      setCurrentBug({
+        id: `bug-${Date.now()}`,
+        title: '',
+        description: '',
+        stepsToReproduce: [''],
+        expectedResult: '',
+        actualResult: '',
+        severity: 'Medium',
+        category: '',
+        evidence: '',
+        images: [],
+        foundAt: new Date(),
+      });
+      setShowBugForm(false);
+      setEditingBugId(null);
+    }
+  };
+
   const score = calculateScore({
     candidateInfo,
     testSession,
@@ -244,12 +321,36 @@ export default function TechnicalReportPage() {
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header */}
         <div className="mb-8">
-          <h1 className={`text-4xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-            🎯 Generador de Informe Técnico
-          </h1>
-          <p className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}>
-            Prueba Técnica: Exploratory Testing & Bug Hunt
-          </p>
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className={`text-4xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                🎯 Generador de Informe Técnico
+              </h1>
+              <p className={isDarkMode ? 'text-slate-400' : 'text-gray-600'}>
+                Prueba Técnica: Exploratory Testing & Bug Hunt
+              </p>
+            </div>
+            <div className="flex flex-col items-end gap-2">
+              {/* Auto-save indicator */}
+              <div className="flex items-center gap-2">
+                <div className={`w-2 h-2 rounded-full ${isDarkMode ? 'bg-green-400' : 'bg-green-500'} animate-pulse`}></div>
+                <span className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
+                  {formatLastSaved(lastSaved)}
+                </span>
+              </div>
+              {/* Clear cache button */}
+              <button
+                onClick={handleClearCache}
+                className={`text-xs px-3 py-1 rounded-lg transition-colors ${isDarkMode
+                  ? 'bg-red-900/30 hover:bg-red-900/50 text-red-400'
+                  : 'bg-red-100 hover:bg-red-200 text-red-700'
+                  }`}
+                title="Limpiar todos los datos guardados"
+              >
+                🗑️ Limpiar Caché
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Score Overview */}

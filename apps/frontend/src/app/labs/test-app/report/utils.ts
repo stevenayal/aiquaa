@@ -459,3 +459,99 @@ export function exportToJSON(report: TechnicalReport): void {
   link.click();
   URL.revokeObjectURL(url);
 }
+
+// Cache utilities
+const CACHE_KEY = 'testAppReportCache';
+
+export interface ReportCache {
+  candidateInfo: any;
+  testSession: any;
+  bugs: any[];
+  lastSaved: string;
+  version: string;
+}
+
+export function saveReportToCache(candidateInfo: any, testSession: any, bugs: any[]): void {
+  try {
+    const cache: ReportCache = {
+      candidateInfo,
+      testSession,
+      bugs,
+      lastSaved: new Date().toISOString(),
+      version: '1.0',
+    };
+    localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+  } catch (error) {
+    console.error('Error saving report to cache:', error);
+  }
+}
+
+export function loadReportFromCache(): ReportCache | null {
+  try {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (!cached) return null;
+
+    const cache: ReportCache = JSON.parse(cached);
+
+    // Convert date strings back to Date objects
+    if (cache.candidateInfo?.testDate) {
+      cache.candidateInfo.testDate = new Date(cache.candidateInfo.testDate);
+    }
+    if (cache.testSession?.startTime) {
+      cache.testSession.startTime = new Date(cache.testSession.startTime);
+    }
+    if (cache.testSession?.endTime) {
+      cache.testSession.endTime = new Date(cache.testSession.endTime);
+    }
+    if (cache.bugs) {
+      cache.bugs = cache.bugs.map((bug) => ({
+        ...bug,
+        foundAt: new Date(bug.foundAt),
+      }));
+    }
+
+    return cache;
+  } catch (error) {
+    console.error('Error loading report from cache:', error);
+    return null;
+  }
+}
+
+export function clearReportCache(): void {
+  try {
+    localStorage.removeItem(CACHE_KEY);
+  } catch (error) {
+    console.error('Error clearing report cache:', error);
+  }
+}
+
+export function getLastSavedTime(): string | null {
+  try {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (!cached) return null;
+
+    const cache: ReportCache = JSON.parse(cached);
+    return cache.lastSaved;
+  } catch (error) {
+    console.error('Error getting last saved time:', error);
+    return null;
+  }
+}
+
+export function formatLastSaved(lastSaved: string | null): string {
+  if (!lastSaved) return 'Sin guardar';
+
+  const date = new Date(lastSaved);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+
+  if (diffMins < 1) return 'Guardado hace menos de 1 minuto';
+  if (diffMins < 60) return `Guardado hace ${diffMins} minuto${diffMins === 1 ? '' : 's'}`;
+
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return `Guardado hace ${diffHours} hora${diffHours === 1 ? '' : 's'}`;
+
+  const diffDays = Math.floor(diffHours / 24);
+  return `Guardado hace ${diffDays} día${diffDays === 1 ? '' : 's'}`;
+}
