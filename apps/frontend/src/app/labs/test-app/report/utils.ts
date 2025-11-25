@@ -204,35 +204,31 @@ export async function generatePDF(report: TechnicalReport): Promise<void> {
     return false;
   };
 
-  // Load and add AIQUAA logo
+  // Draw AIQUAA logo directly with text (cleaner than loading image)
   try {
-    const logoResponse = await fetch('/images/aiquaa-logo.png');
-    const logoBlob = await logoResponse.blob();
-    const logoBase64 = await new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(logoBlob);
-    });
+    // AIQUAA text logo
+    doc.setFontSize(28);
+    doc.setTextColor(0, 0, 0); // Black
+    doc.text('AIQUAA', pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 10;
 
-    // Add logo centered at the top
-    const logoWidth = 40;
-    const logoHeight = 15;
-    const logoX = (pageWidth - logoWidth) / 2;
-    doc.addImage(logoBase64, 'PNG', logoX, yPosition, logoWidth, logoHeight);
-    yPosition += logoHeight + 5;
+    // QA subtitle badge
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100); // Gray
+    doc.text('Quality Assurance Platform', pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 12;
   } catch (error) {
-    console.error('Error loading logo:', error);
-    // Continue without logo if it fails
+    console.error('Error rendering logo:', error);
+    yPosition += 15; // Add space even if logo fails
   }
 
   // Title
-  doc.setFontSize(24);
+  doc.setFontSize(22);
   doc.setTextColor(249, 115, 22); // Orange
-  doc.text('AIQUAA | Informe Técnico', pageWidth / 2, yPosition, { align: 'center' });
-  yPosition += 10;
+  doc.text('Informe Técnico', pageWidth / 2, yPosition, { align: 'center' });
+  yPosition += 8;
 
-  doc.setFontSize(14);
+  doc.setFontSize(12);
   doc.setTextColor(100, 100, 100);
   doc.text('Evaluación: Exploratory Testing & Bug Hunt', pageWidth / 2, yPosition, { align: 'center' });
   yPosition += 15;
