@@ -23,7 +23,11 @@ export default function Base64ConverterPage() {
 
   const encodeText = (text: string) => {
     try {
-      return btoa(unescape(encodeURIComponent(text)));
+      // Usar TextEncoder para manejar UTF-8 correctamente
+      const encoder = new TextEncoder();
+      const data = encoder.encode(text);
+      const binaryString = Array.from(data, byte => String.fromCharCode(byte)).join('');
+      return btoa(binaryString);
     } catch (error) {
       return 'Error: No se pudo codificar el texto';
     }
@@ -31,9 +35,13 @@ export default function Base64ConverterPage() {
 
   const decodeText = (text: string) => {
     try {
-      return decodeURIComponent(escape(atob(text)));
+      // Usar TextDecoder para manejar UTF-8 correctamente
+      const binaryString = atob(text.trim());
+      const bytes = Uint8Array.from(binaryString, char => char.charCodeAt(0));
+      const decoder = new TextDecoder('utf-8');
+      return decoder.decode(bytes);
     } catch (error) {
-      return 'Error: No se pudo decodificar el texto';
+      return 'Error: No se pudo decodificar el texto. Verifica que sea Base64 válido.';
     }
   };
 
@@ -85,7 +93,7 @@ export default function Base64ConverterPage() {
 
     setFileName(file.name);
     setFileSize(file.size);
-    
+
     const reader = new FileReader();
     reader.onload = (e) => {
       const result = e.target?.result as string;
@@ -93,25 +101,32 @@ export default function Base64ConverterPage() {
         // Para archivos, usamos la representación base64 directa
         const base64 = result.split(',')[1] || result;
         setOutputText(base64);
-        setInputText(base64);
+        setInputText(`[Archivo: ${file.name}]`);
       } else {
+        // En modo decode, leer el archivo como texto plano (debería contener base64)
         setInputText(result);
       }
-      
+
       // Mostrar mensaje de éxito
       setAlertMessage(`Archivo ${mode === 'encode' ? 'codificado' : 'cargado'} correctamente`);
       setAlertType('success');
       setShowAlert(true);
-      
+
       // Scroll automático al resultado
       setTimeout(() => {
         outputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 100);
-      
+
       // Ocultar alerta después de 2 segundos
       setTimeout(() => setShowAlert(false), 2000);
     };
-    reader.readAsDataURL(file);
+
+    // En modo encode, leer como DataURL; en decode, leer como texto
+    if (mode === 'encode') {
+      reader.readAsDataURL(file);
+    } else {
+      reader.readAsText(file);
+    }
   }, [mode]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -198,17 +213,26 @@ export default function Base64ConverterPage() {
 
   const isInputValid = () => {
     if (inputText.trim() === '') return false;
-    
+
     if (mode === 'decode') {
       // Verificar que el input sea base64 válido
+      const base64Regex = /^[A-Za-z0-9+/]*={0,2}$/;
+      const trimmedInput = inputText.trim();
+
+      // Validar formato base64
+      if (!base64Regex.test(trimmedInput)) {
+        return false;
+      }
+
+      // Intentar decodificar
       try {
-        atob(inputText);
+        atob(trimmedInput);
         return true;
       } catch {
         return false;
       }
     }
-    
+
     return true;
   };
 
@@ -313,14 +337,18 @@ export default function Base64ConverterPage() {
                       onChange={(e) => handleModeChange(e.target.value as 'encode' | 'decode')}
                       className="mr-2"
                     />
-                    <span className="text-sm">Decodificar (Base64 → Texto)</span>
+                    <span className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-gray-900'}`}>
+                      Decodificar (Base64 → Texto)
+                    </span>
                   </label>
                 </div>
               </div>
 
               {/* Input Type Selection */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-brand-text mb-2">
+                <label className={`block text-sm font-medium mb-2 ${
+                  isDarkMode ? 'text-white' : 'text-brand-text'
+                }`}>
                   Tipo de entrada
                 </label>
                 <div className="flex gap-3">
@@ -332,7 +360,9 @@ export default function Base64ConverterPage() {
                       onChange={(e) => handleInputTypeChange(e.target.value as 'text' | 'file')}
                       className="mr-2"
                     />
-                    <span className="text-sm">Texto</span>
+                    <span className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-gray-900'}`}>
+                      Texto
+                    </span>
                   </label>
                   <label className="flex items-center">
                     <input
@@ -342,7 +372,9 @@ export default function Base64ConverterPage() {
                       onChange={(e) => handleInputTypeChange(e.target.value as 'text' | 'file')}
                       className="mr-2"
                     />
-                    <span className="text-sm">Archivo</span>
+                    <span className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-gray-900'}`}>
+                      Archivo
+                    </span>
                   </label>
                 </div>
               </div>
@@ -350,26 +382,30 @@ export default function Base64ConverterPage() {
               {/* File Upload */}
               {inputType === 'file' && (
                 <div className="mb-6">
-                  <label className="block text-sm font-medium text-brand-text mb-2">
+                  <label className={`block text-sm font-medium mb-2 ${
+                    isDarkMode ? 'text-white' : 'text-brand-text'
+                  }`}>
                     Seleccionar archivo
                   </label>
-                  
+
                   {/* Drag & Drop Area */}
                   <div
                     className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                      isDragOver 
-                        ? 'border-brand-accent bg-brand-accent/10' 
-                        : 'border-gray-300 hover:border-gray-400'
+                      isDragOver
+                        ? 'border-brand-accent bg-brand-accent/10'
+                        : isDarkMode
+                          ? 'border-slate-600 hover:border-slate-500 bg-slate-700/50'
+                          : 'border-gray-300 hover:border-gray-400 bg-white'
                     }`}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
                   >
                     <div className="text-4xl mb-4">📁</div>
-                    <p className="text-brand-text mb-2">
+                    <p className={`mb-2 ${isDarkMode ? 'text-slate-300' : 'text-brand-text'}`}>
                       Arrastra y suelta un archivo aquí
                     </p>
-                    <p className="text-sm text-brand-muted mb-4">
+                    <p className={`text-sm mb-4 ${isDarkMode ? 'text-slate-400' : 'text-brand-muted'}`}>
                       o haz clic para seleccionar
                     </p>
                     <button
@@ -385,12 +421,16 @@ export default function Base64ConverterPage() {
                       className="hidden"
                     />
                   </div>
-                  
+
                   {fileName && (
-                    <div className="mt-2 p-3 bg-gray-50 rounded-lg">
-                      <div className="text-sm text-brand-text">
+                    <div className={`mt-2 p-3 rounded-lg ${
+                      isDarkMode ? 'bg-slate-700' : 'bg-gray-50'
+                    }`}>
+                      <div className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-brand-text'}`}>
                         <div className="font-medium">Archivo: {fileName}</div>
-                        <div className="text-brand-muted">Tamaño: {(fileSize / 1024).toFixed(2)} KB</div>
+                        <div className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>
+                          Tamaño: {(fileSize / 1024).toFixed(2)} KB
+                        </div>
                       </div>
                     </div>
                   )}
@@ -430,7 +470,11 @@ export default function Base64ConverterPage() {
                 </button>
                 <button
                   onClick={clearAll}
-                  className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                  className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+                    isDarkMode
+                      ? 'bg-slate-600 hover:bg-slate-700 text-white'
+                      : 'bg-gray-600 hover:bg-gray-700 text-white'
+                  }`}
                 >
                   🗑️ Limpiar
                 </button>
@@ -477,8 +521,10 @@ export default function Base64ConverterPage() {
                     💾 Descargar
                   </button>
                 )}
-                <div className="flex items-center px-4 py-3 bg-gray-100 rounded-lg">
-                  <span className="text-sm text-gray-600">
+                <div className={`flex items-center px-4 py-3 rounded-lg ${
+                  isDarkMode ? 'bg-slate-700' : 'bg-gray-100'
+                }`}>
+                  <span className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}>
                     {mode === 'encode' ? 'Base64' : 'Decodificado'} • {outputText.length} caracteres
                   </span>
                 </div>
@@ -538,8 +584,12 @@ export default function Base64ConverterPage() {
           </h2>
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-brand-text">Codificación (Encode)</h3>
-              <ul className="space-y-2 text-brand-muted">
+              <h3 className={`text-lg font-semibold ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}>
+                Codificación (Encode)
+              </h3>
+              <ul className={`space-y-2 ${isDarkMode ? 'text-slate-400' : 'text-brand-muted'}`}>
                 <li>• Enviar datos binarios en JSON</li>
                 <li>• Codificar imágenes para APIs</li>
                 <li>• Almacenar archivos en base de datos</li>
@@ -547,8 +597,12 @@ export default function Base64ConverterPage() {
               </ul>
             </div>
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-brand-text">Decodificación (Decode)</h3>
-              <ul className="space-y-2 text-brand-muted">
+              <h3 className={`text-lg font-semibold ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}>
+                Decodificación (Decode)
+              </h3>
+              <ul className={`space-y-2 ${isDarkMode ? 'text-slate-400' : 'text-brand-muted'}`}>
                 <li>• Recuperar archivos de APIs</li>
                 <li>• Decodificar respuestas de servicios</li>
                 <li>• Extraer datos de logs</li>
