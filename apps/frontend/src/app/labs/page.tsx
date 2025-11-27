@@ -107,6 +107,16 @@ export default function LabsPage() {
           color: 'from-indigo-500 to-indigo-600',
           href: '/labs/cron-validator',
           implementedDate: 'Sep 2025'
+        },
+        {
+          id: 'yaml-validator',
+          name: 'Validador de YAML',
+          description: 'Valida sintaxis YAML, formatea código y convierte entre YAML y JSON',
+          icon: '📝',
+          color: 'from-purple-500 to-purple-600',
+          href: '/labs/yaml-validator',
+          featured: true,
+          implementedDate: 'Nov 2025'
         }
       ]
     },
