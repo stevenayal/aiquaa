@@ -31,6 +31,23 @@ postgresql://postgres:eBPaOpZlpKxyAbLUFllzPDSsuBannFlv@yamabiko.proxy.rlwy.net:5
 
 ---
 
+## ✨ Nuevo: Inicialización Automática de Base de Datos
+
+**El backend ahora se auto-configura completamente al desplegarse.**
+
+Cuando hagas deploy en Railway, el backend automáticamente:
+- ✅ Crea todas las tablas necesarias (16 tablas)
+- ✅ Inserta usuarios de prueba (admin + demo)
+- ✅ Inserta categorías iniciales (4 categorías)
+- ✅ Verifica que todo esté correcto
+- ✅ Inicia el servidor NestJS
+
+**No necesitas ejecutar comandos manuales.** Todo es automático.
+
+📖 Para más detalles, consulta: `apps/backend/DATABASE_AUTO_INIT.md`
+
+---
+
 ## 🚀 Variables de Entorno para Railway
 
 ### Variables Obligatorias
