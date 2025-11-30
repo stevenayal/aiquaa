@@ -1,6 +1,6 @@
 [build]
 builder = "NIXPACKS"
-buildCommand = "pnpm install && pnpm prisma:generate && pnpm build:backend"
+buildCommand = "pnpm install && cd apps/backend && npx prisma generate && npx prisma db push --accept-data-loss && cd ../.. && pnpm build:backend"
 
 [deploy]
 startCommand = "pnpm start:prod"
