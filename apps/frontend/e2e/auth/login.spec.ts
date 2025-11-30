@@ -14,9 +14,9 @@ test.describe('Inicio de Sesión', () => {
   });
 
   test('Scenario: Login exitoso con credenciales válidas', async ({ page }) => {
-    // Given: el usuario tiene credenciales válidas
-    const email = 'usuario@test.com';
-    const password = 'Password123!';
+    // Given: el usuario tiene credenciales válidas (usuario demo del seed)
+    const email = 'demo@aiquaa.com';
+    const password = 'demo123';
 
     // When: el usuario ingresa sus credenciales
     await page.getByPlaceholder('Email').fill(email);
@@ -72,9 +72,9 @@ test.describe('Inicio de Sesión', () => {
   });
 
   test('Scenario: Estado de carga durante el login', async ({ page }) => {
-    // When: el usuario ingresa credenciales válidas
-    await page.getByPlaceholder('Email').fill('usuario@test.com');
-    await page.getByPlaceholder('Contraseña').fill('Password123!');
+    // When: el usuario ingresa credenciales válidas (usuario demo del seed)
+    await page.getByPlaceholder('Email').fill('demo@aiquaa.com');
+    await page.getByPlaceholder('Contraseña').fill('demo123');
 
     // And: hace click en el botón "Iniciar sesión"
     const submitButton = page.getByRole('button', { name: /iniciar sesión/i });
