@@ -9,8 +9,8 @@ La base de datos PostgreSQL en Railway ha sido configurada y está lista para us
 1. **Base de datos configurada:** PostgreSQL en Railway
 2. **Schema sincronizado:** Todas las tablas creadas
 3. **Usuarios de prueba creados:**
-   - Admin: `admin@aiquaa.com` / `admin123`
-   - Demo: `demo@aiquaa.com` / `demo123`
+   - Admin: `admin@aiquaa.com` / `Admin123!`
+   - Demo: `demo@aiquaa.com` / `Demo123!`
 4. **Categorías creadas:** 4 categorías por defecto
 
 ---
@@ -148,8 +148,8 @@ Los siguientes usuarios ya están en la base de datos Railway:
 
 | Usuario | Email | Password | Rol |
 |---------|-------|----------|-----|
-| **Admin** | admin@aiquaa.com | admin123 | ADMIN |
-| **Demo** | demo@aiquaa.com | demo123 | USER |
+| **Admin** | admin@aiquaa.com | Admin123! | ADMIN |
+| **Demo** | demo@aiquaa.com | Demo123! | USER |
 
 **IMPORTANTE:** Cambia las contraseñas en producción o elimina estos usuarios.
 
@@ -175,7 +175,7 @@ Una vez desplegado, verifica estos endpoints:
    ```bash
    curl -X POST https://tu-app.railway.app/api/v1/auth/login \
      -H "Content-Type: application/json" \
-     -d '{"email":"demo@aiquaa.com","password":"demo123"}'
+     -d '{"email":"demo@aiquaa.com","password":"Demo123!"}'
    ```
 
    Respuesta esperada:

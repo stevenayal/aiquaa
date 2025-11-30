@@ -37,7 +37,7 @@ Se actualizaron las pruebas de Playwright para usar las credenciales correctas d
 
 **Credenciales de prueba:**
 - Email: `demo@aiquaa.com`
-- Password: `demo123`
+- Password: `Demo123!`
 
 Las pruebas cubren:
 - Login exitoso con credenciales válidas
@@ -127,12 +127,12 @@ Los siguientes usuarios se crean automáticamente al ejecutar el seed de la base
 
 ### Usuario Demo (para pruebas generales)
 - **Email:** demo@aiquaa.com
-- **Password:** demo123
+- **Password:** Demo123!
 - **Rol:** USER
 
 ### Usuario Admin (para pruebas de funcionalidades administrativas)
 - **Email:** admin@aiquaa.com
-- **Password:** admin123
+- **Password:** Admin123!
 - **Rol:** ADMIN
 
 ## Cómo Probar el Login Manualmente
@@ -191,7 +191,7 @@ Los siguientes usuarios se crean automáticamente al ejecutar el seed de la base
 
 3. **Ingresar credenciales del usuario demo:**
    - Email: `demo@aiquaa.com`
-   - Password: `demo123`
+   - Password: `Demo123!`
 
 4. **Click en "Iniciar sesión"**
 

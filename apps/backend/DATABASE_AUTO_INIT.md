@@ -221,8 +221,8 @@ El seed crea automáticamente dos usuarios:
 
 | Usuario | Email | Password | Rol | Estado |
 |---------|-------|----------|-----|--------|
-| **Admin** | admin@aiquaa.com | admin123 | ADMIN | Email verificado |
-| **Demo** | demo@aiquaa.com | demo123 | USER | Email verificado |
+| **Admin** | admin@aiquaa.com | Admin123! | ADMIN | Email verificado |
+| **Demo** | demo@aiquaa.com | Demo123! | USER | Email verificado |
 
 ⚠️ **IMPORTANTE:** Cambia o elimina estos usuarios en producción.
 
@@ -456,7 +456,7 @@ Ahora que el sistema de auto-inicialización está configurado:
 
 1. ✅ **Deploy en Railway** - Solo haz git push
 2. ✅ **Verifica los logs** - Railway mostrará el proceso de inicialización
-3. ✅ **Prueba el login** - Con `demo@aiquaa.com` / `demo123`
+3. ✅ **Prueba el login** - Con `demo@aiquaa.com` / `Demo123!`
 4. ⚠️ **Cambia credenciales de prueba** - Antes de producción
 
 ---

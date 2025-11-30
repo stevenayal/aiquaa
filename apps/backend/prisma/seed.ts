@@ -7,10 +7,13 @@ async function main() {
   console.log('🌱 Starting database seed...');
 
   // Create admin user
-  const hashedPassword = await argon2.hash('admin123');
+  const hashedPassword = await argon2.hash('Admin123!');
   const adminUser = await prisma.user.upsert({
     where: { email: 'admin@aiquaa.com' },
-    update: {},
+    update: {
+      passwordHash: hashedPassword,
+      emailVerifiedAt: new Date(),
+    },
     create: {
       email: 'admin@aiquaa.com',
       name: 'Admin User',
@@ -21,10 +24,13 @@ async function main() {
   });
 
   // Create demo user
-  const demoPassword = await argon2.hash('demo123');
+  const demoPassword = await argon2.hash('Demo123!');
   const demoUser = await prisma.user.upsert({
     where: { email: 'demo@aiquaa.com' },
-    update: {},
+    update: {
+      passwordHash: demoPassword,
+      emailVerifiedAt: new Date(),
+    },
     create: {
       email: 'demo@aiquaa.com',
       name: 'Demo User',
