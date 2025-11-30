@@ -50,7 +50,12 @@
       "Bash(pnpm install)",
       "Bash(public/images/suru/suru-welcome-temp.svg)",
       "Bash(ls:*)",
-      "Bash(make dev:*)"
+      "Bash(make dev:*)",
+      "Bash(npm run prisma:generate:*)",
+      "Bash(npm run prisma:seed:*)",
+      "Bash(node verify-db-connection.js:*)",
+      "Bash(node scripts/init-database.js:*)",
+      "Bash(BACKEND_URL=\"http://localhost:3001\" FRONTEND_URL=\"http://localhost:3001\" node:*)"
     ],
     "deny": [],
     "ask": []
