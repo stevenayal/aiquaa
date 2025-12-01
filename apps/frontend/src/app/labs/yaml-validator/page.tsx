@@ -28,7 +28,7 @@ export default function YamlValidatorPage() {
     }
 
     try {
-      const parsed = yaml.load(inputYaml);
+      yaml.load(inputYaml);
       setIsValid(true);
       setErrorMessage('');
       setOutputText('✅ YAML válido');
