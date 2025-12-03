@@ -24,7 +24,7 @@ export default function ResultsScreen({
   startTime,
   endTime,
 }: ResultsScreenProps) {
-  const { submitResults, isSubmitting, error: submitError, isSubmitted } = useSubmitResults();
+  const { submitResults, isSubmitting, isSubmitted } = useSubmitResults();
 
   // Enviar resultados al backend automáticamente cuando se monta el componente
   useEffect(() => {
@@ -34,6 +34,7 @@ export default function ResultsScreen({
         // No bloqueamos la UI si falla el envío
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const { isDarkMode } = useTheme();
   const [activeTab, setActiveTab] = useState<'summary' | 'learning-objectives' | 'details'>('summary');
