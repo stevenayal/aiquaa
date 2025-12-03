@@ -303,9 +303,7 @@ export default function PerformanceExamPage() {
           </p>
 
           {error && (
-            <Alert type="error" title="Error" className="mb-4">
-              {error}
-            </Alert>
+            <Alert type="error" title="Error" message={error} className="mb-4" />
           )}
 
           <div className="space-y-4">
