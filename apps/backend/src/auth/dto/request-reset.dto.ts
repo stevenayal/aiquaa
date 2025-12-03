@@ -7,5 +7,5 @@ export class RequestResetDto {
     example: 'user@example.com',
   })
   @IsEmail()
-  email: string;
+  email!: string;
 }

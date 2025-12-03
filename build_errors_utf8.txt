@@ -1,0 +1,856 @@
+﻿
+> @aiquaa/backend@0.1.0 build Z:\Proyectos\aiquaa\apps\backend
+> nest build
+
+node.exe : [96msrc/auth/auth.controller.ts[0m:[93m68[0m:[93m52[0m - 
+[91merror[0m[90m TS7006: [0mParameter 'req' implicitly has an 'any' type.
+En línea: 1 Carácter: 1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([96msrc/auth/a... an 'any' type.:String) [] 
+   , RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+[7m68[0m   async register(@Body() registerDto: RegisterDto, @Request() req): 
+Promise<MessageResponseDto> {
+[7m  [0m [91m                                                   ~~~~~~~~~~~~~~[0m
+[96msrc/auth/auth.controller.ts[0m:[93m147[0m:[93m5[0m - [91merror[0m[90m 
+TS7006: [0mParameter 'req' implicitly has an 'any' type.
+
+[7m147[0m     @Request() req,
+[7m   [0m [91m    ~~~~~~~~~~~~~~[0m
+[96msrc/auth/auth.controller.ts[0m:[93m202[0m:[93m5[0m - [91merror[0m[90m 
+TS2322: [0mType '{ updatedAt: Date; id: number; name: string | null; email: string; 
+avatarUrl: string | null; role: Role; emailVerifiedAt: Date | null; createdAt: Date; 
+twoFASecret: string | null; }' is not assignable to type 'UserResponseDto'.
+  Types of property 'name' are incompatible.
+    Type 'string | null' is not assignable to type 'string | undefined'.
+
+[7m202[0m     return this.authService.getProfile(user.id);
+[7m   [0m [91m    ~~~~~~[0m
+[96msrc/auth/auth.controller.ts[0m:[93m225[0m:[93m5[0m - [91merror[0m[90m 
+TS7006: [0mParameter 'req' implicitly has an 'any' type.
+
+[7m225[0m     @Request() req,
+[7m   [0m [91m    ~~~~~~~~~~~~~~[0m
+[96msrc/auth/auth.controller.ts[0m:[93m276[0m:[93m5[0m - [91merror[0m[90m 
+TS7006: [0mParameter 'req' implicitly has an 'any' type.
+
+[7m276[0m     @Request() req,
+[7m   [0m [91m    ~~~~~~~~~~~~~~[0m
+[96msrc/auth/auth.service.ts[0m:[93m120[0m:[93m9[0m - [91merror[0m[90m TS2322: 
+[0mType 'string | null' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+
+[7m120[0m         name: user.name,
+[7m   [0m [91m        ~~~~[0m
+
+  [96msrc/auth/dto/auth-response.dto.ts[0m:[93m29[0m:[93m5[0m
+    [7m29[0m     name?: string;
+    [7m  [0m [96m    ~~~~[0m
+    The expected type comes from property 'name' which is declared here on type '{ id: 
+number; email: string; name?: string | undefined; role: string; emailVerifiedAt?: Date | 
+undefined; }'
+[96msrc/auth/auth.service.ts[0m:[93m122[0m:[93m9[0m - [91merror[0m[90m TS2322: 
+[0mType 'Date | null' is not assignable to type 'Date | undefined'.
+  Type 'null' is not assignable to type 'Date | undefined'.
+
+[7m122[0m         emailVerifiedAt: user.emailVerifiedAt,
+[7m   [0m [91m        ~~~~~~~~~~~~~~~[0m
+
+  [96msrc/auth/dto/auth-response.dto.ts[0m:[93m31[0m:[93m5[0m
+    [7m31[0m     emailVerifiedAt?: Date;
+    [7m  [0m [96m    ~~~~~~~~~~~~~~~[0m
+    The expected type comes from property 'emailVerifiedAt' which is declared here on 
+type '{ id: number; email: string; name?: string | undefined; role: string; 
+emailVerifiedAt?: Date | undefined; }'
+[96msrc/auth/auth.service.ts[0m:[93m601[0m:[93m9[0m - [91merror[0m[90m TS2322: 
+[0mType 'string | null' is not assignable to type 'string | undefined'.
+
+[7m601[0m         name: user.name,
+[7m   [0m [91m        ~~~~[0m
+
+  [96msrc/auth/dto/auth-response.dto.ts[0m:[93m29[0m:[93m5[0m
+    [7m29[0m     name?: string;
+    [7m  [0m [96m    ~~~~[0m
+    The expected type comes from property 'name' which is declared here on type '{ id: 
+number; email: string; name?: string | undefined; role: string; emailVerifiedAt?: Date | 
+undefined; }'
+[96msrc/auth/auth.service.ts[0m:[93m603[0m:[93m9[0m - [91merror[0m[90m TS2322: 
+[0mType 'Date | null' is not assignable to type 'Date | undefined'.
+
+[7m603[0m         emailVerifiedAt: user.emailVerifiedAt,
+[7m   [0m [91m        ~~~~~~~~~~~~~~~[0m
+
+  [96msrc/auth/dto/auth-response.dto.ts[0m:[93m31[0m:[93m5[0m
+    [7m31[0m     emailVerifiedAt?: Date;
+    [7m  [0m [96m    ~~~~~~~~~~~~~~~[0m
+    The expected type comes from property 'emailVerifiedAt' which is declared here on 
+type '{ id: number; email: string; name?: string | undefined; role: string; 
+emailVerifiedAt?: Date | undefined; }'
+[96msrc/auth/dto/auth-response.dto.ts[0m:[93m8[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'access_token' has no initializer and is not definitely assigned in 
+the constructor.
+
+[7m8[0m   access_token: string;
+[7m [0m [91m  ~~~~~~~~~~~~[0m
+[96msrc/auth/dto/auth-response.dto.ts[0m:[93m14[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'refresh_token' has no initializer and is not definitely assigned in 
+the constructor.
+
+[7m14[0m   refresh_token: string;
+[7m  [0m [91m  ~~~~~~~~~~~~~[0m
+[96msrc/auth/dto/auth-response.dto.ts[0m:[93m26[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'user' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m26[0m   user: {
+[7m  [0m [91m  ~~~~[0m
+[96msrc/auth/dto/login.dto.ts[0m:[93m10[0m:[93m3[0m - [91merror[0m[90m TS2564: 
+[0mProperty 'email' has no initializer and is not definitely assigned in the constructor.
+
+[7m10[0m   email: string;
+[7m  [0m [91m  ~~~~~[0m
+[96msrc/auth/dto/login.dto.ts[0m:[93m19[0m:[93m3[0m - [91merror[0m[90m TS2564: 
+[0mProperty 'password' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m19[0m   password: string;
+[7m  [0m [91m  ~~~~~~~~[0m
+[96msrc/auth/dto/message-response.dto.ts[0m:[93m8[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'message' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m8[0m   message: string;
+[7m [0m [91m  ~~~~~~~[0m
+[96msrc/auth/dto/refresh-response.dto.ts[0m:[93m8[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'access_token' has no initializer and is not definitely assigned in 
+the constructor.
+
+[7m8[0m   access_token: string;
+[7m [0m [91m  ~~~~~~~~~~~~[0m
+[96msrc/auth/dto/refresh-response.dto.ts[0m:[93m14[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'refresh_token' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m14[0m   refresh_token: string;
+[7m  [0m [91m  ~~~~~~~~~~~~~[0m
+[96msrc/auth/dto/register.dto.ts[0m:[93m10[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'email' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m10[0m   email: string;
+[7m  [0m [91m  ~~~~~[0m
+[96msrc/auth/dto/register.dto.ts[0m:[93m28[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'password' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m28[0m   password: string;
+[7m  [0m [91m  ~~~~~~~~[0m
+[96msrc/auth/dto/request-reset.dto.ts[0m:[93m10[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'email' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m10[0m   email: string;
+[7m  [0m [91m  ~~~~~[0m
+[96msrc/auth/dto/reset-password.dto.ts[0m:[93m10[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'token' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m10[0m   token: string;
+[7m  [0m [91m  ~~~~~[0m
+[96msrc/auth/dto/reset-password.dto.ts[0m:[93m19[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'password' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m19[0m   password: string;
+[7m  [0m [91m  ~~~~~~~~[0m
+[96msrc/auth/dto/two-factor.dto.ts[0m:[93m10[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'email' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m10[0m   email: string;
+[7m  [0m [91m  ~~~~~[0m
+[96msrc/auth/dto/two-factor.dto.ts[0m:[93m19[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'email' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m19[0m   email: string;
+[7m  [0m [91m  ~~~~~[0m
+[96msrc/auth/dto/two-factor.dto.ts[0m:[93m30[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'code' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m30[0m   code: string;
+[7m  [0m [91m  ~~~~[0m
+[96msrc/auth/dto/two-factor.dto.ts[0m:[93m38[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'enabled' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m38[0m   enabled: boolean;
+[7m  [0m [91m  ~~~~~~~[0m
+[96msrc/auth/dto/user-response.dto.ts[0m:[93m8[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'id' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m8[0m   id: number;
+[7m [0m [91m  ~~[0m
+[96msrc/auth/dto/user-response.dto.ts[0m:[93m14[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'email' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m14[0m   email: string;
+[7m  [0m [91m  ~~~~~[0m
+[96msrc/auth/dto/user-response.dto.ts[0m:[93m35[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'role' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m35[0m   role: string;
+[7m  [0m [91m  ~~~~[0m
+[96msrc/auth/dto/user-response.dto.ts[0m:[93m48[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'createdAt' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m48[0m   createdAt: Date;
+[7m  [0m [91m  ~~~~~~~~~[0m
+[96msrc/auth/dto/user-response.dto.ts[0m:[93m54[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'updatedAt' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m54[0m   updatedAt: Date;
+[7m  [0m [91m  ~~~~~~~~~[0m
+[96msrc/auth/dto/verify-email.dto.ts[0m:[93m10[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'token' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m10[0m   token: string;
+[7m  [0m [91m  ~~~~~[0m
+[96msrc/auth/strategies/github.strategy.ts[0m:[93m10[0m:[93m13[0m - 
+[91merror[0m[90m TS6138: [0mProperty 'configService' is declared but its value is 
+never read.
+
+[7m10[0m     private configService: ConfigService,
+[7m  [0m [91m            ~~~~~~~~~~~~~[0m
+[96msrc/auth/strategies/google.strategy.ts[0m:[93m10[0m:[93m13[0m - 
+[91merror[0m[90m TS6138: [0mProperty 'configService' is declared but its value is 
+never read.
+
+[7m10[0m     private configService: ConfigService,
+[7m  [0m [91m            ~~~~~~~~~~~~~[0m
+[96msrc/auth/strategies/jwt-access.strategy.ts[0m:[93m11[0m:[93m13[0m - 
+[91merror[0m[90m TS6138: [0mProperty 'configService' is declared but its value is 
+never read.
+
+[7m11[0m     private configService: ConfigService,
+[7m  [0m [91m            ~~~~~~~~~~~~~[0m
+[96msrc/auth/strategies/jwt.strategy.ts[0m:[93m8[0m:[93m23[0m - [91merror[0m[90m 
+TS6138: [0mProperty 'configService' is declared but its value is never read.
+
+[7m8[0m   constructor(private configService: ConfigService) {
+[7m [0m [91m                      ~~~~~~~~~~~~~[0m
+[96msrc/forum/dto/create-post.dto.ts[0m:[93m9[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'content' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m9[0m   content: string;
+[7m [0m [91m  ~~~~~~~[0m
+[96msrc/forum/dto/create-thread.dto.ts[0m:[93m10[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'title' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m10[0m   title: string;
+[7m  [0m [91m  ~~~~~[0m
+[96msrc/forum/dto/create-thread.dto.ts[0m:[93m16[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'content' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m16[0m   content: string;
+[7m  [0m [91m  ~~~~~~~[0m
+[96msrc/forum/dto/create-thread.dto.ts[0m:[93m20[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'categoryId' has no initializer and is not definitely assigned in 
+the constructor.
+
+[7m20[0m   categoryId: number;
+[7m  [0m [91m  ~~~~~~~~~~[0m
+[96msrc/forum/dto/thread-response.dto.ts[0m:[93m5[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'id' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m5[0m   id: number;
+[7m [0m [91m  ~~[0m
+[96msrc/forum/dto/thread-response.dto.ts[0m:[93m8[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'email' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m8[0m   email: string;
+[7m [0m [91m  ~~~~~[0m
+[96msrc/forum/dto/thread-response.dto.ts[0m:[93m11[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'name' has no initializer and is not definitely 
+assigned in the constructor.
+
+[7m11[0m   name: string;
+[7m  [0m [91m  ~~~~[0m
+[96msrc/forum/dto/thread-response.dto.ts[0m:[93m19[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'id' has no initializer and is not definitely 
+assigned in the constructor.
+
+[7m19[0m   id: number;
+[7m  [0m [91m  ~~[0m
+[96msrc/forum/dto/thread-response.dto.ts[0m:[93m22[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'name' has no initializer and is not definitely 
+assigned in the constructor.
+
+[7m22[0m   name: string;
+[7m  [0m [91m  ~~~~[0m
+[96msrc/forum/dto/thread-response.dto.ts[0m:[93m28[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'slug' has no initializer and is not definitely 
+assigned in the constructor.
+
+[7m28[0m   slug: string;
+[7m  [0m [91m  ~~~~[0m
+[96msrc/forum/dto/thread-response.dto.ts[0m:[93m33[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'id' has no initializer and is not definitely 
+assigned in the constructor.
+
+[7m33[0m   id: number;
+[7m  [0m [91m  ~~[0m
+[96msrc/forum/dto/thread-response.dto.ts[0m:[93m36[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'title' has no initializer and is not definitely 
+assigned in the constructor.
+
+[7m36[0m   title: string;
+[7m  [0m [91m  ~~~~~[0m
+[96msrc/forum/dto/thread-response.dto.ts[0m:[93m39[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'content' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m39[0m   content: string;
+[7m  [0m [91m  ~~~~~~~[0m
+[96msrc/forum/dto/thread-response.dto.ts[0m:[93m42[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'slug' has no initializer and is not definitely 
+assigned in the constructor.
+
+[7m42[0m   slug: string;
+[7m  [0m [91m  ~~~~[0m
+[96msrc/forum/dto/thread-response.dto.ts[0m:[93m45[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'isSticky' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m45[0m   isSticky: boolean;
+[7m  [0m [91m  ~~~~~~~~[0m
+[96msrc/forum/dto/thread-response.dto.ts[0m:[93m48[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'isLocked' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m48[0m   isLocked: boolean;
+[7m  [0m [91m  ~~~~~~~~[0m
+[96msrc/forum/dto/thread-response.dto.ts[0m:[93m51[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'viewCount' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m51[0m   viewCount: number;
+[7m  [0m [91m  ~~~~~~~~~[0m
+[96msrc/forum/dto/thread-response.dto.ts[0m:[93m54[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'createdAt' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m54[0m   createdAt: Date;
+[7m  [0m [91m  ~~~~~~~~~[0m
+[96msrc/forum/dto/thread-response.dto.ts[0m:[93m57[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'updatedAt' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m57[0m   updatedAt: Date;
+[7m  [0m [91m  ~~~~~~~~~[0m
+[96msrc/forum/dto/thread-response.dto.ts[0m:[93m60[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'author' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m60[0m   author: UserResponseDto;
+[7m  [0m [91m  ~~~~~~[0m
+[96msrc/forum/dto/thread-response.dto.ts[0m:[93m63[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'category' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m63[0m   category: CategoryResponseDto;
+[7m  [0m [91m  ~~~~~~~~[0m
+[96msrc/forum/dto/thread-response.dto.ts[0m:[93m66[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'tags' has no initializer and is not definitely 
+assigned in the constructor.
+
+[7m66[0m   tags: string[];
+[7m  [0m [91m  ~~~~[0m
+[96msrc/forum/dto/thread-response.dto.ts[0m:[93m69[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'replyCount' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m69[0m   replyCount: number;
+[7m  [0m [91m  ~~~~~~~~~~[0m
+[96msrc/forum/dto/thread-response.dto.ts[0m:[93m74[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'data' has no initializer and is not definitely 
+assigned in the constructor.
+
+[7m74[0m   data: ThreadResponseDto[];
+[7m  [0m [91m  ~~~~[0m
+[96msrc/forum/dto/thread-response.dto.ts[0m:[93m77[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'meta' has no initializer and is not definitely 
+assigned in the constructor.
+
+[7m77[0m   meta: {
+[7m  [0m [91m  ~~~~[0m
+[96msrc/istqb/dto/submit-exam.dto.ts[0m:[93m26[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'questionId' has no initializer and is not definitely assigned in 
+the constructor.
+
+[7m26[0m   questionId: number;
+[7m  [0m [91m  ~~~~~~~~~~[0m
+[96msrc/istqb/dto/submit-exam.dto.ts[0m:[93m30[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'questionText' has no initializer and is not definitely assigned in 
+the constructor.
+
+[7m30[0m   questionText: string;
+[7m  [0m [91m  ~~~~~~~~~~~~[0m
+[96msrc/istqb/dto/submit-exam.dto.ts[0m:[93m35[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'userAnswer' has no initializer and is not definitely assigned in 
+the constructor.
+
+[7m35[0m   userAnswer: string[];
+[7m  [0m [91m  ~~~~~~~~~~[0m
+[96msrc/istqb/dto/submit-exam.dto.ts[0m:[93m40[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'correctAnswer' has no initializer and is not definitely assigned in 
+the constructor.
+
+[7m40[0m   correctAnswer: string[];
+[7m  [0m [91m  ~~~~~~~~~~~~~[0m
+[96msrc/istqb/dto/submit-exam.dto.ts[0m:[93m44[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'isCorrect' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m44[0m   isCorrect: boolean;
+[7m  [0m [91m  ~~~~~~~~~[0m
+[96msrc/istqb/dto/submit-exam.dto.ts[0m:[93m48[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'learningObjective' has no initializer and is not definitely 
+assigned in the constructor.
+
+[7m48[0m   learningObjective: string;
+[7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+[96msrc/istqb/dto/submit-exam.dto.ts[0m:[93m52[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'kLevel' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m52[0m   kLevel: string;
+[7m  [0m [91m  ~~~~~~[0m
+[96msrc/istqb/dto/submit-exam.dto.ts[0m:[93m55[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'explanations' has no initializer and is not definitely assigned in 
+the constructor.
+
+[7m55[0m   explanations: Record<string, any>;
+[7m  [0m [91m  ~~~~~~~~~~~~[0m
+[96msrc/istqb/dto/submit-exam.dto.ts[0m:[93m61[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'learningObjective' has no initializer and is not definitely 
+assigned in the constructor.
+
+[7m61[0m   learningObjective: string;
+[7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+[96msrc/istqb/dto/submit-exam.dto.ts[0m:[93m66[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'totalQuestions' has no initializer and is not definitely assigned 
+in the constructor.
+
+[7m66[0m   totalQuestions: number;
+[7m  [0m [91m  ~~~~~~~~~~~~~~[0m
+[96msrc/istqb/dto/submit-exam.dto.ts[0m:[93m71[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'correctAnswers' has no initializer and is not definitely assigned 
+in the constructor.
+
+[7m71[0m   correctAnswers: number;
+[7m  [0m [91m  ~~~~~~~~~~~~~~[0m
+[96msrc/istqb/dto/submit-exam.dto.ts[0m:[93m77[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'percentage' has no initializer and is not definitely assigned in 
+the constructor.
+
+[7m77[0m   percentage: number;
+[7m  [0m [91m  ~~~~~~~~~~[0m
+[96msrc/istqb/dto/submit-exam.dto.ts[0m:[93m83[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'participantName' has no initializer and is not definitely assigned 
+in the constructor.
+
+[7m83[0m   participantName: string;
+[7m  [0m [91m  ~~~~~~~~~~~~~~~[0m
+[96msrc/istqb/dto/submit-exam.dto.ts[0m:[93m96[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'startTime' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m96[0m   startTime: string;
+[7m  [0m [91m  ~~~~~~~~~[0m
+[96msrc/istqb/dto/submit-exam.dto.ts[0m:[93m100[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'endTime' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m100[0m   endTime: string;
+[7m   [0m [91m  ~~~~~~~[0m
+[96msrc/istqb/dto/submit-exam.dto.ts[0m:[93m105[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'timeSpent' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m105[0m   timeSpent: number;
+[7m   [0m [91m  ~~~~~~~~~[0m
+[96msrc/istqb/dto/submit-exam.dto.ts[0m:[93m110[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'score' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m110[0m   score: number;
+[7m   [0m [91m  ~~~~~[0m
+[96msrc/istqb/dto/submit-exam.dto.ts[0m:[93m115[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'totalQuestions' has no initializer and is not definitely assigned 
+in the constructor.
+
+[7m115[0m   totalQuestions: number;
+[7m   [0m [91m  ~~~~~~~~~~~~~~[0m
+[96msrc/istqb/dto/submit-exam.dto.ts[0m:[93m120[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'correctAnswers' has no initializer and is not definitely assigned 
+in the constructor.
+
+[7m120[0m   correctAnswers: number;
+[7m   [0m [91m  ~~~~~~~~~~~~~~[0m
+[96msrc/istqb/dto/submit-exam.dto.ts[0m:[93m125[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'incorrectAnswers' has no initializer and is not definitely assigned 
+in the constructor.
+
+[7m125[0m   incorrectAnswers: number;
+[7m   [0m [91m  ~~~~~~~~~~~~~~~~[0m
+[96msrc/istqb/dto/submit-exam.dto.ts[0m:[93m131[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'percentage' has no initializer and is not definitely assigned in 
+the constructor.
+
+[7m131[0m   percentage: number;
+[7m   [0m [91m  ~~~~~~~~~~[0m
+[96msrc/istqb/dto/submit-exam.dto.ts[0m:[93m135[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'passed' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m135[0m   passed: boolean;
+[7m   [0m [91m  ~~~~~~[0m
+[96msrc/istqb/dto/submit-exam.dto.ts[0m:[93m143[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'mode' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m143[0m   mode: ExamMode;
+[7m   [0m [91m  ~~~~[0m
+[96msrc/istqb/dto/submit-exam.dto.ts[0m:[93m152[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'answers' has no initializer and is not definitely assigned in the 
+constructor.
+
+[7m152[0m   answers: AnswerDetailDto[];
+[7m   [0m [91m  ~~~~~~~[0m
+[96msrc/istqb/dto/submit-exam.dto.ts[0m:[93m161[0m:[93m3[0m - [91merror[0m[90m 
+TS2564: [0mProperty 'learningObjectiveAnalysis' has no initializer and is not definitely 
+assigned in the constructor.
+
+[7m161[0m   learningObjectiveAnalysis: LearningObjectiveResultDto[];
+[7m   [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/mailer/mailer.service.ts[0m:[93m10[0m:[93m13[0m - [91merror[0m[90m 
+TS6138: [0mProperty 'configService' is declared but its value is never read.
+
+[7m10[0m     private configService: ConfigService,
+[7m  [0m [91m            ~~~~~~~~~~~~~[0m
+[96msrc/mailer/resend.service.ts[0m:[93m441[0m:[93m81[0m - [91merror[0m[90m 
+TS7053: [0mElement implicitly has an 'any' type because expression of type 'any' can't 
+be used to index type '{ capacitacion: string; postulacion: string; practica: string; 
+otro: string; }'.
+
+[7m441[0m       html: this.getPerformanceExamReportTemplate(examData, resultId, 
+examDate, purposeLabels[examData.examPurpose]),
+[7m   [0m [91m                                                                         
+       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/mailer/resend.service.ts[0m:[93m561[0m:[93m19[0m - [91merror[0m[90m 
+TS6133: [0m'index' is declared but its value is never read.
+
+[7m561[0m     .map((a: any, index: number) => {
+[7m   [0m [91m                  ~~~~~[0m
+[96msrc/mailer/resend.service.ts[0m:[93m749[0m:[93m19[0m - [91merror[0m[90m 
+TS6133: [0m'index' is declared but its value is never read.
+
+[7m749[0m     .map((a: any, index: number) => {
+[7m   [0m [91m                  ~~~~~[0m
+[96msrc/mailer/resend.service.ts[0m:[93m961[0m:[93m19[0m - [91merror[0m[90m 
+TS6133: [0m'index' is declared but its value is never read.
+
+[7m961[0m     .map((a: any, index: number) => {
+[7m   [0m [91m                  ~~~~~[0m
+[96msrc/main.ts[0m:[93m30[0m:[93m12[0m - [91merror[0m[90m TS6133: [0m'req' is 
+declared but its value is never read.
+
+[7m30[0m   app.use((req, res, next) => {
+[7m  [0m [91m           ~~~[0m
+[96msrc/main.ts[0m:[93m30[0m:[93m12[0m - [91merror[0m[90m TS7006: [0mParameter 
+'req' implicitly has an 'any' type.
+
+[7m30[0m   app.use((req, res, next) => {
+[7m  [0m [91m           ~~~[0m
+[96msrc/main.ts[0m:[93m30[0m:[93m17[0m - [91merror[0m[90m TS6133: [0m'res' is 
+declared but its value is never read.
+
+[7m30[0m   app.use((req, res, next) => {
+[7m  [0m [91m                ~~~[0m
+[96msrc/main.ts[0m:[93m30[0m:[93m17[0m - [91merror[0m[90m TS7006: [0mParameter 
+'res' implicitly has an 'any' type.
+
+[7m30[0m   app.use((req, res, next) => {
+[7m  [0m [91m                ~~~[0m
+[96msrc/main.ts[0m:[93m30[0m:[93m22[0m - [91merror[0m[90m TS7006: [0mParameter 
+'next' implicitly has an 'any' type.
+
+[7m30[0m   app.use((req, res, next) => {
+[7m  [0m [91m                     ~~~~[0m
+[96msrc/main.ts[0m:[93m101[0m:[93m12[0m - [91merror[0m[90m TS7006: [0mParameter 
+'req' implicitly has an 'any' type.
+
+[7m101[0m   app.use((req, res, next) => {
+[7m   [0m [91m           ~~~[0m
+[96msrc/main.ts[0m:[93m101[0m:[93m17[0m - [91merror[0m[90m TS7006: [0mParameter 
+'res' implicitly has an 'any' type.
+
+[7m101[0m   app.use((req, res, next) => {
+[7m   [0m [91m                ~~~[0m
+[96msrc/main.ts[0m:[93m101[0m:[93m22[0m - [91merror[0m[90m TS7006: [0mParameter 
+'next' implicitly has an 'any' type.
+
+[7m101[0m   app.use((req, res, next) => {
+[7m   [0m [91m                     ~~~~[0m
+[96msrc/main.ts[0m:[93m234[0m:[93m26[0m - [91merror[0m[90m TS6133: 
+[0m'controllerKey' is declared but its value is never read.
+
+[7m234[0m     operationIdFactory: (controllerKey: string, methodKey: string) => 
+methodKey,
+[7m   [0m [91m                         ~~~~~~~~~~~~~[0m
+[96msrc/main.ts[0m:[93m254[0m:[93m28[0m - [91merror[0m[90m TS7006: [0mParameter 
+'req' implicitly has an 'any' type.
+
+[7m254[0m       requestInterceptor: (req) => {
+[7m   [0m [91m                           ~~~[0m
+[96msrc/main.ts[0m:[93m365[0m:[93m33[0m - [91merror[0m[90m TS6133: [0m'req' is 
+declared but its value is never read.
+
+[7m365[0m   app.use('/api/v1/docs-json', (req, res) => {
+[7m   [0m [91m                                ~~~[0m
+[96msrc/main.ts[0m:[93m365[0m:[93m33[0m - [91merror[0m[90m TS7006: [0mParameter 
+'req' implicitly has an 'any' type.
+
+[7m365[0m   app.use('/api/v1/docs-json', (req, res) => {
+[7m   [0m [91m                                ~~~[0m
+[96msrc/main.ts[0m:[93m365[0m:[93m38[0m - [91merror[0m[90m TS7006: [0mParameter 
+'res' implicitly has an 'any' type.
+
+[7m365[0m   app.use('/api/v1/docs-json', (req, res) => {
+[7m   [0m [91m                                     ~~~[0m
+[96msrc/main.ts[0m:[93m372[0m:[93m25[0m - [91merror[0m[90m TS6133: [0m'req' is 
+declared but its value is never read.
+
+[7m372[0m   httpAdapter.get('/', (req, res) => {
+[7m   [0m [91m                        ~~~[0m
+[96msrc/main.ts[0m:[93m375[0m:[93m29[0m - [91merror[0m[90m TS6133: [0m'req' is 
+declared but its value is never read.
+
+[7m375[0m   httpAdapter.get('/docs', (req, res) => {
+[7m   [0m [91m                            ~~~[0m
+[96msrc/main.ts[0m:[93m380[0m:[93m31[0m - [91merror[0m[90m TS6133: [0m'req' is 
+declared but its value is never read.
+
+[7m380[0m   httpAdapter.get('/health', (req, res) => {
+[7m   [0m [91m                              ~~~[0m
+[96msrc/performance/dto/submit-exam.dto.ts[0m:[93m31[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'questionId' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m31[0m   questionId: number;
+[7m  [0m [91m  ~~~~~~~~~~[0m
+[96msrc/performance/dto/submit-exam.dto.ts[0m:[93m35[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'questionText' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m35[0m   questionText: string;
+[7m  [0m [91m  ~~~~~~~~~~~~[0m
+[96msrc/performance/dto/submit-exam.dto.ts[0m:[93m40[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'userAnswer' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m40[0m   userAnswer: string[];
+[7m  [0m [91m  ~~~~~~~~~~[0m
+[96msrc/performance/dto/submit-exam.dto.ts[0m:[93m45[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'correctAnswer' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m45[0m   correctAnswer: string[];
+[7m  [0m [91m  ~~~~~~~~~~~~~[0m
+[96msrc/performance/dto/submit-exam.dto.ts[0m:[93m49[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'isCorrect' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m49[0m   isCorrect: boolean;
+[7m  [0m [91m  ~~~~~~~~~[0m
+[96msrc/performance/dto/submit-exam.dto.ts[0m:[93m53[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'learningObjective' has no initializer and is 
+not definitely assigned in the constructor.
+
+[7m53[0m   learningObjective: string;
+[7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+[96msrc/performance/dto/submit-exam.dto.ts[0m:[93m57[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'kLevel' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m57[0m   kLevel: string;
+[7m  [0m [91m  ~~~~~~[0m
+[96msrc/performance/dto/submit-exam.dto.ts[0m:[93m60[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'explanations' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m60[0m   explanations: Record<string, any>;
+[7m  [0m [91m  ~~~~~~~~~~~~[0m
+[96msrc/performance/dto/submit-exam.dto.ts[0m:[93m66[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'learningObjective' has no initializer and is 
+not definitely assigned in the constructor.
+
+[7m66[0m   learningObjective: string;
+[7m  [0m [91m  ~~~~~~~~~~~~~~~~~[0m
+[96msrc/performance/dto/submit-exam.dto.ts[0m:[93m71[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'totalQuestions' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m71[0m   totalQuestions: number;
+[7m  [0m [91m  ~~~~~~~~~~~~~~[0m
+[96msrc/performance/dto/submit-exam.dto.ts[0m:[93m76[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'correctAnswers' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m76[0m   correctAnswers: number;
+[7m  [0m [91m  ~~~~~~~~~~~~~~[0m
+[96msrc/performance/dto/submit-exam.dto.ts[0m:[93m82[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'percentage' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m82[0m   percentage: number;
+[7m  [0m [91m  ~~~~~~~~~~[0m
+[96msrc/performance/dto/submit-exam.dto.ts[0m:[93m88[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'participantName' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m88[0m   participantName: string;
+[7m  [0m [91m  ~~~~~~~~~~~~~~~[0m
+[96msrc/performance/dto/submit-exam.dto.ts[0m:[93m92[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'githubProfile' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m92[0m   githubProfile: string;
+[7m  [0m [91m  ~~~~~~~~~~~~~[0m
+[96msrc/performance/dto/submit-exam.dto.ts[0m:[93m100[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'examPurpose' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m100[0m   examPurpose: ExamPurpose;
+Found 135 error(s).
+
+[7m   [0m [91m  ~~~~~~~~~~~[0m
+[96msrc/performance/dto/submit-exam.dto.ts[0m:[93m112[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'startTime' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m112[0m   startTime: string;
+[7m   [0m [91m  ~~~~~~~~~[0m
+[96msrc/performance/dto/submit-exam.dto.ts[0m:[93m116[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'endTime' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m116[0m   endTime: string;
+[7m   [0m [91m  ~~~~~~~[0m
+[96msrc/performance/dto/submit-exam.dto.ts[0m:[93m121[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'timeSpent' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m121[0m   timeSpent: number;
+[7m   [0m [91m  ~~~~~~~~~[0m
+[96msrc/performance/dto/submit-exam.dto.ts[0m:[93m126[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'score' has no initializer and is not definitely 
+assigned in the constructor.
+
+[7m126[0m   score: number;
+[7m   [0m [91m  ~~~~~[0m
+[96msrc/performance/dto/submit-exam.dto.ts[0m:[93m131[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'totalQuestions' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m131[0m   totalQuestions: number;
+[7m   [0m [91m  ~~~~~~~~~~~~~~[0m
+[96msrc/performance/dto/submit-exam.dto.ts[0m:[93m136[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'correctAnswers' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m136[0m   correctAnswers: number;
+[7m   [0m [91m  ~~~~~~~~~~~~~~[0m
+[96msrc/performance/dto/submit-exam.dto.ts[0m:[93m141[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'incorrectAnswers' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m141[0m   incorrectAnswers: number;
+[7m   [0m [91m  ~~~~~~~~~~~~~~~~[0m
+[96msrc/performance/dto/submit-exam.dto.ts[0m:[93m147[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'percentage' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m147[0m   percentage: number;
+[7m   [0m [91m  ~~~~~~~~~~[0m
+[96msrc/performance/dto/submit-exam.dto.ts[0m:[93m151[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'passed' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m151[0m   passed: boolean;
+[7m   [0m [91m  ~~~~~~[0m
+[96msrc/performance/dto/submit-exam.dto.ts[0m:[93m159[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'mode' has no initializer and is not definitely 
+assigned in the constructor.
+
+[7m159[0m   mode: ExamMode;
+[7m   [0m [91m  ~~~~[0m
+[96msrc/performance/dto/submit-exam.dto.ts[0m:[93m168[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'answers' has no initializer and is not 
+definitely assigned in the constructor.
+
+[7m168[0m   answers: AnswerDetailDto[];
+[7m   [0m [91m  ~~~~~~~[0m
+[96msrc/performance/dto/submit-exam.dto.ts[0m:[93m177[0m:[93m3[0m - 
+[91merror[0m[90m TS2564: [0mProperty 'learningObjectiveAnalysis' has no initializer 
+and is not definitely assigned in the constructor.
+
+[7m177[0m   learningObjectiveAnalysis: LearningObjectiveResultDto[];
+[7m   [0m [91m  ~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/prisma/prisma.service.ts[0m:[93m52[0m:[93m13[0m - [91merror[0m[90m 
+TS2322: [0mType '{ entity: Prisma.ModelName | undefined; entityId: any; action: string; 
+userId: string | null; payload: { before: any; after: any; changes: any; }; }' is not 
+assignable to type '(Without<AuditLogCreateInput, AuditLogUncheckedCreateInput> & 
+AuditLogUncheckedCreateInput) | (Without<...> & AuditLogCreateInput)'.
+  Type '{ entity: Prisma.ModelName | undefined; entityId: any; action: string; userId: 
+string | null; payload: { before: any; after: any; changes: any; }; }' is not assignable 
+to type 'Without<AuditLogUncheckedCreateInput, AuditLogCreateInput> & 
+AuditLogCreateInput'.
+    Type '{ entity: Prisma.ModelName | undefined; entityId: any; action: string; userId: 
+string | null; payload: { before: any; after: any; changes: any; }; }' is not assignable 
+to type 'AuditLogCreateInput'.
+      Types of property 'entity' are incompatible.
+        Type 'string | undefined' is not assignable to type 'string'.
+          Type 'undefined' is not assignable to type 'string'.
+
+[7m52[0m             data: auditData,
+[7m  [0m [91m            ~~~~[0m
+
+  [96m../../node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/.prisma/c
+lient/index.d.ts[0m:[93m15568[0m:[93m5[0m
+    [7m15568[0m     data: XOR<AuditLogCreateInput, AuditLogUncheckedCreateInput>
+    [7m     [0m [96m    ~~~~[0m
+    The expected type comes from property 'data' which is declared here on type '{ 
+select?: AuditLogSelect<DefaultArgs> | null | undefined; data: 
+(Without<AuditLogCreateInput, AuditLogUncheckedCreateInput> & 
+AuditLogUncheckedCreateInput) | (Without<...> & AuditLogCreateInput); }'
+
+Z:\Proyectos\aiquaa\apps\backend:
+ÔÇëERR_PNPM_RECURSIVE_RUN_FIRST_FAILÔÇë @aiquaa/backend@0.1.0 build: `nest build`
+Exit status 1

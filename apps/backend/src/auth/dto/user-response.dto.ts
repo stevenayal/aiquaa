@@ -5,13 +5,13 @@ export class UserResponseDto {
     description: 'ID del usuario',
     example: 1,
   })
-  id: number;
+  id!: number;
 
   @ApiProperty({
     description: 'Email del usuario',
     example: 'user@example.com',
   })
-  email: string;
+  email!: string;
 
   @ApiProperty({
     description: 'Nombre del usuario',
@@ -32,7 +32,7 @@ export class UserResponseDto {
     example: 'USER',
     enum: ['USER', 'MODERATOR', 'ADMIN'],
   })
-  role: string;
+  role!: string;
 
   @ApiProperty({
     description: 'Fecha de verificación del email',
@@ -45,11 +45,11 @@ export class UserResponseDto {
     description: 'Fecha de creación',
     example: '2024-12-08T12:00:00.000Z',
   })
-  createdAt: Date;
+  createdAt!: Date;
 
   @ApiProperty({
     description: 'Fecha de última actualización',
     example: '2024-12-08T12:00:00.000Z',
   })
-  updatedAt: Date;
+  updatedAt!: Date;
 }

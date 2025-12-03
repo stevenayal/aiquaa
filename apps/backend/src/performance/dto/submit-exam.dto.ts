@@ -28,68 +28,68 @@ export enum ExamPurpose {
 export class AnswerDetailDto {
   @ApiProperty({ description: 'ID de la pregunta' })
   @IsInt()
-  questionId: number;
+  questionId!: number;
 
   @ApiProperty({ description: 'Texto de la pregunta' })
   @IsString()
-  questionText: string;
+  questionText!: string;
 
   @ApiProperty({ description: 'Respuesta del usuario', type: [String] })
   @IsArray()
   @IsString({ each: true })
-  userAnswer: string[];
+  userAnswer!: string[];
 
   @ApiProperty({ description: 'Respuesta correcta', type: [String] })
   @IsArray()
   @IsString({ each: true })
-  correctAnswer: string[];
+  correctAnswer!: string[];
 
   @ApiProperty({ description: 'Si la respuesta es correcta' })
   @IsBoolean()
-  isCorrect: boolean;
+  isCorrect!: boolean;
 
   @ApiProperty({ description: 'Sección de la pregunta (Fundamentos, Métricas, Herramientas)' })
   @IsString()
-  learningObjective: string;
+  learningObjective!: string;
 
   @ApiProperty({ description: 'Tags de la pregunta' })
   @IsString()
-  kLevel: string;
+  kLevel!: string;
 
   @ApiProperty({ description: 'Explicaciones de cada opción' })
-  explanations: Record<string, any>;
+  explanations!: Record<string, any>;
 }
 
 export class LearningObjectiveResultDto {
   @ApiProperty({ description: 'Nombre de la sección' })
   @IsString()
-  learningObjective: string;
+  learningObjective!: string;
 
   @ApiProperty({ description: 'Total de preguntas' })
   @IsInt()
   @Min(0)
-  totalQuestions: number;
+  totalQuestions!: number;
 
   @ApiProperty({ description: 'Respuestas correctas' })
   @IsInt()
   @Min(0)
-  correctAnswers: number;
+  correctAnswers!: number;
 
   @ApiProperty({ description: 'Porcentaje de acierto' })
   @IsNumber()
   @Min(0)
   @Max(100)
-  percentage: number;
+  percentage!: number;
 }
 
 export class SubmitPerformanceExamDto {
   @ApiProperty({ description: 'Nombre del participante', example: 'Juan Pérez' })
   @IsString()
-  participantName: string;
+  participantName!: string;
 
   @ApiProperty({ description: 'Perfil de GitHub del participante', example: '@juanperez' })
   @IsString()
-  githubProfile: string;
+  githubProfile!: string;
 
   @ApiProperty({
     description: 'Motivo del examen',
@@ -97,7 +97,7 @@ export class SubmitPerformanceExamDto {
     example: ExamPurpose.PRACTICA,
   })
   @IsEnum(ExamPurpose)
-  examPurpose: ExamPurpose;
+  examPurpose!: ExamPurpose;
 
   @ApiProperty({
     description: 'Nombre de la empresa (requerido si el motivo es postulación)',
@@ -109,46 +109,46 @@ export class SubmitPerformanceExamDto {
 
   @ApiProperty({ description: 'Fecha y hora de inicio del examen' })
   @IsDateString()
-  startTime: string;
+  startTime!: string;
 
   @ApiProperty({ description: 'Fecha y hora de fin del examen' })
   @IsDateString()
-  endTime: string;
+  endTime!: string;
 
   @ApiProperty({ description: 'Tiempo total empleado en segundos', example: 3600 })
   @IsInt()
   @Min(0)
-  timeSpent: number;
+  timeSpent!: number;
 
   @ApiProperty({ description: 'Puntaje obtenido', example: 22 })
   @IsInt()
   @Min(0)
-  score: number;
+  score!: number;
 
   @ApiProperty({ description: 'Total de preguntas', example: 26 })
   @IsInt()
   @Min(1)
-  totalQuestions: number;
+  totalQuestions!: number;
 
   @ApiProperty({ description: 'Respuestas correctas', example: 22 })
   @IsInt()
   @Min(0)
-  correctAnswers: number;
+  correctAnswers!: number;
 
   @ApiProperty({ description: 'Respuestas incorrectas', example: 4 })
   @IsInt()
   @Min(0)
-  incorrectAnswers: number;
+  incorrectAnswers!: number;
 
   @ApiProperty({ description: 'Porcentaje de acierto', example: 84.6 })
   @IsNumber()
   @Min(0)
   @Max(100)
-  percentage: number;
+  percentage!: number;
 
   @ApiProperty({ description: 'Si aprobó el examen' })
   @IsBoolean()
-  passed: boolean;
+  passed!: boolean;
 
   @ApiProperty({
     description: 'Modo del examen',
@@ -156,7 +156,7 @@ export class SubmitPerformanceExamDto {
     example: ExamMode.EXAM,
   })
   @IsEnum(ExamMode)
-  mode: ExamMode;
+  mode!: ExamMode;
 
   @ApiProperty({
     description: 'Detalle de todas las respuestas',
@@ -165,7 +165,7 @@ export class SubmitPerformanceExamDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => AnswerDetailDto)
-  answers: AnswerDetailDto[];
+  answers!: AnswerDetailDto[];
 
   @ApiProperty({
     description: 'Análisis por secciones (Fundamentos, Métricas, Herramientas)',
@@ -174,5 +174,5 @@ export class SubmitPerformanceExamDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => LearningObjectiveResultDto)
-  learningObjectiveAnalysis: LearningObjectiveResultDto[];
+  learningObjectiveAnalysis!: LearningObjectiveResultDto[];
 }

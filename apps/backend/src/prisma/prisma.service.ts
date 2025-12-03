@@ -15,7 +15,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
         params.action = 'update';
         params.args['data'] = { deletedAt: new Date() };
       }
-      
+
       // Soft delete filter middleware
       if (params.action === 'findMany' || params.action === 'findFirst' || params.action === 'findUnique') {
         if (params.args?.where && !params.args?.where?.includeDeleted) {
@@ -33,12 +33,12 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       // Audit middleware
       if (['create', 'update', 'delete'].includes(params.action)) {
         const result = await next(params);
-        
+
         // Create audit log entry
         try {
           const auditData = {
-            entity: params.model,
-            entityId: result?.id || params.args?.where?.id || 'unknown',
+            entity: params.model || 'Unknown',
+            entityId: result?.id?.toString() || params.args?.where?.id?.toString() || 'unknown',
             action: params.action.toUpperCase(),
             userId: this.getCurrentUserId(), // This should be implemented based on your auth context
             payload: {
@@ -80,7 +80,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
   private getChanges(data: any): any {
     // Extract meaningful changes from the update data
     if (!data) return null;
-    
+
     const changes: any = {};
     for (const [key, value] of Object.entries(data)) {
       if (key !== 'updatedAt' && key !== 'deletedAt') {

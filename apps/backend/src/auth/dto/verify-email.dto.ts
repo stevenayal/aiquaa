@@ -7,5 +7,5 @@ export class VerifyEmailDto {
     example: 'verify-token-123',
   })
   @IsString()
-  token: string;
+  token!: string;
 }

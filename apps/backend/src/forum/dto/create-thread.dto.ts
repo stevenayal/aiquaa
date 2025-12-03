@@ -7,17 +7,17 @@ export class CreateThreadDto {
   @IsNotEmpty()
   @MinLength(5)
   @MaxLength(200)
-  title: string;
+  title!: string;
 
   @ApiProperty({ description: 'Contenido del thread', minLength: 20 })
   @IsString()
   @IsNotEmpty()
   @MinLength(20)
-  content: string;
+  content!: string;
 
   @ApiProperty({ description: 'ID de la categoría' })
   @IsNotEmpty()
-  categoryId: number;
+  categoryId!: number;
 
   @ApiPropertyOptional({ description: 'Tags del thread', type: [String] })
   @IsOptional()

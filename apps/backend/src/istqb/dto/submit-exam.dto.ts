@@ -23,64 +23,64 @@ export enum ExamMode {
 export class AnswerDetailDto {
   @ApiProperty({ description: 'ID de la pregunta' })
   @IsInt()
-  questionId: number;
+  questionId!: number;
 
   @ApiProperty({ description: 'Texto de la pregunta' })
   @IsString()
-  questionText: string;
+  questionText!: string;
 
   @ApiProperty({ description: 'Respuesta del usuario', type: [String] })
   @IsArray()
   @IsString({ each: true })
-  userAnswer: string[];
+  userAnswer!: string[];
 
   @ApiProperty({ description: 'Respuesta correcta', type: [String] })
   @IsArray()
   @IsString({ each: true })
-  correctAnswer: string[];
+  correctAnswer!: string[];
 
   @ApiProperty({ description: 'Si la respuesta es correcta' })
   @IsBoolean()
-  isCorrect: boolean;
+  isCorrect!: boolean;
 
   @ApiProperty({ description: 'Learning Objective de la pregunta' })
   @IsString()
-  learningObjective: string;
+  learningObjective!: string;
 
   @ApiProperty({ description: 'Nivel K de la pregunta' })
   @IsString()
-  kLevel: string;
+  kLevel!: string;
 
   @ApiProperty({ description: 'Explicaciones de cada opción' })
-  explanations: Record<string, any>;
+  explanations!: Record<string, any>;
 }
 
 export class LearningObjectiveResultDto {
   @ApiProperty({ description: 'Learning Objective' })
   @IsString()
-  learningObjective: string;
+  learningObjective!: string;
 
   @ApiProperty({ description: 'Total de preguntas' })
   @IsInt()
   @Min(0)
-  totalQuestions: number;
+  totalQuestions!: number;
 
   @ApiProperty({ description: 'Respuestas correctas' })
   @IsInt()
   @Min(0)
-  correctAnswers: number;
+  correctAnswers!: number;
 
   @ApiProperty({ description: 'Porcentaje de acierto' })
   @IsNumber()
   @Min(0)
   @Max(100)
-  percentage: number;
+  percentage!: number;
 }
 
 export class SubmitExamDto {
   @ApiProperty({ description: 'Nombre del participante', example: 'Juan Pérez' })
   @IsString()
-  participantName: string;
+  participantName!: string;
 
   @ApiProperty({
     description: 'Email del participante (opcional)',
@@ -93,46 +93,46 @@ export class SubmitExamDto {
 
   @ApiProperty({ description: 'Fecha y hora de inicio del examen' })
   @IsDateString()
-  startTime: string;
+  startTime!: string;
 
   @ApiProperty({ description: 'Fecha y hora de fin del examen' })
   @IsDateString()
-  endTime: string;
+  endTime!: string;
 
   @ApiProperty({ description: 'Tiempo total empleado en segundos', example: 3600 })
   @IsInt()
   @Min(0)
-  timeSpent: number;
+  timeSpent!: number;
 
   @ApiProperty({ description: 'Puntaje obtenido', example: 32 })
   @IsInt()
   @Min(0)
-  score: number;
+  score!: number;
 
   @ApiProperty({ description: 'Total de preguntas', example: 40 })
   @IsInt()
   @Min(1)
-  totalQuestions: number;
+  totalQuestions!: number;
 
   @ApiProperty({ description: 'Respuestas correctas', example: 32 })
   @IsInt()
   @Min(0)
-  correctAnswers: number;
+  correctAnswers!: number;
 
   @ApiProperty({ description: 'Respuestas incorrectas', example: 8 })
   @IsInt()
   @Min(0)
-  incorrectAnswers: number;
+  incorrectAnswers!: number;
 
   @ApiProperty({ description: 'Porcentaje de acierto', example: 80.0 })
   @IsNumber()
   @Min(0)
   @Max(100)
-  percentage: number;
+  percentage!: number;
 
   @ApiProperty({ description: 'Si aprobó el examen' })
   @IsBoolean()
-  passed: boolean;
+  passed!: boolean;
 
   @ApiProperty({
     description: 'Modo del examen',
@@ -140,7 +140,7 @@ export class SubmitExamDto {
     example: ExamMode.EXAM,
   })
   @IsEnum(ExamMode)
-  mode: ExamMode;
+  mode!: ExamMode;
 
   @ApiProperty({
     description: 'Detalle de todas las respuestas',
@@ -149,7 +149,7 @@ export class SubmitExamDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => AnswerDetailDto)
-  answers: AnswerDetailDto[];
+  answers!: AnswerDetailDto[];
 
   @ApiProperty({
     description: 'Análisis por Learning Objectives',
@@ -158,5 +158,5 @@ export class SubmitExamDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => LearningObjectiveResultDto)
-  learningObjectiveAnalysis: LearningObjectiveResultDto[];
+  learningObjectiveAnalysis!: LearningObjectiveResultDto[];
 }

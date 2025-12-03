@@ -5,7 +5,7 @@ export class MessageResponseDto {
     description: 'Mensaje de respuesta',
     example: 'Operación completada exitosamente',
   })
-  message: string;
+  message!: string;
 
   @ApiProperty({
     description: 'Código de estado',

@@ -7,7 +7,7 @@ export class SendTwoFactorCodeDto {
     example: 'usuario@ejemplo.com',
   })
   @IsEmail({}, { message: 'Debe ser un email válido' })
-  email: string;
+  email!: string;
 }
 
 export class VerifyTwoFactorCodeDto {
@@ -16,7 +16,7 @@ export class VerifyTwoFactorCodeDto {
     example: 'usuario@ejemplo.com',
   })
   @IsEmail({}, { message: 'Debe ser un email válido' })
-  email: string;
+  email!: string;
 
   @ApiProperty({
     description: 'Código de verificación de 6 dígitos',
@@ -27,7 +27,7 @@ export class VerifyTwoFactorCodeDto {
   @IsString({ message: 'El código debe ser una cadena' })
   @Length(6, 6, { message: 'El código debe tener exactamente 6 dígitos' })
   @Matches(/^\d{6}$/, { message: 'El código debe contener solo números' })
-  code: string;
+  code!: string;
 }
 
 export class TwoFactorStatusDto {
@@ -35,6 +35,6 @@ export class TwoFactorStatusDto {
     description: 'Indica si el 2FA está habilitado',
     example: true,
   })
-  enabled: boolean;
+  enabled!: boolean;
 }
 

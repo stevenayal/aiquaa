@@ -5,13 +5,13 @@ export class AuthResponseDto {
     description: 'Token de acceso JWT',
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
   })
-  access_token: string;
+  access_token!: string;
 
   @ApiProperty({
     description: 'Token de refresh',
     example: 'abc123...',
   })
-  refresh_token: string;
+  refresh_token!: string;
 
   @ApiProperty({
     description: 'Usuario autenticado',
@@ -23,7 +23,7 @@ export class AuthResponseDto {
       emailVerifiedAt: '2024-12-08T12:00:00.000Z',
     },
   })
-  user: {
+  user!: {
     id: number;
     email: string;
     name?: string;

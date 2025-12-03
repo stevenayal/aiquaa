@@ -2,13 +2,13 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class UserResponseDto {
   @ApiProperty()
-  id: number;
+  id!: number;
 
   @ApiProperty()
-  email: string;
+  email!: string;
 
   @ApiProperty()
-  name: string;
+  name!: string;
 
   @ApiProperty()
   avatarUrl?: string;
@@ -16,65 +16,65 @@ export class UserResponseDto {
 
 export class CategoryResponseDto {
   @ApiProperty()
-  id: number;
+  id!: number;
 
   @ApiProperty()
-  name: string;
+  name!: string;
 
   @ApiProperty()
   description?: string;
 
   @ApiProperty()
-  slug: string;
+  slug!: string;
 }
 
 export class ThreadResponseDto {
   @ApiProperty()
-  id: number;
+  id!: number;
 
   @ApiProperty()
-  title: string;
+  title!: string;
 
   @ApiProperty()
-  content: string;
+  content!: string;
 
   @ApiProperty()
-  slug: string;
+  slug!: string;
 
   @ApiProperty()
-  isSticky: boolean;
+  isSticky!: boolean;
 
   @ApiProperty()
-  isLocked: boolean;
+  isLocked!: boolean;
 
   @ApiProperty()
-  viewCount: number;
+  viewCount!: number;
 
   @ApiProperty()
-  createdAt: Date;
+  createdAt!: Date;
 
   @ApiProperty()
-  updatedAt: Date;
+  updatedAt!: Date;
 
   @ApiProperty()
-  author: UserResponseDto;
+  author!: UserResponseDto;
 
   @ApiProperty()
-  category: CategoryResponseDto;
+  category!: CategoryResponseDto;
 
   @ApiProperty({ type: [String] })
-  tags: string[];
+  tags!: string[];
 
   @ApiProperty()
-  replyCount: number;
+  replyCount!: number;
 }
 
 export class ThreadListResponseDto {
   @ApiProperty({ type: [ThreadResponseDto] })
-  data: ThreadResponseDto[];
+  data!: ThreadResponseDto[];
 
   @ApiProperty()
-  meta: {
+  meta!: {
     page: number;
     limit: number;
     total: number;

@@ -5,11 +5,11 @@ export class RefreshResponseDto {
     description: 'Nuevo token de acceso JWT',
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
   })
-  access_token: string;
+  access_token!: string;
 
   @ApiProperty({
     description: 'Nuevo token de refresh',
     example: 'abc123...',
   })
-  refresh_token: string;
+  refresh_token!: string;
 }
