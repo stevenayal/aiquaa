@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Alert } from '@/components/common';
 import ExamSimulator from './components/ExamSimulator';
