@@ -55,7 +55,11 @@
       "Bash(npm run prisma:seed:*)",
       "Bash(node verify-db-connection.js:*)",
       "Bash(node scripts/init-database.js:*)",
-      "Bash(BACKEND_URL=\"http://localhost:3001\" FRONTEND_URL=\"http://localhost:3001\" node:*)"
+      "Bash(BACKEND_URL=\"http://localhost:3001\" FRONTEND_URL=\"http://localhost:3001\" node:*)",
+      "Bash(node scripts/preview-performance-email.js:*)",
+      "Bash(start \"\" \"Z:\\Proyectos\\aiquaa\\apps\\backend\\scripts\\performance-email-preview.html\")",
+      "Bash(node scripts/test-performance-email.js:*)",
+      "Bash(node scripts/test-performance-endpoint.js:*)"
     ],
     "deny": [],
     "ask": []
