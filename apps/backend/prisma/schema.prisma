@@ -289,6 +289,38 @@ model IstqbExamResult {
   @@index([passed])
 }
 
+model PerformanceExamResult {
+  id                 Int                 @id @default(autoincrement())
+  participantName    String
+  githubProfile      String
+  examPurpose        PerformanceExamPurpose
+  companyName        String?
+  startTime          DateTime
+  endTime            DateTime
+  timeSpentSeconds   Int      // Tiempo total en segundos
+  score              Int
+  totalQuestions     Int
+  percentage         Decimal  @db.Decimal(5,2)
+  passed             Boolean
+  mode               String   // 'exam' o 'training'
+  answers            Json     // Array de respuestas completo
+  sectionAnalysis    Json     // Análisis por secciones
+  createdAt          DateTime @default(now())
+
+  @@map("performance_exam_results")
+  @@index([githubProfile])
+  @@index([createdAt])
+  @@index([passed])
+  @@index([examPurpose])
+}
+
+enum PerformanceExamPurpose {
+  capacitacion
+  postulacion
+  practica
+  otro
+}
+
 enum ExamMode {
   EXAM
   TRAINING

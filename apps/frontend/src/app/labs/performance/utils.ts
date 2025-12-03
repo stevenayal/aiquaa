@@ -7,8 +7,76 @@ import type {
 } from './types';
 
 export function loadExamData(): ExamData {
-  const data = require('./data/questions-performance.json');
-  return data;
+  const rawData = require('./data/questions-performance.json');
+
+  // Convertir las preguntas del formato performance al formato del simulador
+  const allQuestions: ExamQuestion[] = [];
+  let questionIndex = 1;
+
+  // Extraer preguntas de todas las secciones
+  rawData.sections.forEach((section: any) => {
+    section.questions.forEach((q: any) => {
+      // Filtrar preguntas de tipo open_text y practical_task (no son compatibles con el simulador básico)
+      if (q.type === 'open_text' || q.type === 'practical_task') {
+        return; // Saltar estas preguntas
+      }
+
+      // Convertir opciones de array de strings a formato {label, text}
+      const options = q.options.map((optionText: string, index: number) => ({
+        label: String.fromCharCode(65 + index), // A, B, C, D, E
+        text: optionText
+      }));
+
+      // Determinar el tipo (single o multiple)
+      const type = q.type === 'single_choice' ? 'single' : 'multiple';
+
+      // Crear el mapa de explicaciones
+      const explanations: Record<string, { correct: boolean; explanation: string }> = {};
+      options.forEach((option: any) => {
+        const isCorrect = q.correct_answer.includes(option.text);
+        explanations[option.label] = {
+          correct: isCorrect,
+          explanation: q.explanation || ''
+        };
+      });
+
+      // Mapear las respuestas correctas a labels (A, B, C, etc.)
+      const correctAnswer = q.correct_answer.map((answerText: string) => {
+        const optionIndex = q.options.indexOf(answerText);
+        return String.fromCharCode(65 + optionIndex);
+      });
+
+      // Crear la pregunta adaptada
+      const adaptedQuestion: ExamQuestion = {
+        id: questionIndex++,
+        questionText: q.prompt,
+        options,
+        correctAnswer,
+        learningObjective: section.title, // Usar el título de la sección como learning objective
+        kLevel: (q.tags.find((t: string) => t.startsWith('K')) || 'K1') as 'K1' | 'K2' | 'K3',
+        points: q.weight || 1,
+        type: type as 'single' | 'multiple',
+        explanations
+      };
+
+      allQuestions.push(adaptedQuestion);
+    });
+  });
+
+  // Crear el ExamInfo
+  const examInfo: ExamInfo = {
+    title: rawData.metadata.title,
+    version: rawData.metadata.version,
+    totalQuestions: allQuestions.length,
+    passingScore: Math.ceil(allQuestions.length * (rawData.metadata.passing_score_percentage / 100)),
+    timeLimit: rawData.metadata.estimated_duration_minutes * 60, // Convertir a segundos
+    pointsPerQuestion: 1
+  };
+
+  return {
+    examInfo,
+    questions: allQuestions
+  };
 }
 
 export function shuffleArray<T>(array: T[]): T[] {

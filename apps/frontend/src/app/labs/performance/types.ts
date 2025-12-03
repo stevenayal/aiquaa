@@ -73,9 +73,11 @@ export interface AnswerDetail {
   userAnswer: string[];
   correctAnswer: string[];
   isCorrect: boolean;
-  learningObjective: string;
-  kLevel: string;
+  learningObjective: string; // Section for performance testing
+  kLevel: string; // Tags for performance testing
   explanations: Record<string, Explanation>;
+  section?: string; // Nombre de la sección (Fundamentos, Métricas, etc.)
+  tags?: string[]; // Tags adicionales
 }
 
 export interface LearningObjectiveResult {
@@ -83,6 +85,14 @@ export interface LearningObjectiveResult {
   totalQuestions: number;
   correctAnswers: number;
   percentage: number;
+}
+
+export interface SectionAnalysis {
+  section: string;
+  totalQuestions: number;
+  correctAnswers: number;
+  percentage: number;
+  weight: number;
 }
 
 export interface ExamState {

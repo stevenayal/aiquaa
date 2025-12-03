@@ -1,10 +1,55 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { useTheme } from '@/contexts/ThemeContext';
+import { Alert } from '@/components/common';
+import ExamSimulator from './components/ExamSimulator';
+import { loadExamData } from './utils';
+import { SuruFloating } from '@/components/Suru';
 
 export default function PerformanceExamPage() {
   const { isDarkMode } = useTheme();
+  const [participantName, setParticipantName] = useState('');
+  const [githubProfile, setGithubProfile] = useState('');
+  const [examPurpose, setExamPurpose] = useState<'capacitacion' | 'postulacion' | 'practica' | 'otro'>('practica');
+  const [companyName, setCompanyName] = useState('');
+  const [examMode, setExamMode] = useState<'exam' | 'training' | null>(null);
+  const [hasStarted, setHasStarted] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleStartExam = (mode: 'exam' | 'training') => {
+    if (!participantName.trim()) {
+      setError('Por favor, ingrese su nombre completo');
+      return;
+    }
+    if (!githubProfile.trim()) {
+      setError('Por favor, ingrese su perfil de GitHub');
+      return;
+    }
+    if (examPurpose === 'postulacion' && !companyName.trim()) {
+      setError('Por favor, ingrese el nombre de la empresa');
+      return;
+    }
+
+    setError('');
+    setExamMode(mode);
+    setHasStarted(true);
+  };
+
+  // Si el examen ha iniciado, mostrar el simulador
+  if (hasStarted && examMode) {
+    return (
+      <ExamSimulator
+        participantName={participantName}
+        githubProfile={githubProfile}
+        examPurpose={examPurpose}
+        companyName={companyName}
+        mode={examMode}
+        examData={loadExamData()}
+      />
+    );
+  }
 
   const examSections = [
     {
@@ -63,6 +108,7 @@ export default function PerformanceExamPage() {
     <div className={`min-h-screen py-12 md:py-16 transition-colors duration-300 ${
       isDarkMode ? 'bg-slate-900' : 'bg-brand-light'
     }`}>
+      <SuruFloating />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
@@ -72,12 +118,12 @@ export default function PerformanceExamPage() {
           <h1 className={`text-4xl md:text-5xl font-bold mb-4 ${
             isDarkMode ? 'text-white' : 'text-brand-text'
           }`}>
-            Examen de Performance Testing
+            Simulacro de Performance Testing
           </h1>
           <p className={`text-xl max-w-3xl mx-auto ${
             isDarkMode ? 'text-slate-300' : 'text-brand-muted'
           }`}>
-            Evalúa tus conocimientos en pruebas de rendimiento con esta prueba técnica completa
+            Evaluación técnica completa sobre fundamentos, métricas y herramientas de pruebas de rendimiento
           </p>
         </div>
 
@@ -242,47 +288,191 @@ export default function PerformanceExamPage() {
           </div>
         </div>
 
-        {/* Coming Soon Notice */}
-        <div className={`rounded-lg shadow-lg p-8 text-center ${
-          isDarkMode
-            ? 'bg-gradient-to-r from-yellow-900/30 to-amber-900/30 border border-yellow-700/50'
-            : 'bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200'
+        {/* Participant Data Form */}
+        <div className={`rounded-lg shadow-lg p-8 mb-8 ${
+          isDarkMode ? 'bg-slate-800' : 'bg-white'
         }`}>
-          <div className="text-5xl mb-4">🚧</div>
-          <h2 className={`text-2xl font-bold mb-3 ${
-            isDarkMode ? 'text-yellow-300' : 'text-yellow-800'
+          <h2 className={`text-2xl font-bold mb-4 ${
+            isDarkMode ? 'text-white' : 'text-brand-text'
           }`}>
-            Próximamente Disponible
+            📝 Datos del Participante
           </h2>
-          <p className={`text-lg mb-6 ${
-            isDarkMode ? 'text-yellow-200' : 'text-yellow-700'
+          <p className={`mb-6 ${
+            isDarkMode ? 'text-slate-300' : 'text-gray-700'
           }`}>
-            El examen interactivo estará disponible pronto. Mientras tanto, puedes estudiar el material de referencia.
+            Complete la información antes de iniciar el simulacro
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/recursos"
-              className={`inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-colors ${
+          {error && (
+            <Alert type="error" title="Error" className="mb-4">
+              {error}
+            </Alert>
+          )}
+
+          <div className="space-y-4">
+            <div>
+              <label className={`block text-sm font-semibold mb-2 ${
+                isDarkMode ? 'text-slate-300' : 'text-gray-700'
+              }`}>
+                Nombre Completo *
+              </label>
+              <input
+                type="text"
+                value={participantName}
+                onChange={(e) => setParticipantName(e.target.value)}
+                placeholder="Ej: Juan Pérez González"
+                className={`w-full px-4 py-2 rounded-lg border ${
+                  isDarkMode
+                    ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
+                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                } focus:outline-none focus:ring-2 focus:ring-cyan-500`}
+              />
+            </div>
+
+            <div>
+              <label className={`block text-sm font-semibold mb-2 ${
+                isDarkMode ? 'text-slate-300' : 'text-gray-700'
+              }`}>
+                GitHub Profile *
+              </label>
+              <input
+                type="text"
+                value={githubProfile}
+                onChange={(e) => setGithubProfile(e.target.value)}
+                placeholder="Ej: @tuusuario"
+                className={`w-full px-4 py-2 rounded-lg border ${
+                  isDarkMode
+                    ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
+                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                } focus:outline-none focus:ring-2 focus:ring-cyan-500`}
+              />
+            </div>
+
+            <div>
+              <label className={`block text-sm font-semibold mb-2 ${
+                isDarkMode ? 'text-slate-300' : 'text-gray-700'
+              }`}>
+                Motivo del Examen *
+              </label>
+              <select
+                value={examPurpose}
+                onChange={(e) => setExamPurpose(e.target.value as any)}
+                className={`w-full px-4 py-2 rounded-lg border ${
+                  isDarkMode
+                    ? 'bg-slate-700 border-slate-600 text-white'
+                    : 'bg-white border-gray-300 text-gray-900'
+                } focus:outline-none focus:ring-2 focus:ring-cyan-500`}
+              >
+                <option value="practica">Práctica</option>
+                <option value="capacitacion">Capacitación</option>
+                <option value="postulacion">Postulación / Proceso de Selección</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+
+            {examPurpose === 'postulacion' && (
+              <div>
+                <label className={`block text-sm font-semibold mb-2 ${
+                  isDarkMode ? 'text-slate-300' : 'text-gray-700'
+                }`}>
+                  Nombre de la Empresa *
+                </label>
+                <input
+                  type="text"
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                  placeholder="Ej: ACME Corp"
+                  className={`w-full px-4 py-2 rounded-lg border ${
+                    isDarkMode
+                      ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
+                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                  } focus:outline-none focus:ring-2 focus:ring-cyan-500`}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Mode Selection */}
+        <div className={`rounded-lg shadow-lg p-8 mb-8 ${
+          isDarkMode ? 'bg-slate-800' : 'bg-white'
+        }`}>
+          <h2 className={`text-2xl font-bold mb-6 ${
+            isDarkMode ? 'text-white' : 'text-brand-text'
+          }`}>
+            🎯 Seleccione el Modo:
+          </h2>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Exam Mode */}
+            <div className={`p-6 rounded-lg border-2 transition-all cursor-pointer hover:scale-105 ${
+              isDarkMode
+                ? 'border-cyan-700 bg-slate-700/50 hover:bg-slate-700'
+                : 'border-cyan-300 bg-cyan-50 hover:bg-cyan-100'
+            }`}
+            onClick={() => handleStartExam('exam')}>
+              <div className="text-4xl mb-4">📝</div>
+              <h3 className={`text-xl font-bold mb-2 ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}>
+                Modo Examen
+              </h3>
+              <p className={`text-sm mb-4 ${
+                isDarkMode ? 'text-slate-300' : 'text-gray-600'
+              }`}>
+                Simula el examen real sin feedback inmediato
+              </p>
+              <ul className={`text-sm space-y-2 mb-4 ${
+                isDarkMode ? 'text-slate-400' : 'text-gray-600'
+              }`}>
+                <li>• Timer de 60 minutos</li>
+                <li>• 26 preguntas de selección</li>
+                <li>• Sin retroalimentación durante el examen</li>
+                <li>• Informe completo al finalizar</li>
+              </ul>
+              <button className={`w-full px-4 py-2 rounded-lg font-semibold transition-colors ${
                 isDarkMode
                   ? 'bg-cyan-600 hover:bg-cyan-700 text-white'
                   : 'bg-cyan-500 hover:bg-cyan-600 text-white'
               }`}>
-              <span>📚</span>
-              Ver Recursos
-            </Link>
+                Iniciar Modo Examen
+              </button>
+            </div>
 
-            <Link
-              href="/labs"
-              className={`inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-colors ${
+            {/* Training Mode */}
+            <div className={`p-6 rounded-lg border-2 transition-all cursor-pointer hover:scale-105 ${
+              isDarkMode
+                ? 'border-green-700 bg-slate-700/50 hover:bg-slate-700'
+                : 'border-green-300 bg-green-50 hover:bg-green-100'
+            }`}
+            onClick={() => handleStartExam('training')}>
+              <div className="text-4xl mb-4">🎓</div>
+              <h3 className={`text-xl font-bold mb-2 ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}>
+                Modo Entrenamiento
+              </h3>
+              <p className={`text-sm mb-4 ${
+                isDarkMode ? 'text-slate-300' : 'text-gray-600'
+              }`}>
+                Practica con feedback inmediato en cada pregunta
+              </p>
+              <ul className={`text-sm space-y-2 mb-4 ${
+                isDarkMode ? 'text-slate-400' : 'text-gray-600'
+              }`}>
+                <li>• Sin límite de tiempo</li>
+                <li>• 26 preguntas de selección</li>
+                <li>• Retroalimentación inmediata</li>
+                <li>• Explicaciones detalladas</li>
+              </ul>
+              <button className={`w-full px-4 py-2 rounded-lg font-semibold transition-colors ${
                 isDarkMode
-                  ? 'bg-slate-700 hover:bg-slate-600 text-white'
-                  : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
-              }`}
-            >
-              <span>🧪</span>
-              Volver a Labs
-            </Link>
+                  ? 'bg-green-600 hover:bg-green-700 text-white'
+                  : 'bg-green-500 hover:bg-green-600 text-white'
+              }`}>
+                Iniciar Modo Entrenamiento
+              </button>
+            </div>
           </div>
         </div>
       </div>
