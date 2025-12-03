@@ -1,5 +1,6 @@
 import type {
   ExamData,
+  ExamInfo,
   ExamQuestion,
   ExamResult,
   AnswerDetail,
