@@ -10,6 +10,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AppCacheModule } from './cache/cache.module';
 import { ObservabilityModule } from './observability/observability.module';
 import { IstqbModule } from './istqb/istqb.module';
+import { PerformanceModule } from './performance/performance.module';
 import { LabsModule } from './labs/labs.module';
 
 @Module({
@@ -28,6 +29,7 @@ import { LabsModule } from './labs/labs.module';
     ContentModule,
     BillingModule,
     IstqbModule,
+    PerformanceModule,
     LabsModule,
   ],
 })
