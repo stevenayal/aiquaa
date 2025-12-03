@@ -12,6 +12,7 @@ import { ObservabilityModule } from './observability/observability.module';
 import { IstqbModule } from './istqb/istqb.module';
 import { PerformanceModule } from './performance/performance.module';
 import { LabsModule } from './labs/labs.module';
+import { IdeasBoardModule } from './ideas-board/ideas-board.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { LabsModule } from './labs/labs.module';
     IstqbModule,
     PerformanceModule,
     LabsModule,
+    IdeasBoardModule,
   ],
 })
 export class AppModule {}

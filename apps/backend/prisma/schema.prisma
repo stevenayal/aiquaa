@@ -32,6 +32,9 @@ model User {
   oauthAccounts        OAuthAccount[]
   refreshTokens        RefreshToken[]
   verificationTokens   VerificationToken[]
+  ideas                Idea[]
+  ideaVotes            IdeaVote[]
+  ideaComments         IdeaComment[]
 
   @@map("users")
   @@index([deletedAt])
@@ -324,4 +327,101 @@ enum PerformanceExamPurpose {
 enum ExamMode {
   EXAM
   TRAINING
+}
+
+// ============================================================
+// IDEAS BOARD MODELS
+// ============================================================
+
+model IdeaCategory {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  icon        String?  // Emoji o nombre de icono
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  ideas Idea[]
+
+  @@map("idea_categories")
+  @@index([deletedAt])
+  @@index([order])
+}
+
+model Idea {
+  id          Int        @id @default(autoincrement())
+  title       String
+  description String
+  slug        String     @unique
+  status      IdeaStatus @default(PENDING)
+  categoryId  Int
+  category    IdeaCategory @relation(fields: [categoryId], references: [id])
+  authorId    Int
+  author      User       @relation(fields: [authorId], references: [id])
+
+  // Estadísticas
+  viewCount   Int        @default(0)
+  voteScore   Int        @default(0) // Suma neta de votos (upvotes - downvotes)
+  upvotes     Int        @default(0)
+  downvotes   Int        @default(0)
+
+  // Metadata
+  tags        String[]   // Array de strings para tags
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  deletedAt   DateTime?
+
+  // Relaciones
+  votes       IdeaVote[]
+  comments    IdeaComment[]
+
+  @@map("ideas")
+  @@index([categoryId, voteScore(sort: Desc)])
+  @@index([status, voteScore(sort: Desc)])
+  @@index([deletedAt])
+  @@index([authorId])
+  @@index([createdAt(sort: Desc)])
+}
+
+model IdeaVote {
+  id        Int      @id @default(autoincrement())
+  ideaId    Int
+  idea      Idea     @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  value     Int      // +1 para upvote, -1 para downvote
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([ideaId, userId]) // Un usuario solo puede votar una vez por idea
+  @@map("idea_votes")
+  @@index([ideaId])
+  @@index([userId])
+}
+
+model IdeaComment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  ideaId    Int
+  idea      Idea     @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  authorId  Int
+  author    User     @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  @@map("idea_comments")
+  @@index([ideaId, createdAt(sort: Desc)])
+  @@index([deletedAt])
+  @@index([authorId])
+}
+
+enum IdeaStatus {
+  PENDING      // Nueva idea, pendiente de revisión
+  APPROVED     // Aprobada, en backlog
+  IN_PROGRESS  // En desarrollo
+  COMPLETED    // Implementada
+  REJECTED     // Rechazada
 }
