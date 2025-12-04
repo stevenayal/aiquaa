@@ -1,4 +1,4 @@
-import { getAuthToken } from '@/lib/auth';
+import authService from './authService';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -104,12 +104,20 @@ class IdeasBoardService {
     endpoint: string,
     options: RequestInit = {},
   ): Promise<T> {
-    const token = getAuthToken();
+    const token = authService.getAccessToken();
 
-    const headers: HeadersInit = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      ...options.headers,
     };
+
+    // Add custom headers from options
+    if (options.headers) {
+      Object.entries(options.headers).forEach(([key, value]) => {
+        if (typeof value === 'string') {
+          headers[key] = value;
+        }
+      });
+    }
 
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
