@@ -12,4 +12,9 @@ export class LabsService {
     this.logger.log(`Enviando resultado de examen Git a ${this.adminEmail} - Estudiante: ${examResult.participantName}`);
     await this.mailerService.sendGitExamReport(this.adminEmail, examResult);
   }
+
+  async sendTechnicalBugReport(report: any): Promise<void> {
+    this.logger.log(`Enviando informe técnico de bugs a ${this.adminEmail} - Candidato: ${report.candidateInfo.fullName}`);
+    await this.mailerService.sendTechnicalBugReport(this.adminEmail, report);
+  }
 }

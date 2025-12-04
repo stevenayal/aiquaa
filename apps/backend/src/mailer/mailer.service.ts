@@ -36,4 +36,33 @@ export class MailerService {
   async sendGitExamReport(email: string, examResult: any): Promise<void> {
     return this.resendService.sendGitExamReport(email, examResult);
   }
+
+  async sendTestResultsReport(testResults: {
+    success: boolean;
+    timestamp: Date;
+    duration: number;
+    summary: {
+      total: number;
+      passed: number;
+      failed: number;
+      skipped: number;
+    };
+    coverage?: {
+      statements: number;
+      branches: number;
+      functions: number;
+      lines: number;
+    };
+    failures?: Array<{
+      test: string;
+      error: string;
+    }>;
+    type: 'unit' | 'e2e' | 'contract' | 'all';
+  }): Promise<void> {
+    return this.resendService.sendTestResultsReport(testResults);
+  }
+
+  async sendTechnicalBugReport(email: string, report: any): Promise<void> {
+    return this.resendService.sendTechnicalBugReport(email, report);
+  }
 }

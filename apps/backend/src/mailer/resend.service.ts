@@ -1168,6 +1168,316 @@ private getGitExamReportTemplate(examResult: any, examDate: string): string {
   `;
 }
 
+private getTechnicalBugReportTemplate(report: any, reportDate: string): string {
+  const formatDate = (date: Date | string): string => {
+    const d = new Date(date);
+    return d.toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const bugsSection = report.bugsFound && report.bugsFound.length > 0
+    ? report.bugsFound.map((bug: any, index: number) => {
+        const severityColor = bug.severity === 'Critical' || bug.severity === 'High'
+          ? '#DC2626'
+          : bug.severity === 'Medium'
+          ? '#F59E0B'
+          : '#3B82F6';
+
+        const severityBg = bug.severity === 'Critical' || bug.severity === 'High'
+          ? '#FEE2E2'
+          : bug.severity === 'Medium'
+          ? '#FEF3C7'
+          : '#DBEAFE';
+
+        const stepsHtml = bug.stepsToReproduce && bug.stepsToReproduce.length > 0
+          ? bug.stepsToReproduce.map((step: string, i: number) => `
+              <div style="margin-bottom: 8px;">
+                <span style="font-weight: 600; color: #6B7280;">${i + 1}.</span>
+                <span style="color: #374151;">${step}</span>
+              </div>
+            `).join('')
+          : '<p style="color: #9CA3AF;">No se especificaron pasos</p>';
+
+        const imagesHtml = bug.images && bug.images.length > 0
+          ? `
+            <div style="margin-top: 12px;">
+              <h5 style="margin: 0 0 8px 0; color: #6B7280; font-size: 13px;">📷 Capturas de Pantalla (${bug.images.length}):</h5>
+              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+                ${bug.images.map((img: any) => `
+                  <div style="border: 1px solid #E5E7EB; border-radius: 8px; overflow: hidden;">
+                    <img src="${img.base64Data}" alt="${img.fileName}" style="width: 100%; height: auto; display: block;" />
+                    <div style="padding: 8px; background: #F9FAFB;">
+                      <p style="margin: 0; font-size: 11px; color: #6B7280; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${img.fileName}</p>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `
+          : '';
+
+        return `
+          <div style="background: #FFFFFF; border: 2px solid ${severityColor}; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+              <h3 style="margin: 0; color: #1F2937; font-size: 18px;">Bug #${index + 1}: ${bug.title}</h3>
+              <span style="background: ${severityBg}; color: ${severityColor}; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap;">
+                ${bug.severity}
+              </span>
+            </div>
+
+            ${bug.category ? `
+              <div style="margin-bottom: 12px;">
+                <span style="background: #F3F4F6; color: #374151; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                  ${bug.category}
+                </span>
+              </div>
+            ` : ''}
+
+            ${bug.description ? `
+              <div style="margin-bottom: 16px;">
+                <h4 style="margin: 0 0 8px 0; color: #6B7280; font-size: 13px;">📝 Descripción:</h4>
+                <p style="margin: 0; color: #374151; line-height: 1.6;">${bug.description}</p>
+              </div>
+            ` : ''}
+
+            <div style="margin-bottom: 16px;">
+              <h4 style="margin: 0 0 8px 0; color: #6B7280; font-size: 13px;">🔄 Pasos para Reproducir:</h4>
+              <div style="background: #F9FAFB; padding: 12px; border-radius: 8px; border-left: 3px solid ${severityColor};">
+                ${stepsHtml}
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+              <div>
+                <h4 style="margin: 0 0 8px 0; color: #16A34A; font-size: 13px;">✅ Resultado Esperado:</h4>
+                <p style="margin: 0; padding: 12px; background: #F0FDF4; border-radius: 8px; color: #166534; line-height: 1.6;">
+                  ${bug.expectedResult}
+                </p>
+              </div>
+              <div>
+                <h4 style="margin: 0 0 8px 0; color: #DC2626; font-size: 13px;">❌ Resultado Actual:</h4>
+                <p style="margin: 0; padding: 12px; background: #FEF2F2; border-radius: 8px; color: #991B1B; line-height: 1.6;">
+                  ${bug.actualResult}
+                </p>
+              </div>
+            </div>
+
+            ${bug.evidence ? `
+              <div style="margin-bottom: 16px;">
+                <h4 style="margin: 0 0 8px 0; color: #6B7280; font-size: 13px;">🔍 Evidencia Adicional:</h4>
+                <p style="margin: 0; padding: 12px; background: #F9FAFB; border-radius: 8px; color: #374151; font-family: monospace; font-size: 12px; line-height: 1.6;">
+                  ${bug.evidence}
+                </p>
+              </div>
+            ` : ''}
+
+            ${imagesHtml}
+
+            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #E5E7EB;">
+              <p style="margin: 0; font-size: 12px; color: #9CA3AF;">
+                Encontrado: ${formatDate(bug.foundAt)}
+              </p>
+            </div>
+          </div>
+        `;
+      }).join('')
+    : '<p style="text-align: center; color: #9CA3AF; padding: 40px;">No se reportaron bugs en esta sesión.</p>';
+
+  const severityDistribution = report.bugsFound ? {
+    critical: report.bugsFound.filter((b: any) => b.severity === 'Critical').length,
+    high: report.bugsFound.filter((b: any) => b.severity === 'High').length,
+    medium: report.bugsFound.filter((b: any) => b.severity === 'Medium').length,
+    low: report.bugsFound.filter((b: any) => b.severity === 'Low').length,
+  } : { critical: 0, high: 0, medium: 0, low: 0 };
+
+  const scorePercentage = report.score ? report.score.percentage : 0;
+  const scoreColor = scorePercentage >= 80 ? '#16A34A' : scorePercentage >= 60 ? '#F59E0B' : '#DC2626';
+  const scoreBg = scorePercentage >= 80 ? '#DEF7EC' : scorePercentage >= 60 ? '#FEF3C7' : '#FEE2E2';
+
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Informe Técnico de Bugs - AIQUAA</title>
+    </head>
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background: #F9FAFB;">
+      <div style="max-width: 800px; margin: 20px auto; padding: 0;">
+        <div style="background: linear-gradient(135deg, #7C3AED, #A855F7); color: white; padding: 40px 30px; text-align: center; border-radius: 12px 12px 0 0;">
+          <h1 style="margin: 0; font-size: 32px;">🐛 AIQUAA</h1>
+          <p style="margin: 8px 0 0 0; font-size: 18px; opacity: 0.95;">Informe Técnico de Reporte de Bugs</p>
+          <p style="margin: 4px 0 0 0; font-size: 14px; opacity: 0.85;">Exploratory Testing & Bug Hunt</p>
+        </div>
+
+        <div style="background: #ffffff; padding: 40px 30px; border-radius: 0 0 12px 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+
+          <!-- Score Overview -->
+          <div style="background: ${scoreBg}; padding: 24px; border-radius: 12px; text-align: center; margin-bottom: 32px; border: 2px solid ${scoreColor};">
+            <div style="font-size: 48px; margin-bottom: 8px;">
+              ${scorePercentage >= 80 ? '🏆' : scorePercentage >= 60 ? '👍' : '📊'}
+            </div>
+            <h2 style="margin: 0; font-size: 28px; color: ${scoreColor};">
+              Puntuación: ${report.score ? report.score.totalPoints : 0}/${report.score ? report.score.maxPoints : 30} puntos
+            </h2>
+            <p style="margin: 8px 0 0 0; font-size: 18px; color: #374151;">
+              <strong>${scorePercentage.toFixed(1)}%</strong> de efectividad
+            </p>
+          </div>
+
+          <!-- Candidate Info -->
+          <div style="background: #F3F4F6; padding: 24px; border-radius: 12px; margin-bottom: 24px;">
+            <h3 style="margin: 0 0 16px 0; color: #1F2937; font-size: 20px; border-bottom: 2px solid #7C3AED; padding-bottom: 8px;">
+              👤 Información del Candidato
+            </h3>
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 8px 0; color: #6B7280; font-weight: 600; width: 200px;">Nombre Completo:</td>
+                <td style="padding: 8px 0; color: #1F2937; font-weight: bold;">${report.candidateInfo.fullName}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #6B7280; font-weight: 600;">Email:</td>
+                <td style="padding: 8px 0; color: #1F2937;">${report.candidateInfo.email}</td>
+              </tr>
+              ${report.candidateInfo.githubProfile ? `
+              <tr>
+                <td style="padding: 8px 0; color: #6B7280; font-weight: 600;">GitHub:</td>
+                <td style="padding: 8px 0;">
+                  <a href="${report.candidateInfo.githubProfile}" style="color: #7C3AED; text-decoration: none;">${report.candidateInfo.githubProfile}</a>
+                </td>
+              </tr>
+              ` : ''}
+              ${report.candidateInfo.linkedinProfile ? `
+              <tr>
+                <td style="padding: 8px 0; color: #6B7280; font-weight: 600;">LinkedIn:</td>
+                <td style="padding: 8px 0;">
+                  <a href="${report.candidateInfo.linkedinProfile}" style="color: #7C3AED; text-decoration: none;">${report.candidateInfo.linkedinProfile}</a>
+                </td>
+              </tr>
+              ` : ''}
+              <tr>
+                <td style="padding: 8px 0; color: #6B7280; font-weight: 600;">ID Candidato:</td>
+                <td style="padding: 8px 0; color: #1F2937; font-family: monospace;">${report.candidateInfo.candidateId}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #6B7280; font-weight: 600;">Fecha de Prueba:</td>
+                <td style="padding: 8px 0; color: #1F2937;">${formatDate(report.candidateInfo.testDate)}</td>
+              </tr>
+            </table>
+          </div>
+
+          <!-- Test Session Info -->
+          <div style="background: #F3F4F6; padding: 24px; border-radius: 12px; margin-bottom: 24px;">
+            <h3 style="margin: 0 0 16px 0; color: #1F2937; font-size: 20px; border-bottom: 2px solid #7C3AED; padding-bottom: 8px;">
+              ⏱️ Información de la Sesión
+            </h3>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+              <div style="background: #FFFFFF; padding: 16px; border-radius: 8px; text-align: center; border: 2px solid #E5E7EB;">
+                <div style="font-size: 24px; margin-bottom: 4px;">⏰</div>
+                <div style="font-size: 24px; font-weight: bold; color: #7C3AED;">${report.testSession.duration}</div>
+                <div style="font-size: 12px; color: #6B7280;">minutos</div>
+              </div>
+              <div style="background: #FFFFFF; padding: 16px; border-radius: 8px; text-align: center; border: 2px solid #E5E7EB;">
+                <div style="font-size: 24px; margin-bottom: 4px;">🔍</div>
+                <div style="font-size: 24px; font-weight: bold; color: #7C3AED;">${report.testSession.exploredSections ? report.testSession.exploredSections.length : 0}</div>
+                <div style="font-size: 12px; color: #6B7280;">secciones</div>
+              </div>
+              <div style="background: #FFFFFF; padding: 16px; border-radius: 8px; text-align: center; border: 2px solid #E5E7EB;">
+                <div style="font-size: 24px; margin-bottom: 4px;">📝</div>
+                <div style="font-size: 24px; font-weight: bold; color: #7C3AED;">${report.auditLog ? report.auditLog.length : 0}</div>
+                <div style="font-size: 12px; color: #6B7280;">eventos</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Score Breakdown -->
+          <div style="margin-bottom: 24px;">
+            <h3 style="margin: 0 0 16px 0; color: #1F2937; font-size: 20px; border-bottom: 2px solid #7C3AED; padding-bottom: 8px;">
+              📊 Desglose de Puntuación
+            </h3>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+              <div style="background: linear-gradient(135deg, #E0E7FF, #C7D2FE); padding: 20px; border-radius: 12px; text-align: center; border: 2px solid #7C3AED;">
+                <div style="font-size: 14px; color: #5B21B6; margin-bottom: 4px; font-weight: 600;">Bugs Encontrados</div>
+                <div style="font-size: 28px; font-weight: bold; color: #5B21B6;">${report.score ? report.score.bugsFoundPoints : 0}/15</div>
+              </div>
+              <div style="background: linear-gradient(135deg, #E0E7FF, #C7D2FE); padding: 20px; border-radius: 12px; text-align: center; border: 2px solid #7C3AED;">
+                <div style="font-size: 14px; color: #5B21B6; margin-bottom: 4px; font-weight: 600;">Calidad del Reporte</div>
+                <div style="font-size: 28px; font-weight: bold; color: #5B21B6;">${report.score ? report.score.reportQualityPoints : 0}/10</div>
+              </div>
+              <div style="background: linear-gradient(135deg, #E0E7FF, #C7D2FE); padding: 20px; border-radius: 12px; text-align: center; border: 2px solid #7C3AED;">
+                <div style="font-size: 14px; color: #5B21B6; margin-bottom: 4px; font-weight: 600;">Cobertura</div>
+                <div style="font-size: 28px; font-weight: bold; color: #5B21B6;">${report.score ? report.score.coveragePoints : 0}/5</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bug Distribution -->
+          <div style="margin-bottom: 24px;">
+            <h3 style="margin: 0 0 16px 0; color: #1F2937; font-size: 20px; border-bottom: 2px solid #7C3AED; padding-bottom: 8px;">
+              🐛 Distribución de Bugs por Severidad
+            </h3>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+              <div style="background: linear-gradient(135deg, #FEE2E2, #FECACA); padding: 16px; border-radius: 12px; text-align: center; border: 2px solid #DC2626;">
+                <div style="font-size: 20px; margin-bottom: 4px;">🔴</div>
+                <div style="font-size: 24px; font-weight: bold; color: #991B1B;">${severityDistribution.critical}</div>
+                <div style="font-size: 12px; color: #991B1B; font-weight: 600;">Critical</div>
+              </div>
+              <div style="background: linear-gradient(135deg, #FEE2E2, #FECACA); padding: 16px; border-radius: 12px; text-align: center; border: 2px solid #DC2626;">
+                <div style="font-size: 20px; margin-bottom: 4px;">🟠</div>
+                <div style="font-size: 24px; font-weight: bold; color: #991B1B;">${severityDistribution.high}</div>
+                <div style="font-size: 12px; color: #991B1B; font-weight: 600;">High</div>
+              </div>
+              <div style="background: linear-gradient(135deg, #FEF3C7, #FDE68A); padding: 16px; border-radius: 12px; text-align: center; border: 2px solid #F59E0B;">
+                <div style="font-size: 20px; margin-bottom: 4px;">🟡</div>
+                <div style="font-size: 24px; font-weight: bold; color: #92400E;">${severityDistribution.medium}</div>
+                <div style="font-size: 12px; color: #92400E; font-weight: 600;">Medium</div>
+              </div>
+              <div style="background: linear-gradient(135deg, #DBEAFE, #BFDBFE); padding: 16px; border-radius: 12px; text-align: center; border: 2px solid #3B82F6;">
+                <div style="font-size: 20px; margin-bottom: 4px;">🔵</div>
+                <div style="font-size: 24px; font-weight: bold; color: #1E40AF;">${severityDistribution.low}</div>
+                <div style="font-size: 12px; color: #1E40AF; font-weight: 600;">Low</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bugs Found -->
+          <div style="margin-bottom: 24px;">
+            <h3 style="margin: 0 0 16px 0; color: #1F2937; font-size: 20px; border-bottom: 2px solid #7C3AED; padding-bottom: 8px;">
+              🐛 Bugs Reportados (${report.bugsFound ? report.bugsFound.length : 0})
+            </h3>
+            ${bugsSection}
+          </div>
+
+          ${report.evaluatorNotes ? `
+          <div style="background: #FEF3C7; padding: 20px; border-radius: 12px; margin-top: 24px; border-left: 4px solid #F59E0B;">
+            <h4 style="margin: 0 0 12px 0; color: #92400E; font-size: 16px;">📝 Notas del Evaluador</h4>
+            <p style="margin: 0; color: #78350F; line-height: 1.6;">${report.evaluatorNotes}</p>
+          </div>
+          ` : ''}
+
+          <div style="background: #F0F9FF; padding: 20px; border-radius: 12px; margin-top: 32px; border-left: 4px solid #0284C7;">
+            <p style="margin: 0; color: #0C4A6E; font-size: 14px;">
+              <strong>📌 Nota:</strong> Este informe ha sido generado automáticamente por el Sistema de Pruebas Técnicas de AIQUAA.
+              Fecha de generación: ${reportDate}
+            </p>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 32px; padding: 20px; color: #6B7280; font-size: 14px;">
+          <p style="margin: 0 0 8px 0;">© ${new Date().getFullYear()} AIQUAA. Todos los derechos reservados.</p>
+          <p style="margin: 0;">Este email fue enviado desde una dirección que no acepta respuestas.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
 private getTestResultsReportTemplate(
   testResults: {
     success: boolean;

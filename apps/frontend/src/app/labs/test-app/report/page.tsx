@@ -61,6 +61,8 @@ export default function TechnicalReportPage() {
   const [editingBugId, setEditingBugId] = useState<string | null>(null);
   const [lastSaved, setLastSaved] = useState<string | null>(null);
   const [isLoadingCache, setIsLoadingCache] = useState(true);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
   // Load audit log and cached report from localStorage on mount
   useEffect(() => {
@@ -290,6 +292,7 @@ export default function TechnicalReportPage() {
       });
       setBugs([]);
       setLastSaved(null);
+      setEmailSent(false);
       setCurrentBug({
         id: `bug-${Date.now()}`,
         title: '',
@@ -305,6 +308,45 @@ export default function TechnicalReportPage() {
       });
       setShowBugForm(false);
       setEditingBugId(null);
+    }
+  };
+
+  const handleSendEmail = async () => {
+    if (!candidateInfo.fullName || !candidateInfo.email || !candidateInfo.candidateId) {
+      alert('Por favor, completa la información del candidato antes de enviar');
+      return;
+    }
+
+    setIsSendingEmail(true);
+    try {
+      const report: TechnicalReport = {
+        candidateInfo,
+        testSession,
+        bugsFound: bugs,
+        auditLog,
+        score: calculateScore({ candidateInfo, testSession, bugsFound: bugs, auditLog, score: {} as any }),
+      };
+
+      const response = await fetch('/api/v1/labs/test-app/send-bug-report', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ report }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al enviar el informe');
+      }
+
+      const result = await response.json();
+      alert(result.message || 'Informe enviado exitosamente');
+      setEmailSent(true);
+    } catch (error) {
+      console.error('Error al enviar el informe:', error);
+      alert('Error al enviar el informe. Por favor, intenta nuevamente.');
+    } finally {
+      setIsSendingEmail(false);
     }
   };
 
@@ -842,6 +884,21 @@ export default function TechnicalReportPage() {
             >
               💾 Exportar JSON
             </button>
+            <button
+              onClick={handleSendEmail}
+              disabled={isSendingEmail || emailSent}
+              className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                emailSent
+                  ? isDarkMode
+                    ? 'bg-green-900/50 text-green-300 cursor-not-allowed'
+                    : 'bg-green-100 text-green-700 cursor-not-allowed'
+                  : isSendingEmail
+                  ? 'bg-purple-400 text-white cursor-wait'
+                  : 'bg-purple-600 hover:bg-purple-700 text-white'
+              }`}
+            >
+              {isSendingEmail ? '📧 Enviando...' : emailSent ? '✅ Enviado' : '📧 Enviar por Correo'}
+            </button>
             <a
               href="/labs/test-app"
               className={`px-6 py-3 rounded-lg font-medium transition-colors ${isDarkMode
@@ -852,6 +909,13 @@ export default function TechnicalReportPage() {
               ← Volver al Test App
             </a>
           </div>
+          {emailSent && (
+            <div className={`mt-4 p-4 rounded-lg ${isDarkMode ? 'bg-green-900/30 border border-green-700' : 'bg-green-50 border border-green-300'}`}>
+              <p className={`text-sm ${isDarkMode ? 'text-green-300' : 'text-green-800'}`}>
+                ✅ Informe enviado exitosamente a admin@aiquaa.com
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>
