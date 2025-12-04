@@ -152,7 +152,7 @@ export default function SuruFloating({
       {/* Close button - Bigger size - On left side */}
       <button
         onClick={handleClose}
-        className="absolute -top-2 -left-2 w-10 h-10 bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-800 rounded-full flex items-center justify-center shadow-lg hover:bg-slate-700 dark:hover:bg-slate-300 transition-colors z-10 font-bold text-xl"
+        className="absolute -top-1 -left-1 w-7 h-7 bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-800 rounded-full flex items-center justify-center shadow-lg hover:bg-slate-700 dark:hover:bg-slate-300 transition-colors z-10 font-bold text-lg"
         aria-label="Cerrar Suru"
       >
         ×
@@ -161,17 +161,17 @@ export default function SuruFloating({
       {/* Minimize/Maximize button - On left side */}
       <button
         onClick={() => setIsMinimized(!isMinimized)}
-        className="absolute -top-2 -left-14 w-10 h-10 bg-cyan-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-cyan-600 transition-colors z-10 text-sm"
+        className="absolute -top-1 -left-10 w-7 h-7 bg-cyan-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-cyan-600 transition-colors z-10 text-xs"
         aria-label={isMinimized ? 'Maximizar Suru' : 'Minimizar Suru'}
       >
         {isMinimized ? '↑' : '↓'}
       </button>
 
       {/* Suru Mascot - Responsive sizing */}
-      <div className="relative transition-transform hover:scale-110 duration-300">
+      <div className="relative transition-transform hover:scale-105 duration-300">
         <SuruMascot
           pose={pose}
-          size={isMobile ? 'small' : 'medium'}
+          size={isMobile ? 'mini' : 'small'}
           animated
           message={currentMessage}
           onInteraction={handleInteraction}

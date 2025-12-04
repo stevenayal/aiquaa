@@ -948,6 +948,37 @@ private getPerformanceExamReportTemplate(examData: any, resultId: number, examDa
   `;
 }
 
+async sendTechnicalBugReport(email: string, report: any): Promise<void> {
+  const fromEmail = this.configService.get<string>('RESEND_FROM_EMAIL', 'onboarding@resend.dev');
+
+  const reportDate = new Date().toLocaleDateString('es-ES', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
+  try {
+    const { data, error } = await this.resend.emails.send({
+      from: fromEmail,
+      to: [email],
+      subject: `[AIQUAA] Informe Técnico de Bugs - ${report.candidateInfo.fullName} - ${reportDate}`,
+      html: this.getTechnicalBugReportTemplate(report, reportDate),
+    });
+
+    if (error) {
+      this.logger.error(`Error enviando informe técnico a ${email}:`, error);
+      throw new Error(`Error de Resend: ${error.message}`);
+    }
+
+    this.logger.log(`Informe técnico de bugs enviado a ${email}: ${data?.id}`);
+  } catch (error) {
+    this.logger.error(`Error enviando informe técnico a ${email}`, error);
+    throw error;
+  }
+}
+
 private getGitExamReportTemplate(examResult: any, examDate: string): string {
   const formatTime = (seconds: number): string => {
     const minutes = Math.floor(seconds / 60);

@@ -114,7 +114,7 @@ export default function SuruOnboarding({
       <div className="relative max-w-2xl mx-4">
         {/* Suru Mascot */}
         <div className="flex justify-center mb-8">
-          <SuruMascot pose={currentStepData.pose} size="large" animated />
+          <SuruMascot pose={currentStepData.pose} size="medium" animated />
         </div>
 
         {/* Message Card */}
