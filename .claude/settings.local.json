@@ -59,7 +59,8 @@
       "Bash(node scripts/preview-performance-email.js:*)",
       "Bash(start \"\" \"Z:\\Proyectos\\aiquaa\\apps\\backend\\scripts\\performance-email-preview.html\")",
       "Bash(node scripts/test-performance-email.js:*)",
-      "Bash(node scripts/test-performance-endpoint.js:*)"
+      "Bash(node scripts/test-performance-endpoint.js:*)",
+      "Bash(./node_modules/.bin/tsc:*)"
     ],
     "deny": [],
     "ask": []

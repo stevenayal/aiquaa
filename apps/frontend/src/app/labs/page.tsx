@@ -205,6 +205,23 @@ export default function LabsPage() {
           implementedDate: 'Sep 2025'
         }
       ]
+    },
+    {
+      id: 'comunidad',
+      name: '💡 Comunidad y Mejoras',
+      description: 'Propone ideas y mejoras para la plataforma AIQUAA',
+      tools: [
+        {
+          id: 'ideas-board',
+          name: 'Ideas Board',
+          description: 'Propone nuevas herramientas, mejoras y features. Vota por tus favoritas y ayuda a dar forma al futuro de AIQUAA',
+          icon: '💡',
+          color: 'from-yellow-500 to-yellow-600',
+          href: '/ideas-board',
+          featured: true,
+          implementedDate: 'Dic 2025'
+        }
+      ]
     }
   ];
 
