@@ -9,5 +9,5 @@ export class CreateCommentDto {
   })
   @IsString()
   @MinLength(1, { message: 'El comentario no puede estar vacío' })
-  content: string;
+  content!: string;
 }

@@ -11,5 +11,5 @@ export class UpdateStatusDto {
   @IsEnum(IdeaStatus, {
     message: 'Estado inválido. Debe ser: PENDING, APPROVED, IN_PROGRESS, COMPLETED, o REJECTED',
   })
-  status: IdeaStatus;
+  status!: IdeaStatus;
 }

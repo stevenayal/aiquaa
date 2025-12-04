@@ -117,9 +117,9 @@ export class AuthService {
       user: {
         id: user.id,
         email: user.email,
-        name: user.name,
+        name: user.name ?? undefined,
         role: user.role,
-        emailVerifiedAt: user.emailVerifiedAt,
+        emailVerifiedAt: user.emailVerifiedAt ?? undefined,
       },
     };
   }
@@ -402,7 +402,13 @@ export class AuthService {
       throw new UnauthorizedException('Usuario no encontrado');
     }
 
-    return user;
+    return {
+      ...user,
+      name: user.name ?? undefined,
+      avatarUrl: user.avatarUrl ?? undefined,
+      emailVerifiedAt: user.emailVerifiedAt ?? undefined,
+      twoFASecret: user.twoFASecret ?? undefined,
+    };
   }
 
   async generateAccessToken(user: any): Promise<string> {
@@ -598,9 +604,9 @@ export class AuthService {
       user: {
         id: user.id,
         email: user.email,
-        name: user.name,
+        name: user.name ?? undefined,
         role: user.role,
-        emailVerifiedAt: user.emailVerifiedAt,
+        emailVerifiedAt: user.emailVerifiedAt ?? undefined,
       },
     };
   }

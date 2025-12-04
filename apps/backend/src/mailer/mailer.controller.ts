@@ -1,18 +1,28 @@
 import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import { IsBoolean, IsDate, IsNumber, IsObject, IsOptional, IsEnum, IsArray } from 'class-validator';
+import { Type } from 'class-transformer';
 import { MailerService } from './mailer.service';
 
+enum TestType {
+  UNIT = 'unit',
+  E2E = 'e2e',
+  CONTRACT = 'contract',
+  ALL = 'all'
+}
+
 class TestResultsDto {
-  @ApiBody()
+  @IsBoolean()
   success!: boolean;
 
-  @ApiBody()
+  @IsDate()
+  @Type(() => Date)
   timestamp!: Date;
 
-  @ApiBody()
+  @IsNumber()
   duration!: number;
 
-  @ApiBody()
+  @IsObject()
   summary!: {
     total: number;
     passed: number;
@@ -20,7 +30,8 @@ class TestResultsDto {
     skipped: number;
   };
 
-  @ApiBody()
+  @IsObject()
+  @IsOptional()
   coverage?: {
     statements: number;
     branches: number;
@@ -28,13 +39,14 @@ class TestResultsDto {
     lines: number;
   };
 
-  @ApiBody()
+  @IsArray()
+  @IsOptional()
   failures?: Array<{
     test: string;
     error: string;
   }>;
 
-  @ApiBody()
+  @IsEnum(TestType)
   type!: 'unit' | 'e2e' | 'contract' | 'all';
 }
 

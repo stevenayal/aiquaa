@@ -8,5 +8,5 @@ export class VoteIdeaDto {
     example: 1,
   })
   @IsIn([1, -1], { message: 'El valor del voto debe ser 1 o -1' })
-  value: number;
+  value!: number;
 }

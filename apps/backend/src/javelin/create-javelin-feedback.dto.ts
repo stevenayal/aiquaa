@@ -1,21 +1,21 @@
 export class CreateJavelinFeedbackDto {
     /** Nombre del remitente */
-    name: string;
+    name!: string;
 
     /** Correo electrónico del remitente */
-    email: string;
+    email!: string;
 
     /** Segmento de cliente */
-    customerSegment: string;
+    customerSegment!: string;
 
     /** Problema percibido */
-    problemDescription: string;
+    problemDescription!: string;
 
     /** Por qué el problema importa */
-    whyImportant: string;
+    whyImportant!: string;
 
     /** Señales actuales que indican el problema */
-    currentSignals: string;
+    currentSignals!: string;
 
     /** Comentarios adicionales */
     additionalComments?: string;

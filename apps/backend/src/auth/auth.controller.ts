@@ -18,7 +18,7 @@ import {
   ApiQuery
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import type { Response } from 'express';
+import type { Response, Request as ExpressRequest } from 'express';
 import { AuthService } from './auth.service';
 import {
   LoginDto,
@@ -65,7 +65,7 @@ export class AuthController {
     status: 400, 
     description: 'Datos de registro inválidos' 
   })
-  async register(@Body() registerDto: RegisterDto, @Request() req): Promise<MessageResponseDto> {
+  async register(@Body() registerDto: RegisterDto, @Request() req: ExpressRequest): Promise<MessageResponseDto> {
     // Log para observabilidad
     console.log('🔐 Registration attempt:', {
       email: registerDto.email,
@@ -144,7 +144,7 @@ export class AuthController {
     description: 'Token de refresh inválido' 
   })
   async refresh(
-    @Request() req,
+    @Request() req: ExpressRequest,
     @Res({ passthrough: true }) res: Response
   ): Promise<RefreshResponseDto> {
     const refreshToken = req.cookies[this.configService.get<string>('REFRESH_COOKIE_NAME', 'aiq_rt')];
@@ -222,7 +222,7 @@ export class AuthController {
     description: 'OAuth exitoso, redirigiendo al frontend'
   })
   async googleAuthCallback(
-    @Request() req,
+    @Request() req: ExpressRequest,
     @Res() res: Response
   ) {
     const user = req.user;
@@ -273,7 +273,7 @@ export class AuthController {
     description: 'OAuth exitoso, redirigiendo al frontend'
   })
   async githubAuthCallback(
-    @Request() req,
+    @Request() req: ExpressRequest,
     @Res() res: Response
   ) {
     const user = req.user;
