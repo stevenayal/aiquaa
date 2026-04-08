@@ -2,12 +2,6 @@
   "buildCommand": "pnpm run build",
   "outputDirectory": ".next",
   "framework": "nextjs",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/"
-    }
-  ],
   "env": {
     "NEXT_PUBLIC_API_URL": "https://api.aiquaa.com",
     "NEXT_PUBLIC_BACKEND_URL": "https://api.aiquaa.com"

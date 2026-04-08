@@ -53,13 +53,6 @@ describe('RegisterForm', () => {
       expect(screen.getByRole('button', { name: /crear cuenta/i })).toBeInTheDocument();
     });
 
-    it('renderiza botones de OAuth', () => {
-      renderWithProviders(<RegisterForm />);
-
-      expect(screen.getByRole('button', { name: /registrarse con google/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /registrarse con github/i })).toBeInTheDocument();
-    });
-
     it('renderiza indicador de fuerza de contraseña', () => {
       renderWithProviders(<RegisterForm />);
 

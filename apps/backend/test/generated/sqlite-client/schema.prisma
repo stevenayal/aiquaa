@@ -25,113 +25,113 @@ model User {
   deletedAt       DateTime?
 
   // Relations
-  threads              Thread[]
-  posts                Post[]
-  refreshTokens        RefreshToken[]
-  verificationTokens   VerificationToken[]
+  threads            Thread[]
+  posts              Post[]
+  refreshTokens      RefreshToken[]
+  verificationTokens VerificationToken[]
 
-  @@map("users")
   @@index([deletedAt])
   @@index([email])
   @@index([emailVerifiedAt])
+  @@map("users")
 }
 
 model RefreshToken {
-  id                Int       @id @default(autoincrement())
+  id                Int            @id @default(autoincrement())
   userId            Int
-  user              User      @relation(fields: [userId], references: [id])
-  tokenHash         String    @unique
-  createdAt         DateTime  @default(now())
+  user              User           @relation(fields: [userId], references: [id])
+  tokenHash         String         @unique
+  createdAt         DateTime       @default(now())
   expiresAt         DateTime
   revokedAt         DateTime?
   replacedByTokenId Int?
-  replacedByToken   RefreshToken? @relation("TokenReplacement", fields: [replacedByTokenId], references: [id])
+  replacedByToken   RefreshToken?  @relation("TokenReplacement", fields: [replacedByTokenId], references: [id])
   replacingTokens   RefreshToken[] @relation("TokenReplacement")
   ip                String?
   userAgent         String?
 
-  @@map("refresh_tokens")
   @@index([userId])
   @@index([expiresAt])
   @@index([tokenHash])
+  @@map("refresh_tokens")
 }
 
 model VerificationToken {
-  id         Int                @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   userId     Int?
-  user       User?              @relation(fields: [userId], references: [id])
+  user       User?     @relation(fields: [userId], references: [id])
   email      String?
   type       String
-  tokenHash  String             @unique
-  createdAt  DateTime           @default(now())
+  tokenHash  String    @unique
+  createdAt  DateTime  @default(now())
   expiresAt  DateTime
   consumedAt DateTime?
 
-  @@map("verification_tokens")
   @@index([type, email])
   @@index([tokenHash])
   @@index([expiresAt])
+  @@map("verification_tokens")
 }
 
 model Category {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   name        String
   description String?
-  slug        String   @unique
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  slug        String    @unique
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
 
   // Relations
   threads Thread[]
 
-  @@map("categories")
   @@index([deletedAt])
+  @@map("categories")
 }
 
 model Thread {
-  id         Int      @id @default(autoincrement())
-  title      String
-  content    String
-  slug       String   @unique
-  isSticky   Boolean  @default(false)
-  isLocked   Boolean  @default(false)
-  viewCount  Int      @default(0)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  deletedAt  DateTime?
-
-  // Relations
-  authorId   Int
-  author     User       @relation(fields: [authorId], references: [id])
-  categoryId Int
-  category   Category   @relation(fields: [categoryId], references: [id])
-  posts      Post[]
-  threadTags ThreadTag[]
-
-  @@map("threads")
-  @@index([categoryId, createdAt(sort: Desc)])
-  @@index([deletedAt])
-  @@index([viewCount(sort: Desc)])
-}
-
-model Post {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
+  title     String
   content   String
-  isSolution Boolean @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  slug      String    @unique
+  isSticky  Boolean   @default(false)
+  isLocked  Boolean   @default(false)
+  viewCount Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
   // Relations
-  authorId  Int
-  author    User    @relation(fields: [authorId], references: [id])
-  threadId  Int
-  thread    Thread  @relation(fields: [threadId], references: [id])
+  authorId   Int
+  author     User        @relation(fields: [authorId], references: [id])
+  categoryId Int
+  category   Category    @relation(fields: [categoryId], references: [id])
+  posts      Post[]
+  threadTags ThreadTag[]
 
-  @@map("posts")
+  @@index([categoryId, createdAt(sort: Desc)])
+  @@index([deletedAt])
+  @@index([viewCount(sort: Desc)])
+  @@map("threads")
+}
+
+model Post {
+  id         Int       @id @default(autoincrement())
+  content    String
+  isSolution Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+
+  // Relations
+  authorId Int
+  author   User   @relation(fields: [authorId], references: [id])
+  threadId Int
+  thread   Thread @relation(fields: [threadId], references: [id])
+
   @@index([threadId, createdAt(sort: Desc)])
   @@index([deletedAt])
+  @@map("posts")
 }
 
 model ThreadTag {
@@ -140,9 +140,9 @@ model ThreadTag {
   createdAt DateTime @default(now())
 
   // Relations
-  threads   Thread[]
+  threads Thread[]
 
-  @@map("thread_tags")
   @@unique([name])
   @@index([name])
+  @@map("thread_tags")
 }
