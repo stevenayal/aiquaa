@@ -4,6 +4,11 @@ import GitHubProvider from "next-auth/providers/github"
 import CredentialsProvider from "next-auth/providers/credentials"
 import type { NextAuthOptions } from "next-auth"
 
+const googleClientId = process.env.GOOGLE_CLIENT_ID
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET
+const githubClientId = process.env.GITHUB_CLIENT_ID
+const githubClientSecret = process.env.GITHUB_CLIENT_SECRET
+
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: { strategy: "jwt" },
@@ -64,6 +69,9 @@ export const authOptions: NextAuthOptions = {
               email: data.user.email,
               name: data.user.name,
               image: null,
+              role: data.user.role,
+              emailVerifiedAt: data.user.emailVerifiedAt ?? null,
+              accessToken: data.access_token ?? null,
             };
           }
 
@@ -74,30 +82,52 @@ export const authOptions: NextAuthOptions = {
         }
       }
     }),
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-    GitHubProvider({
-      clientId: process.env.GITHUB_CLIENT_ID!,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-    }),
+    ...(googleClientId && googleClientSecret
+      ? [
+          GoogleProvider({
+            clientId: googleClientId,
+            clientSecret: googleClientSecret,
+          }),
+        ]
+      : []),
+    ...(githubClientId && githubClientSecret
+      ? [
+          GitHubProvider({
+            clientId: githubClientId,
+            clientSecret: githubClientSecret,
+          }),
+        ]
+      : []),
   ],
   pages: { 
     signIn: "/login",
     error: "/api/auth/error"
   },
   callbacks: {
-    async jwt({ token, account, profile }) {
+    async jwt({ token, account, profile, user }) {
+      if (user) {
+        token.sub = user.id;
+        token.name = user.name;
+        token.email = user.email;
+        token.role = (user as { role?: string }).role;
+        token.emailVerifiedAt = (user as { emailVerifiedAt?: string | null }).emailVerifiedAt;
+        token.accessToken = (user as { accessToken?: string | null }).accessToken ?? undefined;
+      }
+
       if (account?.provider && profile) {
         token.provider = account.provider;
       }
+
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
+        session.user.id = token.sub || "";
+        session.user.role = token.role as string | undefined;
+        session.user.emailVerifiedAt = token.emailVerifiedAt as string | null | undefined;
         session.user.provider = token.provider as string;
       }
+      session.accessToken = token.accessToken as string | undefined;
       return session;
     },
     async signIn({ user }) {

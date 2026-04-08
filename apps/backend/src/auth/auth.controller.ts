@@ -8,7 +8,9 @@ import {
   Res,
   Query,
   Param,
-  BadRequestException
+  BadRequestException,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -49,6 +51,18 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
   ) {}
+
+  private getRefreshCookieOptions() {
+    const isProduction = process.env.NODE_ENV === 'production';
+
+    return {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? ('none' as const) : ('lax' as const),
+      path: '/',
+      maxAge: parseInt(this.configService.get<string>('JWT_REFRESH_TTL', '2592000'), 10) * 1000,
+    };
+  }
 
   @Post('register')
   @ApiOperation({ summary: 'Registro de usuario' })
@@ -94,7 +108,8 @@ export class AuthController {
   }
 
   @Post('login')
-  @ApiOperation({ summary: 'Inicio de sesión' })
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Inicio de sesión', description: 'Devuelve el access token en el body y el refresh token en una cookie HTTP-only.' })
   @ApiResponse({ 
     status: 200, 
     description: 'Login exitoso',
@@ -113,27 +128,20 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response
   ): Promise<AuthResponseDto> {
     const result = await this.authService.login(loginDto);
-    
-    // Configurar cookie de refresh token
-    const cookieName = this.configService.get<string>('REFRESH_COOKIE_NAME', 'aiq_rt');
-    const isProduction = process.env.NODE_ENV === 'production';
-    
-    res.cookie(cookieName, result.refresh_token, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: 'strict',
-      path: '/',
-      maxAge: parseInt(this.configService.get<string>('JWT_REFRESH_TTL', '2592000')) * 1000,
-    });
 
-    // No devolver el refresh token en el body por seguridad
+    if (result.refresh_token) {
+      const cookieName = this.configService.get<string>('REFRESH_COOKIE_NAME', 'aiq_rt');
+      res.cookie(cookieName, result.refresh_token, this.getRefreshCookieOptions());
+    }
+
     const { refresh_token, ...response } = result;
-    return response as AuthResponseDto;
+    return response;
   }
 
   @Post('refresh')
   @UseGuards(JwtRefreshGuard)
-  @ApiOperation({ summary: 'Renovar access token' })
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Renovar access token', description: 'Lee el refresh token exclusivamente desde la cookie HTTP-only.' })
   @ApiResponse({ 
     status: 200, 
     description: 'Token renovado exitosamente',
@@ -147,29 +155,20 @@ export class AuthController {
     @Request() req: ExpressRequest,
     @Res({ passthrough: true }) res: Response
   ): Promise<RefreshResponseDto> {
-    const refreshToken = req.cookies[this.configService.get<string>('REFRESH_COOKIE_NAME', 'aiq_rt')];
-    const result = await this.authService.refresh(refreshToken);
-    
-    // Actualizar cookie de refresh token
     const cookieName = this.configService.get<string>('REFRESH_COOKIE_NAME', 'aiq_rt');
-    const isProduction = process.env.NODE_ENV === 'production';
-    
-    res.cookie(cookieName, result.refresh_token, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: 'strict',
-      path: '/',
-      maxAge: parseInt(this.configService.get<string>('JWT_REFRESH_TTL', '2592000')) * 1000,
-    });
+    const refreshToken = req.cookies?.[cookieName];
+    const result = await this.authService.refresh(refreshToken);
 
-    // No devolver el refresh token en el body por seguridad
+    res.cookie(cookieName, result.refresh_token, this.getRefreshCookieOptions());
+
     const { refresh_token, ...response } = result;
-    return response as RefreshResponseDto;
+    return response;
   }
 
   @Post('logout')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Cerrar sesión' })
   @ApiResponse({ 
     status: 200, 
@@ -184,7 +183,11 @@ export class AuthController {
     
     // Limpiar cookie de refresh token
     const cookieName = this.configService.get<string>('REFRESH_COOKIE_NAME', 'aiq_rt');
-    res.clearCookie(cookieName, { path: '/' });
+    res.clearCookie(cookieName, {
+      path: '/',
+      sameSite: this.getRefreshCookieOptions().sameSite,
+      secure: this.getRefreshCookieOptions().secure,
+    });
     
     return result;
   }
@@ -237,16 +240,9 @@ export class AuthController {
     
     // Configurar cookie de refresh token
     const cookieName = this.configService.get<string>('REFRESH_COOKIE_NAME', 'aiq_rt');
-    const isProduction = process.env.NODE_ENV === 'production';
-    const frontOrigin = this.configService.get<string>('FRONT_ORIGIN', 'http://localhost:3001');
-    
-    res.cookie(cookieName, refreshToken, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: 'strict',
-      path: '/',
-      maxAge: parseInt(this.configService.get<string>('JWT_REFRESH_TTL', '2592000')) * 1000,
-    });
+    const frontOrigin = this.configService.getOrThrow<string>('FRONT_ORIGIN');
+
+    res.cookie(cookieName, refreshToken, this.getRefreshCookieOptions());
 
     // Redirigir al frontend con el access token
     const redirectUrl = `${frontOrigin}/oauth-callback?access_token=${accessToken}`;
@@ -288,16 +284,9 @@ export class AuthController {
     
     // Configurar cookie de refresh token
     const cookieName = this.configService.get<string>('REFRESH_COOKIE_NAME', 'aiq_rt');
-    const isProduction = process.env.NODE_ENV === 'production';
-    const frontOrigin = this.configService.get<string>('FRONT_ORIGIN', 'http://localhost:3001');
-    
-    res.cookie(cookieName, refreshToken, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: 'strict',
-      path: '/',
-      maxAge: parseInt(this.configService.get<string>('JWT_REFRESH_TTL', '2592000')) * 1000,
-    });
+    const frontOrigin = this.configService.getOrThrow<string>('FRONT_ORIGIN');
+
+    res.cookie(cookieName, refreshToken, this.getRefreshCookieOptions());
 
     // Redirigir al frontend con el access token
     const redirectUrl = `${frontOrigin}/oauth-callback?access_token=${accessToken}`;
@@ -305,6 +294,7 @@ export class AuthController {
   }
 
   @Post('request-reset')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Solicitar reset de contraseña' })
   @ApiResponse({ 
     status: 200, 
@@ -316,6 +306,7 @@ export class AuthController {
   }
 
   @Post('reset')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Resetear contraseña' })
   @ApiResponse({ 
     status: 200, 
@@ -352,6 +343,7 @@ export class AuthController {
   @Post('change-password')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Cambiar contraseña' })
   @ApiResponse({ 
     status: 200, 
@@ -384,6 +376,7 @@ export class AuthController {
   @Post('logout-device/:tokenId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Cerrar sesión en un dispositivo específico' })
   @ApiResponse({ 
     status: 200, 
@@ -417,6 +410,7 @@ export class AuthController {
   }
 
   @Post('2fa/send-code')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Enviar código de verificación 2FA por email' })
   @ApiResponse({ 
     status: 200, 
@@ -432,6 +426,7 @@ export class AuthController {
   }
 
   @Post('2fa/verify-code')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Verificar código 2FA' })
   @ApiResponse({ 
     status: 200, 
@@ -450,6 +445,7 @@ export class AuthController {
   }
 
   @Post('2fa/complete-login')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Completar login con código 2FA' })
   @ApiResponse({ 
     status: 200, 
@@ -460,15 +456,27 @@ export class AuthController {
     status: 400, 
     description: 'Código inválido o expirado' 
   })
-  async completeTwoFactorLogin(@Body() verifyTwoFactorCodeDto: VerifyTwoFactorCodeDto): Promise<AuthResponseDto> {
-    return this.authService.completeTwoFactorLogin(
+  async completeTwoFactorLogin(
+    @Body() verifyTwoFactorCodeDto: VerifyTwoFactorCodeDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<AuthResponseDto> {
+    const result = await this.authService.completeTwoFactorLogin(
       verifyTwoFactorCodeDto.email, 
       verifyTwoFactorCodeDto.code
     );
+
+    if (result.refresh_token) {
+      const cookieName = this.configService.get<string>('REFRESH_COOKIE_NAME', 'aiq_rt');
+      res.cookie(cookieName, result.refresh_token, this.getRefreshCookieOptions());
+    }
+
+    const { refresh_token, ...response } = result;
+    return response;
   }
 
   @Post('2fa/enable')
   @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Habilitar 2FA por email' })
   @ApiResponse({ 
     status: 200, 
@@ -485,6 +493,7 @@ export class AuthController {
 
   @Post('2fa/disable')
   @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Deshabilitar 2FA por email' })
   @ApiResponse({ 
     status: 200, 

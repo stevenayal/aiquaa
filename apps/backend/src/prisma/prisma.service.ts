@@ -17,17 +17,19 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       }
 
       // Soft delete filter middleware
-      if (params.action === 'findMany' || params.action === 'findFirst' || params.action === 'findUnique') {
-        if (params.args?.where && !params.args?.where?.includeDeleted) {
+      const includeDeleted = Boolean(params.args?.where?.includeDeleted);
+
+      if (params.action === 'findMany' || params.action === 'findFirst') {
+        if (params.args?.where && !includeDeleted) {
           params.args['where'] = {
             ...params.args.where,
             deletedAt: null,
           };
         }
-        // Remove includeDeleted flag from where clause
-        if (params.args?.where?.includeDeleted) {
-          delete params.args.where.includeDeleted;
-        }
+      }
+
+      if (includeDeleted) {
+        delete params.args.where.includeDeleted;
       }
 
       // Audit middleware

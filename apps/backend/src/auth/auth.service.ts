@@ -3,10 +3,29 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto, RegisterDto, RequestResetDto, ResetPasswordDto } from './dto';
-import { AuthResponseDto, RefreshResponseDto, MessageResponseDto } from './dto';
+import { MessageResponseDto } from './dto';
 import * as argon2 from 'argon2';
-import { randomBytes } from 'crypto';
+import { createHash, randomBytes } from 'crypto';
 import { MailerService } from '../mailer/mailer.service';
+
+interface AuthTokensResult {
+  access_token: string | null;
+  refresh_token: string | null;
+  user: {
+    id: number;
+    email: string;
+    name?: string;
+    role: string;
+    emailVerifiedAt?: Date;
+  };
+  requiresTwoFactor?: boolean;
+  message?: string;
+}
+
+interface RefreshTokensResult {
+  access_token: string;
+  refresh_token: string;
+}
 
 @Injectable()
 export class AuthService {
@@ -20,7 +39,6 @@ export class AuthService {
   async register(registerDto: RegisterDto): Promise<MessageResponseDto> {
     const { email, password, name } = registerDto;
 
-    // Verificar si el usuario ya existe
     const existingUser = await this.prisma.user.findUnique({
       where: { email: email.toLowerCase() },
     });
@@ -29,7 +47,6 @@ export class AuthService {
       throw new ConflictException('El email ya está registrado');
     }
 
-    // Hash de la contraseña
     const passwordHash = await argon2.hash(password, {
       type: argon2.argon2id,
       memoryCost: 2 ** 16,
@@ -37,7 +54,6 @@ export class AuthService {
       parallelism: 1,
     });
 
-    // Crear usuario
     const user = await this.prisma.user.create({
       data: {
         email: email.toLowerCase(),
@@ -47,18 +63,16 @@ export class AuthService {
       },
     });
 
-    // Generar token de verificación
     const verificationToken = await this.createVerificationToken(
       user.id,
       email,
-      'VERIFY_EMAIL'
+      'VERIFY_EMAIL',
     );
 
-    // Enviar email de verificación
     await this.mailerService.sendVerificationEmail(
       email,
-      verificationToken.tokenHash,
-      name || email
+      verificationToken.token,
+      name || email,
     );
 
     return {
@@ -66,10 +80,9 @@ export class AuthService {
     };
   }
 
-  async login(loginDto: LoginDto): Promise<AuthResponseDto> {
+  async login(loginDto: LoginDto): Promise<AuthTokensResult> {
     const { email, password } = loginDto;
 
-    // Buscar usuario
     const user = await this.prisma.user.findUnique({
       where: { email: email.toLowerCase() },
     });
@@ -78,36 +91,31 @@ export class AuthService {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
-    // Verificar contraseña
     const isPasswordValid = await argon2.verify(user.passwordHash, password);
     if (!isPasswordValid) {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
-    // Verificar si el usuario tiene 2FA habilitado
     const isTwoFactorEnabled = user.twoFASecret === 'EMAIL_2FA_ENABLED';
-    
+
     if (isTwoFactorEnabled) {
-      // Si tiene 2FA habilitado, enviar código y requerir verificación
       await this.sendTwoFactorCode(email);
-      
-      // Devolver respuesta indicando que se requiere 2FA
+
       return {
         access_token: null,
         refresh_token: null,
         user: {
           id: user.id,
           email: user.email,
-          name: user.name,
+          name: user.name ?? undefined,
           role: user.role,
-          emailVerifiedAt: user.emailVerifiedAt,
+          emailVerifiedAt: user.emailVerifiedAt ?? undefined,
         },
         requiresTwoFactor: true,
         message: 'Se ha enviado un código de verificación a tu email',
-      } as any;
+      };
     }
 
-    // Generar tokens si no requiere 2FA
     const accessToken = await this.generateAccessToken(user);
     const refreshToken = await this.generateRefreshToken(user);
 
@@ -124,9 +132,12 @@ export class AuthService {
     };
   }
 
-  async refresh(refreshToken: string): Promise<RefreshResponseDto> {
+  async refresh(refreshToken?: string): Promise<RefreshTokensResult> {
+    if (!refreshToken) {
+      throw new UnauthorizedException('Token de refresh no encontrado');
+    }
+
     try {
-      // Verificar el token en la base de datos
       const tokenRecord = await this.prisma.refreshToken.findUnique({
         where: { tokenHash: this.hashToken(refreshToken) },
         include: { user: true },
@@ -136,9 +147,7 @@ export class AuthService {
         throw new UnauthorizedException('Token de refresh inválido o expirado');
       }
 
-      // Verificar si el token fue reemplazado (rotación)
       if (tokenRecord.replacedByTokenId) {
-        // Detectar reuso - invalidar todos los tokens del usuario
         await this.prisma.refreshToken.updateMany({
           where: { userId: tokenRecord.userId },
           data: { revokedAt: new Date() },
@@ -146,25 +155,22 @@ export class AuthService {
         throw new UnauthorizedException('Token de refresh reutilizado - sesión inválida');
       }
 
-      // Revocar el token actual
       await this.prisma.refreshToken.update({
         where: { id: tokenRecord.id },
         data: { revokedAt: new Date() },
       });
 
-      // Generar nuevos tokens
       const newAccessToken = await this.generateAccessToken(tokenRecord.user);
       const newRefreshToken = await this.generateRefreshToken(tokenRecord.user);
 
-      // Marcar el nuevo token como reemplazo del anterior
       const newTokenRecord = await this.prisma.refreshToken.findUnique({
-        where: { tokenHash: this.hashToken(newRefreshToken) }
+        where: { tokenHash: this.hashToken(newRefreshToken) },
       });
-      
+
       if (newTokenRecord) {
         await this.prisma.refreshToken.update({
-          where: { id: newTokenRecord.id },
-          data: { replacedByTokenId: tokenRecord.id },
+          where: { id: tokenRecord.id },
+          data: { replacedByTokenId: newTokenRecord.id },
         });
       }
 
@@ -173,6 +179,9 @@ export class AuthService {
         refresh_token: newRefreshToken,
       };
     } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
       throw new UnauthorizedException('Token de refresh inválido');
     }
   }
@@ -289,8 +298,8 @@ export class AuthService {
       // Enviar email de reset
       await this.mailerService.sendPasswordResetEmail(
         email,
-        verificationToken.tokenHash,
-        user.name || email
+        verificationToken.token,
+        user.name || email,
       );
     }
 
@@ -419,7 +428,7 @@ export class AuthService {
     };
 
     return this.jwtService.sign(payload, {
-      secret: this.configService.get<string>('JWT_SECRET'),
+      secret: this.configService.getOrThrow<string>('JWT_SECRET'),
       expiresIn: this.configService.get<string>('JWT_ACCESS_TTL', '900'),
     });
   }
@@ -434,7 +443,7 @@ export class AuthService {
         userId: user.id,
         tokenHash,
         expiresAt: new Date(
-          Date.now() + parseInt(this.configService.get<string>('JWT_REFRESH_TTL', '2592000')) * 1000
+          Date.now() + parseInt(this.configService.get<string>('JWT_REFRESH_TTL', '2592000'), 10) * 1000,
         ),
         ip: this.getClientIP(), // Agregar IP del cliente
         userAgent: this.getUserAgent(), // Agregar User-Agent
@@ -447,24 +456,27 @@ export class AuthService {
   private async createVerificationToken(
     userId: number,
     email: string,
-    type: 'VERIFY_EMAIL' | 'RESET_PASSWORD'
-  ) {
+    type: 'VERIFY_EMAIL' | 'RESET_PASSWORD',
+  ): Promise<{ token: string; record: { id: number } }> {
     const token = randomBytes(32).toString('hex');
     const tokenHash = this.hashToken(token);
 
-    return this.prisma.verificationToken.create({
+    const record = await this.prisma.verificationToken.create({
       data: {
         userId,
         email,
         type,
         tokenHash,
-        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 horas
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
       },
+      select: { id: true },
     });
+
+    return { token, record };
   }
 
   private hashToken(token: string): string {
-    return require('crypto').createHash('sha256').update(token).digest('hex');
+    return createHash('sha256').update(token).digest('hex');
   }
 
   private getClientIP(): string | undefined {
@@ -562,7 +574,7 @@ export class AuthService {
     };
   }
 
-  async completeTwoFactorLogin(email: string, code: string): Promise<AuthResponseDto> {
+  async completeTwoFactorLogin(email: string, code: string): Promise<AuthTokensResult> {
     const user = await this.prisma.user.findUnique({
       where: { email: email.toLowerCase() },
     });

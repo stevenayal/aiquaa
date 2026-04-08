@@ -13,12 +13,14 @@ import { IstqbModule } from './istqb/istqb.module';
 import { PerformanceModule } from './performance/performance.module';
 import { LabsModule } from './labs/labs.module';
 import { IdeasBoardModule } from './ideas-board/ideas-board.module';
+import { validateEnv } from './config/env.validation';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env.local', '.env'],
+      validate: validateEnv,
     }),
     ObservabilityModule,
     PrismaModule,

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CacheService } from '../cache/cache.service';
 import { CreateThreadDto, CreatePostDto } from './dto';
@@ -26,12 +26,12 @@ export class ForumService {
 
   async createThread(createThreadDto: CreateThreadDto & { authorId: number }) {
     const { tags, ...threadData } = createThreadDto;
+    const slug = await this.generateUniqueSlug(threadData.title);
     
-    // Crear el thread
     const thread = await this.prisma.thread.create({
       data: {
         ...threadData,
-        slug: this.generateSlug(threadData.title),
+        slug,
         threadTags: tags && tags.length > 0 ? {
           connectOrCreate: tags.map(tag => ({
             where: { name: tag },
@@ -63,6 +63,22 @@ export class ForumService {
   }
 
   async createPost(createPostDto: CreatePostDto & { threadId: number; authorId: number }) {
+    const thread = await this.prisma.thread.findFirst({
+      where: {
+        id: createPostDto.threadId,
+        deletedAt: null,
+      },
+      select: { id: true, isLocked: true },
+    });
+
+    if (!thread) {
+      throw new NotFoundException('Thread no encontrado');
+    }
+
+    if (thread.isLocked) {
+      throw new ForbiddenException('El thread está bloqueado');
+    }
+
     const post = await this.prisma.post.create({
       data: createPostDto,
       include: {
@@ -81,14 +97,7 @@ export class ForumService {
         },
       },
     });
-    
-    // Incrementar el contador de posts del thread
-    await this.prisma.thread.update({
-      where: { id: createPostDto.threadId },
-      data: { viewCount: { increment: 1 } }
-    });
-    
-    // Invalidate cache for posts of this thread
+    await this.cacheService.invalidateThreads();
     await this.cacheService.invalidatePosts(createPostDto.threadId);
     
     return post;
@@ -206,7 +215,7 @@ export class ForumService {
   }
 
   async getThread(id: number) {
-    const thread = await this.prisma.thread.findUnique({
+    const thread = await this.prisma.thread.findFirst({
       where: { id, deletedAt: null },
       include: {
         author: {
@@ -300,10 +309,9 @@ export class ForumService {
   }
 
   async updateThread(id: number, updateData: Partial<CreateThreadDto>, userId: number) {
-    // Verificar que el usuario sea el autor del thread
-    const thread = await this.prisma.thread.findUnique({
+    const thread = await this.prisma.thread.findFirst({
       where: { id, deletedAt: null },
-      select: { authorId: true }
+      select: { authorId: true, title: true }
     });
 
     if (!thread) {
@@ -311,15 +319,17 @@ export class ForumService {
     }
 
     if (thread.authorId !== userId) {
-      throw new Error('No tienes permisos para editar este thread');
+      throw new ForbiddenException('No tienes permisos para editar este thread');
     }
 
     const { tags, ...threadData } = updateData;
+    const nextSlug = threadData.title ? await this.generateUniqueSlug(threadData.title, id) : undefined;
     
     const updatedThread = await this.prisma.thread.update({
       where: { id },
       data: {
         ...threadData,
+        slug: nextSlug,
         threadTags: tags ? {
           set: [],
           connectOrCreate: tags.map(tag => ({
@@ -354,8 +364,7 @@ export class ForumService {
   }
 
   async deleteThread(id: number, userId: number) {
-    // Verificar que el usuario sea el autor del thread
-    const thread = await this.prisma.thread.findUnique({
+    const thread = await this.prisma.thread.findFirst({
       where: { id, deletedAt: null },
       select: { authorId: true }
     });
@@ -365,7 +374,7 @@ export class ForumService {
     }
 
     if (thread.authorId !== userId) {
-      throw new Error('No tienes permisos para eliminar este thread');
+      throw new ForbiddenException('No tienes permisos para eliminar este thread');
     }
 
     // Soft delete
@@ -520,12 +529,42 @@ export class ForumService {
   }
 
   private generateSlug(title: string): string {
-    return title
+    const normalized = title
       .toLowerCase()
       .replace(/[^a-z0-9 -]/g, '')
       .replace(/\s+/g, '-')
       .replace(/-+/g, '-')
       .trim();
+
+    return normalized || 'thread';
+  }
+
+  private async generateUniqueSlug(title: string, excludeThreadId?: number): Promise<string> {
+    const baseSlug = this.generateSlug(title);
+
+    const existingThreads = await this.prisma.thread.findMany({
+      where: {
+        slug: {
+          startsWith: baseSlug,
+        },
+        ...(excludeThreadId ? { NOT: { id: excludeThreadId } } : {}),
+      },
+      select: { slug: true },
+    });
+
+    if (!existingThreads.some((thread) => thread.slug === baseSlug)) {
+      return baseSlug;
+    }
+
+    let suffix = 2;
+    let candidate = `${baseSlug}-${suffix}`;
+
+    while (existingThreads.some((thread) => thread.slug === candidate)) {
+      suffix += 1;
+      candidate = `${baseSlug}-${suffix}`;
+    }
+
+    return candidate;
   }
 
   private formatThreadResponse(thread: any) {

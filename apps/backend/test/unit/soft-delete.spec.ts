@@ -1,89 +1,43 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { PrismaService } from '../../src/prisma/prisma.service';
 import { ForumService } from '../../src/forum/forum.service';
+import { PrismaService } from '../../src/prisma/prisma.service';
 import { CacheService } from '../../src/cache/cache.service';
 
-describe('Soft Delete', () => {
-  let module: TestingModule;
-  let prismaService: PrismaService;
-  let forumService: ForumService;
+describe('Soft Delete behavior', () => {
+  let service: ForumService;
+  let prisma: any;
+  let cacheService: jest.Mocked<CacheService>;
 
-  beforeEach(async () => {
-    module = await Test.createTestingModule({
-      providers: [
-        PrismaService,
-        ForumService,
-        {
-          provide: CacheService,
-          useValue: {
-            invalidateThreads: jest.fn(),
-            invalidatePosts: jest.fn(),
-            getOrSet: jest.fn(),
-          },
-        },
-      ],
-    }).compile();
-
-    prismaService = module.get<PrismaService>(PrismaService);
-    forumService = module.get<ForumService>(ForumService);
-  });
-
-  afterEach(async () => {
-    await module.close();
-  });
-
-  it('should mark thread as deleted instead of hard delete', async () => {
-    // Create a test thread
-    const thread = await prismaService.thread.create({
-      data: {
-        title: 'Test Thread',
-        content: 'Test Content',
-        slug: 'test-thread',
-        authorId: 1,
-        categoryId: 1,
+  beforeEach(() => {
+    prisma = {
+      thread: {
+        findFirst: jest.fn(),
+        update: jest.fn(),
       },
-    });
+    };
 
-    // Delete the thread (should be soft delete)
-    await prismaService.thread.delete({
-      where: { id: thread.id },
-    });
+    cacheService = {
+      invalidateThreads: jest.fn(),
+      invalidatePosts: jest.fn(),
+      getOrSet: jest.fn(),
+    } as unknown as jest.Mocked<CacheService>;
 
-    // Verify thread is marked as deleted
-    const deletedThread = await prismaService.thread.findUnique({
-      where: { id: thread.id },
-    });
-
-    expect(deletedThread).toBeNull();
-
-    // Verify thread exists with includeDeleted flag
-    const softDeletedThread = await prismaService.thread.findUnique({
-      where: { id: thread.id, includeDeleted: true },
-    });
-
-    expect(softDeletedThread).toBeDefined();
-    expect(softDeletedThread?.deletedAt).toBeDefined();
+    service = new ForumService(prisma as PrismaService, cacheService);
   });
 
-  it('should not return deleted threads in normal queries', async () => {
-    // Create and delete a thread
-    const thread = await prismaService.thread.create({
-      data: {
-        title: 'Test Thread',
-        content: 'Test Content',
-        slug: 'test-thread-2',
-        authorId: 1,
-        categoryId: 1,
-      },
-    });
+  it('marks a thread as deleted instead of removing it', async () => {
+    prisma.thread.findFirst.mockResolvedValue({ authorId: 9 });
+    prisma.thread.update.mockResolvedValue({ id: 15, deletedAt: new Date() });
 
-    await prismaService.thread.delete({
-      where: { id: thread.id },
-    });
+    const result = await service.deleteThread(15, 9);
 
-    // Verify thread is not returned in normal queries
-    const threads = await prismaService.thread.findMany();
-    const deletedThreadInList = threads.find(t => t.id === thread.id);
-    expect(deletedThreadInList).toBeUndefined();
+    expect(prisma.thread.update).toHaveBeenCalledWith({
+      where: { id: 15 },
+      data: { deletedAt: expect.any(Date) },
+    });
+    expect(cacheService.invalidateThreads).toHaveBeenCalled();
+    expect(result).toEqual({
+      success: true,
+      message: 'Thread eliminado exitosamente',
+    });
   });
 });

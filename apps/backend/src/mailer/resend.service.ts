@@ -8,15 +8,8 @@ export class ResendService {
   private resend: Resend;
 
   constructor(private configService: ConfigService) {
-    const apiKey = this.configService.get<string>('RESEND_API_KEY');
-    
-    if (!apiKey) {
-      this.logger.warn('RESEND_API_KEY no configurada, usando clave de prueba');
-      // Usar la clave que proporcionaste como fallback
-      this.resend = new Resend('re_Vo8z4maQ_8ruYVtSYkU5Ye1ue2CPDPbcT');
-    } else {
-      this.resend = new Resend(apiKey);
-    }
+    const apiKey = this.configService.getOrThrow<string>('RESEND_API_KEY');
+    this.resend = new Resend(apiKey);
   }
 
   async sendVerificationEmail(email: string, token: string, name: string): Promise<void> {

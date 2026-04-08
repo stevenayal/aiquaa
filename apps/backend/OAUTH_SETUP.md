@@ -1,48 +1,48 @@
 # Configuración OAuth para el Backend AIQUAA
 
-## 🔐 **Google OAuth - Configurado ✅**
+## 🔐 **Google OAuth**
 
 ### Credenciales:
-- **Client ID**: `91995874414-kqjeag1g4h46nmlg1nodb7aqb6jud80r.apps.googleusercontent.com`
-- **Client Secret**: `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`
+- **Client ID**: configúralo en variables de entorno
+- **Client Secret**: configúralo en variables de entorno
 
 ### Variables de entorno:
 ```bash
-GOOGLE_CLIENT_ID=91995874414-kqjeag1g4h46nmlg1nodb7aqb6jud80r.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=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
+GOOGLE_CLIENT_ID=replace-with-google-client-id
+GOOGLE_CLIENT_SECRET=replace-with-google-client-secret
 ```
 
 ### URLs de redirección configuradas:
 - **Producción**: `https://api.aiquaa.com/api/v1/auth/google/callback`
-- **Desarrollo**: `http://localhost:3000/api/v1/auth/google/callback`
+- **Desarrollo**: `http://localhost:3001/api/v1/auth/google/callback`
 
-## 🚀 **GitHub OAuth - Configurado ✅**
+## 🚀 **GitHub OAuth**
 
 ### Credenciales:
-- **Client ID**: `Ov23lictkb4l9L1uwTny`
-- **Client Secret**: `c1e715801f146fbb3d7899da98536dd111cd8862`
+- **Client ID**: configúralo en variables de entorno
+- **Client Secret**: configúralo en variables de entorno
 
 ### Variables de entorno:
 ```bash
-GITHUB_CLIENT_ID=Ov23lictkb4l9L1uwTny
-GITHUB_CLIENT_SECRET=c1e715801f146fbb3d7899da98536dd111cd8862
+GITHUB_CLIENT_ID=replace-with-github-client-id
+GITHUB_CLIENT_SECRET=replace-with-github-client-secret
 ```
 
 ### URLs de redirección configuradas:
 - **Producción**: `https://api.aiquaa.com/api/v1/auth/github/callback`
-- **Desarrollo**: `http://localhost:3000/api/v1/auth/github/callback`
+- **Desarrollo**: `http://localhost:3001/api/v1/auth/github/callback`
 
 ## 📋 **Verificación de configuración**
 
 ### Variables requeridas para OAuth:
 ```bash
 # Google OAuth
-GOOGLE_CLIENT_ID=✓ Configurado
-GOOGLE_CLIENT_SECRET=✓ Configurado
+GOOGLE_CLIENT_ID=replace-with-google-client-id
+GOOGLE_CLIENT_SECRET=replace-with-google-client-secret
 
 # GitHub OAuth
-GITHUB_CLIENT_ID=✓ Configurado
-GITHUB_CLIENT_SECRET=✓ Configurado
+GITHUB_CLIENT_ID=replace-with-github-client-id
+GITHUB_CLIENT_SECRET=replace-with-github-client-secret
 ```
 
 ## 🔧 **Endpoints OAuth disponibles**
@@ -75,12 +75,12 @@ GITHUB_CLIENT_SECRET=✓ Configurado
 
 ## 🚀 **Próximos pasos**
 
-1. **✅ Google OAuth configurado** - Listo para usar
-2. **✅ GitHub OAuth configurado** - Listo para usar
-3. **🔒 Cambiar JWT_SECRET** en producción
-4. **🌐 Configurar CORS** para el dominio de producción
-5. **📧 Configurar SMTP** para emails de verificación
+1. Configurar `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET`
+2. Configurar `GITHUB_CLIENT_ID` y `GITHUB_CLIENT_SECRET`
+3. Configurar `BACKEND_URL` y `FRONT_ORIGIN`
+4. Cambiar `JWT_SECRET` por un secreto fuerte
+5. Validar CORS y cookies en el dominio real
 
-## 🎉 **¡OAuth completamente configurado!**
+## 🎉 **OAuth listo para configurarse**
 
-Ambos proveedores OAuth (Google y GitHub) están configurados y listos para usar. Los usuarios podrán autenticarse con cualquiera de las dos opciones.
+Cuando completes las variables de entorno reales, los usuarios podrán autenticarse con Google o GitHub usando los endpoints del backend.

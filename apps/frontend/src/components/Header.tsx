@@ -5,12 +5,14 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useNextAuth } from '@/contexts/NextAuthContext';
 import LanguageSelector from './LanguageSelector';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { isDarkMode, toggleDarkMode } = useTheme();
   const { t } = useLanguage();
+  const { user, isAuthenticated, logout, isLoading } = useNextAuth();
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -18,6 +20,11 @@ const Header = () => {
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    closeMobileMenu();
   };
 
   return (
@@ -100,6 +107,51 @@ const Header = () => {
 
           {/* Desktop Language Selector & Theme Toggle */}
           <div className="hidden md:flex items-center space-x-3">
+            {isAuthenticated ? (
+              <>
+                <div
+                  className={`px-3 py-2 rounded-lg text-sm font-medium ${
+                    isDarkMode ? 'bg-dark-secondary text-dark-text' : 'bg-brand-accent/20 text-brand-light'
+                  }`}
+                >
+                  {user?.name || user?.email}
+                </div>
+                <button
+                  onClick={handleLogout}
+                  disabled={isLoading}
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors duration-200 ${
+                    isDarkMode
+                      ? 'bg-red-900/40 text-red-100 hover:bg-red-900/60'
+                      : 'bg-white text-brand-dark hover:bg-brand-light'
+                  } disabled:opacity-60`}
+                >
+                  Cerrar sesión
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors duration-200 ${
+                    isDarkMode
+                      ? 'text-dark-text hover:bg-dark-secondary'
+                      : 'text-brand-light hover:bg-brand-accent/20'
+                  }`}
+                >
+                  Iniciar sesión
+                </Link>
+                <Link
+                  href="/register"
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors duration-200 ${
+                    isDarkMode
+                      ? 'bg-amber-500 text-slate-900 hover:bg-amber-400'
+                      : 'bg-white text-brand-dark hover:bg-brand-light'
+                  }`}
+                >
+                  Crear cuenta
+                </Link>
+              </>
+            )}
             <LanguageSelector />
             <button
               onClick={toggleDarkMode}
@@ -206,6 +258,50 @@ const Header = () => {
               >
                 {t('nav.about')}
               </Link>
+
+              <div className="border-t border-white/10 my-2" />
+
+              {isAuthenticated ? (
+                <>
+                  <div
+                    className={`block px-3 py-2 rounded-md text-base font-medium ${
+                      isDarkMode ? 'text-dark-text bg-dark-secondary' : 'text-brand-light bg-brand-accent/20'
+                    }`}
+                  >
+                    {user?.name || user?.email}
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    disabled={isLoading}
+                    className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                      isDarkMode ? 'text-red-200 hover:bg-dark-secondary' : 'text-white hover:bg-brand-accent/20'
+                    } disabled:opacity-60`}
+                  >
+                    Cerrar sesión
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                      isDarkMode ? 'text-dark-text hover:bg-dark-secondary' : 'text-brand-light hover:bg-brand-accent/20'
+                    }`}
+                    onClick={closeMobileMenu}
+                  >
+                    Iniciar sesión
+                  </Link>
+                  <Link
+                    href="/register"
+                    className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                      isDarkMode ? 'text-dark-text hover:bg-dark-secondary' : 'text-brand-light hover:bg-brand-accent/20'
+                    }`}
+                    onClick={closeMobileMenu}
+                  >
+                    Crear cuenta
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         )}

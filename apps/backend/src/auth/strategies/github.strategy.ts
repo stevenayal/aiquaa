@@ -11,9 +11,9 @@ export class GitHubStrategy extends PassportStrategy(Strategy, 'github') {
     private prisma: PrismaService,
   ) {
     super({
-      clientID: configService.get<string>('GITHUB_CLIENT_ID'),
-      clientSecret: configService.get<string>('GITHUB_CLIENT_SECRET'),
-      callbackURL: `${configService.get<string>('BACKEND_URL', 'http://localhost:3000')}/api/v1/auth/github/callback`,
+      clientID: configService.get<string>('GITHUB_CLIENT_ID') || '',
+      clientSecret: configService.get<string>('GITHUB_CLIENT_SECRET') || '',
+      callbackURL: `${configService.getOrThrow<string>('BACKEND_URL')}/api/v1/auth/github/callback`,
       scope: ['user:email'],
     });
   }

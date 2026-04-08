@@ -4,6 +4,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../prisma/prisma.service';
 import type { Request } from 'express';
+import { createHash } from 'crypto';
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
@@ -18,7 +19,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
           return request?.cookies?.[cookieName];
         },
       ]),
-      secretOrKey: configService.get<string>('JWT_SECRET'),
+      secretOrKey: configService.getOrThrow<string>('JWT_SECRET'),
       ignoreExpiration: false,
       passReqToCallback: true,
     });
@@ -47,7 +48,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
       }
 
       // Hash del token para buscar en la base de datos
-      const tokenHash = require('crypto').createHash('sha256').update(refreshToken).digest('hex');
+      const tokenHash = createHash('sha256').update(refreshToken).digest('hex');
       
       const tokenRecord = await this.prisma.refreshToken.findUnique({
         where: { tokenHash },

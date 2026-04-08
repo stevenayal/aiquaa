@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { RequestIdMiddleware } from './observability/request-id.middleware';
@@ -34,10 +35,12 @@ async function bootstrap() {
 
   // Helmet sin bloquear recursos de front
   app.use(helmet({ crossOriginResourcePolicy: false }));
+  app.use(cookieParser());
 
   // CORS configuration robusta con función de validación - DEBE IR ANTES que otros middlewares
   const allowlist = [
     'https://aiquaa.com',
+    'https://www.aiquaa.com',
     /^https:\/\/.*\.vercel\.app$/,
     'http://localhost:3000',
     'http://localhost:3001',
@@ -59,7 +62,7 @@ async function bootstrap() {
       if (isAllowed) {
         callback(null, true);
       } else {
-        console.warn(`CORS blocked: ${origin}`);
+        logger.warn({ origin }, 'CORS blocked');
         callback(new Error(`CORS blocked: ${origin}`), false);
       }
     },

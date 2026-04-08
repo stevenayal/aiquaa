@@ -3,8 +3,13 @@ const { Resend } = require('resend');
 // Script para probar la funcionalidad de Resend
 async function testResend() {
   console.log('🧪 Probando Resend...');
-  
-  const resend = new Resend('re_Vo8z4maQ_8ruYVtSYkU5Ye1ue2CPDPbcT');
+  const apiKey = process.env.RESEND_API_KEY;
+
+  if (!apiKey) {
+    throw new Error('RESEND_API_KEY no configurada');
+  }
+
+  const resend = new Resend(apiKey);
 
   try {
     const { data, error } = await resend.emails.send({

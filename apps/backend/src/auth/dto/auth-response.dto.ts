@@ -4,14 +4,9 @@ export class AuthResponseDto {
   @ApiProperty({
     description: 'Token de acceso JWT',
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+    nullable: true,
   })
-  access_token!: string;
-
-  @ApiProperty({
-    description: 'Token de refresh',
-    example: 'abc123...',
-  })
-  refresh_token!: string;
+  access_token!: string | null;
 
   @ApiProperty({
     description: 'Usuario autenticado',
@@ -30,4 +25,18 @@ export class AuthResponseDto {
     role: string;
     emailVerifiedAt?: Date;
   };
+
+  @ApiProperty({
+    description: 'Indica si el login requiere un segundo factor antes de emitir tokens',
+    example: false,
+    required: false,
+  })
+  requiresTwoFactor?: boolean;
+
+  @ApiProperty({
+    description: 'Mensaje adicional para el cliente',
+    example: 'Se ha enviado un código de verificación a tu email',
+    required: false,
+  })
+  message?: string;
 }

@@ -10,6 +10,8 @@ declare module "next-auth" {
       email: string;
       image?: string;
       provider?: string;
+      role?: string;
+      emailVerifiedAt?: string | null;
     } & DefaultSession["user"];
   }
 }
@@ -18,5 +20,7 @@ declare module "next-auth/jwt" {
   interface JWT extends DefaultJWT {
     accessToken?: string;
     provider?: string;
+    role?: string;
+    emailVerifiedAt?: string | null;
   }
 }

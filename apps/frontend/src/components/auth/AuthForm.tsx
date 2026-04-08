@@ -42,8 +42,15 @@ export default function AuthForm({
   const error = searchParams?.get("error");
   const message = searchParams?.get("message");
   const [oauthLoading, setOauthLoading] = React.useState<'google' | 'github' | null>(null);
+  const googleEnabled = Boolean(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
+  const githubEnabled = Boolean(process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID);
 
   const handleGoogleAuth = async () => {
+    if (!googleEnabled) {
+      onSocialError('Google login no está configurado todavía.');
+      return;
+    }
+
     try {
       onSocialError(null);
       setOauthLoading('google');
@@ -56,6 +63,11 @@ export default function AuthForm({
   };
 
   const handleGitHubAuth = async () => {
+    if (!githubEnabled) {
+      onSocialError('GitHub login no está configurado todavía.');
+      return;
+    }
+
     try {
       onSocialError(null);
       setOauthLoading('github');
@@ -247,6 +259,14 @@ export default function AuthForm({
             </LoadingButton>
           </div>
 
+          {isLogin && (
+            <div className="text-sm text-right">
+              <Link href="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
+                ¿No tienes cuenta? Regístrate
+              </Link>
+            </div>
+          )}
+
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
@@ -261,7 +281,7 @@ export default function AuthForm({
               <button
                 type="button"
                 onClick={handleGoogleAuth}
-                disabled={isLoading || oauthLoading !== null}
+                disabled={isLoading || oauthLoading !== null || !googleEnabled}
                 className="w-full inline-flex justify-center items-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group relative"
                 title={`${isLogin ? 'Iniciar sesión' : 'Registrarse'} con Google`}
               >
@@ -290,7 +310,7 @@ export default function AuthForm({
               <button
                 type="button"
                 onClick={handleGitHubAuth}
-                disabled={isLoading || oauthLoading !== null}
+                disabled={isLoading || oauthLoading !== null || !githubEnabled}
                 className="w-full inline-flex justify-center items-center py-2 px-4 border border-gray-800 rounded-lg shadow-sm bg-gray-900 text-sm font-medium text-white hover:bg-gray-800 hover:shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group relative"
                 title={`${isLogin ? 'Iniciar sesión' : 'Registrarse'} con GitHub`}
               >
@@ -313,6 +333,12 @@ export default function AuthForm({
                 )}
               </button>
             </div>
+
+            {(!googleEnabled || !githubEnabled) && (
+              <p className="mt-3 text-center text-xs text-gray-500">
+                Los accesos sociales se habilitan cuando las credenciales del proveedor están configuradas.
+              </p>
+            )}
           </div>
         </form>
       </div>

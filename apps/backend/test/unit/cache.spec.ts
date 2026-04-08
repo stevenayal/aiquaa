@@ -75,4 +75,19 @@ describe('CacheService', () => {
     expect(cachedResult).toEqual(mockValue);
     expect(mockFn).toHaveBeenCalledTimes(1); // Should not be called again
   });
+
+  it('should invalidate cached thread keys by prefix', async () => {
+    jest.spyOn(cacheManager, 'set').mockResolvedValue(undefined);
+    jest.spyOn(cacheManager, 'del').mockResolvedValue(undefined);
+
+    await service.set('threads:page-1', { data: 1 }, 60);
+    await service.set('threads:page-2', { data: 2 }, 60);
+    await service.set('posts:10:page-1', { data: 3 }, 60);
+
+    await service.invalidateThreads();
+
+    expect(cacheManager.del).toHaveBeenCalledWith('forum:threads:page-1');
+    expect(cacheManager.del).toHaveBeenCalledWith('forum:threads:page-2');
+    expect(cacheManager.del).not.toHaveBeenCalledWith('forum:posts:10:page-1');
+  });
 });

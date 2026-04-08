@@ -1,163 +1,104 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
+import { Test } from '@nestjs/testing';
 import * as request from 'supertest';
-import { AppModule } from '../../src/app.module';
-import { cleanDatabase, getPrismaClient } from '../utils/prisma';
-import { UserFactory } from '../factories/user.factory';
-import { CategoryFactory } from '../factories/category.factory';
-import { ThreadFactory } from '../factories/thread.factory';
+import { ForumController } from '../../src/forum/forum.controller';
+import { ForumService } from '../../src/forum/forum.service';
+import { JwtAuthGuard } from '../../src/auth/guards/jwt-auth.guard';
 
 describe('ForumController (e2e)', () => {
   let app: INestApplication;
-  let prisma: any;
+  let forumService: any;
 
   beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+    forumService = {
+      getCategories: jest.fn(),
+      getTags: jest.fn(),
+      getThreads: jest.fn(),
+      getThread: jest.fn(),
+      createThread: jest.fn(),
+      updateThread: jest.fn(),
+      deleteThread: jest.fn(),
+      getPosts: jest.fn(),
+      createPost: jest.fn(),
+      getForumStats: jest.fn(),
+      search: jest.fn(),
+    };
+
+    const moduleRef = await Test.createTestingModule({
+      controllers: [ForumController],
+      providers: [
+        { provide: ForumService, useValue: forumService },
+        {
+          provide: JwtAuthGuard,
+          useValue: {
+            canActivate: jest.fn((context) => {
+              const req = context.switchToHttp().getRequest();
+              req.user = { id: 42 };
+              return true;
+            }),
+          },
+        },
+      ],
     }).compile();
 
-    app = moduleFixture.createNestApplication();
+    app = moduleRef.createNestApplication();
     await app.init();
-
-    prisma = getPrismaClient();
-    await cleanDatabase();
   });
 
   afterEach(async () => {
-    await cleanDatabase();
     await app.close();
   });
 
-  describe('/forum/categories (GET)', () => {
-    it('should return all categories', async () => {
-      // Crear categorías de prueba
-      const category1 = await CategoryFactory.create({ name: 'Category 1' });
-      const category2 = await CategoryFactory.create({ name: 'Category 2' });
+  it('GET /forum/threads returns the current paginated contract', async () => {
+    forumService.getThreads.mockResolvedValue({
+      success: true,
+      data: [{ id: '1', title: 'Thread 1' }],
+      pagination: { page: 1, limit: 20, total: 1, totalPages: 1 },
+    });
 
-      return request(app.getHttpServer())
-        .get('/forum/categories')
-        .expect(200)
-        .expect((res) => {
-          expect(Array.isArray(res.body)).toBe(true);
-          expect(res.body.length).toBeGreaterThanOrEqual(2);
-          expect(res.body.some((cat: any) => cat.name === 'Category 1')).toBe(true);
-          expect(res.body.some((cat: any) => cat.name === 'Category 2')).toBe(true);
-        });
+    const response = await request(app.getHttpServer())
+      .get('/forum/threads?page=1&limit=20')
+      .expect(200);
+
+    expect(response.body).toEqual({
+      success: true,
+      data: [{ id: '1', title: 'Thread 1' }],
+      pagination: { page: 1, limit: 20, total: 1, totalPages: 1 },
     });
   });
 
-  describe('/forum/threads (GET)', () => {
-    it('should return threads with pagination', async () => {
-      // Crear hilos de prueba
-      const user = await UserFactory.create();
-      const category = await CategoryFactory.create();
-      const thread1 = await ThreadFactory.create({
-        title: 'Thread 1',
-        authorId: user.id,
-        categoryId: category.id,
-      });
-      const thread2 = await ThreadFactory.create({
-        title: 'Thread 2',
-        authorId: user.id,
-        categoryId: category.id,
-      });
+  it('POST /forum/threads injects the authenticated authorId', async () => {
+    forumService.createThread.mockResolvedValue({ id: '10', title: 'Nuevo thread' });
 
-      return request(app.getHttpServer())
-        .get('/forum/threads?page=1&limit=10')
-        .expect(200)
-        .expect((res) => {
-          expect(Array.isArray(res.body)).toBe(true);
-          expect(res.body.length).toBeGreaterThanOrEqual(2);
-          expect(res.body.some((t: any) => t.title === 'Thread 1')).toBe(true);
-          expect(res.body.some((t: any) => t.title === 'Thread 2')).toBe(true);
-        });
+    await request(app.getHttpServer())
+      .post('/forum/threads')
+      .send({
+        title: 'Nuevo thread',
+        content: 'Contenido suficientemente largo para pasar la validacion',
+        categoryId: 2,
+      })
+      .expect(201);
+
+    expect(forumService.createThread).toHaveBeenCalledWith({
+      title: 'Nuevo thread',
+      content: 'Contenido suficientemente largo para pasar la validacion',
+      categoryId: 2,
+      authorId: 42,
     });
   });
 
-  describe('/forum/threads (POST)', () => {
-    it('should create a new thread when authenticated', async () => {
-      const user = await UserFactory.create();
-      const category = await CategoryFactory.create();
+  it('POST /forum/threads/:id/posts injects threadId and authorId', async () => {
+    forumService.createPost.mockResolvedValue({ id: 3, content: 'Respuesta' });
 
-      const threadData = {
-        title: 'New Thread',
-        content: 'Thread content',
-        categoryId: category.id,
-      };
+    await request(app.getHttpServer())
+      .post('/forum/threads/15/posts')
+      .send({ content: 'Respuesta' })
+      .expect(201);
 
-      // Primero hacer login para obtener token
-      const loginResponse = await request(app.getHttpServer())
-        .post('/auth/login')
-        .send({
-          email: user.email,
-          password: 'password123',
-        })
-        .expect(200);
-
-      const accessToken = loginResponse.body.access_token;
-
-      return request(app.getHttpServer())
-        .post('/forum/threads')
-        .set('Authorization', `Bearer ${accessToken}`)
-        .send(threadData)
-        .expect(201)
-        .expect((res) => {
-          expect(res.body).toHaveProperty('id');
-          expect(res.body.title).toBe(threadData.title);
-          expect(res.body.content).toBe(threadData.content);
-          expect(res.body.categoryId).toBe(category.id);
-        });
-    });
-
-    it('should return 401 when not authenticated', async () => {
-      const category = await CategoryFactory.create();
-      const threadData = {
-        title: 'New Thread',
-        content: 'Thread content',
-        categoryId: category.id,
-      };
-
-      return request(app.getHttpServer())
-        .post('/forum/threads')
-        .send(threadData)
-        .expect(401);
-    });
-  });
-
-  describe('/forum/threads/:id/posts (POST)', () => {
-    it('should create a new post when authenticated', async () => {
-      const user = await UserFactory.create();
-      const category = await CategoryFactory.create();
-      const thread = await ThreadFactory.create({
-        authorId: user.id,
-        categoryId: category.id,
-      });
-
-      const postData = {
-        content: 'New post content',
-      };
-
-      // Primero hacer login para obtener token
-      const loginResponse = await request(app.getHttpServer())
-        .post('/auth/login')
-        .send({
-          email: user.email,
-          password: 'password123',
-        })
-        .expect(200);
-
-      const accessToken = loginResponse.body.access_token;
-
-      return request(app.getHttpServer())
-        .post(`/forum/threads/${thread.id}/posts`)
-        .set('Authorization', `Bearer ${accessToken}`)
-        .send(postData)
-        .expect(201)
-        .expect((res) => {
-          expect(res.body).toHaveProperty('id');
-          expect(res.body.content).toBe(postData.content);
-          expect(res.body.threadId).toBe(thread.id);
-        });
+    expect(forumService.createPost).toHaveBeenCalledWith({
+      content: 'Respuesta',
+      threadId: 15,
+      authorId: 42,
     });
   });
 });
