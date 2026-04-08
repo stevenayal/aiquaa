@@ -1,10 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { PrismaClient } from '@prisma/client';
 import { UsersService } from '../../src/users/users.service';
-import { getPrismaClient } from '../utils/prisma';
 
-// Mock Prisma
-jest.mock('../utils/prisma', () => ({
-  getPrismaClient: jest.fn(),
+jest.mock('@prisma/client', () => ({
+  PrismaClient: jest.fn(),
 }));
 
 describe('UsersService', () => {
@@ -22,7 +21,7 @@ describe('UsersService', () => {
       },
     };
 
-    (getPrismaClient as jest.Mock).mockReturnValue(mockPrisma);
+    (PrismaClient as unknown as jest.Mock).mockImplementation(() => mockPrisma);
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [UsersService],

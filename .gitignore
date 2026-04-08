@@ -29,6 +29,10 @@ dist-ssr
 .env.development.local
 .env.test.local
 .env.production.local
+apps/backend/.env.local
+apps/backend/.env.test.local
+apps/frontend/.env.local
+apps/frontend/.env.test.local
 
 # Build outputs
 build/
