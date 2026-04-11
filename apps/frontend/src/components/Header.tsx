@@ -129,28 +129,7 @@ const Header = () => {
                 </button>
               </>
             ) : (
-              <>
-                <Link
-                  href="/login"
-                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors duration-200 ${
-                    isDarkMode
-                      ? 'text-dark-text hover:bg-dark-secondary'
-                      : 'text-brand-light hover:bg-brand-accent/20'
-                  }`}
-                >
-                  Iniciar sesión
-                </Link>
-                <Link
-                  href="/register"
-                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors duration-200 ${
-                    isDarkMode
-                      ? 'bg-amber-500 text-slate-900 hover:bg-amber-400'
-                      : 'bg-white text-brand-dark hover:bg-brand-light'
-                  }`}
-                >
-                  Crear cuenta
-                </Link>
-              </>
+              null
             )}
             <LanguageSelector />
             <button
@@ -281,26 +260,7 @@ const Header = () => {
                   </button>
                 </>
               ) : (
-                <>
-                  <Link
-                    href="/login"
-                    className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
-                      isDarkMode ? 'text-dark-text hover:bg-dark-secondary' : 'text-brand-light hover:bg-brand-accent/20'
-                    }`}
-                    onClick={closeMobileMenu}
-                  >
-                    Iniciar sesión
-                  </Link>
-                  <Link
-                    href="/register"
-                    className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
-                      isDarkMode ? 'text-dark-text hover:bg-dark-secondary' : 'text-brand-light hover:bg-brand-accent/20'
-                    }`}
-                    onClick={closeMobileMenu}
-                  >
-                    Crear cuenta
-                  </Link>
-                </>
+                null
               )}
             </div>
           </div>

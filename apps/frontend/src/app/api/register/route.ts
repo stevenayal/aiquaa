@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const BACKEND = process.env.BACKEND_URL;
+const BACKEND = process.env.BACKEND_URL?.trim();
 
 export async function POST(request: NextRequest) {
   const requestId = crypto.randomUUID();
