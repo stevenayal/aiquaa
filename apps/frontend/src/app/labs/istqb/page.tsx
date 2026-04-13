@@ -176,7 +176,6 @@ export default function ISTQBSimulatorPage() {
         examData={examData}
         onReset={handleReset}
         language={language}
-        model={model}
         onExamComplete={handleExamComplete}
       />
     );

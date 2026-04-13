@@ -14,7 +14,6 @@ interface ExamSimulatorProps {
   onReset: () => void;
   language: 'es' | 'en';
   onExamComplete?: (result: import('../types').ExamResult) => void;
-  model?: string;
 }
 
 export default function ExamSimulator({
@@ -24,7 +23,6 @@ export default function ExamSimulator({
   onReset,
   language,
   onExamComplete,
-  model,
 }: ExamSimulatorProps) {
   const { isDarkMode } = useTheme();
   const [questions, setQuestions] = useState<ExamQuestion[]>([]);
