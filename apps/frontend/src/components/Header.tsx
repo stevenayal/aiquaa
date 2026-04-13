@@ -90,7 +90,7 @@ const Header = () => {
                     isDarkMode ? 'text-dark-text hover:bg-dark-secondary' : 'text-brand-light/80 hover:text-white hover:bg-white/10'
                   }`}
                 >
-                  Iniciar sesión
+                  {t('nav.login')}
                 </Link>
                 <Link
                   href="/register"
@@ -100,7 +100,7 @@ const Header = () => {
                       : 'border-brand-light/50 text-white hover:bg-white hover:text-brand-dark'
                   }`}
                 >
-                  Registrarse
+                  {t('nav.register')}
                 </Link>
               </>
             )}
@@ -221,7 +221,7 @@ const Header = () => {
                     isDarkMode ? 'text-dark-text hover:bg-dark-secondary' : 'text-white/80 hover:bg-white/10'
                   }`}
                 >
-                  Iniciar sesión
+                  {t('nav.login')}
                 </Link>
                 <Link
                   href="/register"
@@ -230,7 +230,7 @@ const Header = () => {
                     isDarkMode ? 'border-dark-accent text-dark-accent' : 'border-white/40 text-white'
                   }`}
                 >
-                  Registrarse
+                  {t('nav.register')}
                 </Link>
               </>
             )}

@@ -47,9 +47,13 @@ export default function HomePage() {
   return (
     <div className={isDarkMode ? 'dark' : ''}>
       {/* Hero Section - Optimized for Conversion */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900">
+      <section className={`relative overflow-hidden transition-colors duration-300 ${
+        isDarkMode
+          ? 'bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900'
+          : 'bg-gradient-to-br from-indigo-50 via-white to-blue-50'
+      }`}>
         {/* Background Pattern */}
-        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+        <div className={`absolute inset-0 bg-grid-pattern ${isDarkMode ? 'opacity-5' : 'opacity-[0.03]'}`}></div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-16 md:py-24 lg:py-28">
@@ -58,12 +62,16 @@ export default function HomePage() {
               {/* Left Column - Content */}
               <div className="text-center lg:text-left space-y-8">
                 {/* Headline - Benefit-focused */}
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight">
+                <h1 className={`text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight ${
+                  isDarkMode ? 'text-white' : 'text-slate-900'
+                }`}>
                   {t('home.hero.title')}
                 </h1>
 
                 {/* Subtitle - 1-2 sentences explaining value */}
-                <p className="text-lg sm:text-xl text-slate-300 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                <p className={`text-lg sm:text-xl leading-relaxed max-w-2xl mx-auto lg:mx-0 ${
+                  isDarkMode ? 'text-slate-300' : 'text-slate-600'
+                }`}>
                   {t('home.hero.subtitle')}
                 </p>
 
@@ -81,7 +89,11 @@ export default function HomePage() {
                   {/* Secondary CTA - Less prominent */}
                   <Link
                     href="/comunidad"
-                    className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-slate-300 border-2 border-slate-600 rounded-xl hover:bg-slate-800/50 hover:border-slate-500 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-slate-500/50"
+                    className={`inline-flex items-center justify-center px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300 focus:outline-none focus:ring-4 border-2 ${
+                      isDarkMode
+                        ? 'text-slate-300 border-slate-600 hover:bg-slate-800/50 hover:border-slate-500 focus:ring-slate-500/50'
+                        : 'text-slate-700 border-slate-300 hover:bg-slate-100 hover:border-slate-400 focus:ring-slate-300/50'
+                    }`}
                   >
                     {t('home.hero.cta.primary')}
                   </Link>
@@ -89,44 +101,36 @@ export default function HomePage() {
 
                 {/* Trust Badges - Discrete */}
                 <div className="flex flex-wrap justify-center lg:justify-start gap-6 pt-4">
-                  <div className="flex items-center gap-2 text-slate-400 text-sm">
-                    <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                    </svg>
-                    <span>{t('home.hero.trust.free')}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-slate-400 text-sm">
-                    <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                    </svg>
-                    <span>{t('home.hero.trust.opensource')}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-slate-400 text-sm">
-                    <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                    </svg>
-                    <span>{t('home.hero.trust.spanish')}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-slate-400 text-sm">
-                    <span className="text-green-400">🇵🇾</span>
+                  {[
+                    t('home.hero.trust.free'),
+                    t('home.hero.trust.opensource'),
+                    t('home.hero.trust.spanish'),
+                  ].map((label) => (
+                    <div key={label} className={`flex items-center gap-2 text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                      <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                      </svg>
+                      <span>{label}</span>
+                    </div>
+                  ))}
+                  <div className={`flex items-center gap-2 text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                    <span>🇵🇾</span>
                     <span>{t('home.hero.trust.paraguay')}</span>
                   </div>
                 </div>
 
                 {/* Quick Stats */}
                 <div className="grid grid-cols-3 gap-6 pt-8 max-w-lg mx-auto lg:mx-0">
-                  <div className="text-center lg:text-left">
-                    <div className="text-3xl font-bold text-white">15+</div>
-                    <div className="text-sm text-slate-400 mt-1">{t('home.hero.stats.tools')}</div>
-                  </div>
-                  <div className="text-center lg:text-left">
-                    <div className="text-3xl font-bold text-white">50+</div>
-                    <div className="text-sm text-slate-400 mt-1">{t('home.hero.stats.resources')}</div>
-                  </div>
-                  <div className="text-center lg:text-left">
-                    <div className="text-3xl font-bold text-white">100+</div>
-                    <div className="text-sm text-slate-400 mt-1">{t('home.hero.stats.community')}</div>
-                  </div>
+                  {[
+                    { value: '15+', label: t('home.hero.stats.tools') },
+                    { value: '50+', label: t('home.hero.stats.resources') },
+                    { value: '100+', label: t('home.hero.stats.community') },
+                  ].map((stat) => (
+                    <div key={stat.value} className="text-center lg:text-left">
+                      <div className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{stat.value}</div>
+                      <div className={`text-sm mt-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>{stat.label}</div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -137,7 +141,11 @@ export default function HomePage() {
                   <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/30 to-purple-500/30 rounded-full blur-3xl"></div>
 
                   {/* Main visual - Logo */}
-                  <div className="relative bg-slate-800/50 backdrop-blur-sm rounded-2xl p-12 border border-slate-700/50 shadow-2xl">
+                  <div className={`relative backdrop-blur-sm rounded-2xl p-12 shadow-2xl border ${
+                    isDarkMode
+                      ? 'bg-slate-800/50 border-slate-700/50'
+                      : 'bg-white/80 border-indigo-100'
+                  }`}>
                     <div className="relative z-10">
                       <img
                         src="/images/logo1.png"
@@ -167,7 +175,9 @@ export default function HomePage() {
         </div>
 
         {/* Bottom wave separator */}
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-slate-900/80 to-transparent"></div>
+        <div className={`absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t to-transparent ${
+          isDarkMode ? 'from-slate-900/80' : 'from-white/80'
+        }`}></div>
       </section>
 
       {/* ISTQB Simulator Highlight */}

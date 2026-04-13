@@ -84,7 +84,8 @@
       "Bash(grep -r \"NEXT_PUBLIC_SITE_URL\\\\|NEXTAUTH_URL\" Z:/Proyectos/aiquaa/apps/frontend/.env*)",
       "Bash(python3 -c ':*)",
       "Bash(identify Z:/Proyectos/aiquaa/apps/frontend/public/images/logo1.png)",
-      "Bash(grep -r \"brand-dark\\\\|brand-accent\\\\|brand-light\\\\|brand-muted\\\\|dark-primary\\\\|dark-secondary\\\\|dark-text\" Z:/Proyectos/aiquaa/apps/frontend/tailwind.config.*)"
+      "Bash(grep -r \"brand-dark\\\\|brand-accent\\\\|brand-light\\\\|brand-muted\\\\|dark-primary\\\\|dark-secondary\\\\|dark-text\" Z:/Proyectos/aiquaa/apps/frontend/tailwind.config.*)",
+      "Bash(grep -r \"login\\\\|register\" Z:/Proyectos/aiquaa/apps/frontend/src/lib/translations*)"
     ],
     "deny": [],
     "ask": []

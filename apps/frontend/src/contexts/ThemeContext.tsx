@@ -30,9 +30,9 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       if (saved !== null) {
         return JSON.parse(saved);
       }
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+      return true;
     }
-    return false;
+    return true;
   });
 
   useEffect(() => {
