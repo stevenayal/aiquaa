@@ -1,11 +1,14 @@
 'use client';
 
-import React, { useState, useTransition } from 'react';
-import { loginAction, resendConfirmationAction } from '@/actions/auth';
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { resendConfirmationAction } from '@/actions/auth';
+import { createClient } from '@/lib/supabase/client';
 import AuthForm from './AuthForm';
 
 export default function LoginForm() {
-  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showAlert, setShowAlert] = useState(false);
@@ -37,25 +40,29 @@ export default function LoginForm() {
 
     if (!validateForm()) return;
 
-    const data = new FormData();
-    data.set('email', formData.email);
-    data.set('password', formData.password);
-
-    startTransition(async () => {
-      const result = await loginAction(data);
-      if (result?.error) {
-        let msg = result.error;
-        if (result.error.includes('Invalid login')) {
-          msg = 'Credenciales inválidas. Verificá tu email y contraseña.';
-        } else if (result.error.includes('Email not confirmed')) {
-          msg = 'Tu email aún no fue confirmado. Revisá tu bandeja de entrada o reenviá el correo.';
-          setShowResend(true);
-        }
-        setAlertMessage(msg);
-        setAlertType('error');
-        setShowAlert(true);
-      }
+    setIsLoading(true);
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithPassword({
+      email: formData.email,
+      password: formData.password,
     });
+    setIsLoading(false);
+
+    if (error) {
+      let msg = error.message;
+      if (error.message.includes('Invalid login')) {
+        msg = 'Credenciales inválidas. Verificá tu email y contraseña.';
+      } else if (error.message.includes('Email not confirmed')) {
+        msg = 'Tu email aún no fue confirmado. Revisá tu bandeja de entrada o reenviá el correo.';
+        setShowResend(true);
+      }
+      setAlertMessage(msg);
+      setAlertType('error');
+      setShowAlert(true);
+    } else {
+      router.push('/forum');
+      router.refresh();
+    }
   };
 
   const handleResend = async () => {
@@ -92,7 +99,7 @@ export default function LoginForm() {
     <AuthForm
       mode="login"
       onSubmit={handleSubmit}
-      isLoading={isPending}
+      isLoading={isLoading}
       errors={errors}
       formData={formData}
       onFieldChange={handleChange}

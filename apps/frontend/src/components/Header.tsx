@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { logoutAction } from '@/actions/auth';
 import LanguageSelector from './LanguageSelector';
+import Avatar from '@/components/ui/Avatar';
 
 const navLinks = [
   { href: '/', label: 'nav.home', emoji: '' },
@@ -20,6 +21,8 @@ const navLinks = [
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
   const { isDarkMode, toggleDarkMode } = useTheme();
   const { t } = useLanguage();
   const { user, isAuthenticated, isLoading } = useSupabaseAuth();
@@ -27,9 +30,21 @@ const Header = () => {
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   const handleLogout = async () => {
-    await logoutAction();
+    setIsUserMenuOpen(false);
     closeMobileMenu();
+    await logoutAction();
   };
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   const linkClass = `text-sm font-medium transition-colors duration-200 ${
     isDarkMode ? 'text-dark-text hover:text-white' : 'text-brand-light/80 hover:text-white'
@@ -62,26 +77,65 @@ const Header = () => {
           {/* Desktop: Actions */}
           <div className="hidden md:flex items-center gap-3">
             {isAuthenticated ? (
-              <>
-                <span
-                  className={`text-sm font-medium px-3 py-1.5 rounded-lg ${
-                    isDarkMode ? 'bg-dark-secondary text-dark-text' : 'bg-white/10 text-brand-light'
-                  }`}
-                >
-                  {user?.user_metadata?.full_name || user?.email}
-                </span>
+              <div className="relative" ref={userMenuRef}>
                 <button
-                  onClick={handleLogout}
-                  disabled={isLoading}
-                  className={`text-sm font-medium px-3 py-1.5 rounded-lg transition-colors duration-200 disabled:opacity-60 ${
-                    isDarkMode
-                      ? 'text-red-200 hover:bg-dark-secondary'
-                      : 'text-brand-light/80 hover:text-white hover:bg-white/10'
-                  }`}
+                  onClick={() => setIsUserMenuOpen(v => !v)}
+                  className="flex items-center gap-2 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-transparent"
+                  aria-label="Menú de usuario"
                 >
-                  Cerrar sesión
+                  <Avatar
+                    name={user?.user_metadata?.full_name}
+                    email={user?.email}
+                    avatarUrl={user?.user_metadata?.avatar_url}
+                    size="sm"
+                  />
                 </button>
-              </>
+
+                {isUserMenuOpen && (
+                  <div className={`absolute right-0 mt-2 w-52 rounded-xl shadow-xl border z-50 overflow-hidden ${
+                    isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'
+                  }`}>
+                    {/* User info */}
+                    <div className={`px-4 py-3 border-b ${isDarkMode ? 'border-slate-700' : 'border-gray-100'}`}>
+                      <p className={`text-sm font-semibold truncate ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                        {user?.user_metadata?.full_name || 'Sin nombre'}
+                      </p>
+                      <p className={`text-xs truncate ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
+                        {user?.email}
+                      </p>
+                    </div>
+                    {/* Links */}
+                    <Link
+                      href="/perfil"
+                      onClick={() => setIsUserMenuOpen(false)}
+                      className={`flex items-center gap-2 px-4 py-2.5 text-sm transition-colors ${
+                        isDarkMode ? 'text-slate-200 hover:bg-slate-700' : 'text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      👤 Mi perfil
+                    </Link>
+                    <Link
+                      href="/forum"
+                      onClick={() => setIsUserMenuOpen(false)}
+                      className={`flex items-center gap-2 px-4 py-2.5 text-sm transition-colors ${
+                        isDarkMode ? 'text-slate-200 hover:bg-slate-700' : 'text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      💬 Foro
+                    </Link>
+                    <div className={`border-t ${isDarkMode ? 'border-slate-700' : 'border-gray-100'}`} />
+                    <button
+                      onClick={handleLogout}
+                      disabled={isLoading}
+                      className={`flex items-center gap-2 w-full px-4 py-2.5 text-sm transition-colors disabled:opacity-50 ${
+                        isDarkMode ? 'text-red-400 hover:bg-slate-700' : 'text-red-600 hover:bg-red-50'
+                      }`}
+                    >
+                      🚪 Cerrar sesión
+                    </button>
+                  </div>
+                )}
+              </div>
             ) : (
               <>
                 <Link
@@ -197,21 +251,39 @@ const Header = () => {
 
             {isAuthenticated ? (
               <>
-                <div
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${
-                    isDarkMode ? 'text-dark-text bg-dark-secondary' : 'text-white bg-white/10'
+                <div className={`flex items-center gap-3 px-3 py-2 rounded-md ${isDarkMode ? 'bg-dark-secondary' : 'bg-white/10'}`}>
+                  <Avatar
+                    name={user?.user_metadata?.full_name}
+                    email={user?.email}
+                    avatarUrl={user?.user_metadata?.avatar_url}
+                    size="sm"
+                  />
+                  <div className="min-w-0">
+                    <p className={`text-sm font-medium truncate ${isDarkMode ? 'text-white' : 'text-white'}`}>
+                      {user?.user_metadata?.full_name || 'Sin nombre'}
+                    </p>
+                    <p className={`text-xs truncate ${isDarkMode ? 'text-slate-400' : 'text-white/60'}`}>
+                      {user?.email}
+                    </p>
+                  </div>
+                </div>
+                <Link
+                  href="/perfil"
+                  onClick={closeMobileMenu}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                    isDarkMode ? 'text-dark-text hover:bg-dark-secondary' : 'text-white/80 hover:bg-white/10'
                   }`}
                 >
-                  {user?.user_metadata?.full_name || user?.email}
-                </div>
+                  👤 Mi perfil
+                </Link>
                 <button
                   onClick={handleLogout}
                   disabled={isLoading}
-                  className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 disabled:opacity-60 ${
-                    isDarkMode ? 'text-red-200 hover:bg-dark-secondary' : 'text-white/80 hover:bg-white/10'
+                  className={`flex items-center gap-2 w-full text-left px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 disabled:opacity-60 ${
+                    isDarkMode ? 'text-red-300 hover:bg-dark-secondary' : 'text-white/80 hover:bg-white/10'
                   }`}
                 >
-                  Cerrar sesión
+                  🚪 Cerrar sesión
                 </button>
               </>
             ) : (

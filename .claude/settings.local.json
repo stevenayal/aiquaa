@@ -85,7 +85,9 @@
       "Bash(python3 -c ':*)",
       "Bash(identify Z:/Proyectos/aiquaa/apps/frontend/public/images/logo1.png)",
       "Bash(grep -r \"brand-dark\\\\|brand-accent\\\\|brand-light\\\\|brand-muted\\\\|dark-primary\\\\|dark-secondary\\\\|dark-text\" Z:/Proyectos/aiquaa/apps/frontend/tailwind.config.*)",
-      "Bash(grep -r \"login\\\\|register\" Z:/Proyectos/aiquaa/apps/frontend/src/lib/translations*)"
+      "Bash(grep -r \"login\\\\|register\" Z:/Proyectos/aiquaa/apps/frontend/src/lib/translations*)",
+      "mcp__supabase__list_projects",
+      "mcp__supabase__execute_sql"
     ],
     "deny": [],
     "ask": []
