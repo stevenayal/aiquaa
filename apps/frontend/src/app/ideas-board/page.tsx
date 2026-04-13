@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTheme } from '@/contexts/ThemeContext';
-import { useAuth } from '@/contexts/AuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { SuruFloating } from '@/components/Suru';
 import { ideasBoardService, type Idea, type IdeaCategory } from '@/services/ideasBoardService';
 import { IdeaCard } from './components/IdeaCard';
@@ -11,7 +11,7 @@ import { IdeaFilters } from './components/IdeaFilters';
 
 export default function IdeasBoardPage() {
   const { isDarkMode } = useTheme();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useSupabaseAuth();
 
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [categories, setCategories] = useState<IdeaCategory[]>([]);

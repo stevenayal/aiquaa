@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Thread } from '../../services/forumService';
 import forumService from '../../services/forumService';
-import { useAuth } from '../../contexts/AuthContext';
+import { useSupabaseAuth } from '../../contexts/SupabaseAuthContext';
 import { User } from '../../services/authService';
 
 interface ForumThreadListProps {
@@ -14,7 +14,7 @@ interface ForumThreadListProps {
 }
 
 export default function ForumThreadList({ threads, onThreadDeleted, currentUser }: ForumThreadListProps) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useSupabaseAuth();
   const [deletingThread, setDeletingThread] = useState<string | null>(null);
 
   const handleDeleteThread = async (threadId: string) => {

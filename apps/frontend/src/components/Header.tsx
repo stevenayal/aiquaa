@@ -5,14 +5,15 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useNextAuth } from '@/contexts/NextAuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
+import { logoutAction } from '@/actions/auth';
 import LanguageSelector from './LanguageSelector';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { isDarkMode, toggleDarkMode } = useTheme();
   const { t } = useLanguage();
-  const { user, isAuthenticated, logout, isLoading } = useNextAuth();
+  const { user, isAuthenticated, isLoading } = useSupabaseAuth();
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -23,7 +24,7 @@ const Header = () => {
   };
 
   const handleLogout = async () => {
-    await logout();
+    await logoutAction();
     closeMobileMenu();
   };
 
@@ -114,7 +115,7 @@ const Header = () => {
                     isDarkMode ? 'bg-dark-secondary text-dark-text' : 'bg-brand-accent/20 text-brand-light'
                   }`}
                 >
-                  {user?.name || user?.email}
+                  {user?.user_metadata?.full_name || user?.email}
                 </div>
                 <button
                   onClick={handleLogout}
@@ -247,7 +248,7 @@ const Header = () => {
                       isDarkMode ? 'text-dark-text bg-dark-secondary' : 'text-brand-light bg-brand-accent/20'
                     }`}
                   >
-                    {user?.name || user?.email}
+                    {user?.user_metadata?.full_name || user?.email}
                   </div>
                   <button
                     onClick={handleLogout}

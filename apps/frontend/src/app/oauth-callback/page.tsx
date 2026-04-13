@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
-import authService from '@/services/authService';
+import { createClient } from '@/lib/supabase/client';
 import Image from 'next/image';
 
 export default function OAuthCallbackPage() {
@@ -11,7 +10,6 @@ export default function OAuthCallbackPage() {
   const [message, setMessage] = useState('');
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { refreshUser } = useAuth();
 
   useEffect(() => {
     const handleOAuthCallback = async () => {
@@ -23,44 +21,18 @@ export default function OAuthCallbackPage() {
           return;
         }
 
-        const accessToken = searchParams.get('access_token');
-        const refreshToken = searchParams.get('refresh_token');
-        
-        if (!accessToken) {
-          setStatus('error');
-          setMessage('No se recibió el token de acceso. Por favor, intenta nuevamente.');
-          return;
-        }
+        // Supabase maneja el callback OAuth automáticamente via cookies
+        const supabase = createClient();
+        const { data: { session }, error } = await supabase.auth.getSession();
 
-        // Aplicar tokens al servicio de auth (maneja localStorage internamente)
-        authService.applyTokens(accessToken, refreshToken ?? undefined);
-        
-        // Intentar obtener información del usuario
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '';
-        const base = apiUrl || (process.env.NODE_ENV !== 'production' ? 'http://localhost:3001' : 'https://api.aiquaa.com');
-        if (!base) {
-          throw new Error('NEXT_PUBLIC_API_URL no está configurada');
-        }
-        const userResponse = await fetch(`${base}/auth/profile`, {
-          headers: {
-            'Authorization': `Bearer ${accessToken}`
-          }
-        });
+        if (error) throw error;
 
-        if (userResponse.ok) {
-          // Actualizar el contexto de autenticación
-          // Nota: Esto requeriría modificar el AuthContext para aceptar un usuario externo
-          // Por ahora, redirigimos y el AuthContext se actualizará automáticamente
-          await refreshUser();
+        if (session) {
           setStatus('success');
           setMessage('¡Autenticación exitosa! Redirigiendo...');
-          
-          // Redirigir después de 2 segundos
-          setTimeout(() => {
-            router.push('/');
-          }, 2000);
+          setTimeout(() => router.push('/'), 2000);
         } else {
-          throw new Error('Error al obtener información del usuario');
+          throw new Error('No se pudo obtener la sesión');
         }
       } catch (error) {
         console.error('OAuth callback error:', error);
@@ -70,7 +42,7 @@ export default function OAuthCallbackPage() {
     };
 
     handleOAuthCallback();
-  }, [searchParams, router, refreshUser]);
+  }, [searchParams, router]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
