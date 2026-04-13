@@ -1,16 +1,18 @@
 'use client';
 
 import React, { useState, useTransition } from 'react';
-import { registerAction } from '@/actions/auth';
+import { registerAction, resendConfirmationAction } from '@/actions/auth';
 import AuthForm from './AuthForm';
 
 export default function RegisterForm() {
   const [isPending, startTransition] = useTransition();
+  const [isResending, setIsResending] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState<'success' | 'error'>('error');
   const [socialLoginError] = useState<string | null>(null);
+  const [showResend, setShowResend] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -69,14 +71,26 @@ export default function RegisterForm() {
         setAlertType('error');
         setShowAlert(true);
       } else if (result?.success) {
-        setAlertMessage(result.message || 'Registro exitoso. Revisá tu email.');
+        setAlertMessage('¡Registro exitoso! Revisá tu email para confirmar tu cuenta.');
         setAlertType('success');
         setShowAlert(true);
-        setTimeout(() => {
-          window.location.href = '/login?message=registration_success';
-        }, 2500);
+        setShowResend(true);
       }
     });
+  };
+
+  const handleResend = async () => {
+    setIsResending(true);
+    const result = await resendConfirmationAction(formData.email);
+    setIsResending(false);
+    if (result.error) {
+      setAlertMessage('Error al reenviar: ' + result.error);
+      setAlertType('error');
+    } else {
+      setAlertMessage('Correo reenviado. Revisá tu bandeja de entrada.');
+      setAlertType('success');
+    }
+    setShowAlert(true);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,6 +116,9 @@ export default function RegisterForm() {
       showAlert={showAlert}
       alertMessage={alertMessage}
       alertType={alertType}
+      showResend={showResend}
+      onResend={handleResend}
+      isResending={isResending}
     />
   );
 }

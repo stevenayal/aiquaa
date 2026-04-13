@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSupabaseAuth } from '../../contexts/SupabaseAuthContext';
+import { useTheme } from '../../contexts/ThemeContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 import forumService, { Thread, ForumFilters } from '../../services/forumService';
 import ForumThreadList from './ForumThreadList';
 import ForumCreateThread from './ForumCreateThread';
@@ -11,6 +13,8 @@ import { SuruFloating } from '@/components/Suru';
 
 export default function ForumMain() {
   const { user, isAuthenticated } = useSupabaseAuth();
+  const { isDarkMode } = useTheme();
+  const { t } = useLanguage();
   const [threads, setThreads] = useState<Thread[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -82,15 +86,15 @@ export default function ForumMain() {
   };
 
   return (
-    <div className="min-h-screen bg-brand-light py-8">
+    <div className={`min-h-screen py-8 transition-colors duration-300 ${isDarkMode ? 'bg-slate-900' : 'bg-brand-light'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-brand-text mb-4">
-            🗨️ Foro de la Comunidad
+          <h1 className={`text-4xl md:text-5xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-brand-text'}`}>
+            {t('forum.title')}
           </h1>
-          <p className="text-xl text-brand-muted max-w-3xl mx-auto">
-            Conecta con otros profesionales, comparte conocimientos y resuelve dudas en nuestro foro comunitario.
+          <p className={`text-xl max-w-3xl mx-auto ${isDarkMode ? 'text-slate-300' : 'text-brand-muted'}`}>
+            {t('forum.subtitle')}
           </p>
         </div>
 
@@ -100,7 +104,7 @@ export default function ForumMain() {
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Sidebar con filtros */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-lg p-6 sticky top-4">
+            <div className={`rounded-lg shadow-lg p-6 sticky top-4 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
               <ForumFiltersComponent
                 filters={filters}
                 onFiltersChange={handleFiltersChange}
@@ -117,7 +121,7 @@ export default function ForumMain() {
                   onClick={() => setShowCreateForm(!showCreateForm)}
                   className="bg-brand-accent hover:bg-brand-primary text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center gap-2"
                 >
-                  {showCreateForm ? '❌ Cancelar' : '✏️ Crear Nuevo Thread'}
+                  {showCreateForm ? t('forum.cancel') : t('forum.create')}
                 </button>
               </div>
             )}
@@ -136,7 +140,7 @@ export default function ForumMain() {
             {isLoading ? (
               <div className="text-center py-12">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-accent mx-auto mb-4"></div>
-                <p className="text-brand-muted">Cargando threads...</p>
+                <p className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>{t('forum.loading')}</p>
               </div>
             ) : (
               <>
@@ -155,7 +159,7 @@ export default function ForumMain() {
                         disabled={pagination.page <= 1}
                         className="px-3 py-2 rounded-lg border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                       >
-                        ← Anterior
+                        {t('forum.pagination.prev')}
                       </button>
                       
                       {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((page) => (
@@ -177,7 +181,7 @@ export default function ForumMain() {
                         disabled={pagination.page >= pagination.totalPages}
                         className="px-3 py-2 rounded-lg border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                       >
-                        Siguiente →
+                        {t('forum.pagination.next')}
                       </button>
                     </nav>
                   </div>
@@ -187,14 +191,11 @@ export default function ForumMain() {
                 {threads.length === 0 && !isLoading && (
                   <div className="text-center py-12">
                     <div className="text-6xl mb-4">📝</div>
-                    <h3 className="text-xl font-semibold text-brand-text mb-2">
-                      No hay threads disponibles
+                    <h3 className={`text-xl font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-brand-text'}`}>
+                      {t('forum.empty.title')}
                     </h3>
-                    <p className="text-brand-muted">
-                      {isAuthenticated 
-                        ? '¡Sé el primero en crear un thread!' 
-                        : 'Inicia sesión para crear el primer thread'
-                      }
+                    <p className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>
+                      {isAuthenticated ? t('forum.empty.auth') : t('forum.empty.guest')}
                     </p>
                   </div>
                 )}

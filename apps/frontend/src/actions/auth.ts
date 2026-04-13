@@ -41,6 +41,21 @@ export async function registerAction(formData: FormData) {
   return { success: true, message: 'Revisá tu email para confirmar tu cuenta.' };
 }
 
+export async function resendConfirmationAction(email: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resend({
+    type: 'signup',
+    email,
+    options: {
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL}/auth/confirm`,
+    },
+  });
+  if (error) {
+    return { error: error.message };
+  }
+  return { success: true };
+}
+
 export async function logoutAction() {
   const supabase = await createClient();
   await supabase.auth.signOut();

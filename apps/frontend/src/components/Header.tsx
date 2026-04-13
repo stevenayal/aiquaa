@@ -10,12 +10,12 @@ import { logoutAction } from '@/actions/auth';
 import LanguageSelector from './LanguageSelector';
 
 const navLinks = [
-  { href: '/', label: 'nav.home' },
-  { href: '/blog', label: 'nav.blog' },
-  { href: '/labs', label: 'nav.labs' },
-  { href: '/recursos', label: 'nav.resources' },
-  { href: '/comunidad', label: 'nav.community' },
-  { href: '/about', label: 'nav.about' },
+  { href: '/', label: 'nav.home', emoji: '' },
+  { href: '/blog', label: 'nav.blog', emoji: '📝' },
+  { href: '/labs', label: 'nav.labs', emoji: '🧪' },
+  { href: '/recursos', label: 'nav.resources', emoji: '📚' },
+  { href: '/comunidad', label: 'nav.community', emoji: '💬' },
+  { href: '/about', label: 'nav.about', emoji: '' },
 ];
 
 const Header = () => {
@@ -161,7 +161,8 @@ const Header = () => {
                   |
                 </span>
               )}
-              <Link href={link.href} className={linkClass}>
+              <Link href={link.href} className={`${linkClass} flex items-center gap-1`}>
+                {link.emoji && <span>{link.emoji}</span>}
                 {t(link.label)}
               </Link>
             </span>
@@ -183,10 +184,11 @@ const Header = () => {
                 key={link.href}
                 href={link.href}
                 onClick={closeMobileMenu}
-                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                className={`flex items-center gap-2 px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
                   isDarkMode ? 'text-dark-text hover:bg-dark-secondary' : 'text-brand-light hover:bg-white/10'
                 }`}
               >
+                {link.emoji && <span>{link.emoji}</span>}
                 {t(link.label)}
               </Link>
             ))}

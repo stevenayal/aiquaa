@@ -11,17 +11,19 @@ export class ForumService {
   ) {}
 
   async getCategories() {
-    return this.prisma.category.findMany({
+    const categories = await this.prisma.category.findMany({
       where: { deletedAt: null },
       orderBy: { name: 'asc' },
+      select: { name: true },
     });
+    return { success: true, data: categories.map(c => c.name) };
   }
 
   async getTags() {
     const tags = await this.prisma.threadTag.findMany({
       orderBy: { name: 'asc' },
     });
-    return tags.map(tag => tag.name);
+    return { success: true, data: tags.map(tag => tag.name) };
   }
 
   async createThread(createThreadDto: CreateThreadDto & { authorId: number }) {

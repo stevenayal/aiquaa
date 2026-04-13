@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useTheme } from '../../contexts/ThemeContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { ForumFilters } from '../../services/forumService';
 import forumService from '../../services/forumService';
 
@@ -10,6 +12,8 @@ interface ForumFiltersComponentProps {
 }
 
 export default function ForumFiltersComponent({ filters, onFiltersChange }: ForumFiltersComponentProps) {
+  const { isDarkMode } = useTheme();
+  const { t } = useLanguage();
   const [categories, setCategories] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState(filters.search || '');
@@ -75,48 +79,45 @@ export default function ForumFiltersComponent({ filters, onFiltersChange }: Foru
 
   const hasActiveFilters = filters.search || filters.category || (filters.tags && filters.tags.length > 0);
 
+  const labelClass = `block text-sm font-medium mb-2 ${isDarkMode ? 'text-slate-300' : 'text-brand-text'}`;
+  const inputClass = `w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-accent focus:border-transparent text-sm ${
+    isDarkMode
+      ? 'bg-slate-700 border-slate-600 text-slate-200 placeholder-slate-400'
+      : 'bg-white border-gray-300 text-brand-text'
+  }`;
+  const mutedClass = isDarkMode ? 'text-slate-400' : 'text-brand-muted';
+
   return (
     <div className="space-y-6">
-      <h3 className="text-lg font-semibold text-brand-text">Filtros</h3>
+      <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-brand-text'}`}>{t('forum.filters.title')}</h3>
 
-      {/* Búsqueda */}
       <div>
-        <label className="block text-sm font-medium text-brand-text mb-2">
-          🔍 Buscar
-        </label>
+        <label className={labelClass}>{t('forum.filters.search')}</label>
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => handleSearchChange(e.target.value)}
-          placeholder="Buscar en threads..."
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-accent focus:border-transparent text-sm"
+          placeholder={t('forum.filters.searchPlaceholder')}
+          className={inputClass}
         />
       </div>
 
-      {/* Categorías */}
       <div>
-        <label className="block text-sm font-medium text-brand-text mb-2">
-          📂 Categorías
-        </label>
+        <label className={labelClass}>{t('forum.filters.categories')}</label>
         <select
           value={filters.category || 'all'}
           onChange={(e) => handleCategoryChange(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-accent focus:border-transparent text-sm"
+          className={inputClass}
         >
-          <option value="all">Todas las categorías</option>
+          <option value="all">{t('forum.filters.allCategories')}</option>
           {categories.map((category) => (
-            <option key={category} value={category}>
-              {category}
-            </option>
+            <option key={category} value={category}>{category}</option>
           ))}
         </select>
       </div>
 
-      {/* Tags */}
       <div>
-        <label className="block text-sm font-medium text-brand-text mb-2">
-          🏷️ Tags
-        </label>
+        <label className={labelClass}>{t('forum.filters.tags')}</label>
         <div className="max-h-32 overflow-y-auto space-y-2">
           {tags.slice(0, 20).map((tag) => (
             <label key={tag} className="flex items-center gap-2 cursor-pointer">
@@ -126,64 +127,53 @@ export default function ForumFiltersComponent({ filters, onFiltersChange }: Foru
                 onChange={() => handleTagToggle(tag)}
                 className="w-4 h-4 text-brand-accent focus:ring-brand-accent border-gray-300 rounded"
               />
-              <span className="text-sm text-brand-text">#{tag}</span>
+              <span className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-brand-text'}`}>#{tag}</span>
             </label>
           ))}
         </div>
         {tags.length > 20 && (
-          <p className="text-xs text-brand-muted mt-2">
-            Mostrando 20 de {tags.length} tags
-          </p>
+          <p className={`text-xs mt-2 ${mutedClass}`}>{t('forum.filters.showing').replace('{count}', String(tags.length))}</p>
         )}
       </div>
 
-      {/* Ordenamiento */}
       <div>
-        <label className="block text-sm font-medium text-brand-text mb-2">
-          📊 Ordenar por
-        </label>
+        <label className={labelClass}>{t('forum.filters.sortBy')}</label>
         <select
           value={filters.sortBy || 'newest'}
           onChange={(e) => handleSortChange(e.target.value as ForumFilters['sortBy'])}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-accent focus:border-transparent text-sm"
+          className={inputClass}
         >
-          <option value="newest">Más recientes</option>
-          <option value="oldest">Más antiguos</option>
-          <option value="mostViewed">Más vistos</option>
-          <option value="mostReplied">Más respondidos</option>
+          <option value="newest">{t('forum.filters.newest')}</option>
+          <option value="oldest">{t('forum.filters.oldest')}</option>
+          <option value="mostViewed">{t('forum.filters.mostViewed')}</option>
+          <option value="mostReplied">{t('forum.filters.mostReplied')}</option>
         </select>
       </div>
 
-      {/* Limpiar filtros */}
       {hasActiveFilters && (
-        <div>
-          <button
-            onClick={clearFilters}
-            className="w-full px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors text-sm"
-          >
-            🗑️ Limpiar Filtros
-          </button>
-        </div>
+        <button
+          onClick={clearFilters}
+          className={`w-full px-4 py-2 rounded-lg font-medium transition-colors text-sm ${
+            isDarkMode ? 'bg-slate-700 hover:bg-slate-600 text-slate-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+          }`}
+        >
+          {t('forum.filters.clear')}
+        </button>
       )}
 
-      {/* Información de filtros activos */}
       {hasActiveFilters && (
-        <div className="p-3 bg-brand-accent/10 rounded-lg">
-          <h4 className="text-sm font-medium text-brand-text mb-2">Filtros activos:</h4>
-          <div className="space-y-1 text-xs text-brand-muted">
-            {filters.search && (
-              <div>🔍 Búsqueda: &quot;{filters.search}&quot;</div>
-            )}
-            {filters.category && (
-              <div>📂 Categoría: {filters.category}</div>
-            )}
-            {filters.tags && filters.tags.length > 0 && (
-              <div>🏷️ Tags: {filters.tags.join(', ')}</div>
-            )}
+        <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-slate-700/50' : 'bg-brand-accent/10'}`}>
+          <h4 className={`text-sm font-medium mb-2 ${isDarkMode ? 'text-slate-300' : 'text-brand-text'}`}>{t('forum.filters.active')}</h4>
+          <div className={`space-y-1 text-xs ${mutedClass}`}>
+            {filters.search && <div>🔍 &quot;{filters.search}&quot;</div>}
+            {filters.category && <div>📂 {filters.category}</div>}
+            {filters.tags && filters.tags.length > 0 && <div>🏷️ {filters.tags.join(', ')}</div>}
             {filters.sortBy && (
-              <div>📊 Orden: {filters.sortBy === 'newest' ? 'Más recientes' : 
-                               filters.sortBy === 'oldest' ? 'Más antiguos' :
-                               filters.sortBy === 'mostViewed' ? 'Más vistos' : 'Más respondidos'}</div>
+              <div>📊 {
+                filters.sortBy === 'newest' ? t('forum.filters.newest') :
+                filters.sortBy === 'oldest' ? t('forum.filters.oldest') :
+                filters.sortBy === 'mostViewed' ? t('forum.filters.mostViewed') : t('forum.filters.mostReplied')
+              }</div>
             )}
           </div>
         </div>
