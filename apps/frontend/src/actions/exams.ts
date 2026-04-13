@@ -38,6 +38,16 @@ export async function saveExamResultAction(payload: SaveExamResultPayload) {
   return { success: true };
 }
 
+export async function getLeaderboardAction(examType: 'git' | 'istqb', limit = 20) {
+  const supabase = createClient();
+  const { data, error } = await supabase.rpc('get_leaderboard', {
+    p_exam_type: examType,
+    p_limit: limit,
+  });
+  if (error) return { error: error.message, data: null };
+  return { data };
+}
+
 export async function getExamResultsAction() {
   const supabase = createClient();
   const { data: { user }, error: userError } = await supabase.auth.getUser();

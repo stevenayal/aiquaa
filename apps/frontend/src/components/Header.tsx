@@ -14,6 +14,7 @@ const navLinks = [
   { href: '/', label: 'nav.home', emoji: '' },
   { href: '/blog', label: 'nav.blog', emoji: '📝' },
   { href: '/labs', label: 'nav.labs', emoji: '🧪' },
+  { href: '/ranking', label: 'nav.ranking', emoji: '🏆' },
   { href: '/recursos', label: 'nav.resources', emoji: '📚' },
   { href: '/comunidad', label: 'nav.community', emoji: '💬' },
   { href: '/about', label: 'nav.about', emoji: '' },
