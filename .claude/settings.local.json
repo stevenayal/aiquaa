@@ -65,7 +65,22 @@
       "Bash(node --version)",
       "Bash(npm --version:*)",
       "Bash(git checkout:*)",
-      "Bash(FRONTEND_PORT=3001 pnpm dev:*)"
+      "Bash(FRONTEND_PORT=3001 pnpm dev:*)",
+      "Bash(pnpm --filter @aiquaa/frontend add @supabase/ssr)",
+      "Bash(cmd /c \"cd /d Z:\\\\Proyectos\\\\aiquaa && pnpm --filter @aiquaa/frontend add @supabase/ssr\")",
+      "mcp__vercel__list_teams",
+      "mcp__vercel__list_projects",
+      "mcp__vercel__get_project",
+      "Bash(curl.exe:*)",
+      "Bash(powershell.exe -Command ':*)",
+      "Bash(powershell.exe -Command \"vercel env add NEXT_PUBLIC_SUPABASE_URL production --cwd Z:\\\\Proyectos\\\\aiquaa\\\\apps\\\\frontend 2>&1\")",
+      "Bash(powershell.exe:*)",
+      "Bash(cmd.exe:*)",
+      "mcp__vercel__get_deployment_build_logs",
+      "mcp__vercel__get_deployment",
+      "mcp__vercel__get_runtime_logs",
+      "mcp__vercel__list_deployments",
+      "Bash(powershell:*)"
     ],
     "deny": [],
     "ask": []

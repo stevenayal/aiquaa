@@ -130,7 +130,24 @@ const Header = () => {
                 </button>
               </>
             ) : (
-              null
+              <>
+                <Link
+                  href="/login"
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200 ${
+                    isDarkMode ? 'text-dark-text hover:bg-dark-secondary' : 'text-brand-light hover:bg-brand-accent/20'
+                  }`}
+                >
+                  Iniciar sesión
+                </Link>
+                <Link
+                  href="/register"
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200 ${
+                    isDarkMode ? 'bg-dark-secondary text-dark-text hover:bg-dark-secondary/80' : 'bg-white/10 text-brand-light hover:bg-white/20'
+                  }`}
+                >
+                  Registrarse
+                </Link>
+              </>
             )}
             <LanguageSelector />
             <button
@@ -261,7 +278,26 @@ const Header = () => {
                   </button>
                 </>
               ) : (
-                null
+                <>
+                  <Link
+                    href="/login"
+                    className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                      isDarkMode ? 'text-dark-text hover:bg-dark-secondary' : 'text-brand-light hover:bg-brand-accent/20'
+                    }`}
+                    onClick={closeMobileMenu}
+                  >
+                    Iniciar sesión
+                  </Link>
+                  <Link
+                    href="/register"
+                    className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                      isDarkMode ? 'text-dark-text bg-dark-secondary' : 'text-brand-light bg-white/10'
+                    }`}
+                    onClick={closeMobileMenu}
+                  >
+                    Registrarse
+                  </Link>
+                </>
               )}
             </div>
           </div>
