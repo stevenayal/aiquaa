@@ -16,14 +16,26 @@ export class ResendService {
     const appUrl = this.configService.get<string>('APP_URL', 'http://localhost:3000');
     const verificationUrl = `${appUrl}/verify-email?token=${token}`;
     const fromEmail = this.configService.get<string>('RESEND_FROM_EMAIL', 'onboarding@resend.dev');
+    const templateId = this.configService.get<string>('RESEND_TEMPLATE_VERIFICATION');
 
     try {
-      const { data, error } = await this.resend.emails.send({
-        from: fromEmail,
-        to: [email],
-        subject: 'Verifica tu email - AIQUAA',
-        html: this.getVerificationEmailTemplate(name, verificationUrl),
-      });
+      const payload = templateId
+        ? ({
+            from: fromEmail,
+            to: [email],
+            template: {
+              id: templateId,
+              variables: { NAME: name, VERIFICATION_URL: verificationUrl },
+            },
+          } as const)
+        : ({
+            from: fromEmail,
+            to: [email],
+            subject: 'Verifica tu email - AIQUAA',
+            html: this.getVerificationEmailTemplate(name, verificationUrl),
+          } as const);
+
+      const { data, error } = await this.resend.emails.send(payload);
 
       if (error) {
         this.logger.error(`Error enviando email de verificación a ${email}:`, error);
@@ -41,14 +53,26 @@ export class ResendService {
     const appUrl = this.configService.get<string>('APP_URL', 'http://localhost:3000');
     const resetUrl = `${appUrl}/reset-password?token=${token}`;
     const fromEmail = this.configService.get<string>('RESEND_FROM_EMAIL', 'onboarding@resend.dev');
+    const templateId = this.configService.get<string>('RESEND_TEMPLATE_PASSWORD_RESET');
 
     try {
-      const { data, error } = await this.resend.emails.send({
-        from: fromEmail,
-        to: [email],
-        subject: 'Restablece tu contraseña - AIQUAA',
-        html: this.getPasswordResetEmailTemplate(name, resetUrl),
-      });
+      const payload = templateId
+        ? ({
+            from: fromEmail,
+            to: [email],
+            template: {
+              id: templateId,
+              variables: { NAME: name, RESET_URL: resetUrl },
+            },
+          } as const)
+        : ({
+            from: fromEmail,
+            to: [email],
+            subject: 'Restablece tu contraseña - AIQUAA',
+            html: this.getPasswordResetEmailTemplate(name, resetUrl),
+          } as const);
+
+      const { data, error } = await this.resend.emails.send(payload);
 
       if (error) {
         this.logger.error(`Error enviando email de reset de contraseña a ${email}:`, error);
