@@ -1,185 +1,104 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useNextAuth } from '../../contexts/NextAuthContext';
+import React, { useState, useTransition } from 'react';
+import { registerAction } from '@/actions/auth';
 import AuthForm from './AuthForm';
 
 export default function RegisterForm() {
-  const { register } = useNextAuth();
+  const [isPending, startTransition] = useTransition();
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState<'success' | 'error'>('error');
+  const [socialLoginError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     confirmPassword: '',
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
-  const [alertType, setAlertType] = useState<'success' | 'error'>('error');
-  const [socialLoginError, setSocialLoginError] = useState<string | null>(null);
 
-  // Validaciones en JavaScript
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
-
-    // Validar nombre
     if (!formData.name.trim()) {
       newErrors.name = 'Nombre obligatorio';
     } else if (formData.name.length < 2 || formData.name.length > 50) {
       newErrors.name = 'El nombre debe tener entre 2 y 50 caracteres';
     }
-
-    // Validar email
     if (!formData.email.trim()) {
       newErrors.email = 'Correo obligatorio';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Correo inválido';
     }
-
-    // Validar contraseña
     if (!formData.password.trim()) {
       newErrors.password = 'Contraseña obligatoria';
     } else if (formData.password.length < 8) {
       newErrors.password = 'La contraseña debe tener al menos 8 caracteres';
     } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
-      newErrors.password = 'La contraseña debe contener al menos una mayúscula, una minúscula y un número';
+      newErrors.password = 'Debe contener mayúscula, minúscula y número';
     }
-
-    // Validar confirmación de contraseña
     if (!formData.confirmPassword.trim()) {
       newErrors.confirmPassword = 'Confirmar contraseña obligatorio';
     } else if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Las contraseñas no coinciden';
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Limpiar errores previos
     setErrors({});
     setShowAlert(false);
-    setSocialLoginError(null);
 
-    // Validar formulario
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
-    setIsSubmitting(true);
+    const data = new FormData();
+    data.set('email', formData.email);
+    data.set('password', formData.password);
+    data.set('name', formData.name);
 
-    try {
-      const result = await register({
-        email: formData.email,
-        name: formData.name,
-        password: formData.password,
-        confirmPassword: formData.confirmPassword,
-      });
-      
-      if (result.success) {
-        setAlertMessage('Registro exitoso. Revisa tu email para verificar tu cuenta.');
-        setAlertType('success');
-        setShowAlert(true);
-
-        // Redirigir al login después de un breve delay
-        setTimeout(() => {
-          window.location.href = '/login?message=registration_success';
-        }, 2000);
-      } else {
-        // Mostrar el mensaje de error específico del backend
-        let errorMessage = result.message || 'Error en el registro';
-        
-        // Mapear errores específicos del backend a mensajes más claros
-        if (errorMessage.includes('email') && errorMessage.includes('already')) {
-          errorMessage = 'Este email ya está registrado. Intenta iniciar sesión o usa otro email.';
-        } else if (errorMessage.includes('username') && errorMessage.includes('already')) {
-          errorMessage = 'Este nombre de usuario ya está en uso. Elige otro.';
-        } else if (errorMessage.includes('password') && errorMessage.includes('weak')) {
-          errorMessage = 'La contraseña es muy débil. Debe tener al menos 8 caracteres con mayúscula, minúscula y número.';
-        } else if (errorMessage.includes('validation')) {
-          errorMessage = 'Los datos proporcionados no son válidos. Verifica la información.';
+    startTransition(async () => {
+      const result = await registerAction(data);
+      if (result?.error) {
+        let msg = result.error;
+        if (result.error.includes('already registered')) {
+          msg = 'Este email ya está registrado. Intentá iniciar sesión.';
         }
-        
-        setAlertMessage(errorMessage);
+        setAlertMessage(msg);
         setAlertType('error');
         setShowAlert(true);
+      } else if (result?.success) {
+        setAlertMessage(result.message || 'Registro exitoso. Revisá tu email.');
+        setAlertType('success');
+        setShowAlert(true);
+        setTimeout(() => {
+          window.location.href = '/login?message=registration_success';
+        }, 2500);
       }
-    } catch (error) {
-      console.error('Error en registro:', error);
-      
-      // Manejar diferentes tipos de errores
-      let errorMessage = 'Error inesperado en el registro';
-      
-      if (error instanceof TypeError && error.message.includes('fetch')) {
-        errorMessage = 'Error de conexión. Verifica tu conexión a internet o contacta al administrador.';
-      } else if (error instanceof Error) {
-        // Mapear errores específicos de red
-        if (error.message.includes('Failed to fetch')) {
-          errorMessage = 'No se pudo conectar con el servidor. Verifica tu conexión o contacta al administrador.';
-        } else if (error.message.includes('NetworkError')) {
-          errorMessage = 'Error de red. Verifica tu conexión a internet.';
-        } else {
-          errorMessage = error.message;
-        }
-      }
-      
-      setAlertMessage(errorMessage);
-      setAlertType('error');
-      setShowAlert(true);
-    } finally {
-      setIsSubmitting(false);
-    }
+    });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    
-    // Limpiar errores específicos del campo al modificarlo
+    setFormData(prev => ({ ...prev, [name]: value }));
     if (errors[name]) {
-      setErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
+      setErrors(prev => { const n = { ...prev }; delete n[name]; return n; });
     }
-    
-    // Limpiar alerta si existe
-    if (showAlert) {
-      setShowAlert(false);
-    }
-    
-    // Limpiar errores de OAuth
-    if (socialLoginError) {
-      setSocialLoginError(null);
-    }
-  };
-
-  const clearError = () => {
-    setErrors({});
-    setShowAlert(false);
-    setSocialLoginError(null);
+    if (showAlert) setShowAlert(false);
   };
 
   return (
     <AuthForm
       mode="register"
       onSubmit={handleSubmit}
-      isLoading={isSubmitting}
+      isLoading={isPending}
       errors={errors}
       formData={formData}
       onFieldChange={handleChange}
-      onClearErrors={clearError}
+      onClearErrors={() => { setErrors({}); setShowAlert(false); }}
       socialLoginError={socialLoginError}
-      onSocialError={setSocialLoginError}
+      onSocialError={() => {}}
       showAlert={showAlert}
       alertMessage={alertMessage}
       alertType={alertType}
