@@ -8,9 +8,10 @@ export async function updateProfileAction(formData: FormData) {
   const fullName = (formData.get('full_name') as string)?.trim();
   const bio = (formData.get('bio') as string)?.trim();
   const username = (formData.get('username') as string)?.trim();
+  const role = (formData.get('role') as string)?.trim();
 
   const { error } = await supabase.auth.updateUser({
-    data: { full_name: fullName, bio, username },
+    data: { full_name: fullName, bio, username, role },
   });
 
   if (error) return { error: error.message };

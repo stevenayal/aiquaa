@@ -10,6 +10,16 @@ import PasswordInput from './PasswordInput';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 
+const ROLES = [
+  { value: 'estudiante',  label: 'Estudiante',      emoji: '🎓' },
+  { value: 'qa_junior',   label: 'Tester QA Junior', emoji: '🌱' },
+  { value: 'qa_senior',   label: 'Tester QA Senior', emoji: '⭐' },
+  { value: 'qa_engineer', label: 'QA Engineer',      emoji: '⚙️' },
+  { value: 'analista_qa', label: 'Analista QA',      emoji: '🔍' },
+  { value: 'developer',   label: 'Developer',        emoji: '💻' },
+  { value: 'otro',        label: 'Otro rol',         emoji: '🙋' },
+];
+
 interface AuthFormProps {
   mode: 'login' | 'register';
   onSubmit: (e: React.FormEvent) => void;
@@ -17,6 +27,7 @@ interface AuthFormProps {
   errors: { [key: string]: string };
   formData: any;
   onFieldChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onRoleChange?: (role: string) => void;
   onClearErrors: () => void;
   socialLoginError: string | null;
   onSocialError: (error: string | null) => void;
@@ -38,6 +49,7 @@ export default function AuthForm({
   onClearErrors,
   socialLoginError,
   onSocialError,
+  onRoleChange,
   showAlert = false,
   alertMessage = '',
   alertType = 'error',
@@ -222,6 +234,38 @@ export default function AuthForm({
             )}
           </div>
 
+          {/* Role selector — solo en registro */}
+          {!isLogin && (
+            <div>
+              <p className={`text-sm font-medium mb-2 ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}>
+                ¿Cuál es tu rol en QA?
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                {ROLES.map(role => {
+                  const selected = formData.role === role.value;
+                  return (
+                    <button
+                      key={role.value}
+                      type="button"
+                      onClick={() => onRoleChange?.(role.value)}
+                      className={`flex items-center gap-2 px-3 py-2.5 rounded-lg border text-sm font-medium transition-all ${
+                        selected
+                          ? 'border-indigo-500 bg-indigo-600 text-white shadow-sm'
+                          : isDarkMode
+                            ? 'border-slate-600 bg-slate-700 text-slate-300 hover:border-indigo-400 hover:bg-slate-600'
+                            : 'border-gray-300 bg-white text-gray-700 hover:border-indigo-400 hover:bg-indigo-50'
+                      }`}
+                    >
+                      <span>{role.emoji}</span>
+                      <span className="truncate">{role.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              {errors.role && <p className="mt-1 text-sm text-red-500">{errors.role}</p>}
+            </div>
+          )}
+
           <div>
             <LoadingButton
               isLoading={isLoading}
@@ -233,7 +277,10 @@ export default function AuthForm({
           </div>
 
           {isLogin && (
-            <div className="text-sm text-right">
+            <div className="flex items-center justify-between text-sm">
+              <Link href="/auth/forgot-password" className={`${isDarkMode ? 'text-slate-400 hover:text-slate-200' : 'text-gray-500 hover:text-gray-700'}`}>
+                ¿Olvidaste tu contraseña?
+              </Link>
               <Link href="/register" className="font-medium text-brand-accent hover:text-brand-primary">
                 {t('auth.register.link')}
               </Link>

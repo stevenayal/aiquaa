@@ -7,6 +7,16 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { updateProfileAction, uploadAvatarAction } from '@/actions/profile';
 import Avatar from '@/components/ui/Avatar';
 
+const ROLES: Record<string, { label: string; emoji: string }> = {
+  estudiante:  { label: 'Estudiante',       emoji: '🎓' },
+  qa_junior:   { label: 'Tester QA Junior',  emoji: '🌱' },
+  qa_senior:   { label: 'Tester QA Senior',  emoji: '⭐' },
+  qa_engineer: { label: 'QA Engineer',       emoji: '⚙️' },
+  analista_qa: { label: 'Analista QA',       emoji: '🔍' },
+  developer:   { label: 'Developer',         emoji: '💻' },
+  otro:        { label: 'Otro rol',          emoji: '🙋' },
+};
+
 export default function PerfilPage() {
   const { user, isLoading } = useSupabaseAuth();
   const { isDarkMode } = useTheme();
@@ -21,6 +31,7 @@ export default function PerfilPage() {
     full_name: '',
     username: '',
     bio: '',
+    role: '',
   });
   const [initialized, setInitialized] = useState(false);
 
@@ -31,6 +42,7 @@ export default function PerfilPage() {
         full_name: user.user_metadata?.full_name || '',
         username: user.user_metadata?.username || '',
         bio: user.user_metadata?.bio || '',
+        role: user.user_metadata?.role || '',
       });
       setInitialized(true);
     }
@@ -72,6 +84,7 @@ export default function PerfilPage() {
     fd.set('full_name', formData.full_name);
     fd.set('username', formData.username);
     fd.set('bio', formData.bio);
+    fd.set('role', formData.role);
     startTransition(async () => {
       const result = await updateProfileAction(fd);
       if (result.error) {
@@ -236,6 +249,33 @@ export default function PerfilPage() {
             <p className={`text-xs mt-1 text-right ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>
               {formData.bio.length}/200
             </p>
+          </div>
+
+          {/* Role */}
+          <div>
+            <label className={labelClass}>Tu rol en QA</label>
+            <div className="grid grid-cols-2 gap-2">
+              {Object.entries(ROLES).map(([value, { label, emoji }]) => {
+                const selected = formData.role === value;
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setFormData(p => ({ ...p, role: value }))}
+                    className={`flex items-center gap-2 px-3 py-2.5 rounded-lg border text-sm font-medium transition-all ${
+                      selected
+                        ? 'border-indigo-500 bg-indigo-600 text-white shadow-sm'
+                        : isDarkMode
+                          ? 'border-slate-600 bg-slate-700 text-slate-300 hover:border-indigo-400 hover:bg-slate-600'
+                          : 'border-gray-300 bg-white text-gray-700 hover:border-indigo-400 hover:bg-indigo-50'
+                    }`}
+                  >
+                    <span>{emoji}</span>
+                    <span className="truncate">{label}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Member since */}

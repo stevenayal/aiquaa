@@ -22,6 +22,7 @@ export async function registerAction(formData: FormData) {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
   const name = formData.get('name') as string;
+  const role = formData.get('role') as string;
 
   const supabase = await createClient();
 
@@ -29,7 +30,7 @@ export async function registerAction(formData: FormData) {
     email,
     password,
     options: {
-      data: { full_name: name },
+      data: { full_name: name, role },
       emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL}/auth/confirm`,
     },
   });
@@ -53,6 +54,16 @@ export async function resendConfirmationAction(email: string) {
   if (error) {
     return { error: error.message };
   }
+  return { success: true };
+}
+
+export async function forgotPasswordAction(email: string) {
+  const supabase = createClient();
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || '';
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${siteUrl}/auth/confirm?next=/auth/reset-password`,
+  });
+  if (error) return { error: error.message };
   return { success: true };
 }
 

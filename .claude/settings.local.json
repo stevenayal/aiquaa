@@ -87,7 +87,8 @@
       "Bash(grep -r \"brand-dark\\\\|brand-accent\\\\|brand-light\\\\|brand-muted\\\\|dark-primary\\\\|dark-secondary\\\\|dark-text\" Z:/Proyectos/aiquaa/apps/frontend/tailwind.config.*)",
       "Bash(grep -r \"login\\\\|register\" Z:/Proyectos/aiquaa/apps/frontend/src/lib/translations*)",
       "mcp__supabase__list_projects",
-      "mcp__supabase__execute_sql"
+      "mcp__supabase__execute_sql",
+      "Bash(wc:*)"
     ],
     "deny": [],
     "ask": []

@@ -18,6 +18,7 @@ export default function RegisterForm() {
     email: '',
     password: '',
     confirmPassword: '',
+    role: '',
   });
 
   const validateForm = (): boolean => {
@@ -44,6 +45,9 @@ export default function RegisterForm() {
     } else if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Las contraseñas no coinciden';
     }
+    if (!formData.role) {
+      newErrors.role = 'Seleccioná tu rol para continuar';
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -59,6 +63,7 @@ export default function RegisterForm() {
     data.set('email', formData.email);
     data.set('password', formData.password);
     data.set('name', formData.name);
+    data.set('role', formData.role);
 
     startTransition(async () => {
       const result = await registerAction(data);
@@ -102,6 +107,13 @@ export default function RegisterForm() {
     if (showAlert) setShowAlert(false);
   };
 
+  const handleRoleChange = (role: string) => {
+    setFormData(prev => ({ ...prev, role }));
+    if (errors.role) {
+      setErrors(prev => { const n = { ...prev }; delete n.role; return n; });
+    }
+  };
+
   return (
     <AuthForm
       mode="register"
@@ -110,6 +122,7 @@ export default function RegisterForm() {
       errors={errors}
       formData={formData}
       onFieldChange={handleChange}
+      onRoleChange={handleRoleChange}
       onClearErrors={() => { setErrors({}); setShowAlert(false); }}
       socialLoginError={socialLoginError}
       onSocialError={() => {}}
