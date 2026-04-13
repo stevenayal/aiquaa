@@ -1,6 +1,9 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
+const PROTECTED_ROUTES = ['/dashboard', '/labs', '/perfil'];
+const AUTH_ROUTES = ['/login', '/register'];
+
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
@@ -23,14 +26,35 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // Refresh session if expired — keeps user logged in
-  await supabase.auth.getUser();
+  // Verify session only for matched routes — avoids Supabase rate limiting from
+  // calling getUser() on every single request across the entire site.
+  const { data: { user } } = await supabase.auth.getUser();
+  const { pathname } = request.nextUrl;
+
+  // Redirect unauthenticated users away from protected routes
+  const isProtected = PROTECTED_ROUTES.some(route => pathname.startsWith(route));
+  if (!user && isProtected) {
+    const loginUrl = request.nextUrl.clone();
+    loginUrl.pathname = '/login';
+    loginUrl.searchParams.set('redirectedFrom', pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  // Redirect authenticated users away from auth pages
+  const isAuthRoute = AUTH_ROUTES.some(route => pathname === route);
+  if (user && isAuthRoute) {
+    return NextResponse.redirect(new URL('/forum', request.url));
+  }
 
   return supabaseResponse;
 }
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/dashboard/:path*',
+    '/labs/:path*',
+    '/perfil/:path*',
+    '/login',
+    '/register',
   ],
 };
