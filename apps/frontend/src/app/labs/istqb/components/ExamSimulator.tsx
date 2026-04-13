@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import type { ExamData, ExamQuestion } from '../types';
 import { prepareExamQuestions, formatTime, generateExamResult } from '../utils';
@@ -13,6 +13,8 @@ interface ExamSimulatorProps {
   examData: ExamData;
   onReset: () => void;
   language: 'es' | 'en';
+  onExamComplete?: (result: import('../types').ExamResult) => void;
+  model?: string;
 }
 
 export default function ExamSimulator({
@@ -21,6 +23,8 @@ export default function ExamSimulator({
   examData,
   onReset,
   language,
+  onExamComplete,
+  model,
 }: ExamSimulatorProps) {
   const { isDarkMode } = useTheme();
   const [questions, setQuestions] = useState<ExamQuestion[]>([]);
@@ -34,6 +38,7 @@ export default function ExamSimulator({
   const [showSubmitDialog, setShowSubmitDialog] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [startTime] = useState(Date.now());
+  const savedRef = useRef(false);
 
   const t = {
     es: {
@@ -193,6 +198,11 @@ export default function ExamSimulator({
       timeSpent,
       examData.examInfo.passingScore,
     );
+
+    if (onExamComplete && !savedRef.current) {
+      savedRef.current = true;
+      onExamComplete(result);
+    }
 
     return <ResultsScreen result={result} onReset={onReset} mode={mode} language={language} />;
   }

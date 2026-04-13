@@ -1,20 +1,49 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Alert } from '@/components/common';
 import ExamSimulator from './components/ExamSimulator';
 import { loadExamData } from './utils';
 import { SuruFloating } from '@/components/Suru';
+import ExamAuthGate from '@/components/labs/ExamAuthGate';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
+import { saveExamResultAction } from '@/actions/exams';
+import type { ExamResult } from './types';
 
 export default function ISTQBSimulatorPage() {
   const { isDarkMode } = useTheme();
+  const { user } = useSupabaseAuth();
   const [participantName, setParticipantName] = useState('');
   const [examMode, setExamMode] = useState<'exam' | 'training' | null>(null);
   const [hasStarted, setHasStarted] = useState(false);
   const [error, setError] = useState('');
   const [language, setLanguage] = useState<'es' | 'en'>('es');
   const [model, setModel] = useState<'A' | 'B' | 'C'>('A');
+
+  useEffect(() => {
+    if (user?.user_metadata?.full_name && !participantName) {
+      setParticipantName(user.user_metadata.full_name);
+    }
+  }, [user]);
+
+  const handleExamComplete = async (result: ExamResult) => {
+    await saveExamResultAction({
+      exam_type: 'istqb',
+      exam_mode: examMode as 'exam' | 'training',
+      score: result.score,
+      total_questions: result.totalQuestions,
+      correct_answers: result.correctAnswers,
+      incorrect_answers: result.incorrectAnswers,
+      passing_score: 26,
+      passed: result.passed,
+      percentage: result.percentage,
+      time_spent: result.timeSpent,
+      model,
+      language,
+      learning_objectives: result.learningObjectiveAnalysis,
+    });
+  };
 
   const t = {
     es: {
@@ -147,11 +176,14 @@ export default function ISTQBSimulatorPage() {
         examData={examData}
         onReset={handleReset}
         language={language}
+        model={model}
+        onExamComplete={handleExamComplete}
       />
     );
   }
 
   return (
+    <ExamAuthGate examName="Simulacro ISTQB CTFL v4.0" examEmoji="📋">
     <div className={`min-h-screen py-8 transition-colors ${isDarkMode ? 'bg-slate-900' : 'bg-gray-50'}`}>
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="mb-8 text-center">
@@ -376,5 +408,6 @@ export default function ISTQBSimulatorPage() {
       {/* Suru mascot teaching ISTQB */}
       <SuruFloating pose="teacher" position="bottom-right" />
     </div>
+    </ExamAuthGate>
   );
 }

@@ -88,7 +88,8 @@
       "Bash(grep -r \"login\\\\|register\" Z:/Proyectos/aiquaa/apps/frontend/src/lib/translations*)",
       "mcp__supabase__list_projects",
       "mcp__supabase__execute_sql",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "mcp__supabase__apply_migration"
     ],
     "deny": [],
     "ask": []

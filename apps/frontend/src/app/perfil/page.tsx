@@ -1,11 +1,33 @@
 'use client';
 
-import React, { useState, useRef, useTransition } from 'react';
+import React, { useState, useRef, useTransition, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { updateProfileAction, uploadAvatarAction } from '@/actions/profile';
+import { getExamResultsAction } from '@/actions/exams';
 import Avatar from '@/components/ui/Avatar';
+
+interface ExamResultRow {
+  id: string;
+  exam_type: 'git' | 'istqb';
+  exam_mode: 'exam' | 'training';
+  score: number;
+  total_questions: number;
+  passing_score: number;
+  passed: boolean;
+  percentage: number;
+  time_spent: number;
+  model?: string;
+  language?: string;
+  created_at: string;
+}
+
+const formatTime = (s: number) => {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${m}:${sec.toString().padStart(2, '0')}`;
+};
 
 const ROLES: Record<string, { label: string; emoji: string }> = {
   estudiante:  { label: 'Estudiante',       emoji: '🎓' },
@@ -26,6 +48,8 @@ export default function PerfilPage() {
   const [isUploading, setIsUploading] = useState(false);
   const [alert, setAlert] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [examResults, setExamResults] = useState<ExamResultRow[]>([]);
+  const [examResultsLoading, setExamResultsLoading] = useState(true);
 
   const [formData, setFormData] = useState({
     full_name: '',
@@ -50,6 +74,14 @@ export default function PerfilPage() {
       router.replace('/login');
     }
   }, [user, isLoading, initialized, router]);
+
+  useEffect(() => {
+    if (!user) return;
+    getExamResultsAction().then(({ data }) => {
+      setExamResults((data as ExamResultRow[]) || []);
+      setExamResultsLoading(false);
+    });
+  }, [user]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -292,6 +324,71 @@ export default function PerfilPage() {
             {isPending ? 'Guardando...' : '💾 Guardar cambios'}
           </button>
         </form>
+
+        {/* Exam History */}
+        <div className={`${card} rounded-xl p-6`}>
+          <h2 className={`text-base font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+            📊 Historial de exámenes
+          </h2>
+
+          {examResultsLoading ? (
+            <div className="flex justify-center py-6">
+              <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-indigo-500" />
+            </div>
+          ) : examResults.length === 0 ? (
+            <div className={`text-center py-8 rounded-lg ${isDarkMode ? 'bg-slate-700/40' : 'bg-gray-50'}`}>
+              <p className="text-3xl mb-2">📝</p>
+              <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
+                Todavía no rendiste ningún examen.
+              </p>
+              <div className="flex justify-center gap-3 mt-4">
+                <a href="/labs/git" className="text-xs text-indigo-400 hover:underline">🌿 Examen GIT</a>
+                <span className={isDarkMode ? 'text-slate-600' : 'text-gray-300'}>·</span>
+                <a href="/labs/istqb" className="text-xs text-indigo-400 hover:underline">📋 ISTQB CTFL</a>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {examResults.map(r => (
+                <div key={r.id} className={`flex items-center justify-between px-4 py-3 rounded-lg ${isDarkMode ? 'bg-slate-700/50' : 'bg-gray-50'}`}>
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="text-lg shrink-0">{r.exam_type === 'git' ? '🌿' : '📋'}</span>
+                    <div className="min-w-0">
+                      <p className={`text-sm font-medium ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}>
+                        {r.exam_type === 'git' ? 'GIT' : `ISTQB${r.model ? ` Modelo ${r.model}` : ''}`}
+                        {' · '}
+                        <span className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
+                          {r.exam_mode === 'exam' ? 'Examen' : 'Entrenamiento'}
+                        </span>
+                      </p>
+                      <p className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>
+                        {new Date(r.created_at).toLocaleDateString('es-PY', { day: '2-digit', month: 'short', year: 'numeric' })}
+                        {' · '}{formatTime(r.time_spent)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <div className="text-right">
+                      <p className={`text-sm font-bold ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}>
+                        {r.score}/{r.total_questions}
+                      </p>
+                      <p className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>
+                        {r.percentage.toFixed(0)}%
+                      </p>
+                    </div>
+                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                      r.passed
+                        ? isDarkMode ? 'bg-emerald-900/40 text-emerald-300' : 'bg-emerald-100 text-emerald-700'
+                        : isDarkMode ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700'
+                    }`}>
+                      {r.passed ? '✓ Aprobado' : '✗ No aprobado'}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
       </div>
     </div>

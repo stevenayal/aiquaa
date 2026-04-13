@@ -1,13 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Alert } from '@/components/common';
 import ExamSimulator from './components/ExamSimulator';
 import { loadExamData } from './utils';
+import ExamAuthGate from '@/components/labs/ExamAuthGate';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
+import { saveExamResultAction } from '@/actions/exams';
+import type { ExamResult } from './types';
 
 export default function GitExamPage() {
   const { isDarkMode } = useTheme();
+  const { user } = useSupabaseAuth();
   const [participantName, setParticipantName] = useState('');
   const [githubProfile, setGithubProfile] = useState('');
   const [examPurpose, setExamPurpose] = useState<'capacitacion' | 'postulacion' | 'practica' | 'otro'>('capacitacion');
@@ -15,6 +20,32 @@ export default function GitExamPage() {
   const [examMode, setExamMode] = useState<'exam' | 'training' | null>(null);
   const [hasStarted, setHasStarted] = useState(false);
   const [error, setError] = useState('');
+
+  // Pre-fill name from user profile
+  useEffect(() => {
+    if (user?.user_metadata?.full_name && !participantName) {
+      setParticipantName(user.user_metadata.full_name);
+    }
+  }, [user]);
+
+  const handleExamComplete = async (result: ExamResult) => {
+    await saveExamResultAction({
+      exam_type: 'git',
+      exam_mode: examMode as 'exam' | 'training',
+      score: result.score,
+      total_questions: result.totalQuestions,
+      correct_answers: result.correctAnswers,
+      incorrect_answers: result.incorrectAnswers,
+      passing_score: 26,
+      passed: result.passed,
+      percentage: result.percentage,
+      time_spent: result.timeSpent,
+      github_profile: result.githubProfile,
+      exam_purpose: result.examPurpose,
+      company_name: result.companyName,
+      learning_objectives: result.learningObjectiveAnalysis,
+    });
+  };
 
   const examData = loadExamData();
 
@@ -67,11 +98,13 @@ export default function GitExamPage() {
         mode={examMode}
         examData={examData}
         onReset={handleReset}
+        onExamComplete={handleExamComplete}
       />
     );
   }
 
   return (
+    <ExamAuthGate examName="Examen Técnico GIT" examEmoji="🌿">
     <div className={`min-h-screen py-8 transition-colors ${isDarkMode ? 'bg-slate-900' : 'bg-gray-50'}`}>
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="mb-8 text-center">
@@ -314,5 +347,6 @@ export default function GitExamPage() {
         </div>
       </div>
     </div>
+    </ExamAuthGate>
   );
 }
