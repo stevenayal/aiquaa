@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
+import { useSupabaseAuth } from '../../contexts/SupabaseAuthContext';
 import forumService, { Thread, ForumFilters } from '../../services/forumService';
 import ForumThreadList from './ForumThreadList';
 import ForumCreateThread from './ForumCreateThread';
@@ -10,7 +10,7 @@ import ForumStats from './ForumStats';
 import { SuruFloating } from '@/components/Suru';
 
 export default function ForumMain() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useSupabaseAuth();
   const [threads, setThreads] = useState<Thread[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -143,7 +143,7 @@ export default function ForumMain() {
                 <ForumThreadList
                   threads={threads}
                   onThreadDeleted={handleThreadDeleted}
-                  currentUser={user}
+                  currentUser={user ? { id: user.id } as any : null}
                 />
 
                 {/* Paginación */}

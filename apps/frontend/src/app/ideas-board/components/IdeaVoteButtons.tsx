@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { ideasBoardService, type Idea } from '@/services/ideasBoardService';
 import { useTheme } from '@/contexts/ThemeContext';
 
@@ -16,7 +16,7 @@ export function IdeaVoteButtons({
   onVoteChange,
   size = 'small',
 }: IdeaVoteButtonsProps) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useSupabaseAuth();
   const { isDarkMode } = useTheme();
   const [isVoting, setIsVoting] = useState(false);
   const [error, setError] = useState<string | null>(null);

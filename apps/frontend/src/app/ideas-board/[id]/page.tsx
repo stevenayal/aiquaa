@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useTheme } from '@/contexts/ThemeContext';
-import { useAuth } from '@/contexts/AuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { SuruFloating } from '@/components/Suru';
 import { ideasBoardService, type Idea, type IdeaComment } from '@/services/ideasBoardService';
 import { IdeaVoteButtons } from '../components/IdeaVoteButtons';
@@ -21,7 +21,7 @@ export default function IdeaDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { isDarkMode } = useTheme();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useSupabaseAuth();
 
   const ideaId = Number(params.id);
 

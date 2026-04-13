@@ -4,14 +4,14 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useTheme } from '@/contexts/ThemeContext';
-import { useAuth } from '@/contexts/AuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { SuruFloating } from '@/components/Suru';
 import { ideasBoardService, type IdeaCategory } from '@/services/ideasBoardService';
 
 export default function CreateIdeaPage() {
   const router = useRouter();
   const { isDarkMode } = useTheme();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useSupabaseAuth();
 
   const [categories, setCategories] = useState<IdeaCategory[]>([]);
   const [loading, setLoading] = useState(false);
