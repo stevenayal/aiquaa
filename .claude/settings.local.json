@@ -80,7 +80,8 @@
       "mcp__vercel__get_deployment",
       "mcp__vercel__get_runtime_logs",
       "mcp__vercel__list_deployments",
-      "Bash(powershell:*)"
+      "Bash(powershell:*)",
+      "Bash(grep -r \"NEXT_PUBLIC_SITE_URL\\\\|NEXTAUTH_URL\" Z:/Proyectos/aiquaa/apps/frontend/.env*)"
     ],
     "deny": [],
     "ask": []
