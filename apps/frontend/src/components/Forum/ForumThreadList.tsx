@@ -137,9 +137,9 @@ export default function ForumThreadList({ threads, onThreadDeleted, currentUser 
                   <span className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>
                     {t('forum.thread.by')} <span className={`font-medium ${isDarkMode ? 'text-slate-200' : 'text-brand-text'}`}>{thread.author.display_name}</span>
                   </span>
-                  <span className={isDarkMode ? 'text-slate-500' : 'text-brand-muted'}>{formatDate(thread.createdAt)}</span>
-                  {thread.updatedAt !== thread.createdAt && (
-                    <span className={isDarkMode ? 'text-slate-500' : 'text-brand-muted'}>({t('forum.thread.edited')} {formatDate(thread.updatedAt)})</span>
+                  <span className={isDarkMode ? 'text-slate-500' : 'text-brand-muted'}>{formatDate(thread.created_at)}</span>
+                  {thread.updated_at !== thread.created_at && (
+                    <span className={isDarkMode ? 'text-slate-500' : 'text-brand-muted'}>({t('forum.thread.edited')} {formatDate(thread.updated_at)})</span>
                   )}
                 </div>
                 <div className="flex items-center gap-2">
@@ -148,7 +148,7 @@ export default function ForumThreadList({ threads, onThreadDeleted, currentUser 
                       <Link href={`/forum/thread/${thread.id}`} className="text-brand-accent hover:text-brand-primary text-sm font-medium">
                         {t('forum.thread.view')}
                       </Link>
-                      {currentUser && currentUser.id === thread.authorId && (
+                      {currentUser && currentUser.id === thread.author_id && (
                         <>
                           <Link href={`/forum/thread/${thread.id}/edit`} className="text-blue-400 hover:text-blue-300 text-sm">{t('forum.thread.edit')}</Link>
                           <button

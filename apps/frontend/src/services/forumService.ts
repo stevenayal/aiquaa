@@ -67,7 +67,8 @@ export interface UpdatePostData {
 }
 
 export interface ForumFilters {
-  category?: string; // slug
+  category?: string; // slug o name
+  tags?: string[];
   search?: string;
   sortBy?: 'newest' | 'oldest' | 'mostViewed' | 'mostReplied';
   page?: number;
