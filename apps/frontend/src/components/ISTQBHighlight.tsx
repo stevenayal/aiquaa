@@ -64,7 +64,7 @@ export default function ISTQBHighlight() {
               </ul>
 
               {/* CTA Buttons */}
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-col sm:flex-row flex-wrap gap-4">
                 <Link
                   href="/recursos"
                   className={`inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${

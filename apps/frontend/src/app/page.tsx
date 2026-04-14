@@ -62,7 +62,7 @@ export default function HomePage() {
               {/* Left Column - Content */}
               <div className="text-center lg:text-left space-y-8">
                 {/* Headline - Benefit-focused */}
-                <h1 className={`text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight ${
+                <h1 className={`text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight break-words hyphens-auto ${
                   isDarkMode ? 'text-white' : 'text-slate-900'
                 }`}>
                   {t('home.hero.title')}
@@ -100,7 +100,7 @@ export default function HomePage() {
                 </div>
 
                 {/* Trust Badges - Discrete */}
-                <div className="flex flex-wrap justify-center lg:justify-start gap-6 pt-4">
+                <div className="flex flex-wrap justify-center lg:justify-start gap-3 sm:gap-6 pt-4">
                   {[
                     t('home.hero.trust.free'),
                     t('home.hero.trust.opensource'),
@@ -120,15 +120,15 @@ export default function HomePage() {
                 </div>
 
                 {/* Quick Stats */}
-                <div className="grid grid-cols-3 gap-6 pt-8 max-w-lg mx-auto lg:mx-0">
+                <div className="grid grid-cols-3 gap-3 sm:gap-6 pt-8 max-w-lg mx-auto lg:mx-0">
                   {[
                     { value: '15+', label: t('home.hero.stats.tools') },
                     { value: '50+', label: t('home.hero.stats.resources') },
                     { value: '100+', label: t('home.hero.stats.community') },
                   ].map((stat) => (
-                    <div key={stat.value} className="text-center lg:text-left">
-                      <div className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{stat.value}</div>
-                      <div className={`text-sm mt-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>{stat.label}</div>
+                    <div key={stat.value} className="text-center lg:text-left min-w-0">
+                      <div className={`text-2xl sm:text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{stat.value}</div>
+                      <div className={`text-xs sm:text-sm mt-1 leading-tight break-words ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>{stat.label}</div>
                     </div>
                   ))}
                 </div>
