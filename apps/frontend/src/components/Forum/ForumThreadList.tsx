@@ -99,14 +99,14 @@ export default function ForumThreadList({ threads, onThreadDeleted, currentUser 
         <div key={thread.id} className={`rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
           <div className="flex items-start gap-4">
             <div className="flex flex-col items-center gap-2 min-w-[60px]">
-              {thread.isPinned && <span className="text-yellow-500 text-lg" title="Thread fijado">📌</span>}
-              {thread.isLocked && <span className="text-red-500 text-lg" title="Thread bloqueado">🔒</span>}
+              {thread.is_pinned && <span className="text-yellow-500 text-lg" title="Thread fijado">📌</span>}
+              {thread.is_locked && <span className="text-red-500 text-lg" title="Thread bloqueado">🔒</span>}
               <div className="text-center">
-                <div className={`text-lg font-semibold ${isDarkMode ? 'text-slate-200' : 'text-brand-text'}`}>{thread.viewCount}</div>
+                <div className={`text-lg font-semibold ${isDarkMode ? 'text-slate-200' : 'text-brand-text'}`}>{thread.view_count}</div>
                 <div className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-brand-muted'}`}>{t('forum.thread.views')}</div>
               </div>
               <div className="text-center">
-                <div className={`text-lg font-semibold ${isDarkMode ? 'text-slate-200' : 'text-brand-text'}`}>{thread.replyCount}</div>
+                <div className={`text-lg font-semibold ${isDarkMode ? 'text-slate-200' : 'text-brand-text'}`}>{thread.reply_count}</div>
                 <div className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-brand-muted'}`}>{t('forum.thread.replies')}</div>
               </div>
             </div>
@@ -135,7 +135,7 @@ export default function ForumThreadList({ threads, onThreadDeleted, currentUser 
               <div className="flex items-center justify-between text-sm flex-wrap gap-2">
                 <div className="flex items-center gap-4 flex-wrap">
                   <span className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>
-                    {t('forum.thread.by')} <span className={`font-medium ${isDarkMode ? 'text-slate-200' : 'text-brand-text'}`}>{thread.author.username}</span>
+                    {t('forum.thread.by')} <span className={`font-medium ${isDarkMode ? 'text-slate-200' : 'text-brand-text'}`}>{thread.author.display_name}</span>
                   </span>
                   <span className={isDarkMode ? 'text-slate-500' : 'text-brand-muted'}>{formatDate(thread.createdAt)}</span>
                   {thread.updatedAt !== thread.createdAt && (
