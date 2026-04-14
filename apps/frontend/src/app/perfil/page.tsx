@@ -40,7 +40,7 @@ const ROLES: Record<string, { label: string; emoji: string }> = {
 };
 
 export default function PerfilPage() {
-  const { user, isLoading } = useSupabaseAuth();
+  const { user, isLoading, refreshUser } = useSupabaseAuth();
   const { isDarkMode } = useTheme();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -105,6 +105,8 @@ export default function PerfilPage() {
       setAlert({ type: 'error', msg: result.error });
       setPreviewUrl(null);
     } else {
+      await refreshUser();
+      setPreviewUrl(null);
       setAlert({ type: 'success', msg: 'Foto actualizada correctamente' });
     }
   };
@@ -122,6 +124,7 @@ export default function PerfilPage() {
       if (result.error) {
         setAlert({ type: 'error', msg: result.error });
       } else {
+        await refreshUser();
         setAlert({ type: 'success', msg: 'Perfil guardado correctamente' });
       }
     });

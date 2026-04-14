@@ -5,7 +5,14 @@ const nextConfig = {
     serverActions: true,
   },
   images: {
-    domains: ['localhost', 'vercel.app'],
+    remotePatterns: [
+      { protocol: 'http', hostname: 'localhost' },
+      { protocol: 'https', hostname: '*.vercel.app' },
+      { protocol: 'https', hostname: '*.supabase.co' },
+      { protocol: 'https', hostname: 'img.youtube.com' },
+      { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
+      { protocol: 'https', hostname: 'avatars.githubusercontent.com' },
+    ],
   },
   // Configuración de variables de entorno con valores por defecto
   env: {

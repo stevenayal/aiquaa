@@ -9,6 +9,7 @@ interface SupabaseAuthContextType {
   session: Session | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  refreshUser: () => Promise<void>;
 }
 
 const SupabaseAuthContext = createContext<SupabaseAuthContextType | undefined>(undefined);
@@ -44,6 +45,12 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
     return () => subscription.unsubscribe();
   }, []);
 
+  const refreshUser = async () => {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    setUser(user);
+  };
+
   return (
     <SupabaseAuthContext.Provider
       value={{
@@ -51,6 +58,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
         session,
         isLoading,
         isAuthenticated: !!user,
+        refreshUser,
       }}
     >
       {children}

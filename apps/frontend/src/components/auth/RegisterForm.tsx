@@ -30,8 +30,10 @@ export default function RegisterForm() {
     }
     if (!formData.email.trim()) {
       newErrors.email = 'Correo obligatorio';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    } else if (!/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(formData.email)) {
       newErrors.email = 'Correo inválido';
+    } else if (/\.(con|cmo|gmal|gamil|yaho|homail|outlok)$/i.test(formData.email)) {
+      newErrors.email = 'Parece un error tipográfico en el email';
     }
     if (!formData.password.trim()) {
       newErrors.password = 'Contraseña obligatoria';

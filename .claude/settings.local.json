@@ -101,7 +101,8 @@
       "Bash(where python:*)",
       "Bash(pnpm --filter @aiquaa/backend build)",
       "Bash(node_modules/.bin/tsc --noEmit)",
-      "mcp__supabase__get_project_url"
+      "mcp__supabase__get_project_url",
+      "WebFetch(domain:github.com)"
     ],
     "deny": [],
     "ask": []
