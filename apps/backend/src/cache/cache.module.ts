@@ -22,10 +22,12 @@ import { CacheService } from './cache.service';
         }
 
         // Usar Redis si está configurado
-        console.log('✅ Using Redis for caching');
+        const isTls = redisUrl.startsWith('rediss://');
+        console.log(`✅ Using Redis for caching${isTls ? ' (TLS)' : ''}`);
         return {
           store: redisStore,
           url: redisUrl,
+          ...(isTls && { tls: {} }),
           ttl: configService.get('CACHE_TTL', 60),
           max: configService.get('CACHE_MAX_ITEMS', 100),
         };
