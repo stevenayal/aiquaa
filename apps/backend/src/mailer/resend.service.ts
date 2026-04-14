@@ -1,48 +1,43 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Resend } from 'resend';
+import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class ResendService {
   private readonly logger = new Logger(ResendService.name);
-  private resend: Resend;
+  private transporter: nodemailer.Transporter;
 
   constructor(private configService: ConfigService) {
-    const apiKey = this.configService.getOrThrow<string>('RESEND_API_KEY');
-    this.resend = new Resend(apiKey);
+    this.transporter = nodemailer.createTransport({
+      host: this.configService.getOrThrow<string>('SES_SMTP_HOST'),
+      port: this.configService.get<number>('SES_SMTP_PORT', 587),
+      secure: false,
+      auth: {
+        user: this.configService.getOrThrow<string>('SES_SMTP_USER'),
+        pass: this.configService.getOrThrow<string>('SES_SMTP_PASS'),
+      },
+    });
+    this.logger.log('MailerService inicializado con AWS SES SMTP');
+  }
+
+  private async sendMail(options: { from: string; to: string | string[]; subject: string; html: string }): Promise<string> {
+    const info = await this.transporter.sendMail(options);
+    return info.messageId;
   }
 
   async sendVerificationEmail(email: string, token: string, name: string): Promise<void> {
-    const appUrl = this.configService.get<string>('APP_URL', 'http://localhost:3000');
-    const verificationUrl = `${appUrl}/verify-email?token=${token}`;
-    const fromEmail = this.configService.get<string>('RESEND_FROM_EMAIL', 'onboarding@resend.dev');
-    const templateId = this.configService.get<string>('RESEND_TEMPLATE_VERIFICATION');
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL', 'http://localhost:3000');
+    const verificationUrl = `${frontendUrl}/verify-email?token=${token}`;
+    const fromEmail = this.configService.get<string>('SES_FROM_EMAIL', 'noreply@aiquaa.com');
 
     try {
-      const payload = templateId
-        ? ({
-            from: fromEmail,
-            to: [email],
-            template: {
-              id: templateId,
-              variables: { NAME: name, VERIFICATION_URL: verificationUrl },
-            },
-          } as const)
-        : ({
-            from: fromEmail,
-            to: [email],
-            subject: 'Verifica tu email - AIQUAA',
-            html: this.getVerificationEmailTemplate(name, verificationUrl),
-          } as const);
-
-      const { data, error } = await this.resend.emails.send(payload);
-
-      if (error) {
-        this.logger.error(`Error enviando email de verificación a ${email}:`, error);
-        throw new Error(`Error de Resend: ${error.message}`);
-      }
-
-      this.logger.log(`Email de verificación enviado a ${email}: ${data?.id}`);
+      const messageId = await this.sendMail({
+        from: fromEmail,
+        to: email,
+        subject: 'Verifica tu email - AIQUAA',
+        html: this.getVerificationEmailTemplate(name, verificationUrl),
+      });
+      this.logger.log(`Email de verificación enviado a ${email}: ${messageId}`);
     } catch (error) {
       this.logger.error(`Error enviando email de verificación a ${email}`, error);
       throw error;
@@ -50,36 +45,18 @@ export class ResendService {
   }
 
   async sendPasswordResetEmail(email: string, token: string, name: string): Promise<void> {
-    const appUrl = this.configService.get<string>('APP_URL', 'http://localhost:3000');
-    const resetUrl = `${appUrl}/reset-password?token=${token}`;
-    const fromEmail = this.configService.get<string>('RESEND_FROM_EMAIL', 'onboarding@resend.dev');
-    const templateId = this.configService.get<string>('RESEND_TEMPLATE_PASSWORD_RESET');
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL', 'http://localhost:3000');
+    const resetUrl = `${frontendUrl}/auth/reset-password?token=${token}`;
+    const fromEmail = this.configService.get<string>('SES_FROM_EMAIL', 'noreply@aiquaa.com');
 
     try {
-      const payload = templateId
-        ? ({
-            from: fromEmail,
-            to: [email],
-            template: {
-              id: templateId,
-              variables: { NAME: name, RESET_URL: resetUrl },
-            },
-          } as const)
-        : ({
-            from: fromEmail,
-            to: [email],
-            subject: 'Restablece tu contraseña - AIQUAA',
-            html: this.getPasswordResetEmailTemplate(name, resetUrl),
-          } as const);
-
-      const { data, error } = await this.resend.emails.send(payload);
-
-      if (error) {
-        this.logger.error(`Error enviando email de reset de contraseña a ${email}:`, error);
-        throw new Error(`Error de Resend: ${error.message}`);
-      }
-
-      this.logger.log(`Email de reset de contraseña enviado a ${email}: ${data?.id}`);
+      const messageId = await this.sendMail({
+        from: fromEmail,
+        to: email,
+        subject: 'Restablece tu contraseña - AIQUAA',
+        html: this.getPasswordResetEmailTemplate(name, resetUrl),
+      });
+      this.logger.log(`Email de reset de contraseña enviado a ${email}: ${messageId}`);
     } catch (error) {
       this.logger.error(`Error enviando email de reset de contraseña a ${email}`, error);
       throw error;
@@ -87,22 +64,16 @@ export class ResendService {
   }
 
   async sendWelcomeEmail(email: string, name: string): Promise<void> {
-    const fromEmail = this.configService.get<string>('RESEND_FROM_EMAIL', 'onboarding@resend.dev');
+    const fromEmail = this.configService.get<string>('SES_FROM_EMAIL', 'noreply@aiquaa.com');
 
     try {
-      const { data, error } = await this.resend.emails.send({
+      const messageId = await this.sendMail({
         from: fromEmail,
-        to: [email],
-        subject: '¡Bienvenido a AIQUAA! 🎉',
+        to: email,
+        subject: '¡Bienvenido a AIQUAA!',
         html: this.getWelcomeEmailTemplate(name),
       });
-
-      if (error) {
-        this.logger.error(`Error enviando email de bienvenida a ${email}:`, error);
-        throw new Error(`Error de Resend: ${error.message}`);
-      }
-
-      this.logger.log(`Email de bienvenida enviado a ${email}: ${data?.id}`);
+      this.logger.log(`Email de bienvenida enviado a ${email}: ${messageId}`);
     } catch (error) {
       this.logger.error(`Error enviando email de bienvenida a ${email}`, error);
       // No relanzamos para no bloquear el flujo de verificación
@@ -110,22 +81,16 @@ export class ResendService {
   }
 
   async sendTwoFactorCode(email: string, code: string, name: string): Promise<void> {
-    const fromEmail = this.configService.get<string>('RESEND_FROM_EMAIL', 'onboarding@resend.dev');
+    const fromEmail = this.configService.get<string>('SES_FROM_EMAIL', 'noreply@aiquaa.com');
 
     try {
-      const { data, error } = await this.resend.emails.send({
+      const messageId = await this.sendMail({
         from: fromEmail,
-        to: [email],
+        to: email,
         subject: 'Código de verificación - AIQUAA',
         html: this.getTwoFactorEmailTemplate(name, code),
       });
-
-      if (error) {
-        this.logger.error(`Error enviando código 2FA a ${email}:`, error);
-        throw new Error(`Error de Resend: ${error.message}`);
-      }
-
-      this.logger.log(`Código 2FA enviado a ${email}: ${data?.id}`);
+      this.logger.log(`Código 2FA enviado a ${email}: ${messageId}`);
     } catch (error) {
       this.logger.error(`Error enviando código 2FA a ${email}`, error);
       throw error;
@@ -133,22 +98,16 @@ export class ResendService {
   }
 
   async sendSecurityAlert(email: string, name: string, alertType: string, details: string): Promise<void> {
-    const fromEmail = this.configService.get<string>('RESEND_FROM_EMAIL', 'onboarding@resend.dev');
+    const fromEmail = this.configService.get<string>('SES_FROM_EMAIL', 'noreply@aiquaa.com');
 
     try {
-      const { data, error } = await this.resend.emails.send({
+      const messageId = await this.sendMail({
         from: fromEmail,
-        to: [email],
+        to: email,
         subject: `Alerta de seguridad - AIQUAA`,
         html: this.getSecurityAlertTemplate(name, alertType, details),
       });
-
-      if (error) {
-        this.logger.error(`Error enviando alerta de seguridad a ${email}:`, error);
-        throw new Error(`Error de Resend: ${error.message}`);
-      }
-
-      this.logger.log(`Alerta de seguridad enviada a ${email}: ${data?.id}`);
+      this.logger.log(`Alerta de seguridad enviada a ${email}: ${messageId}`);
     } catch (error) {
       this.logger.error(`Error enviando alerta de seguridad a ${email}`, error);
       // No relanzamos para no bloquear el flujo principal
@@ -401,7 +360,7 @@ export class ResendService {
 
 async sendIstqbExamReport(examData: any, resultId: number): Promise<void> {
   const adminEmail = this.configService.get<string>('ADMIN_EMAIL', 'admin@aiquaa.com');
-  const fromEmail = this.configService.get<string>('RESEND_FROM_EMAIL', 'onboarding@resend.dev');
+  const fromEmail = this.configService.get<string>('SES_FROM_EMAIL', 'noreply@aiquaa.com');
 
   const examDate = new Date(examData.endTime).toLocaleDateString('es-ES', {
     year: 'numeric',
@@ -412,19 +371,13 @@ async sendIstqbExamReport(examData: any, resultId: number): Promise<void> {
   });
 
   try {
-    const { data, error } = await this.resend.emails.send({
+    const messageId = await this.sendMail({
       from: fromEmail,
-      to: [adminEmail],
+      to: adminEmail,
       subject: `[ISTQB] Examen completado - ${examData.participantName} - ${examDate}`,
       html: this.getIstqbExamReportTemplate(examData, resultId, examDate),
     });
-
-    if (error) {
-      this.logger.error(`Error enviando informe ISTQB a ${adminEmail}:`, error);
-      throw new Error(`Error de Resend: ${error.message}`);
-    }
-
-    this.logger.log(`Informe ISTQB enviado a ${adminEmail}: ${data?.id}`);
+    this.logger.log(`Informe ISTQB enviado a ${adminEmail}: ${messageId}`);
   } catch (error) {
     this.logger.error(`Error enviando informe ISTQB a ${adminEmail}`, error);
     throw error;
@@ -433,7 +386,7 @@ async sendIstqbExamReport(examData: any, resultId: number): Promise<void> {
 
 async sendPerformanceExamReport(examData: any, resultId: number): Promise<void> {
   const adminEmail = this.configService.get<string>('ADMIN_EMAIL', 'admin@aiquaa.com');
-  const fromEmail = this.configService.get<string>('RESEND_FROM_EMAIL', 'onboarding@resend.dev');
+  const fromEmail = this.configService.get<string>('SES_FROM_EMAIL', 'noreply@aiquaa.com');
 
   const examDate = new Date(examData.endTime).toLocaleDateString('es-ES', {
     year: 'numeric',
@@ -451,19 +404,13 @@ async sendPerformanceExamReport(examData: any, resultId: number): Promise<void> 
   };
 
   try {
-    const { data, error } = await this.resend.emails.send({
+    const messageId = await this.sendMail({
       from: fromEmail,
-      to: [adminEmail],
+      to: adminEmail,
       subject: `[Performance Testing] Examen completado - ${examData.participantName} - ${examDate}`,
       html: this.getPerformanceExamReportTemplate(examData, resultId, examDate, purposeLabels[examData.examPurpose]),
     });
-
-    if (error) {
-      this.logger.error(`Error enviando informe de Performance a ${adminEmail}:`, error);
-      throw new Error(`Error de Resend: ${error.message}`);
-    }
-
-    this.logger.log(`Informe de Performance Testing enviado a ${adminEmail}: ${data?.id}`);
+    this.logger.log(`Informe de Performance Testing enviado a ${adminEmail}: ${messageId}`);
   } catch (error) {
     this.logger.error(`Error enviando informe de Performance a ${adminEmail}`, error);
     throw error;
@@ -471,7 +418,7 @@ async sendPerformanceExamReport(examData: any, resultId: number): Promise<void> 
 }
 
 async sendGitExamReport(email: string, examResult: any): Promise<void> {
-  const fromEmail = this.configService.get<string>('RESEND_FROM_EMAIL', 'onboarding@resend.dev');
+  const fromEmail = this.configService.get<string>('SES_FROM_EMAIL', 'noreply@aiquaa.com');
 
   const examDate = new Date().toLocaleDateString('es-ES', {
     year: 'numeric',
@@ -482,19 +429,13 @@ async sendGitExamReport(email: string, examResult: any): Promise<void> {
   });
 
   try {
-    const { data, error } = await this.resend.emails.send({
+    const messageId = await this.sendMail({
       from: fromEmail,
-      to: [email],
+      to: email,
       subject: `[AIQUAA] Resultado Examen GIT - ${examResult.participantName} - ${examDate}`,
       html: this.getGitExamReportTemplate(examResult, examDate),
     });
-
-    if (error) {
-      this.logger.error(`Error enviando resultado de examen Git a ${email}:`, error);
-      throw new Error(`Error de Resend: ${error.message}`);
-    }
-
-    this.logger.log(`Resultado de examen Git enviado a ${email}: ${data?.id}`);
+    this.logger.log(`Resultado de examen Git enviado a ${email}: ${messageId}`);
   } catch (error) {
     this.logger.error(`Error enviando resultado de examen Git a ${email}`, error);
     throw error;
@@ -524,7 +465,7 @@ async sendTestResultsReport(testResults: {
   type: 'unit' | 'e2e' | 'contract' | 'all';
 }): Promise<void> {
   const adminEmail = this.configService.get<string>('ADMIN_EMAIL', 'admin@aiquaa.com');
-  const fromEmail = this.configService.get<string>('RESEND_FROM_EMAIL', 'onboarding@resend.dev');
+  const fromEmail = this.configService.get<string>('SES_FROM_EMAIL', 'noreply@aiquaa.com');
 
   const testDate = testResults.timestamp.toLocaleDateString('es-ES', {
     year: 'numeric',
@@ -542,19 +483,13 @@ async sendTestResultsReport(testResults: {
   };
 
   try {
-    const { data, error } = await this.resend.emails.send({
+    const messageId = await this.sendMail({
       from: fromEmail,
-      to: [adminEmail],
-      subject: `[Tests] ${typeLabels[testResults.type]} - ${testResults.success ? '✅ EXITOSO' : '❌ FALLIDO'} - ${testDate}`,
+      to: adminEmail,
+      subject: `[Tests] ${typeLabels[testResults.type]} - ${testResults.success ? 'EXITOSO' : 'FALLIDO'} - ${testDate}`,
       html: this.getTestResultsReportTemplate(testResults, testDate, typeLabels[testResults.type]),
     });
-
-    if (error) {
-      this.logger.error(`Error enviando resultados de pruebas a ${adminEmail}:`, error);
-      throw new Error(`Error de Resend: ${error.message}`);
-    }
-
-    this.logger.log(`Resultados de pruebas enviados a ${adminEmail}: ${data?.id}`);
+    this.logger.log(`Resultados de pruebas enviados a ${adminEmail}: ${messageId}`);
   } catch (error) {
     this.logger.error(`Error enviando resultados de pruebas a ${adminEmail}`, error);
     throw error;
@@ -966,7 +901,7 @@ private getPerformanceExamReportTemplate(examData: any, resultId: number, examDa
 }
 
 async sendTechnicalBugReport(email: string, report: any): Promise<void> {
-  const fromEmail = this.configService.get<string>('RESEND_FROM_EMAIL', 'onboarding@resend.dev');
+  const fromEmail = this.configService.get<string>('SES_FROM_EMAIL', 'noreply@aiquaa.com');
 
   const reportDate = new Date().toLocaleDateString('es-ES', {
     year: 'numeric',
@@ -977,19 +912,13 @@ async sendTechnicalBugReport(email: string, report: any): Promise<void> {
   });
 
   try {
-    const { data, error } = await this.resend.emails.send({
+    const messageId = await this.sendMail({
       from: fromEmail,
-      to: [email],
+      to: email,
       subject: `[AIQUAA] Informe Técnico de Bugs - ${report.candidateInfo.fullName} - ${reportDate}`,
       html: this.getTechnicalBugReportTemplate(report, reportDate),
     });
-
-    if (error) {
-      this.logger.error(`Error enviando informe técnico a ${email}:`, error);
-      throw new Error(`Error de Resend: ${error.message}`);
-    }
-
-    this.logger.log(`Informe técnico de bugs enviado a ${email}: ${data?.id}`);
+    this.logger.log(`Informe técnico de bugs enviado a ${email}: ${messageId}`);
   } catch (error) {
     this.logger.error(`Error enviando informe técnico a ${email}`, error);
     throw error;

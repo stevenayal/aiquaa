@@ -17,43 +17,60 @@ interface YouTubeVideo {
 // Lista de videos del canal AIQUAA
 const videos: YouTubeVideo[] = [
   {
-    id: 'istqb-intro',
-    title: 'ISTQB Foundation Level - Introducción',
-    description: 'Introducción completa al ISTQB CTFL v4.0. Aprende los conceptos fundamentales del testing de software.',
-    videoId: 'YOUR_VIDEO_ID_1', // Reemplazar con ID real del video
-    duration: '15:30',
+    id: 'cap1',
+    title: 'Capítulo 1 - El Mundo de las Pruebas de Software',
+    description: 'Introducción al mundo del testing: qué es, por qué es importante y los fundamentos del ISTQB CTFL v4.0.',
+    videoId: 'q7I42B9douk',
+    duration: '',
     chapter: 1,
-    isNew: true,
-    thumbnail: 'https://img.youtube.com/vi/YOUR_VIDEO_ID_1/maxresdefault.jpg'
+    thumbnail: 'https://img.youtube.com/vi/q7I42B9douk/maxresdefault.jpg'
   },
   {
-    id: 'jmeter-basics',
-    title: 'Apache JMeter - Primeros Pasos',
-    description: 'Aprende a crear tu primer test de performance con JMeter. Configuración básica y elementos principales.',
-    videoId: 'YOUR_VIDEO_ID_2',
-    duration: '22:45',
+    id: 'cap2',
+    title: 'Capítulo 2 - El Arte de Probar Software',
+    description: 'Técnicas de prueba estática y dinámica, niveles de testing y cómo diseñar casos de prueba efectivos.',
+    videoId: 'wWlP2-8uzv0',
+    duration: '',
     chapter: 2,
-    isNew: true,
-    thumbnail: 'https://img.youtube.com/vi/YOUR_VIDEO_ID_2/maxresdefault.jpg'
+    thumbnail: 'https://img.youtube.com/vi/wWlP2-8uzv0/maxresdefault.jpg'
   },
   {
-    id: 'testing-fundamentals',
-    title: 'Fundamentos de Testing de Software',
-    description: 'Los 7 principios del testing, niveles de prueba y técnicas fundamentales que todo tester debe conocer.',
-    videoId: 'YOUR_VIDEO_ID_3',
-    duration: '18:20',
+    id: 'cap3',
+    title: 'Capítulo 3 - Pruebas Estáticas',
+    description: 'Revisiones, inspecciones y análisis estático de código. Técnicas para encontrar defectos sin ejecutar el software.',
+    videoId: 'tF61cMWLlF0',
+    duration: '',
     chapter: 3,
-    thumbnail: 'https://img.youtube.com/vi/YOUR_VIDEO_ID_3/maxresdefault.jpg'
+    thumbnail: 'https://img.youtube.com/vi/tF61cMWLlF0/maxresdefault.jpg'
   },
   {
-    id: 'automation-intro',
-    title: 'Introducción a la Automatización de Pruebas',
-    description: 'Cuándo automatizar, qué automatizar y herramientas esenciales para comenzar en la automatización.',
-    videoId: 'YOUR_VIDEO_ID_4',
-    duration: '20:15',
+    id: 'cap4',
+    title: 'Capítulo 4 - La Vida Secreta del Testing',
+    description: 'Técnicas de diseño de pruebas: caja negra, caja blanca y basadas en experiencia.',
+    videoId: 'h3uVKefxuhk',
+    duration: '',
     chapter: 4,
-    thumbnail: 'https://img.youtube.com/vi/YOUR_VIDEO_ID_4/maxresdefault.jpg'
-  }
+    thumbnail: 'https://img.youtube.com/vi/h3uVKefxuhk/maxresdefault.jpg'
+  },
+  {
+    id: 'cap5',
+    title: 'Capítulo 5 - Gestión de Pruebas',
+    description: 'Planificación, estimación, monitoreo y control de actividades de testing en proyectos reales.',
+    videoId: 'dZ0GaiBm8wM',
+    duration: '',
+    chapter: 5,
+    thumbnail: 'https://img.youtube.com/vi/dZ0GaiBm8wM/maxresdefault.jpg'
+  },
+  {
+    id: 'cap6',
+    title: 'Capítulo 6 - Herramientas del Tester',
+    description: 'Herramientas esenciales para el testing moderno: gestión de pruebas, automatización y performance.',
+    videoId: 'lnf-zlxqu3E',
+    duration: '',
+    chapter: 6,
+    isNew: true,
+    thumbnail: 'https://img.youtube.com/vi/lnf-zlxqu3E/maxresdefault.jpg'
+  },
 ];
 
 export default function YouTubeSection() {
@@ -100,7 +117,7 @@ export default function YouTubeSection() {
         </div>
 
         {/* Videos Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {videos.map((video) => (
             <div
               key={video.id}
@@ -120,14 +137,13 @@ export default function YouTubeSection() {
                 <div className={`aspect-video relative ${
                   isDarkMode ? 'bg-slate-600' : 'bg-gray-200'
                 }`}>
-                  {/* Placeholder for thumbnail - replace with actual YouTube thumbnail */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <svg className={`w-16 h-16 ${
-                      isDarkMode ? 'text-slate-500' : 'text-gray-400'
-                    }`} fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z"/>
-                    </svg>
-                  </div>
+                  {/* YouTube thumbnail */}
+                  <img
+                    src={video.thumbnail}
+                    alt={video.title}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    onError={(e) => { (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${video.videoId}/hqdefault.jpg`; }}
+                  />
 
                   {/* Play button overlay */}
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
@@ -155,11 +171,13 @@ export default function YouTubeSection() {
                   </div>
 
                   {/* Duration */}
-                  <div className="absolute bottom-2 right-2">
-                    <span className="bg-black bg-opacity-80 text-white text-xs px-2 py-1 rounded">
-                      {video.duration}
-                    </span>
-                  </div>
+                  {video.duration && (
+                    <div className="absolute bottom-2 right-2">
+                      <span className="bg-black bg-opacity-80 text-white text-xs px-2 py-1 rounded">
+                        {video.duration}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </a>
 

@@ -89,7 +89,19 @@
       "mcp__supabase__list_projects",
       "mcp__supabase__execute_sql",
       "Bash(wc:*)",
-      "mcp__supabase__apply_migration"
+      "mcp__supabase__apply_migration",
+      "Bash(python3 -c \"import sys,json; logs=json.load\\(sys.stdin\\); errors=[l for l in logs if 'error' in l.get\\('text',''\\).lower\\(\\) or 'Error' in l.get\\('text',''\\) or 'failed' in l.get\\('text',''\\).lower\\(\\)]; [print\\(l['text']\\) for l in errors[-80:]]\")",
+      "Bash(python3:*)",
+      "mcp__supabase__get_logs",
+      "Bash(python -c \"import sys,json; logs=json.load\\(sys.stdin\\); [print\\(l['text'][:300]\\) for l in logs[:20]]\")",
+      "Bash(aws configure:*)",
+      "Bash(aws sts:*)",
+      "Bash(winget list:*)",
+      "Bash(pip show:*)",
+      "Bash(where python:*)",
+      "Bash(pnpm --filter @aiquaa/backend build)",
+      "Bash(node_modules/.bin/tsc --noEmit)",
+      "mcp__supabase__get_project_url"
     ],
     "deny": [],
     "ask": []
