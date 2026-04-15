@@ -360,5 +360,3 @@ export async function exportToPDF(result: ExamResult): Promise<void> {
   // Download
   doc.save(`Examen-Git-${result.participantName.replace(/\s+/g, '-')}-${Date.now()}.pdf`);
 }
-
-}
