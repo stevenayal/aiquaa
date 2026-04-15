@@ -5,7 +5,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import type { ExamResult } from '../types';
 import { exportToCSV, downloadCSV, formatTime } from '../utils';
 import { generateExamPDF } from '../utils/pdfExport';
-// import { useSubmitResults } from '../hooks/useSubmitResults';
+import { useSubmitResults } from '../hooks/useSubmitResults';
 
 interface ResultsScreenProps {
   result: ExamResult;
@@ -22,6 +22,7 @@ export default function ResultsScreen({
 }: ResultsScreenProps) {
   const { isDarkMode } = useTheme();
   const [activeTab, setActiveTab] = useState<'summary' | 'learning-objectives' | 'details'>('summary');
+  useSubmitResults(result, mode);
 
   const t = {
     es: {

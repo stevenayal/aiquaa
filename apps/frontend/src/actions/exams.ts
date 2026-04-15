@@ -3,17 +3,19 @@
 import { createClient } from '@/lib/supabase/server';
 
 interface SaveExamResultPayload {
-  exam_type: 'git' | 'istqb';
+  exam_type: 'git' | 'istqb' | 'performance';
   exam_mode: 'exam' | 'training';
+  participant_name?: string;
   score: number;
   total_questions: number;
   correct_answers: number;
   incorrect_answers: number;
-  passing_score: number;
+  passing_score?: number;
   passed: boolean;
   percentage: number;
   time_spent: number;
-  // Git
+  answers?: object;
+  // Git & Performance
   github_profile?: string;
   exam_purpose?: string;
   company_name?: string;
@@ -38,7 +40,7 @@ export async function saveExamResultAction(payload: SaveExamResultPayload) {
   return { success: true };
 }
 
-export async function getLeaderboardAction(examType: 'git' | 'istqb', limit = 20) {
+export async function getLeaderboardAction(examType: 'git' | 'istqb' | 'performance', limit = 20) {
   const supabase = createClient();
   const { data, error } = await supabase.rpc('get_leaderboard', {
     p_exam_type: examType,

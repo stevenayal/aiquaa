@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import type { ExamResult } from '../types';
-import { exportToCSV, downloadCSV, formatTime, exportToPDF, sendResultByEmail } from '../utils';
+import { exportToCSV, downloadCSV, formatTime, exportToPDF } from '../utils';
+import { saveExamResultAction } from '@/actions/exams';
 
 interface ResultsScreenProps {
   result: ExamResult;
@@ -18,8 +19,27 @@ export default function ResultsScreen({
 }: ResultsScreenProps) {
   const { isDarkMode } = useTheme();
   const [activeTab, setActiveTab] = useState<'summary' | 'learning-objectives' | 'details'>('summary');
-  const [sendingEmail, setSendingEmail] = useState(false);
-  const [emailSuccess, setEmailSuccess] = useState(false);
+
+  useEffect(() => {
+    saveExamResultAction({
+      exam_type: 'git',
+      exam_mode: mode,
+      participant_name: result.participantName,
+      github_profile: result.githubProfile,
+      exam_purpose: result.examPurpose,
+      company_name: result.companyName,
+      score: result.score,
+      total_questions: result.totalQuestions,
+      correct_answers: result.correctAnswers,
+      incorrect_answers: result.incorrectAnswers,
+      passing_score: 26,
+      passed: result.passed,
+      percentage: result.percentage,
+      time_spent: result.timeSpent,
+      answers: result.answers as any,
+      learning_objectives: result.learningObjectiveAnalysis as any,
+    }).catch((err) => console.error('Error guardando resultado Git:', err));
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleExportCSV = () => {
     const csv = exportToCSV(result);
@@ -33,23 +53,6 @@ export default function ResultsScreen({
     } catch (error) {
       console.error('Error al exportar PDF:', error);
       alert('Error al generar el PDF. Por favor, intenta de nuevo.');
-    }
-  };
-
-  const handleSendEmail = async () => {
-    setSendingEmail(true);
-
-    try {
-      await sendResultByEmail(result);
-      setEmailSuccess(true);
-      setTimeout(() => {
-        setEmailSuccess(false);
-      }, 3000);
-    } catch (error) {
-      console.error('Error al enviar correo:', error);
-      alert('Error al enviar el correo al administrador. Por favor, intenta de nuevo.');
-    } finally {
-      setSendingEmail(false);
     }
   };
 
@@ -116,20 +119,6 @@ export default function ResultsScreen({
                   }`}
                 >
                   📄 PDF
-                </button>
-                <button
-                  onClick={handleSendEmail}
-                  disabled={sendingEmail}
-                  title="Enviar resultados a admin@aiquaa.com"
-                  className={`px-4 py-2 rounded-lg font-medium transition-colors flex-1 md:flex-none ${
-                    sendingEmail
-                      ? 'bg-gray-400 cursor-not-allowed'
-                      : isDarkMode
-                      ? 'bg-blue-700 hover:bg-blue-600 text-white border border-blue-600'
-                      : 'bg-blue-600 hover:bg-blue-700 text-white border border-blue-700'
-                  }`}
-                >
-                  {sendingEmail ? '📤 Enviando...' : emailSuccess ? '✓ Enviado' : '📧 Enviar al Admin'}
                 </button>
                 <button
                   onClick={onReset}
@@ -546,16 +535,7 @@ export default function ResultsScreen({
           </div>
         </div>
 
-        {emailSuccess && (
-          <div className="fixed bottom-4 right-4 z-50">
-            <div className="p-4 rounded-lg bg-green-100 dark:bg-green-900/90 border-2 border-green-500 dark:border-green-700 shadow-xl">
-              <p className="text-sm font-semibold text-green-800 dark:text-green-200 flex items-center gap-2">
-                <span className="text-xl">✓</span>
-                ¡Resultados enviados a admin@aiquaa.com!
-              </p>
-            </div>
-          </div>
-        )}
+
       </div>
     </div>
   );

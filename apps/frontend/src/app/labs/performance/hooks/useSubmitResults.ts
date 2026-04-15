@@ -1,24 +1,6 @@
 import { useState } from 'react';
+import { saveExamResultAction } from '@/actions/exams';
 import type { ExamResult } from '../types';
-
-interface SubmitResultsPayload {
-  participantName: string;
-  githubProfile: string;
-  examPurpose: 'capacitacion' | 'postulacion' | 'practica' | 'otro';
-  companyName?: string;
-  startTime: string;
-  endTime: string;
-  timeSpent: number;
-  score: number;
-  totalQuestions: number;
-  correctAnswers: number;
-  incorrectAnswers: number;
-  percentage: number;
-  passed: boolean;
-  mode: 'exam' | 'training';
-  answers: any[];
-  learningObjectiveAnalysis: any[];
-}
 
 export function useSubmitResults() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -28,66 +10,45 @@ export function useSubmitResults() {
   const submitResults = async (
     result: ExamResult,
     mode: 'exam' | 'training',
-    startTime: Date,
-    endTime: Date
+    _startTime: Date,
+    _endTime: Date,
   ) => {
     setIsSubmitting(true);
     setError(null);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-
-      const payload: SubmitResultsPayload = {
-        participantName: result.participantName,
-        githubProfile: result.githubProfile,
-        examPurpose: result.examPurpose,
-        companyName: result.companyName,
-        startTime: startTime.toISOString(),
-        endTime: endTime.toISOString(),
-        timeSpent: result.timeSpent,
+      const res = await saveExamResultAction({
+        exam_type: 'performance',
+        exam_mode: mode,
+        participant_name: result.participantName,
+        github_profile: result.githubProfile,
+        exam_purpose: result.examPurpose,
+        company_name: result.companyName,
         score: result.score,
-        totalQuestions: result.totalQuestions,
-        correctAnswers: result.correctAnswers,
-        incorrectAnswers: result.incorrectAnswers,
-        percentage: result.percentage,
+        total_questions: result.totalQuestions,
+        correct_answers: result.correctAnswers,
+        incorrect_answers: result.incorrectAnswers,
         passed: result.passed,
-        mode,
-        answers: result.answers,
-        learningObjectiveAnalysis: result.learningObjectiveAnalysis,
-      };
-
-      const response = await fetch(`${apiUrl}/api/v1/performance/submit-exam`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
+        percentage: result.percentage,
+        time_spent: result.timeSpent,
+        answers: result.answers as any,
+        learning_objectives: result.learningObjectiveAnalysis as any,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.message || 'Error al guardar los resultados');
+      if (res.error) {
+        throw new Error(res.error);
       }
 
-      const data = await response.json();
-      console.log('Resultados guardados exitosamente:', data);
-
       setIsSubmitted(true);
-      return data;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Error desconocido al guardar resultados';
-      setError(errorMessage);
-      console.error('Error al enviar resultados:', err);
+      const msg = err instanceof Error ? err.message : 'Error desconocido al guardar resultados';
+      setError(msg);
+      console.error('Error al guardar resultado Performance:', err);
       throw err;
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  return {
-    submitResults,
-    isSubmitting,
-    error,
-    isSubmitted,
-  };
+  return { submitResults, isSubmitting, error, isSubmitted };
 }

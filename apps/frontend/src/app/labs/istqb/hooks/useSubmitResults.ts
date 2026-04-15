@@ -1,54 +1,45 @@
 import { useEffect, useState } from 'react';
+import { saveExamResultAction } from '@/actions/exams';
 import type { ExamResult } from '../types';
 
 export function useSubmitResults(result: ExamResult, mode: 'exam' | 'training') {
-  const [emailSent, setEmailSent] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    const submitResults = async () => {
+    const submit = async () => {
       setIsSubmitting(true);
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-        const response = await fetch(`${apiUrl}/api/v1/istqb/submit-exam`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            participantName: result.participantName,
-            participantEmail: undefined,
-            startTime: new Date(Date.now() - result.timeSpent * 1000).toISOString(),
-            endTime: new Date().toISOString(),
-            timeSpent: result.timeSpent,
-            score: result.score,
-            totalQuestions: result.totalQuestions,
-            correctAnswers: result.correctAnswers,
-            incorrectAnswers: result.incorrectAnswers,
-            percentage: result.percentage,
-            passed: result.passed,
-            mode: mode.toUpperCase() as 'EXAM' | 'TRAINING',
-            answers: result.answers,
-            learningObjectiveAnalysis: result.learningObjectiveAnalysis,
-          }),
+        const res = await saveExamResultAction({
+          exam_type: 'istqb',
+          exam_mode: mode,
+          participant_name: result.participantName,
+          score: result.score,
+          total_questions: result.totalQuestions,
+          correct_answers: result.correctAnswers,
+          incorrect_answers: result.incorrectAnswers,
+          passing_score: 26,
+          passed: result.passed,
+          percentage: result.percentage,
+          time_spent: result.timeSpent,
+          answers: result.answers as any,
+          learning_objectives: result.learningObjectiveAnalysis as any,
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Resultados enviados exitosamente:', data);
-          setEmailSent(true);
+        if (res.error) {
+          console.error('Error guardando resultado ISTQB:', res.error);
         } else {
-          console.error('Error enviando resultados:', await response.text());
+          setIsSaved(true);
         }
-      } catch (error) {
-        console.error('Error al conectar con el servidor:', error);
+      } catch (err) {
+        console.error('Error guardando resultado ISTQB:', err);
       } finally {
         setIsSubmitting(false);
       }
     };
 
-    submitResults();
-  }, [result, mode]);
+    submit();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return { emailSent, isSubmitting };
+  return { isSaved, isSubmitting };
 }
