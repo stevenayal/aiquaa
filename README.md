@@ -1,426 +1,256 @@
-# AIQUAA Monorepo
+# AIQUAA
 
-Plataforma de inteligencia artificial y desarrollo con herramientas, laboratorios y comunidad para QA en Paraguay.
+Plataforma educativa y de herramientas para la comunidad QA en Paraguay.
 
-## 🏗️ Estructura del Proyecto
+---
+
+## ¿Cómo funciona AIQUAA hoy?
+
+AIQUAA es una aplicación **Next.js desplegada en Vercel** que usa **Supabase** como backend-as-a-service (base de datos, autenticación y storage). No existe un servidor backend propio en producción.
+
+```
+Browser
+  └── Next.js (Vercel)
+        ├── App Router + Server Components
+        ├── Server Actions  →  Supabase (PostgreSQL + Auth + Storage)
+        ├── API Routes      →  GitHub API / AWS SES SMTP
+        └── Client Components (React)
+```
+
+### Stack de producción
+
+| Capa | Tecnología |
+|---|---|
+| Frontend + SSR | Next.js 13 (App Router) en Vercel |
+| Base de datos | Supabase PostgreSQL |
+| Autenticación | Supabase Auth (email/password con verificación) |
+| Email | AWS SES SMTP via nodemailer |
+| Bug reports | GitHub Issues via Octokit |
+| Cache API externa | `next: { revalidate }` en fetch calls |
+
+### NestJS — solo desarrollo local
+
+El directorio `apps/backend/` contiene una API NestJS con Prisma que se usa únicamente en desarrollo local. **No está desplegado en producción.** Si quieres correrlo localmente para explorar o hacer pruebas, sigue las instrucciones de la sección [Desarrollo local](#-desarrollo-local).
+
+---
+
+## Funcionalidades actuales
+
+### Autenticación
+- Registro con email y verificación por link (SES SMTP)
+- Login con email y contraseña
+- Reset de contraseña por email
+- Rutas protegidas via middleware (`/labs/*`, `/perfil`)
+
+### Laboratorios (Labs)
+
+Todos los exámenes requieren cuenta y guardan resultados en Supabase (`exam_results`).
+
+| Lab | Descripción |
+|---|---|
+| **ISTQB CTFL v4.0** | Simulacro de 40 preguntas, modo examen y entrenamiento |
+| **Examen GIT** | Evaluación técnica de control de versiones |
+| **Performance Testing** | Examen sobre fundamentos y herramientas de performance |
+| **All Pairs** | Generador de combinaciones pairwise para diseño de pruebas |
+| **Test App** | App ficticia con bugs intencionales para ejercitar exploración |
+| **Cron Validator** | Validador y explicador de expresiones cron |
+| **JSON Validator** | Validador y formateador de JSON |
+| **YAML Validator** | Validador de YAML |
+| **JWT Decoder** | Decodificador de tokens JWT |
+| **Risk Matrix** | Matriz de riesgo para planificación de pruebas |
+| **Req Lint** | Análisis de calidad de requerimientos |
+| **Checklist** | Generador de checklists de pruebas |
+| **Data Generator** | Generador de datos de prueba |
+
+### Ranking
+- Leaderboard por tipo de examen: **GIT**, **ISTQB**, **Performance**
+- Tab **Reportadores**: lista de usuarios que abrieron issues en el repositorio de GitHub, con conteo de issues abiertos/resueltos y links directos
+
+### Foro
+- Categorías, hilos y posts gestionados directamente en Supabase
+- RLS (Row Level Security) para control de acceso
+- Categorías precargadas al iniciar el proyecto
+
+### Comunidad
+- Página de comunidad con timeline de hitos, eventos pasados y sección de YouTube
+- Integración con GitHub Issues y Discussions
+- Widget de reporte de bugs (crea issues en GitHub automáticamente)
+
+### Ideas Board
+- Los usuarios pueden proponer y votar ideas para la plataforma
+
+### Perfil
+- Historial de exámenes del usuario con scores, fechas y estado aprobado/reprobado
+- Actualización de avatar
+
+---
+
+## 📁 Estructura del monorepo
 
 ```
 aiquaa/
 ├── apps/
-│   ├── frontend/          # Next.js 15 App Router
-│   └── backend/           # NestJS API
+│   ├── frontend/          # Next.js 13 — app de producción (Vercel)
+│   │   └── src/
+│   │       ├── app/       # Páginas y API routes (App Router)
+│   │       ├── actions/   # Server Actions (Supabase)
+│   │       ├── components/
+│   │       ├── contexts/
+│   │       ├── hooks/
+│   │       ├── lib/       # Clientes Supabase, utilidades
+│   │       └── services/
+│   └── backend/           # NestJS + Prisma — solo desarrollo local
 ├── packages/
-│   └── shared/            # Tipos y utilidades compartidas
+│   ├── allpairs-core/     # Algoritmo pairwise (TypeScript puro)
+│   └── shared/            # Tipos compartidos
 ├── docs/
-│   ├── adr/              # Architecture Decision Records
-│   ├── observability.md  # Sistema de observabilidad
-│   └── dashboard-kpis.md # KPIs y métricas
-├── docker-compose.yml     # PostgreSQL + Redis
-├── docker-compose.observability.yml # Jaeger + Prometheus + Grafana
-├── Makefile              # Comandos útiles
-└── package.json          # Workspace root
+│   └── adr/               # Architecture Decision Records
+└── Makefile
 ```
 
-## 🚀 Requisitos
+---
+
+## 🚀 Desarrollo local
+
+### Requisitos
 
 - Node.js 20+
 - pnpm 9+
-- Docker & Docker Compose
-- PostgreSQL 16
-- Redis 7
+- Cuenta en [Supabase](https://supabase.com) (o proyecto existente)
 
-## 🛠️ Instalación
+### Frontend (producción-equivalente)
 
-1. **Clonar el repositorio**
-   ```bash
-   git clone <repository-url>
-   cd aiquaa
-   ```
-
-2. **Instalar dependencias**
-   ```bash
-   pnpm install
-   ```
-
-3. **Configurar variables de entorno**
-   ```bash
-   # Copiar archivos de ejemplo
-   cp env.example .env
-   cp apps/frontend/env.local.example apps/frontend/.env.local
-   
-   # Configurar observabilidad (opcional)
-   cp env.observability.example .env.observability
-   ```
-
-4. **Levantar servicios**
-   ```bash
-   make db-up
-   ```
-
-5. **Ejecutar migraciones y seed**
-   ```bash
-   make db-seed
-   ```
-
-## 🎯 Comandos Principales
-
-### Desarrollo
 ```bash
-# Iniciar frontend y backend
-make dev
+pnpm install
 
-# Solo frontend (puerto 3001)
+# Configurar variables de entorno del frontend
+cp apps/frontend/.env.local.example apps/frontend/.env.local
+# Editar con tus claves de Supabase
+
+# Iniciar frontend (puerto 3001)
 make dev-front
-
-# Solo backend (puerto 3000)
-make dev-back
-
-# Con observabilidad completa
-make dev-observability
+# o
+pnpm dev:front
 ```
 
-### Base de Datos
+### Variables de entorno — Frontend
+
 ```bash
-# Levantar PostgreSQL y Redis
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=https://<project>.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon-key>
+SUPABASE_SERVICE_ROLE_KEY=<service-role-key>   # solo servidor
+
+# Email (AWS SES SMTP)
+SES_SMTP_HOST=email-smtp.<region>.amazonaws.com
+SES_SMTP_PORT=587
+SES_SMTP_USER=<iam-smtp-user>
+SES_SMTP_PASS=<iam-smtp-password>
+SES_FROM_EMAIL=noreply@tudominio.com
+
+# URLs
+NEXT_PUBLIC_SITE_URL=https://tuapp.vercel.app
+FRONTEND_URL=https://tuapp.vercel.app
+
+# Bug reports
+GITHUB_TOKEN=<personal-access-token>
+GITHUB_REPO=owner/repo
+
+# Registro
+NEXT_PUBLIC_DISABLE_REGISTRATION=false
+```
+
+### Backend NestJS (opcional, solo local)
+
+Solo necesario si quieres explorar o probar la API NestJS localmente:
+
+```bash
+# Requiere Docker para PostgreSQL y Redis
 make db-up
-
-# Detener servicios
-make db-down
-
-# Migraciones y seed
 make db-seed
+
+# Iniciar backend (puerto 3000)
+make dev-back
 ```
 
-### Observabilidad
+Variables adicionales para el backend:
 ```bash
-# Levantar servicios de observabilidad
-make observability-up
-
-# Detener servicios de observabilidad
-make observability-down
-
-# Probar sistema de observabilidad
-make test-observability
-```
-
-### Build
-```bash
-# Build de todos los paquetes
-make build
-
-# Limpiar artifacts
-make clean
-```
-
-## 📊 Observabilidad
-
-AIQUAA incluye un sistema completo de observabilidad con:
-
-- **Logging estructurado** con Pino
-- **Tracing distribuido** con OpenTelemetry
-- **Métricas** con Prometheus
-- **Monitoreo de errores** con Sentry
-- **Correlación** con Request IDs
-
-### Endpoints de Observabilidad
-
-- **Métricas**: `http://localhost:3000/metrics` (Prometheus)
-- **Health Check**: `http://localhost:3000/api/v1/health`
-- **Jaeger UI**: `http://localhost:16686` (tracing)
-- **Grafana**: `http://localhost:3001` (dashboards)
-
-### Configuración Rápida
-
-1. **Variables de entorno**:
-   ```bash
-   # Backend
-   LOG_LEVEL=info
-   OTLP_ENDPOINT=http://localhost:4318
-   SENTRY_DSN=your-sentry-dsn
-   
-   # Frontend
-   NEXT_PUBLIC_SENTRY_DSN=your-sentry-dsn
-   ```
-
-2. **Servicios opcionales**:
-   ```bash
-   docker-compose -f docker-compose.observability.yml up -d
-   ```
-
-3. **Verificar funcionamiento**:
-   ```bash
-   node scripts/test-observability.js
-   ```
-
-Para más detalles, consulta [docs/observability.md](docs/observability.md).
-
-## 🗄️ Data & Cache
-
-### Redis Cache
-El proyecto utiliza Redis para cachear consultas frecuentes y mejorar el rendimiento.
-
-#### Configuración
-```bash
-# Variables de entorno
+DATABASE_URL=postgresql://user:password@localhost:5432/aiquaa
+JWT_SECRET=tu-jwt-secret
+PORT=3000
 REDIS_URL=redis://localhost:6379
-CACHE_TTL=60
-CACHE_MAX_ITEMS=100
 ```
 
-#### Invalidación
-- **Threads**: Se invalida automáticamente al crear/editar/eliminar threads
-- **Posts**: Se invalida automáticamente al crear/editar/eliminar posts
-- **Patrones**: Soporte para invalidación por patrones (ej: `forum:threads:*`)
+---
 
-#### Monitoreo
-- Logs de cache hit/miss disponibles
-- Métricas de performance en desarrollo
+## 🗄️ Base de datos (Supabase)
 
-### Soft Delete & Auditoría
-- **Soft Delete**: Los registros se marcan como eliminados (`deletedAt`) en lugar de eliminarse físicamente
-- **Auditoría**: Todos los cambios se registran automáticamente en `audit_logs`
-- **Índices**: Optimizados para consultas frecuentes y búsquedas
+Las tablas principales en producción:
 
-## 🔍 SEO
+| Tabla | Descripción |
+|---|---|
+| `profiles` | Perfil público del usuario (display_name, avatar_url) |
+| `exam_results` | Resultados de exámenes (ISTQB, GIT, Performance) |
+| `forum_categories` | Categorías del foro |
+| `forum_threads` | Hilos del foro |
+| `forum_posts` | Posts/respuestas del foro |
 
-### Sitemap y Robots
-- **Generación automática**: `next-sitemap` genera `/sitemap.xml` y `/robots.txt`
-- **Configuración**: `apps/frontend/next-sitemap.config.js`
-- **Build**: Se ejecuta automáticamente después del build
+### RLS
+Todas las tablas tienen Row Level Security activo. Los usuarios solo pueden leer/escribir sus propios registros donde corresponde.
 
-### Metadata
-- **Dinámica**: Metadata generada dinámicamente por ruta
-- **Open Graph**: Soporte completo para redes sociales
-- **JSON-LD**: Schema.org para mejor SEO
+### Funciones RPC
+- `get_leaderboard(p_exam_type, p_limit)` — ranking por tipo de examen
+- `increment_thread_views(thread_id)` — vistas de hilos
+- `increment_thread_replies(thread_id)` — conteo de respuestas
 
-### Revalidación
-- **API Route**: `/api/revalidate` para invalidar cache
-- **Tokens**: Seguridad con `REVALIDATE_TOKEN`
-- **Tags**: Revalidación granular por tags
+---
 
-## 📋 ADRs (Architecture Decision Records)
+## 📧 Emails
 
-Los ADRs documentan decisiones arquitectónicas importantes del proyecto.
+Solo se envían dos tipos de emails vía AWS SES SMTP:
 
-### Comandos
+1. **Verificación de cuenta** — al registrarse
+2. **Reset de contraseña** — al solicitar cambio de clave
+
+No se envían emails de exámenes, notificaciones de foro ni bienvenida.
+
+---
+
+## 🧪 Pruebas
+
 ```bash
-# Crear nuevo ADR
-pnpm adr:new "Título del ADR"
+# Tests unitarios backend
+pnpm --filter @aiquaa/backend test
 
-# Listar ADRs existentes
-pnpm adr:list
+# Tests unitarios frontend
+pnpm --filter @aiquaa/frontend test
+
+# Tests del paquete allpairs-core (52 tests)
+cd packages/allpairs-core && pnpm test:cov
+
+# E2E con Playwright
+pnpm --filter @aiquaa/frontend e2e
 ```
 
-### ADRs Existentes
-- [ADR-001: Monolito modular Nest](./docs/adr/ADR-001-monolito-modular-nest.md)
-- [ADR-002: Next vs Nuxt](./docs/adr/ADR-002-next-vs-nuxt.md)
+---
+
+## 🚢 Despliegue
+
+### Frontend → Vercel
+- Auto-deploy desde rama `main`
+- Comando de build: `pnpm build:vercel`
+- Variables de entorno configuradas en el dashboard de Vercel
+
+### Base de datos → Supabase
+- Migraciones aplicadas via MCP de Supabase o Supabase CLI
+- No se usa Prisma en producción
+
+---
+
+## 📋 ADRs
+
+- [ADR-001: Monolito modular NestJS](./docs/adr/ADR-001-monolito-modular-nest.md)
+- [ADR-002: Next.js vs Nuxt](./docs/adr/ADR-002-next-vs-nuxt.md)
 - [ADR-003: OpenAPI + codegen tipos compartidos](./docs/adr/ADR-003-openapi-codegen-tipos-compartidos.md)
 - [ADR-004: Redis cache con invalidación por tags](./docs/adr/ADR-004-redis-cache-invalidacion-tags.md)
 - [ADR-005: Soft delete + auditoría con Prisma](./docs/adr/ADR-005-soft-delete-auditoria-prisma.md)
-
-## 🧪 Pruebas y Cobertura
-
-### Ejecutar Pruebas
-
-```bash
-# Ejecutar todas las pruebas
-pnpm test
-
-# Ejecutar pruebas con cobertura
-pnpm test:cov
-```
-
-## 🎯 Etapa 2: Pruebas y Funcionalidades Post-v1
-
-### E2E Testing con Playwright
-
-```bash
-# Ejecutar tests E2E
-pnpm e2e
-
-# Ver reporte de E2E
-pnpm e2e:report
-```
-
-**Tests incluidos:**
-- `health.spec.ts` - Verificación de health check
-- `forum.crud.spec.ts` - Flujo completo CRUD del foro
-- `auth.spec.ts` - Autenticación y autorización
-- `a11y.spec.ts` - Tests de accesibilidad con axe-core
-
-### Contratos de API
-
-```bash
-# Ejecutar tests de contratos
-pnpm test:contract
-```
-
-**Tests incluidos:**
-- `contracts.forum.spec.ts` - Validación de endpoints del foro
-- `contracts.auth.spec.ts` - Validación de endpoints de autenticación
-
-### Performance Testing con k6
-
-```bash
-# Ejecutar tests de performance
-pnpm perf:forum
-```
-
-**Métricas:**
-- P95 < 400ms para requests HTTP
-- Error rate < 1%
-- Tests de carga para endpoints del foro
-
-### Búsqueda y Paginación
-
-**Endpoints implementados:**
-- `GET /forum/threads?search=&page=&limit=` - Búsqueda y paginación de hilos
-- `GET /forum/posts?threadId=&page=&limit=` - Paginación de posts
-- `GET /forum/search?q=&page=&limit=` - Búsqueda avanzada
-
-### Seguridad y Anti-spam
-
-**Funcionalidades implementadas:**
-- Rate limiting (100 requests/15min por IP)
-- Anti-spam con honeypot y time-gate (>2s)
-- Headers de seguridad (helmet)
-
-**Tests de seguridad:**
-- `security.rate-limit.spec.ts` - Validación de rate limiting
-- `security.antispam.spec.ts` - Validación de anti-spam
-
-### Stripe Integration (Sandbox)
-
-**Endpoints implementados:**
-- `POST /billing/checkout` - Crear sesión de checkout
-- `POST /billing/webhook` - Procesar eventos de Stripe
-
-**Tests incluidos:**
-- `billing.webhook.spec.ts` - Validación de webhooks
-
-### Accesibilidad y SEO
-
-**Funcionalidades:**
-- Tests de accesibilidad automáticos con axe-core
-- Meta tags dinámicos
-- ARIA labels en componentes
-- Estructura de headings semántica
-
-### Analytics
-
-**Implementación:**
-- Eventos de "CreateThread" y "ReplyPost"
-- Endpoint `/analytics/mock` para desarrollo
-- Tests RTL para verificar tracking
-
-### CI/CD Gates
-
-**Workflow actualizado:**
-- Tests unitarios y de integración
-- Tests de contratos de API
-- Tests E2E con Playwright
-- Tests de performance con k6
-- Cobertura mínima 75% (backend y frontend)
-- Linting y build verification
-
-### Variables de Entorno Requeridas
-
-```bash
-# Backend
-DATABASE_URL=postgresql://user:password@localhost:5432/dbname
-JWT_SECRET=your-jwt-secret
-NODE_ENV=development
-PORT=3000
-
-# Frontend
-FRONTEND_PORT=3001
-NEXT_PUBLIC_API_URL=http://localhost:3000
-
-# Performance Testing
-BACKEND_URL=http://localhost:3000
-```
-
-### Definition of Done
-
-Para que una PR sea considerada completa, debe cumplir:
-
-1. ✅ `pnpm --filter @aiquaa/backend test:contract` pasa contra OpenAPI actual
-2. ✅ `pnpm --filter @aiquaa/frontend e2e` pasa (health, foro CRUD, a11y sin violaciones críticas)
-3. ✅ `pnpm perf:forum` cumple thresholds p95 < 400ms, error_rate < 1%
-4. ✅ Rate limit y anti-spam activos en endpoints definidos
-5. ✅ Webhook Stripe (mock) crea Enrollment/Purchase idempotente
-6. ✅ Coverage ≥ 75% en backend y frontend
-7. ✅ README actualizado con pasos y variables
-
-## 🔐 Autenticación con NextAuth v5
-
-### Configuración de Variables de Entorno
-
-**Variables requeridas en Vercel:**
-```bash
-# NextAuth
-NEXTAUTH_SECRET=your-nextauth-secret-here
-NEXTAUTH_URL=https://your-domain.vercel.app
-
-# Google OAuth
-GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=your-google-client-secret
-
-# GitHub OAuth
-GITHUB_CLIENT_ID=your-github-client-id
-GITHUB_CLIENT_SECRET=your-github-client-secret
-
-# Control de registro (opcional)
-NEXT_PUBLIC_DISABLE_REGISTRATION=true
-```
-
-### URLs de Callback Autorizadas
-
-**Google Cloud Console:**
-- `https://your-domain.vercel.app/api/auth/callback/google`
-
-**GitHub Developer Settings:**
-- `https://your-domain.vercel.app/api/auth/callback/github`
-
-### Control de Registro
-
-**Habilitar/Deshabilitar registro:**
-```bash
-# Permitir registro libre
-NEXT_PUBLIC_DISABLE_REGISTRATION=false
-
-# Bloquear nuevos registros
-NEXT_PUBLIC_DISABLE_REGISTRATION=true
-```
-
-**Dominios autorizados (cuando registro está deshabilitado):**
-```bash
-# Solo emails de dominio específico
-ALLOWED_DOMAIN=tuempresa.com
-```
-
-### Verificación de Autenticación
-
-**Script de verificación:**
-```bash
-# Verificar que /api/auth/signin responde correctamente
-pnpm auth:check
-```
-
-**CI/CD:**
-- Ejecutar `pnpm auth:check` en Preview y Production
-- Verificar que las variables de entorno estén configuradas
-
-### Rutas Protegidas
-
-El middleware protege automáticamente:
-- `/dashboard/*` - Panel de control
-- `/labs/*` - Laboratorios
-
-**Personalizar protección:**
-```typescript
-// middleware.ts
-export const config = { 
-  matcher: ["/dashboard/:path*", "/labs/:path*", "/admin/:path*"] 
-};
-```
