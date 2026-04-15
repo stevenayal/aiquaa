@@ -394,6 +394,40 @@ class ForumService {
     }
   }
 
+  async getForumStats(): Promise<ForumResponse<{ totalThreads: number; totalPosts: number; totalUsers: number; activeUsers: number }>> {
+    try {
+      const supabase = createClient();
+
+      const [{ count: totalThreads }, { count: totalPosts }, { count: totalUsers }] = await Promise.all([
+        supabase.from('forum_threads').select('*', { count: 'exact', head: true }).is('deleted_at', null),
+        supabase.from('forum_posts').select('*', { count: 'exact', head: true }).is('deleted_at', null),
+        supabase.from('profiles').select('*', { count: 'exact', head: true }),
+      ]);
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const { data: activeData } = await supabase
+        .from('forum_posts')
+        .select('author_id')
+        .is('deleted_at', null)
+        .gte('created_at', today.toISOString());
+
+      const activeUsers = new Set((activeData ?? []).map((p) => p.author_id)).size;
+
+      return {
+        success: true,
+        data: {
+          totalThreads: totalThreads ?? 0,
+          totalPosts: totalPosts ?? 0,
+          totalUsers: totalUsers ?? 0,
+          activeUsers,
+        },
+      };
+    } catch (error) {
+      return { success: false, error: error instanceof Error ? error.message : 'Error' };
+    }
+  }
+
   async getTags(): Promise<ForumResponse<string[]>> {
     try {
       const supabase = createClient();
