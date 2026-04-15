@@ -260,12 +260,7 @@ export class AuthService {
       data: { consumedAt: new Date() },
     });
 
-    // Enviar email de bienvenida (no bloqueante)
-    try {
-      await this.mailerService.sendWelcomeEmail(updatedUser.email, updatedUser.name || updatedUser.email);
-    } catch (_) {
-      // Ignorar error de envío para no afectar la verificación
-    }
+
 
     return { message: 'Email verificado exitosamente' };
   }
@@ -524,13 +519,6 @@ export class AuthService {
         expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutos
       },
     });
-
-    // Enviar código por email
-    await this.mailerService.sendTwoFactorCode(
-      user.email,
-      code,
-      user.name || user.email
-    );
 
     return {
       message: 'Código de verificación enviado a tu email',

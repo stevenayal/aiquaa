@@ -63,22 +63,10 @@ export class PerformanceService {
   }
 
   private async sendAdminNotification(
-    examData: SubmitPerformanceExamDto,
-    resultId: number,
+    _examData: SubmitPerformanceExamDto,
+    _resultId: number,
   ): Promise<void> {
-    try {
-      await this.resendService.sendPerformanceExamReport(examData, resultId);
-      this.logger.log(
-        `Email de informe enviado al admin para examen de Performance ID: ${resultId}`,
-      );
-    } catch (error) {
-      const err = error as Error;
-      this.logger.error(
-        `Error enviando email de informe: ${err.message}`,
-        err.stack,
-      );
-      // No relanzamos el error para no bloquear el flujo principal
-    }
+    // Email notifications disabled — only registration and password reset emails are sent
   }
 
   async getExamResults(filters?: {
