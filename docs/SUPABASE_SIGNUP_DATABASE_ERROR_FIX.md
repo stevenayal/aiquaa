@@ -28,3 +28,4 @@ Si devuelve `Database error saving new user`, el script te indica revisar trigge
 - Intentá registro desde `/register`.
 - Confirmá que no aparece el error.
 - Revisá si el perfil quedó en `public.usuarios`.
+

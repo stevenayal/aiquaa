@@ -22,7 +22,11 @@ export async function registerAction(formData: FormData) {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
   const name = formData.get('name') as string;
-  const role = formData.get('role') as string;
+  // NOTE: Evitamos enviar `role` en user_metadata porque algunos proyectos
+  // tienen triggers/constraints en auth.users que solo aceptan ciertos valores
+  // y terminan rompiendo el signup con "Database error saving new user".
+  // El rol puede persistirse luego en una tabla de perfil propia.
+  const selectedRole = formData.get('role') as string | null;
 
   const supabase = await createClient();
 
@@ -30,12 +34,19 @@ export async function registerAction(formData: FormData) {
     email,
     password,
     options: {
-      data: { full_name: name, role },
+      data: {
+        full_name: name,
+        // Solo enviamos role si es un valor seguro y compatible con triggers comunes
+        ...(selectedRole && ['comunidad', 'admin'].includes(selectedRole) ? { role: selectedRole } : {}),
+      },
       emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL}/auth/confirm`,
     },
   });
 
   if (error) {
+    if (error.message.toLowerCase().includes('database error saving new user')) {
+      return { error: 'No se pudo completar el registro por una regla interna de la base de datos. Contactá soporte o intentá nuevamente en unos minutos.' };
+    }
     return { error: error.message };
   }
 
