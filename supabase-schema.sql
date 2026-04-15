@@ -123,14 +123,27 @@ ON CONFLICT (email) DO NOTHING;
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
+  -- Nunca bloquear el alta en auth.users por fallas en la tabla de perfil.
+  IF NEW.email IS NULL THEN
+    RETURN NEW;
+  END IF;
+
   INSERT INTO public.usuarios (email, nombre, rol)
   VALUES (
     NEW.email,
-    COALESCE(NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1)),
-    COALESCE(NEW.raw_user_meta_data->>'role', 'comunidad')
+    COALESCE(NULLIF(NEW.raw_user_meta_data->>'full_name', ''), split_part(NEW.email, '@', 1)),
+    COALESCE(NULLIF(NEW.raw_user_meta_data->>'role', ''), 'comunidad')
   )
   ON CONFLICT (email) DO NOTHING;
+
   RETURN NEW;
+EXCEPTION
+  WHEN undefined_table THEN
+    RAISE WARNING 'public.handle_new_user: tabla public.usuarios no existe. auth.users continuará. id=%', NEW.id;
+    RETURN NEW;
+  WHEN others THEN
+    RAISE WARNING 'public.handle_new_user: error sincronizando perfil para auth.users.id=%: %', NEW.id, SQLERRM;
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
