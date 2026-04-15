@@ -29,8 +29,3 @@ Si devuelve `Database error saving new user`, el script te indica revisar trigge
 - Confirmá que no aparece el error.
 - Revisá si el perfil quedó en `public.usuarios`.
 
-## 4) Mitigación inmediata en frontend (sin tocar DB)
-
-Si el proyecto tiene triggers que validan `raw_user_meta_data->>'role'` contra un enum/constraint, enviar roles personalizados (por ejemplo `qa_junior`, `qa_engineer`) puede romper el signup.
-
-Mitigación aplicada: en `registerAction` solo se envía `role` si es `comunidad` o `admin`; en cualquier otro caso se omite para que el trigger use su valor por defecto.
