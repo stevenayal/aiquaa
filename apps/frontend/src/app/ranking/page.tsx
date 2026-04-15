@@ -18,8 +18,9 @@ interface LeaderboardEntry {
 }
 
 const EXAM_TABS = [
-  { key: 'git',   label: 'Examen GIT',       emoji: '🌿', color: 'from-amber-500 to-orange-600' },
-  { key: 'istqb', label: 'ISTQB CTFL v4.0',  emoji: '📋', color: 'from-indigo-500 to-violet-600' },
+  { key: 'git',         label: 'Examen GIT',       emoji: '🌿', color: 'from-amber-500 to-orange-600' },
+  { key: 'istqb',       label: 'ISTQB CTFL v4.0',  emoji: '📋', color: 'from-indigo-500 to-violet-600' },
+  { key: 'performance', label: 'Performance',       emoji: '⚡', color: 'from-emerald-500 to-teal-600' },
 ] as const;
 
 const MEDAL = ['🥇', '🥈', '🥉'];
@@ -54,9 +55,9 @@ function MiniAvatar({ name, avatarUrl }: { name: string; avatarUrl: string | nul
 
 export default function RankingPage() {
   const { isDarkMode } = useTheme();
-  const [activeTab, setActiveTab] = useState<'git' | 'istqb'>('git');
-  const [data, setData] = useState<Record<string, LeaderboardEntry[]>>({ git: [], istqb: [] });
-  const [loading, setLoading] = useState<Record<string, boolean>>({ git: true, istqb: true });
+  const [activeTab, setActiveTab] = useState<'git' | 'istqb' | 'performance'>('git');
+  const [data, setData] = useState<Record<string, LeaderboardEntry[]>>({ git: [], istqb: [], performance: [] });
+  const [loading, setLoading] = useState<Record<string, boolean>>({ git: true, istqb: true, performance: true });
 
   useEffect(() => {
     EXAM_TABS.forEach(({ key }) => {
@@ -120,7 +121,7 @@ export default function RankingPage() {
               ¡Sé el primero en completar el examen y aparecer acá!
             </p>
             <a
-              href={activeTab === 'git' ? '/labs/git' : '/labs/istqb'}
+              href={activeTab === 'git' ? '/labs/git' : activeTab === 'istqb' ? '/labs/istqb' : '/labs/performance'}
               className="inline-block mt-4 px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition-colors"
             >
               {tab.emoji} Ir al examen
