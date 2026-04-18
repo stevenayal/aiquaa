@@ -55,9 +55,10 @@ export default function DataGeneratorPage() {
     switch (field.type) {
       case 'text':
         const words = ['Lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing', 'elit', 'sed', 'do', 'eiusmod', 'tempor', 'incididunt', 'ut', 'labore', 'et', 'dolore', 'magna', 'aliqua'];
-        const length = field.minLength || 5;
+        const wordCount = Math.max(field.minLength || 1, 1);
         const maxLength = field.maxLength || 50;
-        const result = words.slice(0, Math.max(length, 1)).join(' ');
+        const shuffled = [...words].sort(() => Math.random() - 0.5);
+        const result = shuffled.slice(0, wordCount).join(' ');
         return result.length > maxLength ? result.substring(0, maxLength) : result;
       
       case 'email':
