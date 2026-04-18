@@ -2,7 +2,7 @@
 CREATE TYPE "OAuthProvider" AS ENUM ('GOOGLE', 'GITHUB');
 
 -- CreateEnum
-CREATE TYPE "VerificationType" AS ENUM ('VERIFY_EMAIL', 'RESET_PASSWORD');
+CREATE TYPE "VerificationType" AS ENUM ('VERIFY_EMAIL', 'RESET_PASSWORD', 'TWO_FACTOR_EMAIL');
 
 -- AlterTable
 ALTER TABLE "users" 

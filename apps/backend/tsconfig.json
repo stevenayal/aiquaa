@@ -17,6 +17,8 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "noEmit": false,
+    "allowImportingTsExtensions": false,
     "paths": {
       "@/*": [
         "src/*"
