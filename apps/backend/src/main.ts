@@ -28,7 +28,7 @@ async function bootstrap() {
   });
 
   // Trust proxy para Railway - no mutar socket.remoteAddress
-  app.use((req, res, next) => {
+  app.use((_req: unknown, _res: unknown, next: () => void) => {
     // Solo configurar req.ip para que Express maneje X-Forwarded-For
     next();
   });
@@ -101,7 +101,7 @@ async function bootstrap() {
   app.useGlobalFilters(new GlobalExceptionFilter());
 
   // Manejar OPTIONS explícitamente
-  app.use((req, res, next) => {
+  app.use((req: { method: string }, res: { sendStatus: (code: number) => void }, next: () => void) => {
     if (req.method === 'OPTIONS') {
       return res.sendStatus(204);
     }
@@ -234,7 +234,7 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config, {
-    operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
+    operationIdFactory: (_controllerKey: string, methodKey: string) => methodKey,
   });
 
   // Configurar Swagger UI con opciones personalizadas
@@ -254,7 +254,7 @@ async function bootstrap() {
       defaultModelsExpandDepth: 3,
       defaultModelExpandDepth: 3,
       displayOperationId: false,
-      requestInterceptor: (req) => {
+      requestInterceptor: (req: unknown) => {
         // Agregar headers personalizados si es necesario
         return req;
       },
@@ -365,22 +365,22 @@ async function bootstrap() {
   });
 
   // Endpoint adicional para obtener la especificación OpenAPI en JSON
-  app.use('/api/v1/docs-json', (req, res) => {
+  app.use('/api/v1/docs-json', (_req: unknown, res: { setHeader: (k: string, v: string) => void; send: (d: unknown) => void }) => {
     res.setHeader('Content-Type', 'application/json');
     res.send(document);
   });
 
   // Redirección desde /docs y / a /api/v1/docs para facilitar el acceso
   const httpAdapter = app.getHttpAdapter();
-  httpAdapter.get('/', (req, res) => {
+  httpAdapter.get('/', (_req: unknown, res: { redirect: (code: number, url: string) => void }) => {
     res.redirect(301, '/api/v1/docs');
   });
-  httpAdapter.get('/docs', (req, res) => {
+  httpAdapter.get('/docs', (_req: unknown, res: { redirect: (code: number, url: string) => void }) => {
     res.redirect(301, '/api/v1/docs');
   });
 
   // Health check endpoint usando el adaptador HTTP
-  httpAdapter.get('/health', (req, res) => {
+  httpAdapter.get('/health', (_req: unknown, res: { status: (code: number) => { json: (data: unknown) => void } }) => {
     res.status(200).json({
       status: 'ok',
       time: new Date().toISOString(),

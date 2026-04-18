@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { ResendService } from './resend.service';
 
 @Injectable()
@@ -7,7 +6,6 @@ export class MailerService {
   private readonly logger = new Logger(MailerService.name);
 
   constructor(
-    private configService: ConfigService,
     private resendService: ResendService,
   ) {
     this.logger.log('MailerService inicializado con AWS SES SMTP');

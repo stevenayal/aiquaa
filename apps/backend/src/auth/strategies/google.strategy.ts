@@ -7,7 +7,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(
-    private configService: ConfigService,
+    configService: ConfigService,
     private prisma: PrismaService,
   ) {
     super({

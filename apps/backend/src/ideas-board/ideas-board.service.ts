@@ -481,7 +481,7 @@ export class IdeasBoardService {
   async updateStatus(
     id: number,
     updateStatusDto: UpdateStatusDto,
-    userId: number,
+    _userId: number,
     userRole: Role,
   ) {
     if (userRole !== Role.ADMIN) {
