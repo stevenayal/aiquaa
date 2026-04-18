@@ -10,7 +10,7 @@ import Avatar from '@/components/ui/Avatar';
 
 interface ExamResultRow {
   id: string;
-  exam_type: 'git' | 'istqb';
+  exam_type: 'git' | 'istqb' | 'performance';
   exam_mode: 'exam' | 'training';
   score: number;
   total_questions: number;
@@ -405,7 +405,7 @@ export default function PerfilPage() {
           </div>
 
           <p className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>
-            Si ingresaste con Google o GitHub podés establecer una contraseña para acceder también con email.
+            La contraseña es gestionada por Supabase. Si te registraste con email podés cambiarla acá. Si usás un proveedor externo (Google, GitHub) esta opción no aplica.
           </p>
 
           <button
@@ -433,10 +433,12 @@ export default function PerfilPage() {
               <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
                 Todavía no rendiste ningún examen.
               </p>
-              <div className="flex justify-center gap-3 mt-4">
-                <a href="/labs/git" className="text-xs text-indigo-400 hover:underline">🌿 Examen GIT</a>
-                <span className={isDarkMode ? 'text-slate-600' : 'text-gray-300'}>·</span>
+              <div className="flex justify-center gap-3 mt-4 flex-wrap">
                 <a href="/labs/istqb" className="text-xs text-indigo-400 hover:underline">📋 ISTQB CTFL</a>
+                <span className={isDarkMode ? 'text-slate-600' : 'text-gray-300'}>·</span>
+                <a href="/labs/git" className="text-xs text-indigo-400 hover:underline">🌿 GIT</a>
+                <span className={isDarkMode ? 'text-slate-600' : 'text-gray-300'}>·</span>
+                <a href="/labs/performance" className="text-xs text-indigo-400 hover:underline">⚡ Performance</a>
               </div>
             </div>
           ) : (
@@ -444,10 +446,12 @@ export default function PerfilPage() {
               {examResults.map(r => (
                 <div key={r.id} className={`flex items-center justify-between px-4 py-3 rounded-lg ${isDarkMode ? 'bg-slate-700/50' : 'bg-gray-50'}`}>
                   <div className="flex items-center gap-3 min-w-0">
-                    <span className="text-lg shrink-0">{r.exam_type === 'git' ? '🌿' : '📋'}</span>
+                    <span className="text-lg shrink-0">
+                      {r.exam_type === 'git' ? '🌿' : r.exam_type === 'performance' ? '⚡' : '📋'}
+                    </span>
                     <div className="min-w-0">
                       <p className={`text-sm font-medium ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}>
-                        {r.exam_type === 'git' ? 'GIT' : `ISTQB${r.model ? ` Modelo ${r.model}` : ''}`}
+                        {r.exam_type === 'git' ? 'GIT' : r.exam_type === 'performance' ? 'Performance' : `ISTQB CTFL${r.model ? ` · Modelo ${r.model}` : ''}`}
                         {' · '}
                         <span className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
                           {r.exam_mode === 'exam' ? 'Examen' : 'Entrenamiento'}
