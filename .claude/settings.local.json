@@ -113,7 +113,9 @@
       "Bash(where gh:*)",
       "Bash(gh pr:*)",
       "WebFetch(domain:api.github.com)",
-      "WebFetch(domain:raw.githubusercontent.com)"
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(pnpm install:*)",
+      "Bash(npm_config_yes=true npx pnpm@8.15.0 install)"
     ],
     "deny": [],
     "ask": []
