@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Alert } from '@/components/common';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useToolUsage } from '@/hooks/useToolUsage';
 
 interface ChecklistItem {
   id: string;
@@ -22,6 +23,7 @@ interface ChecklistTemplate {
 
 export default function ChecklistPage() {
   const { isDarkMode } = useTheme();
+  const { logUsage } = useToolUsage('checklist');
   const [currentTemplate, setCurrentTemplate] = useState<string>('manual');
   const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>([]);
   const [notes, setNotes] = useState<Record<string, string>>({});
@@ -154,6 +156,7 @@ export default function ChecklistPage() {
   };
 
   const exportChecklist = (format: 'json' | 'markdown') => {
+    void logUsage(`export-${format}`);
     if (checklistItems.length === 0) {
       setAlertMessage('No hay items para exportar');
       setAlertType('error');

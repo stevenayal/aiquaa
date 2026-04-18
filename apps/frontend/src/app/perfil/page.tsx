@@ -4,7 +4,7 @@ import React, { useState, useRef, useTransition, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
-import { updateProfileAction, uploadAvatarAction } from '@/actions/profile';
+import { updateProfileAction, uploadAvatarAction, changePasswordAction } from '@/actions/profile';
 import { getExamResultsAction } from '@/actions/exams';
 import Avatar from '@/components/ui/Avatar';
 
@@ -45,8 +45,12 @@ export default function PerfilPage() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isPending, startTransition] = useTransition();
+  const [isPwPending, startPwTransition] = useTransition();
   const [isUploading, setIsUploading] = useState(false);
   const [alert, setAlert] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
+  const [pwAlert, setPwAlert] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
+  const [pwForm, setPwForm] = useState({ new_password: '', confirm_password: '' });
+  const [showPw, setShowPw] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [examResults, setExamResults] = useState<ExamResultRow[]>([]);
   const [examResultsLoading, setExamResultsLoading] = useState(true);
@@ -109,6 +113,23 @@ export default function PerfilPage() {
       setPreviewUrl(null);
       setAlert({ type: 'success', msg: 'Foto actualizada correctamente' });
     }
+  };
+
+  const handlePasswordSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    setPwAlert(null);
+    const fd = new FormData();
+    fd.set('new_password', pwForm.new_password);
+    fd.set('confirm_password', pwForm.confirm_password);
+    startPwTransition(async () => {
+      const result = await changePasswordAction(fd);
+      if (result.error) {
+        setPwAlert({ type: 'error', msg: result.error });
+      } else {
+        setPwAlert({ type: 'success', msg: 'Contraseña actualizada correctamente' });
+        setPwForm({ new_password: '', confirm_password: '' });
+      }
+    });
   };
 
   const handleSave = (e: React.FormEvent) => {
@@ -325,6 +346,74 @@ export default function PerfilPage() {
             className="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isPending ? 'Guardando...' : '💾 Guardar cambios'}
+          </button>
+        </form>
+
+        {/* Change Password */}
+        <form onSubmit={handlePasswordSave} className={`${card} rounded-xl p-6 space-y-5`}>
+          <h2 className={`text-base font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+            🔐 Cambiar contraseña
+          </h2>
+
+          {pwAlert && (
+            <div className={`px-4 py-3 rounded-lg text-sm font-medium flex items-center justify-between ${
+              pwAlert.type === 'success'
+                ? isDarkMode ? 'bg-emerald-900/40 text-emerald-300 border border-emerald-700' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                : isDarkMode ? 'bg-red-900/40 text-red-300 border border-red-700' : 'bg-red-50 text-red-700 border border-red-200'
+            }`}>
+              <span>{pwAlert.type === 'success' ? '✅' : '❌'} {pwAlert.msg}</span>
+              <button type="button" onClick={() => setPwAlert(null)} className="ml-4 opacity-60 hover:opacity-100">✕</button>
+            </div>
+          )}
+
+          <div>
+            <label className={labelClass}>Nueva contraseña</label>
+            <div className="relative">
+              <input
+                type={showPw ? 'text' : 'password'}
+                value={pwForm.new_password}
+                onChange={e => setPwForm(p => ({ ...p, new_password: e.target.value }))}
+                placeholder="Mínimo 8 caracteres"
+                className={`${inputClass} pr-10`}
+                minLength={8}
+                autoComplete="new-password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPw(v => !v)}
+                className={`absolute right-3 top-1/2 -translate-y-1/2 text-sm ${isDarkMode ? 'text-slate-400 hover:text-slate-200' : 'text-gray-400 hover:text-gray-600'}`}
+              >
+                {showPw ? '🙈' : '👁️'}
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label className={labelClass}>Confirmar nueva contraseña</label>
+            <input
+              type={showPw ? 'text' : 'password'}
+              value={pwForm.confirm_password}
+              onChange={e => setPwForm(p => ({ ...p, confirm_password: e.target.value }))}
+              placeholder="Repetí la contraseña"
+              className={inputClass}
+              minLength={8}
+              autoComplete="new-password"
+            />
+            {pwForm.confirm_password && pwForm.new_password !== pwForm.confirm_password && (
+              <p className="text-xs mt-1 text-red-500">Las contraseñas no coinciden</p>
+            )}
+          </div>
+
+          <p className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>
+            Si ingresaste con Google o GitHub podés establecer una contraseña para acceder también con email.
+          </p>
+
+          <button
+            type="submit"
+            disabled={isPwPending || !pwForm.new_password || !pwForm.confirm_password}
+            className="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isPwPending ? 'Actualizando...' : '🔑 Actualizar contraseña'}
           </button>
         </form>
 

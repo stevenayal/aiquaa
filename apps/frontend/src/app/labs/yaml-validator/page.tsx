@@ -5,9 +5,11 @@ import Link from 'next/link';
 import yaml from 'js-yaml';
 import { Alert } from '@/components/common';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useToolUsage } from '@/hooks/useToolUsage';
 
 export default function YamlValidatorPage() {
   const { isDarkMode } = useTheme();
+  const { logUsage, logError } = useToolUsage('yaml-validator');
   const [inputYaml, setInputYaml] = useState('');
   const [outputText, setOutputText] = useState('');
   const [isValid, setIsValid] = useState<boolean | null>(null);
@@ -32,12 +34,14 @@ export default function YamlValidatorPage() {
       setIsValid(true);
       setErrorMessage('');
       setOutputText('✅ YAML válido');
+      void logUsage('validate');
 
       setAlertMessage('YAML validado correctamente');
       setAlertType('success');
       setShowAlert(true);
       setTimeout(() => setShowAlert(false), 2000);
     } catch (error: any) {
+      void logError(error, 'validate');
       setIsValid(false);
       const errorMsg = error.message || 'Error desconocido';
       setErrorMessage(errorMsg);

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import LabsAuthGate from '@/components/labs/LabsAuthGate';
 
 /**
  * Layout y metadatos específicos para AIQUAA Labs
@@ -52,5 +53,5 @@ export default function LabsLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return <LabsAuthGate>{children}</LabsAuthGate>;
 }

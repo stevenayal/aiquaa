@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { analyzeRequirement } from '@/lib/req-lint/engine';
+import { useToolUsage } from '@/hooks/useToolUsage';
 import type { RequirementInput, AnalysisResult } from '@/lib/req-lint/schemas';
 import RequirementLinter from './components/RequirementLinter';
 import HelpTab from './components/HelpTab';
@@ -67,6 +68,7 @@ Criterios de aceptación (mal formados):
 
 export default function RequirementLintPage() {
   const [activeTab, setActiveTab] = useState<Tab>('analyzer');
+  const { logUsage } = useToolUsage('req-lint');
   const [requirementText, setRequirementText] = useState('');
   const [requirementId, setRequirementId] = useState('REQ-001');
   const [result, setResult] = useState<AnalysisResult | null>(null);
@@ -90,6 +92,7 @@ export default function RequirementLintPage() {
 
       const analysisResult = analyzeRequirement(input);
       setResult(analysisResult);
+      void logUsage('analyze');
       setIsAnalyzing(false);
     }, 100);
   };

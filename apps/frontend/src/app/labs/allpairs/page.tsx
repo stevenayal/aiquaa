@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { PairwiseInput, PairwiseResult, toCsv } from '@aiquaa/allpairs-core';
+import { useToolUsage } from '@/hooks/useToolUsage';
 import EditorTab from './components/EditorTab';
 import JsonYamlTab from './components/JsonYamlTab';
 import ExamplesTab from './components/ExamplesTab';
@@ -24,6 +25,7 @@ export default function AllPairsPage() {
   const [result, setResult] = useState<PairwiseResult | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { logUsage, logError } = useToolUsage('allpairs');
 
   // Load last input from localStorage on mount
   useEffect(() => {
@@ -53,6 +55,7 @@ export default function AllPairsPage() {
     setResult(null);
 
     try {
+      void logUsage('generate');
       const response = await fetch('/api/labs/allpairs/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -67,6 +70,7 @@ export default function AllPairsPage() {
 
       setResult(data);
     } catch (err: any) {
+      void logError(err, 'generate');
       setError(err.message || 'Failed to generate pairwise combinations');
     } finally {
       setIsGenerating(false);

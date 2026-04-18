@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Alert } from '@/components/common';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useToolUsage } from '@/hooks/useToolUsage';
 
 interface CronField {
   name: string;
@@ -22,6 +23,7 @@ interface CronValidation {
 
 export default function CronValidatorPage() {
   const { isDarkMode } = useTheme();
+  const { logUsage } = useToolUsage('cron-validator');
   const [cronExpression, setCronExpression] = useState('');
   const [validation, setValidation] = useState<CronValidation | null>(null);
   const [executionCount, setExecutionCount] = useState(5);
@@ -248,8 +250,9 @@ export default function CronValidatorPage() {
 
     const result = validateCronExpression(cronExpression.trim());
     setValidation(result);
-    
+
     if (result.isValid) {
+      void logUsage('validate');
       setAlertMessage('Expresión cron válida');
       setAlertType('success');
       setShowAlert(true);
