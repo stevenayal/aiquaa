@@ -4,6 +4,7 @@ import { useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { Alert } from '@/components/common';
 import { useTheme } from '@/contexts/ThemeContext';
+import { jsPDF } from 'jspdf';
 
 export default function Base64ConverterPage() {
   const { isDarkMode } = useTheme();
@@ -165,6 +166,38 @@ export default function Base64ConverterPage() {
     setFileName('');
     setFileSize(0);
     setShowAlert(false);
+  };
+
+  const downloadAsPdf = () => {
+    if (!outputText) return;
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const margin = 15;
+    const maxLineWidth = pageWidth - margin * 2;
+
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Reporte - Decodificación Base64', margin, 20);
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(100);
+    doc.text(`Generado: ${new Date().toLocaleString('es-PY')}`, margin, 28);
+    if (fileName) doc.text(`Archivo origen: ${fileName}`, margin, 34);
+
+    doc.setTextColor(0);
+    doc.setFontSize(11);
+    doc.setFont('courier', 'normal');
+
+    const lines = doc.splitTextToSize(outputText, maxLineWidth);
+    doc.text(lines, margin, fileName ? 44 : 40);
+
+    doc.save(`decoded_${fileName ? fileName.replace(/\.[^.]+$/, '') : 'resultado'}.pdf`);
+
+    setAlertMessage('PDF descargado correctamente');
+    setAlertType('success');
+    setShowAlert(true);
+    setTimeout(() => setShowAlert(false), 2000);
   };
 
   const downloadResult = () => {
@@ -514,12 +547,20 @@ export default function Base64ConverterPage() {
                   📋 Copiar
                 </button>
                 {mode === 'decode' && (
-                  <button
-                    onClick={downloadResult}
-                    className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
-                  >
-                    💾 Descargar
-                  </button>
+                  <>
+                    <button
+                      onClick={downloadResult}
+                      className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                    >
+                      💾 Descargar
+                    </button>
+                    <button
+                      onClick={downloadAsPdf}
+                      className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                    >
+                      📄 PDF
+                    </button>
+                  </>
                 )}
                 <div className={`flex items-center px-4 py-3 rounded-lg ${
                   isDarkMode ? 'bg-slate-700' : 'bg-gray-100'
