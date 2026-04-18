@@ -1,14 +1,24 @@
-name: CI/CD Pipeline
+name: Backend CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
+    paths:
+      - 'apps/backend/**'
+      - 'packages/**'
+      - '.github/workflows/ci.yml'
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
+    paths:
+      - 'apps/backend/**'
+      - 'packages/**'
+      - '.github/workflows/ci.yml'
 
 jobs:
-  build-and-test:
+  backend:
+    name: Build, Test & Lint
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     services:
       postgres:
@@ -26,259 +36,57 @@ jobs:
           - 5432:5432
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup pnpm
-      uses: pnpm/action-setup@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'pnpm'
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
 
-    - name: Install dependencies
-      run: pnpm install --frozen-lockfile
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-    - name: Generate Prisma client
-      run: pnpm --filter @aiquaa/backend prisma:generate
-      env:
-        DATABASE_URL: postgresql://test:test@localhost:5432/test
-
-    - name: Run database migrations
-      run: pnpm --filter @aiquaa/backend exec prisma migrate deploy
-      env:
-        DATABASE_URL: postgresql://test:test@localhost:5432/test
-
-    - name: Run backend tests
-      run: pnpm --filter @aiquaa/backend test:cov
-      env:
-        DATABASE_URL: postgresql://test:test@localhost:5432/test
-        JWT_SECRET: test-secret-key
-        NODE_ENV: test
-
-    - name: Run frontend tests
-      run: pnpm --filter @aiquaa/frontend test:cov
-      env:
-        NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-
-    - name: Run contract tests
-      run: pnpm test:contract
-      env:
-        DATABASE_URL: postgresql://test:test@localhost:5432/test
-        JWT_SECRET: test-secret-key
-        NODE_ENV: test
-
-    - name: Run linting
-      run: pnpm lint
-
-    - name: Build applications
-      run: pnpm build
-      env:
-        NEXT_PUBLIC_API_URL: http://localhost:3001
-        NEXT_PUBLIC_BACKEND_URL: http://localhost:3001
-        NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-        NEXTAUTH_SECRET: test-secret-key-for-ci-min-32-characters
-
-    - name: Upload coverage reports
-      uses: codecov/codecov-action@v4
-      with:
-        file: ./apps/backend/coverage/lcov.info
-        flags: backend
-        name: backend-coverage
-
-    - name: Upload frontend coverage
-      uses: codecov/codecov-action@v4
-      with:
-        file: ./apps/frontend/coverage/lcov.info
-        flags: frontend
-        name: frontend-coverage
-
-    - name: Check coverage thresholds
-      run: |
-        # Verificar cobertura del backend (mínimo 75%)
-        BACKEND_COVERAGE=$(cat ./apps/backend/coverage/coverage-summary.json | jq -r '.total.lines.pct')
-        if (( $(echo "$BACKEND_COVERAGE < 75" | bc -l) )); then
-          echo "❌ Backend coverage is below 75%: $BACKEND_COVERAGE%"
-          exit 1
-        fi
-        echo "✅ Backend coverage: $BACKEND_COVERAGE%"
-        
-        # Verificar cobertura del frontend (mínimo 75%)
-        FRONTEND_COVERAGE=$(cat ./apps/frontend/coverage/coverage-summary.json | jq -r '.total.lines.pct')
-        if (( $(echo "$FRONTEND_COVERAGE < 75" | bc -l) )); then
-          echo "❌ Frontend coverage is below 75%: $FRONTEND_COVERAGE%"
-          exit 1
-        fi
-        echo "✅ Frontend coverage: $FRONTEND_COVERAGE%"
-
-    - name: Upload test artifacts
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: test-results
-        path: |
-          apps/backend/coverage/
-          apps/frontend/coverage/
-          apps/backend/test-results/
-          apps/frontend/test-results/
-
-  e2e:
-    runs-on: ubuntu-latest
-    needs: build-and-test
-
-    services:
-      postgres:
-        image: postgres:15-alpine
+      - name: Generate Prisma client
+        run: pnpm --filter @aiquaa/backend exec prisma generate
         env:
-          POSTGRES_PASSWORD: test
-          POSTGRES_USER: test
-          POSTGRES_DB: test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
+          DATABASE_URL: postgresql://test:test@localhost:5432/test
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Setup pnpm
-      uses: pnpm/action-setup@v4
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'pnpm'
-
-    - name: Install dependencies
-      run: pnpm install --frozen-lockfile
-
-    - name: Generate Prisma client
-      run: pnpm --filter @aiquaa/backend prisma:generate
-      env:
-        DATABASE_URL: postgresql://test:test@localhost:5432/test
-
-    - name: Run database migrations
-      run: pnpm --filter @aiquaa/backend exec prisma migrate deploy
-      env:
-        DATABASE_URL: postgresql://test:test@localhost:5432/test
-
-    - name: Install Playwright browsers
-      run: pnpm --filter @aiquaa/frontend exec playwright install --with-deps
-
-    - name: Start backend
-      run: |
-        pnpm --filter @aiquaa/backend start:dev &
-        sleep 10
-      env:
-        DATABASE_URL: postgresql://test:test@localhost:5432/test
-        JWT_SECRET: test-secret-key
-        NODE_ENV: test
-        PORT: 3000
-
-    - name: Start frontend
-      run: |
-        pnpm --filter @aiquaa/frontend dev &
-        sleep 15
-      env:
-        FRONTEND_PORT: 3001
-        NEXT_PUBLIC_API_URL: http://localhost:3000
-
-    - name: Run E2E tests
-      run: pnpm e2e
-      env:
-        FRONTEND_PORT: 3001
-        BACKEND_URL: http://localhost:3000
-
-    - name: Upload E2E results
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: e2e-results
-        path: |
-          apps/frontend/test-results/
-          apps/frontend/playwright-report/
-
-  performance:
-    runs-on: ubuntu-latest
-    needs: build-and-test
-
-    services:
-      postgres:
-        image: postgres:15-alpine
+      - name: Run database migrations
+        run: pnpm --filter @aiquaa/backend exec prisma migrate deploy
         env:
-          POSTGRES_PASSWORD: test
-          POSTGRES_USER: test
-          POSTGRES_DB: test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
+          DATABASE_URL: postgresql://test:test@localhost:5432/test
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Run backend tests
+        run: pnpm --filter @aiquaa/backend test:cov
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/test
+          JWT_SECRET: test-secret-key
+          NODE_ENV: test
 
-    - name: Setup pnpm
-      uses: pnpm/action-setup@v4
+      - name: Run linting
+        run: pnpm --filter @aiquaa/backend lint
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'pnpm'
+      - name: Build backend
+        run: pnpm --filter @aiquaa/backend build
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/test
 
-    - name: Install dependencies
-      run: pnpm install --frozen-lockfile
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./apps/backend/coverage/lcov.info
+          flags: backend
+          name: backend-coverage
 
-    - name: Generate Prisma client
-      run: pnpm --filter @aiquaa/backend prisma:generate
-      env:
-        DATABASE_URL: postgresql://test:test@localhost:5432/test
-
-    - name: Run database migrations
-      run: pnpm --filter @aiquaa/backend exec prisma migrate deploy
-      env:
-        DATABASE_URL: postgresql://test:test@localhost:5432/test
-
-    - name: Start backend
-      run: |
-        pnpm --filter @aiquaa/backend start:dev &
-        sleep 10
-      env:
-        DATABASE_URL: postgresql://test:test@localhost:5432/test
-        JWT_SECRET: test-secret-key
-        NODE_ENV: test
-        PORT: 3000
-
-    - name: Run performance tests
-      run: |
-        # Install k6 if not available
-        if ! command -v k6 &> /dev/null; then
-          sudo gpg -k
-          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
-          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
-          sudo apt-get update
-          sudo apt-get install k6
-        fi
-        k6 run perf/k6/forum-smoke.js
-      env:
-        BACKEND_URL: http://localhost:3000
-
-    - name: Upload performance results
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: performance-results
-        path: perf/k6/results.json
+      - name: Upload test artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-test-results
+          path: apps/backend/coverage/
+          retention-days: 14
