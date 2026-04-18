@@ -10,10 +10,40 @@ export async function updateProfileAction(formData: FormData) {
   const username = (formData.get('username') as string)?.trim();
   const role = (formData.get('role') as string)?.trim();
 
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) return { error: 'No autenticado' };
+
   const { error } = await supabase.auth.updateUser({
     data: { full_name: fullName, bio, username, role },
   });
 
+  if (error) return { error: error.message };
+
+  // Sync to profiles table
+  await supabase.from('profiles').upsert({
+    id: user.id,
+    display_name: fullName || username || null,
+    email: user.email,
+    role: role || null,
+  }, { onConflict: 'id' });
+
+  revalidatePath('/perfil');
+  return { success: true };
+}
+
+export async function changePasswordAction(formData: FormData) {
+  const supabase = createClient();
+  const newPassword = (formData.get('new_password') as string)?.trim();
+  const confirmPassword = (formData.get('confirm_password') as string)?.trim();
+
+  if (!newPassword || newPassword.length < 8) {
+    return { error: 'La contraseña debe tener al menos 8 caracteres' };
+  }
+  if (newPassword !== confirmPassword) {
+    return { error: 'Las contraseñas no coinciden' };
+  }
+
+  const { error } = await supabase.auth.updateUser({ password: newPassword });
   if (error) return { error: error.message };
 
   revalidatePath('/perfil');

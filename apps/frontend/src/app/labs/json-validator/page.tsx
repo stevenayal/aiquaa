@@ -4,9 +4,11 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { Alert } from '@/components/common';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useToolUsage } from '@/hooks/useToolUsage';
 
 export default function JsonValidatorPage() {
   const { isDarkMode } = useTheme();
+  const { logUsage, logError } = useToolUsage('json-validator');
   const [inputJson, setInputJson] = useState('');
   const [outputJson, setOutputJson] = useState('');
   const [isValid, setIsValid] = useState<boolean | null>(null);
@@ -51,7 +53,8 @@ export default function JsonValidatorPage() {
       setError('');
       setOutputJson(JSON.stringify(parsed, null, 2));
       setIsFormatted(true);
-      
+      void logUsage('validate');
+
       // Mostrar alerta de éxito
       setAlertMessage('JSON válido y formateado correctamente');
       setAlertType('success');
@@ -63,6 +66,7 @@ export default function JsonValidatorPage() {
       }, 100);
       
     } catch (err) {
+      void logError(err, 'validate');
       setIsValid(false);
       const errorMessage = err instanceof Error ? err.message : 'Error de sintaxis JSON';
       setError(errorMessage);

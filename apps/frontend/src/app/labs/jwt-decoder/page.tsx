@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { Alert } from '@/components/common';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useToolUsage } from '@/hooks/useToolUsage';
 
 interface DecodedJwtResult {
   header: any;
@@ -18,6 +19,7 @@ interface DecodedJwtResult {
 
 export default function JwtDecoderPage() {
   const { isDarkMode } = useTheme();
+  const { logUsage, logError } = useToolUsage('jwt-decoder');
   const [jwtToken, setJwtToken] = useState('');
   const [decodedJwt, setDecodedJwt] = useState<DecodedJwtResult | null>(null);
   const [showAlert, setShowAlert] = useState(false);
@@ -128,6 +130,7 @@ export default function JwtDecoderPage() {
     setDecodedJwt(result);
     
     if (result?.isValid) {
+      void logUsage('decode');
       setAlertMessage('JWT decodificado correctamente');
       setAlertType('success');
       setShowAlert(true);
@@ -137,6 +140,7 @@ export default function JwtDecoderPage() {
         outputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 100);
     } else {
+      void logError(result?.error ?? 'decode failed', 'decode');
       setAlertMessage(result?.error || 'Error al decodificar JWT');
       setAlertType('error');
       setShowAlert(true);

@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { ResendService } from '../mailer/resend.service';
 import { SubmitExamDto } from './dto/submit-exam.dto';
 import { Decimal } from '@prisma/client/runtime/library';
 
@@ -10,7 +9,6 @@ export class IstqbService {
 
   constructor(
     private prisma: PrismaService,
-    private resendService: ResendService,
   ) {}
 
   async submitExamResult(examData: SubmitExamDto) {

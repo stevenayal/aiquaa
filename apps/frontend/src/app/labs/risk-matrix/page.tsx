@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Alert } from '@/components/common';
+import { useToolUsage } from '@/hooks/useToolUsage';
 
 interface Risk {
   id: string;
@@ -24,6 +25,7 @@ interface Risk {
 
 export default function RiskMatrixPage() {
   const { isDarkMode } = useTheme();
+  const { logUsage } = useToolUsage('risk-matrix');
   const [risks, setRisks] = useState<Risk[]>([]);
   const [riskInput, setRiskInput] = useState('');
   const [category, setCategory] = useState('Téc');
@@ -98,6 +100,7 @@ export default function RiskMatrixPage() {
     });
 
     setRisks(updatedRisks);
+    void logUsage('add-risk');
 
     // Reset form
     setRiskInput('');

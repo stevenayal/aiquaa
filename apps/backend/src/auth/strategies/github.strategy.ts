@@ -7,7 +7,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 @Injectable()
 export class GitHubStrategy extends PassportStrategy(Strategy, 'github') {
   constructor(
-    private configService: ConfigService,
+    configService: ConfigService,
     private prisma: PrismaService,
   ) {
     super({

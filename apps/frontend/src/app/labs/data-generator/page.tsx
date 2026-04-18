@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import Link from 'next/link';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Alert } from '@/components/common';
+import { useToolUsage } from '@/hooks/useToolUsage';
 
 interface DataField {
   id: string;
@@ -18,6 +19,7 @@ interface DataField {
 
 export default function DataGeneratorPage() {
   const { isDarkMode, toggleDarkMode } = useTheme();
+  const { logUsage } = useToolUsage('data-generator');
   const [fields, setFields] = useState<DataField[]>([
     { id: '1', name: 'nombre', type: 'text', minLength: 3, maxLength: 20 },
     { id: '2', name: 'email', type: 'email' },
@@ -117,8 +119,10 @@ export default function DataGeneratorPage() {
       return;
     }
 
+    void logUsage('generate');
+
     const data = [];
-    
+
     for (let i = 0; i < recordCount; i++) {
       const record: any = {};
       fields.forEach(field => {

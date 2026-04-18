@@ -134,7 +134,7 @@ export class AuthController {
       res.cookie(cookieName, result.refresh_token, this.getRefreshCookieOptions());
     }
 
-    const { refresh_token, ...response } = result;
+    const { refresh_token: _refresh_token, ...response } = result;
     return response;
   }
 
@@ -161,7 +161,7 @@ export class AuthController {
 
     res.cookie(cookieName, result.refresh_token, this.getRefreshCookieOptions());
 
-    const { refresh_token, ...response } = result;
+    const { refresh_token: _refresh_token, ...response } = result;
     return response;
   }
 
@@ -470,7 +470,7 @@ export class AuthController {
       res.cookie(cookieName, result.refresh_token, this.getRefreshCookieOptions());
     }
 
-    const { refresh_token, ...response } = result;
+    const { refresh_token: _refresh_token, ...response } = result;
     return response;
   }
 

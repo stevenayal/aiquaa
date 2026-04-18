@@ -5,9 +5,11 @@ import Link from 'next/link';
 import { Alert } from '@/components/common';
 import { useTheme } from '@/contexts/ThemeContext';
 import { jsPDF } from 'jspdf';
+import { useToolUsage } from '@/hooks/useToolUsage';
 
 export default function Base64ConverterPage() {
   const { isDarkMode } = useTheme();
+  const { logUsage } = useToolUsage('base64-converter');
   const [inputText, setInputText] = useState('');
   const [outputText, setOutputText] = useState('');
   const [mode, setMode] = useState<'encode' | 'decode'>('encode');
@@ -51,6 +53,8 @@ export default function Base64ConverterPage() {
       setOutputText('');
       return;
     }
+
+    void logUsage(mode);
 
     let result: string;
     if (mode === 'encode') {

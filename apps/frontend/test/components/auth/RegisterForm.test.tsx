@@ -3,6 +3,8 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import RegisterForm from '@/components/auth/RegisterForm';
 import { NextAuthProvider } from '@/contexts/NextAuthContext';
+import { ThemeProvider } from '@/contexts/ThemeContext';
+import { LanguageProvider } from '@/contexts/LanguageContext';
 
 // Mock del SessionProvider de next-auth
 vi.mock('next-auth/react', () => ({
@@ -26,9 +28,13 @@ vi.mock('next/navigation', () => ({
 
 const renderWithProviders = (component: React.ReactElement) => {
   return render(
-    <NextAuthProvider>
-      {component}
-    </NextAuthProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <NextAuthProvider>
+          {component}
+        </NextAuthProvider>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 };
 

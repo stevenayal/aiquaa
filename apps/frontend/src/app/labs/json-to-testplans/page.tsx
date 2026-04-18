@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { z } from 'zod';
+import { useToolUsage } from '@/hooks/useToolUsage';
 import { TestAnalysisSchema, ExportOptions, ProcessedData } from './lib/schema';
 import { transformToCSV } from './lib/transformers';
 import {
@@ -17,6 +18,7 @@ import PreviewCard from './components/PreviewCard';
 const STORAGE_KEY = 'json-to-testplans-input';
 
 export default function JsonToTestPlansPage() {
+  const { logUsage, logError } = useToolUsage('json-to-testplans');
   const [jsonInput, setJsonInput] = useState('');
   const [validationError, setValidationError] = useState<string | null>(null);
   const [processedData, setProcessedData] = useState<ProcessedData | null>(null);
@@ -91,6 +93,7 @@ export default function JsonToTestPlansPage() {
       setProcessedData(processed);
       setCasesCount(validated.casos_prueba.length);
 
+      void logUsage('load-json');
       setSuccessMessage(
         `JSON validado exitosamente. ${validated.casos_prueba.length} casos de prueba procesados.`
       );
@@ -110,6 +113,7 @@ export default function JsonToTestPlansPage() {
       } else {
         setValidationError('Error: ' + (err as Error).message);
       }
+      void logError(err, 'load-json');
     }
   };
 

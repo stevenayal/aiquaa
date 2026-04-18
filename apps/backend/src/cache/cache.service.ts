@@ -76,6 +76,14 @@ export class CacheService {
     }
   }
 
+  async invalidate(key: string): Promise<void> {
+    await this.del(key);
+  }
+
+  async invalidateByTag(tag: string): Promise<void> {
+    await this.invalidatePattern(`${tag}:`);
+  }
+
   async invalidateThreads(): Promise<void> {
     await this.invalidatePattern('threads:');
   }
