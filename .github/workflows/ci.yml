@@ -20,6 +20,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
+    env:
+      DATABASE_URL: postgresql://test:test@localhost:5432/test
+      POSTGRES_URL: postgresql://test:test@localhost:5432/test
+      JWT_SECRET: test-secret-key
+      NODE_ENV: test
+
     services:
       postgres:
         image: postgres:15-alpine
@@ -53,28 +59,18 @@ jobs:
 
       - name: Generate Prisma client
         run: pnpm --filter @aiquaa/backend exec prisma generate
-        env:
-          DATABASE_URL: postgresql://test:test@localhost:5432/test
 
       - name: Run database migrations
         run: pnpm --filter @aiquaa/backend exec prisma migrate deploy
-        env:
-          DATABASE_URL: postgresql://test:test@localhost:5432/test
 
       - name: Run backend tests
         run: pnpm --filter @aiquaa/backend test:cov
-        env:
-          DATABASE_URL: postgresql://test:test@localhost:5432/test
-          JWT_SECRET: test-secret-key
-          NODE_ENV: test
 
       - name: Run linting
         run: pnpm --filter @aiquaa/backend lint
 
       - name: Build backend
         run: pnpm --filter @aiquaa/backend build
-        env:
-          DATABASE_URL: postgresql://test:test@localhost:5432/test
 
       - name: Upload coverage
         uses: codecov/codecov-action@v4
