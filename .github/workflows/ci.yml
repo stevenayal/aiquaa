@@ -84,14 +84,14 @@ jobs:
         NEXTAUTH_SECRET: test-secret-key-for-ci-min-32-characters
 
     - name: Upload coverage reports
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
       with:
         file: ./apps/backend/coverage/lcov.info
         flags: backend
         name: backend-coverage
 
     - name: Upload frontend coverage
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
       with:
         file: ./apps/frontend/coverage/lcov.info
         flags: frontend
@@ -116,7 +116,7 @@ jobs:
         echo "✅ Frontend coverage: $FRONTEND_COVERAGE%"
 
     - name: Upload test artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: test-results
@@ -199,7 +199,7 @@ jobs:
         BACKEND_URL: http://localhost:3000
 
     - name: Upload E2E results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: e2e-results
@@ -277,7 +277,7 @@ jobs:
         BACKEND_URL: http://localhost:3000
 
     - name: Upload performance results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: performance-results
