@@ -110,7 +110,10 @@
       "Bash(xargs grep:*)",
       "Bash(pnpm tsc:*)",
       "Bash(npm run:*)",
-      "Bash(where gh:*)"
+      "Bash(where gh:*)",
+      "Bash(gh pr:*)",
+      "WebFetch(domain:api.github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)"
     ],
     "deny": [],
     "ask": []
