@@ -249,7 +249,7 @@ export class AuthService {
     }
 
     // Marcar email como verificado
-    const updatedUser = await this.prisma.user.update({
+    await this.prisma.user.update({
       where: { id: tokenRecord.userId! },
       data: { emailVerifiedAt: new Date() },
     });
