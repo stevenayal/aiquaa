@@ -26,10 +26,10 @@ interface ReportersData {
 }
 
 const EXAM_TABS = [
-  { key: 'git',         label: 'Examen GIT',       emoji: '🌿', color: 'from-amber-500 to-orange-600' },
+  { key: 'reportes',    label: 'Bughunters',        emoji: '🐛', color: 'from-rose-500 to-pink-600' },
+  { key: 'git',         label: 'Examen GIT',        emoji: '🌿', color: 'from-amber-500 to-orange-600' },
   { key: 'istqb',       label: 'ISTQB CTFL v4.0',  emoji: '📋', color: 'from-indigo-500 to-violet-600' },
   { key: 'performance', label: 'Performance',       emoji: '⚡', color: 'from-emerald-500 to-teal-600' },
-  { key: 'reportes',    label: 'Reportadores',      emoji: '🐛', color: 'from-rose-500 to-pink-600' },
 ] as const;
 
 type TabKey = (typeof EXAM_TABS)[number]['key'];
@@ -213,7 +213,7 @@ function ReportadoresTab({ isDarkMode }: { isDarkMode: boolean }) {
 
 export default function RankingPage() {
   const { isDarkMode } = useTheme();
-  const [activeTab, setActiveTab] = useState<TabKey>('git');
+  const [activeTab, setActiveTab] = useState<TabKey>('reportes');
   const [examData, setExamData] = useState<Record<string, LeaderboardEntry[]>>({ git: [], istqb: [], performance: [] });
   const [examLoading, setExamLoading] = useState<Record<string, boolean>>({ git: true, istqb: true, performance: true });
 

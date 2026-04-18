@@ -107,7 +107,9 @@
       "Bash(cmd /c \"cd /d Z:\\\\Proyectos\\\\aiquaa\\\\apps\\\\frontend && npx tsc --noEmit 2>&1\")",
       "Bash(cmd:*)",
       "Bash(claude mcp:*)",
-      "Bash(xargs grep:*)"
+      "Bash(xargs grep:*)",
+      "Bash(pnpm tsc:*)",
+      "Bash(npm run:*)"
     ],
     "deny": [],
     "ask": []
