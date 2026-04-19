@@ -5,7 +5,6 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Alert, LoadingButton } from '@/components/common';
 import OAuthDebug from './OAuthDebug';
-import PasswordStrengthIndicator from './PasswordStrengthIndicator';
 import PasswordInput from './PasswordInput';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -27,6 +26,7 @@ interface AuthFormProps {
   errors: { [key: string]: string };
   formData: any;
   onFieldChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onPasswordChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onRoleChange?: (role: string) => void;
   onClearErrors: () => void;
   socialLoginError: string | null;
@@ -37,6 +37,8 @@ interface AuthFormProps {
   showResend?: boolean;
   onResend?: () => void;
   isResending?: boolean;
+  passwordRef?: React.RefObject<HTMLInputElement>;
+  confirmPasswordRef?: React.RefObject<HTMLInputElement>;
 }
 
 export default function AuthForm({
@@ -46,6 +48,7 @@ export default function AuthForm({
   errors,
   formData,
   onFieldChange,
+  onPasswordChange,
   onClearErrors,
   socialLoginError,
   onSocialError,
@@ -56,6 +59,8 @@ export default function AuthForm({
   showResend = false,
   onResend,
   isResending = false,
+  passwordRef,
+  confirmPasswordRef,
 }: AuthFormProps) {
   const { isDarkMode } = useTheme();
   const { t } = useLanguage();
@@ -201,32 +206,28 @@ export default function AuthForm({
             <div>
               <label htmlFor="password" className="sr-only">{t('auth.field.password')}</label>
               <PasswordInput
+                ref={passwordRef}
                 id="password"
                 name="password"
-                value={formData.password || ''}
                 placeholder={t('auth.field.password')}
                 autoComplete={isLogin ? "current-password" : "new-password"}
-                onChange={onFieldChange}
+                onChange={onPasswordChange ?? onFieldChange}
                 className={inputClass(!!errors.password, isLogin ? 'rounded-b-md' : '')}
+                showStrength={!isLogin}
               />
               {errors.password && <p className="mt-1 text-sm text-red-500">{errors.password}</p>}
-              {!isLogin && (
-                <div className={`px-3 pb-2 border-l border-r ${isDarkMode ? 'bg-slate-700 border-slate-600' : 'bg-gray-50 border-gray-300'}`}>
-                  <PasswordStrengthIndicator password={formData.password || ''} />
-                </div>
-              )}
             </div>
 
             {!isLogin && (
               <div>
                 <label htmlFor="confirmPassword" className="sr-only">{t('auth.field.confirmPassword')}</label>
                 <PasswordInput
+                  ref={confirmPasswordRef}
                   id="confirmPassword"
                   name="confirmPassword"
-                  value={formData.confirmPassword || ''}
                   placeholder={t('auth.field.confirmPassword')}
                   autoComplete="new-password"
-                  onChange={onFieldChange}
+                  onChange={onPasswordChange ?? onFieldChange}
                   className={inputClass(!!errors.confirmPassword, 'rounded-b-md')}
                 />
                 {errors.confirmPassword && <p className="mt-1 text-sm text-red-500">{errors.confirmPassword}</p>}

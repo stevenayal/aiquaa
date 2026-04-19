@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useTransition } from 'react';
+import React, { useRef, useState, useTransition } from 'react';
 import { registerAction, resendConfirmationAction } from '@/actions/auth';
 import AuthForm from './AuthForm';
 
@@ -13,13 +13,11 @@ export default function RegisterForm() {
   const [alertType, setAlertType] = useState<'success' | 'error'>('error');
   const [socialLoginError] = useState<string | null>(null);
   const [showResend, setShowResend] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    role: '',
-  });
+  const [formData, setFormData] = useState({ name: '', email: '', role: '' });
+
+  // Password values stay in DOM only — never in React state
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const confirmPasswordRef = useRef<HTMLInputElement>(null);
 
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
@@ -38,16 +36,20 @@ export default function RegisterForm() {
     } else if (/\.(con|cmo|gmal|gamil|yaho|homail|outlok)$/i.test(formData.email)) {
       newErrors.email = 'Parece un error tipográfico en el email';
     }
-    if (!formData.password.trim()) {
+
+    const password = passwordRef.current?.value ?? '';
+    const confirmPassword = confirmPasswordRef.current?.value ?? '';
+
+    if (!password) {
       newErrors.password = 'Contraseña obligatoria';
-    } else if (formData.password.length < 8) {
+    } else if (password.length < 8) {
       newErrors.password = 'La contraseña debe tener al menos 8 caracteres';
-    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
+    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
       newErrors.password = 'Debe contener mayúscula, minúscula y número';
     }
-    if (!formData.confirmPassword.trim()) {
+    if (!confirmPassword) {
       newErrors.confirmPassword = 'Confirmar contraseña obligatorio';
-    } else if (formData.password !== formData.confirmPassword) {
+    } else if (password !== confirmPassword) {
       newErrors.confirmPassword = 'Las contraseñas no coinciden';
     }
     if (!formData.role) {
@@ -66,7 +68,7 @@ export default function RegisterForm() {
 
     const data = new FormData();
     data.set('email', formData.email.trim());
-    data.set('password', formData.password);
+    data.set('password', passwordRef.current?.value ?? '');
     data.set('name', formData.name.trim());
     data.set('role', formData.role);
 
@@ -112,6 +114,15 @@ export default function RegisterForm() {
     if (showAlert) setShowAlert(false);
   };
 
+  // Password fields: only clear errors, never store value in state
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name } = e.target;
+    if (errors[name]) {
+      setErrors(prev => { const n = { ...prev }; delete n[name]; return n; });
+    }
+    if (showAlert) setShowAlert(false);
+  };
+
   const handleRoleChange = (role: string) => {
     setFormData(prev => ({ ...prev, role }));
     if (errors.role) {
@@ -127,6 +138,7 @@ export default function RegisterForm() {
       errors={errors}
       formData={formData}
       onFieldChange={handleChange}
+      onPasswordChange={handlePasswordChange}
       onRoleChange={handleRoleChange}
       onClearErrors={() => { setErrors({}); setShowAlert(false); }}
       socialLoginError={socialLoginError}
@@ -137,6 +149,8 @@ export default function RegisterForm() {
       showResend={showResend}
       onResend={handleResend}
       isResending={isResending}
+      passwordRef={passwordRef}
+      confirmPasswordRef={confirmPasswordRef}
     />
   );
 }

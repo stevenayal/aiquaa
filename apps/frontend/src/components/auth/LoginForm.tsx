@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { resendConfirmationAction } from '@/actions/auth';
 import { createClient } from '@/lib/supabase/client';
@@ -15,8 +15,11 @@ export default function LoginForm() {
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState<'success' | 'error'>('error');
   const [socialLoginError] = useState<string | null>(null);
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [formData, setFormData] = useState({ email: '' });
   const [showResend, setShowResend] = useState(false);
+
+  // Password value stays in DOM only — never in React state
+  const passwordRef = useRef<HTMLInputElement>(null);
 
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
@@ -25,7 +28,8 @@ export default function LoginForm() {
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Correo inválido';
     }
-    if (!formData.password.trim()) {
+    const password = passwordRef.current?.value ?? '';
+    if (!password.trim()) {
       newErrors.password = 'Contraseña obligatoria';
     }
     setErrors(newErrors);
@@ -44,7 +48,7 @@ export default function LoginForm() {
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithPassword({
       email: formData.email,
-      password: formData.password,
+      password: passwordRef.current?.value ?? '',
     });
     setIsLoading(false);
 
@@ -95,6 +99,15 @@ export default function LoginForm() {
     if (showAlert) setShowAlert(false);
   };
 
+  // Password field: only clear errors, never store value in state
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name } = e.target;
+    if (errors[name]) {
+      setErrors(prev => { const n = { ...prev }; delete n[name]; return n; });
+    }
+    if (showAlert) setShowAlert(false);
+  };
+
   return (
     <AuthForm
       mode="login"
@@ -103,6 +116,7 @@ export default function LoginForm() {
       errors={errors}
       formData={formData}
       onFieldChange={handleChange}
+      onPasswordChange={handlePasswordChange}
       onClearErrors={() => { setErrors({}); setShowAlert(false); setShowResend(false); }}
       socialLoginError={socialLoginError}
       onSocialError={() => {}}
@@ -112,6 +126,7 @@ export default function LoginForm() {
       showResend={showResend}
       onResend={handleResend}
       isResending={isResending}
+      passwordRef={passwordRef}
     />
   );
 }
