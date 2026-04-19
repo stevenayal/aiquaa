@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ISTQBHighlight from '@/components/ISTQBHighlight';
@@ -9,6 +10,14 @@ import { SuruFloating } from '@/components/Suru';
 export default function HomePage() {
   const { isDarkMode } = useTheme();
   const { t } = useLanguage();
+  const [memberCount, setMemberCount] = useState<string>('...');
+
+  useEffect(() => {
+    fetch('/api/community/members')
+      .then(r => r.json())
+      .then(data => setMemberCount(String(data.count)))
+      .catch(() => setMemberCount('—'));
+  }, []);
 
   // Herramientas destacadas más importantes
   const featuredTools = [
@@ -124,7 +133,7 @@ export default function HomePage() {
                   {[
                     { value: '15+', label: t('home.hero.stats.tools') },
                     { value: '50+', label: t('home.hero.stats.resources') },
-                    { value: '100+', label: t('home.hero.stats.community') },
+                    { value: memberCount, label: t('home.hero.stats.community') },
                   ].map((stat) => (
                     <div key={stat.value} className="text-center lg:text-left min-w-0">
                       <div className={`text-2xl sm:text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{stat.value}</div>

@@ -6,6 +6,7 @@ import Comments from '@/components/Comments';
 import CollaborationSection from '@/components/CollaborationSection';
 import YouTubeSection from '@/components/YouTubeSection';
 import { SuruFloating } from '@/components/Suru';
+import MembersGrid from '@/components/Community/MembersGrid';
 
 export default function ComunidadPage() {
   const { isDarkMode } = useTheme();
@@ -79,6 +80,11 @@ export default function ComunidadPage() {
           }`}>
             {t('community.subtitle')}
           </p>
+        </div>
+
+        {/* Integrantes */}
+        <div className="mb-12">
+          <MembersGrid />
         </div>
 
         {/* Timeline de Hitos */}
