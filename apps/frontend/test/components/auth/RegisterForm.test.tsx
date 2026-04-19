@@ -94,6 +94,51 @@ describe('RegisterForm', () => {
       });
     });
 
+    it('muestra error si el nombre contiene números (issue #24)', async () => {
+      const user = userEvent.setup();
+      renderWithProviders(<RegisterForm />);
+
+      const nameInput = screen.getByPlaceholderText('Nombre completo');
+      await user.type(nameInput, '234234 43234324');
+
+      const submitButton = screen.getByRole('button', { name: /crear cuenta/i });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(screen.getByText('El nombre solo puede contener letras')).toBeInTheDocument();
+      });
+    });
+
+    it('muestra error si el nombre es solo espacios en blanco (issue #25)', async () => {
+      const user = userEvent.setup();
+      renderWithProviders(<RegisterForm />);
+
+      const nameInput = screen.getByPlaceholderText('Nombre completo');
+      await user.type(nameInput, '   ');
+
+      const submitButton = screen.getByRole('button', { name: /crear cuenta/i });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(screen.getByText('Nombre obligatorio')).toBeInTheDocument();
+      });
+    });
+
+    it('acepta nombre con caracteres especiales válidos (tildes, guion, apóstrofe)', async () => {
+      const user = userEvent.setup();
+      renderWithProviders(<RegisterForm />);
+
+      const nameInput = screen.getByPlaceholderText('Nombre completo');
+      await user.type(nameInput, "María O'Brien-González");
+
+      const submitButton = screen.getByRole('button', { name: /crear cuenta/i });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(screen.queryByText('El nombre solo puede contener letras')).not.toBeInTheDocument();
+      });
+    });
+
     it('muestra error si el email está vacío', async () => {
       const user = userEvent.setup();
       renderWithProviders(<RegisterForm />);

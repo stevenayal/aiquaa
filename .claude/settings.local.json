@@ -132,7 +132,14 @@
       "Bash(sed -n '100,110p' \"Z:/Proyectos/aiquaa/apps/backend/src/main.ts\")",
       "Bash(sed -n '230,245p' \"Z:/Proyectos/aiquaa/apps/backend/src/main.ts\")",
       "Bash(sed -n '255,265p' \"Z:/Proyectos/aiquaa/apps/backend/src/main.ts\")",
-      "Bash(sed -n '365,390p' \"Z:/Proyectos/aiquaa/apps/backend/src/main.ts\")"
+      "Bash(sed -n '365,390p' \"Z:/Proyectos/aiquaa/apps/backend/src/main.ts\")",
+      "mcp__supabase__list_tables",
+      "Bash(pnpm --filter @aiquaa/frontend test -- --reporter=verbose test/components/auth/RegisterForm.test.tsx)",
+      "Bash(./pnpm --filter @aiquaa/frontend test -- --reporter=verbose test/components/auth/RegisterForm.test.tsx)",
+      "Bash(./pnpm --filter @aiquaa/frontend test)",
+      "Bash(node ./pnpm/dist/pnpm.cjs --filter @aiquaa/frontend test -- --run)",
+      "Bash(where.exe pnpm:*)",
+      "Bash(node_modules/.bin/vitest run:*)"
     ],
     "deny": [],
     "ask": []

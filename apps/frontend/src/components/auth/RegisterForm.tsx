@@ -23,10 +23,13 @@ export default function RegisterForm() {
 
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
-    if (!formData.name.trim()) {
+    const trimmedName = formData.name.trim();
+    if (!trimmedName) {
       newErrors.name = 'Nombre obligatorio';
-    } else if (formData.name.length < 2 || formData.name.length > 50) {
+    } else if (trimmedName.length < 2 || trimmedName.length > 50) {
       newErrors.name = 'El nombre debe tener entre 2 y 50 caracteres';
+    } else if (!/^[a-zA-ZÀ-ÿñÑ\s'\-]+$/.test(trimmedName)) {
+      newErrors.name = 'El nombre solo puede contener letras';
     }
     if (!formData.email.trim()) {
       newErrors.email = 'Correo obligatorio';
@@ -62,9 +65,9 @@ export default function RegisterForm() {
     if (!validateForm()) return;
 
     const data = new FormData();
-    data.set('email', formData.email);
+    data.set('email', formData.email.trim());
     data.set('password', formData.password);
-    data.set('name', formData.name);
+    data.set('name', formData.name.trim());
     data.set('role', formData.role);
 
     startTransition(async () => {
