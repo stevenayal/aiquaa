@@ -28,6 +28,7 @@ interface AuthFormProps {
   onFieldChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onPasswordChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onRoleChange?: (role: string) => void;
+  onPhoneChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onClearErrors: () => void;
   socialLoginError: string | null;
   onSocialError: (error: string | null) => void;
@@ -53,6 +54,7 @@ export default function AuthForm({
   socialLoginError,
   onSocialError,
   onRoleChange,
+  onPhoneChange,
   showAlert = false,
   alertMessage = '',
   alertType = 'error',
@@ -185,6 +187,23 @@ export default function AuthForm({
                   onChange={onFieldChange}
                 />
                 {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
+              </div>
+            )}
+
+            {!isLogin && (
+              <div>
+                <label htmlFor="phone" className="sr-only">Teléfono</label>
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  autoComplete="tel"
+                  className={inputClass(!!errors.phone, '')}
+                  placeholder="Teléfono (opcional)"
+                  value={formData.phone || ''}
+                  onChange={onPhoneChange ?? onFieldChange}
+                />
+                {errors.phone && <p className="mt-1 text-sm text-red-500">{errors.phone}</p>}
               </div>
             )}
 

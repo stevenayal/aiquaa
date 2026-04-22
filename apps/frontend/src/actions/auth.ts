@@ -22,6 +22,7 @@ export async function registerAction(formData: FormData) {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
   const name = formData.get('name') as string;
+  const phone = formData.get('phone') as string | null;
   // NOTE: Evitamos enviar `role` en user_metadata porque algunos proyectos
   // tienen triggers/constraints en auth.users que solo aceptan ciertos valores
   // y terminan rompiendo el signup con "Database error saving new user".
@@ -36,6 +37,7 @@ export async function registerAction(formData: FormData) {
     options: {
       data: {
         full_name: name,
+        phone: phone || undefined,
         // Solo enviamos role si es un valor seguro y compatible con triggers comunes
         ...(selectedRole && ['comunidad', 'admin'].includes(selectedRole) ? { role: selectedRole } : {}),
       },

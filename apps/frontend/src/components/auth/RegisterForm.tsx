@@ -13,7 +13,7 @@ export default function RegisterForm() {
   const [alertType, setAlertType] = useState<'success' | 'error'>('error');
   const [socialLoginError] = useState<string | null>(null);
   const [showResend, setShowResend] = useState(false);
-  const [formData, setFormData] = useState({ name: '', email: '', role: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', role: '', phone: '' });
 
   // Password values stay in DOM only — never in React state
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -55,6 +55,10 @@ export default function RegisterForm() {
     if (!formData.role) {
       newErrors.role = 'Seleccioná tu rol para continuar';
     }
+    const trimmedPhone = (formData.phone || '').trim();
+    if (trimmedPhone && !/^[\d\s\-\+\(\)]{7,}$/.test(trimmedPhone.replace(/\s/g, ''))) {
+      newErrors.phone = 'Teléfono inválido';
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -71,6 +75,7 @@ export default function RegisterForm() {
     data.set('password', passwordRef.current?.value ?? '');
     data.set('name', formData.name.trim());
     data.set('role', formData.role);
+    data.set('phone', formData.phone.trim());
 
     startTransition(async () => {
       const result = await registerAction(data);
@@ -140,6 +145,7 @@ export default function RegisterForm() {
       onFieldChange={handleChange}
       onPasswordChange={handlePasswordChange}
       onRoleChange={handleRoleChange}
+      onPhoneChange={handleChange}
       onClearErrors={() => { setErrors({}); setShowAlert(false); }}
       socialLoginError={socialLoginError}
       onSocialError={() => {}}
