@@ -34,10 +34,10 @@ export async function registerAction(formData: FormData) {
   const { error } = await supabase.auth.signUp({
     email,
     password,
+    ...(phone ? { phone } : {}),
     options: {
       data: {
         full_name: name,
-        phone: phone || undefined,
         // Solo enviamos role si es un valor seguro y compatible con triggers comunes
         ...(selectedRole && ['comunidad', 'admin'].includes(selectedRole) ? { role: selectedRole } : {}),
       },
