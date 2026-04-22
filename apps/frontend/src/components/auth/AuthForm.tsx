@@ -111,28 +111,43 @@ export default function AuthForm({
 
           {/* Reenviar confirmación */}
           {showResend && onResend && (
-            <button
-              type="button"
-              onClick={onResend}
-              disabled={isResending}
-              className={`w-full flex justify-center items-center gap-2 px-4 py-2 border rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-accent disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${
-                isDarkMode
-                  ? 'border-indigo-500 bg-indigo-900/30 text-indigo-300 hover:bg-indigo-900/50'
-                  : 'border-indigo-300 bg-indigo-50 text-indigo-700 hover:bg-indigo-100'
-              }`}
-            >
-              {isResending ? (
-                <>
-                  <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                  </svg>
-                  {t('auth.resend.loading')}
-                </>
-              ) : (
-                t('auth.resend.button')
-              )}
-            </button>
+            <div className={`rounded-lg p-4 ${isDarkMode ? 'bg-slate-800/50 border border-slate-700' : 'bg-blue-50 border border-blue-200'}`}>
+              <div className="mb-3">
+                <p className={`text-sm font-semibold ${isDarkMode ? 'text-slate-200' : 'text-gray-900'}`}>
+                  ¿No recibiste el email?
+                </p>
+                <p className={`text-xs mt-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
+                  Te enviaremos un nuevo link de verificación a <strong>{formData.email}</strong>
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={onResend}
+                disabled={isResending}
+                className={`w-full flex justify-center items-center gap-2 px-4 py-2.5 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-accent disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${
+                  isDarkMode
+                    ? 'bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-offset-slate-900'
+                    : 'bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-offset-blue-50'
+                }`}
+              >
+                {isResending ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                    </svg>
+                    Reenviando...
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    Reenviar email de confirmación
+                  </>
+                )}
+              </button>
+            </div>
           )}
 
           {/* Alertas de errores de URL */}
