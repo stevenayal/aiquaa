@@ -75,18 +75,11 @@ export default function AuthForm({
   const linkText = isLogin ? t('auth.login.linkText') : t('auth.register.linkText');
   const linkHref = isLogin ? '/register' : '/login';
 
-  const inputClass = (hasError: boolean, extra = '') =>
-    `appearance-none rounded-none relative block w-full px-3 py-2 border text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent focus:border-transparent focus:z-10 ${extra} ${
-      isDarkMode
-        ? `bg-slate-700 text-slate-100 placeholder-slate-400 ${hasError ? 'border-red-500' : 'border-slate-600'}`
-        : `bg-white text-gray-900 placeholder-gray-500 ${hasError ? 'border-red-300' : 'border-gray-300'}`
-    }`;
-
   const fieldClass = (hasError: boolean) =>
-    `w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-colors ${
+    `w-full px-4 py-2.5 rounded-xl border text-sm outline-none shadow-sm transition-all duration-200 focus-visible:ring-2 focus-visible:ring-indigo-400/70 focus-visible:ring-offset-1 ${
       isDarkMode
-        ? `bg-slate-700/60 text-white placeholder-slate-400 ${hasError ? 'border-red-500 focus:border-red-400' : 'border-slate-600 focus:border-indigo-400'}`
-        : `bg-white text-gray-900 placeholder-gray-400 ${hasError ? 'border-red-400 focus:border-red-400' : 'border-gray-200 focus:border-indigo-400'}`
+        ? `bg-slate-700/70 text-white placeholder-slate-400 ${hasError ? 'border-red-500 focus:border-red-400' : 'border-slate-500/80 focus:border-indigo-300'}`
+        : `bg-white text-gray-900 placeholder-gray-400 ${hasError ? 'border-red-400 focus:border-red-400' : 'border-gray-300 focus:border-indigo-400'}`
     }`;
 
   return (
@@ -114,23 +107,23 @@ export default function AuthForm({
           <h1 className={`text-2xl font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
             AIQUAA
           </h1>
-          <p className={`text-sm mt-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
+          <p className={`text-sm mt-1 ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}>
             Plataforma QA de Paraguay
           </p>
         </div>
 
         {/* Card */}
-        <div className={`rounded-2xl p-8 shadow-xl ${
+        <div className={`rounded-2xl p-6 sm:p-8 shadow-xl backdrop-blur-sm ${
           isDarkMode
-            ? 'bg-slate-800 border border-slate-700/60'
-            : 'bg-white border border-gray-100'
+            ? 'bg-slate-800/95 border border-slate-600/60'
+            : 'bg-white/95 border border-gray-200'
         }`}>
           <h2 className={`text-xl font-semibold mb-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
             {title}
           </h2>
-          <p className={`text-sm mb-6 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
+          <p className={`text-sm mb-6 ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}>
             {isLogin ? '¿No tenés cuenta?' : '¿Ya tenés cuenta?'}{' '}
-            <Link href={linkHref} className="font-medium text-indigo-500 hover:text-indigo-400">
+            <Link href={linkHref} className="font-semibold text-indigo-500 hover:text-indigo-400 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 rounded-sm">
               {linkText}
             </Link>
           </p>
@@ -157,7 +150,7 @@ export default function AuthForm({
                   value={formData.name || ''}
                   onChange={onFieldChange}
                 />
-                {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name}</p>}
+                {errors.name && <p className="mt-1 text-xs text-red-500 dark:text-red-400 leading-relaxed">{errors.name}</p>}
               </div>
             )}
 
@@ -172,7 +165,7 @@ export default function AuthForm({
                 value={formData.email || ''}
                 onChange={onFieldChange}
               />
-              {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
+              {errors.email && <p className="mt-1 text-xs text-red-500 dark:text-red-400 leading-relaxed">{errors.email}</p>}
             </div>
 
             <div>
@@ -188,7 +181,7 @@ export default function AuthForm({
                 className={fieldClass(!!errors.password)}
                 showStrength={!isLogin}
               />
-              {errors.password && <p className="mt-1 text-xs text-red-500">{errors.password}</p>}
+              {errors.password && <p className="mt-1 text-xs text-red-500 dark:text-red-400 leading-relaxed">{errors.password}</p>}
             </div>
 
             {!isLogin && (
@@ -204,7 +197,7 @@ export default function AuthForm({
                   onChange={onPasswordChange ?? onFieldChange}
                   className={fieldClass(!!errors.confirmPassword)}
                 />
-                {errors.confirmPassword && <p className="mt-1 text-xs text-red-500">{errors.confirmPassword}</p>}
+                {errors.confirmPassword && <p className="mt-1 text-xs text-red-500 dark:text-red-400 leading-relaxed">{errors.confirmPassword}</p>}
               </div>
             )}
 
@@ -222,7 +215,7 @@ export default function AuthForm({
                         key={role.value}
                         type="button"
                         onClick={() => onRoleChange?.(role.value)}
-                        className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition-all ${
+                        className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/70 ${
                           selected
                             ? 'border-indigo-500 bg-indigo-600 text-white shadow-sm'
                             : isDarkMode
@@ -236,7 +229,7 @@ export default function AuthForm({
                     );
                   })}
                 </div>
-                {errors.role && <p className="mt-1 text-xs text-red-500">{errors.role}</p>}
+                {errors.role && <p className="mt-1 text-xs text-red-500 dark:text-red-400 leading-relaxed">{errors.role}</p>}
               </div>
             )}
 
@@ -272,10 +265,10 @@ export default function AuthForm({
 
             {isLogin && (
               <div className="flex items-center justify-between text-xs pt-1">
-                <Link href="/auth/forgot-password" className={`${isDarkMode ? 'text-slate-400 hover:text-slate-200' : 'text-gray-400 hover:text-gray-600'}`}>
+                <Link href="/auth/forgot-password" className={`${isDarkMode ? 'text-slate-300 hover:text-white' : 'text-gray-500 hover:text-gray-700'} transition-colors`}>
                   ¿Olvidaste tu contraseña?
                 </Link>
-                <Link href="/register" className="font-medium text-indigo-500 hover:text-indigo-400">
+                <Link href="/register" className="font-semibold text-indigo-500 hover:text-indigo-400 underline-offset-4 hover:underline">
                   {t('auth.register.link')}
                 </Link>
               </div>
