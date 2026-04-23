@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
-import type { ExamData, ExamQuestion } from '../types';
+import type { ExamData, ExamQuestion, ExamResult } from '../types';
 import { prepareExamQuestions, formatTime, generateExamResult } from '../utils';
 import QuestionCard from './QuestionCard';
 import ResultsScreen from './ResultsScreen';
