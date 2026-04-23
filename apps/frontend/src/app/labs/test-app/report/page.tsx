@@ -1,7 +1,11 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import type { TechnicalReport, BugReport, CandidateInfo, TestSession, ImageEvidence } from './types';
 import {
   calculateScore,
@@ -19,8 +23,14 @@ import { saveExamResultAction } from '@/actions/exams';
 
 export default function TechnicalReportPage() {
   const { isDarkMode } = useTheme();
+  const { user, isLoading } = useSupabaseAuth();
+  const router = useRouter();
 
-  // Candidate Info
+  useEffect(() => {
+    if (!isLoading && !user) router.push('/login');
+  }, [user, isLoading, router]);
+
+  // Candidate Info — pre-filled from session, github editable
   const [candidateInfo, setCandidateInfo] = useState<CandidateInfo>({
     fullName: '',
     email: '',
@@ -29,6 +39,19 @@ export default function TechnicalReportPage() {
     candidateId: '',
     testDate: new Date(),
   });
+
+  // Sync session data into candidateInfo once user loads
+  useEffect(() => {
+    if (user) {
+      const name = user.user_metadata?.full_name || user.user_metadata?.name || '';
+      const email = user.email || '';
+      setCandidateInfo(prev => ({
+        ...prev,
+        fullName: prev.fullName || name,
+        email: prev.email || email,
+      }));
+    }
+  }, [user]);
 
   // Test Session
   const [testSession, setTestSession] = useState<TestSession>({
@@ -364,18 +387,16 @@ export default function TechnicalReportPage() {
   });
 
   const handleSaveToDb = async () => {
-    if (!candidateInfo.fullName) {
-      setSaveError('Ingresá tu nombre completo antes de guardar');
-      return;
-    }
     setIsSaving(true);
     setSaveError('');
+    const participantName = candidateInfo.fullName || user?.user_metadata?.full_name || user?.email || '';
+    const participantEmail = candidateInfo.email || user?.email || '';
     const bugsWithoutImages = bugs.map(({ images: _images, ...rest }) => rest);
     const { error } = await saveExamResultAction({
       exam_type: 'test-app',
       exam_mode: 'exam',
-      participant_name: candidateInfo.fullName,
-      participant_email: candidateInfo.email || undefined,
+      participant_name: participantName,
+      participant_email: participantEmail || undefined,
       candidate_id: candidateInfo.candidateId || undefined,
       score: score.totalPoints,
       total_questions: score.maxPoints,
@@ -406,6 +427,14 @@ export default function TechnicalReportPage() {
       setSavedOk(true);
     }
   };
+
+  if (isLoading || !user) {
+    return (
+      <div className={`min-h-screen ${isDarkMode ? 'bg-slate-900' : 'bg-gray-50'} flex items-center justify-center`}>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500" />
+      </div>
+    );
+  }
 
   return (
     <div className={`min-h-screen py-8 ${isDarkMode ? 'bg-slate-900' : 'bg-gray-50'}`}>
@@ -480,70 +509,37 @@ export default function TechnicalReportPage() {
           </div>
         </div>
 
-        {/* Candidate Info */}
+        {/* Candidate Info — read-only from session */}
         <div className={`rounded-lg shadow-lg mb-6 p-6 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
           <h2 className={`text-2xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
             👤 Información del Candidato
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                Nombre Completo *
-              </label>
-              <input
-                type="text"
-                value={candidateInfo.fullName}
-                onChange={(e) => setCandidateInfo((prev) => ({ ...prev, fullName: e.target.value }))}
-                className={`w-full px-4 py-2 rounded-lg border ${isDarkMode
-                  ? 'bg-slate-700 border-slate-600 text-white'
-                  : 'bg-white border-gray-300 text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-amber-500`}
-                placeholder="Ej: Juan Pérez"
-              />
+              <p className={`text-xs font-medium mb-1 uppercase tracking-wider ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Nombre</p>
+              <p className={`text-base font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                {candidateInfo.fullName || user?.email || '—'}
+              </p>
             </div>
             <div>
-              <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                Email *
-              </label>
-              <input
-                type="email"
-                value={candidateInfo.email}
-                onChange={(e) => setCandidateInfo((prev) => ({ ...prev, email: e.target.value }))}
-                className={`w-full px-4 py-2 rounded-lg border ${isDarkMode
-                  ? 'bg-slate-700 border-slate-600 text-white'
-                  : 'bg-white border-gray-300 text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-amber-500`}
-                placeholder="juan@example.com"
-              />
+              <p className={`text-xs font-medium mb-1 uppercase tracking-wider ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Email</p>
+              <p className={`text-base ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}>
+                {candidateInfo.email || user?.email || '—'}
+              </p>
             </div>
-            <div>
+            <div className="md:col-span-2">
               <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                GitHub Profile
+                GitHub Profile <span className={`font-normal ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>(opcional)</span>
               </label>
               <input
                 type="text"
                 value={candidateInfo.githubProfile}
                 onChange={(e) => setCandidateInfo((prev) => ({ ...prev, githubProfile: e.target.value }))}
-                className={`w-full px-4 py-2 rounded-lg border ${isDarkMode
-                  ? 'bg-slate-700 border-slate-600 text-white'
-                  : 'bg-white border-gray-300 text-gray-900'
+                className={`w-full max-w-sm px-4 py-2 rounded-lg border ${isDarkMode
+                  ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
+                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
                   } focus:outline-none focus:ring-2 focus:ring-amber-500`}
                 placeholder="https://github.com/username"
-              />
-            </div>
-            <div>
-              <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                Candidate ID *
-              </label>
-              <input
-                type="text"
-                value={candidateInfo.candidateId}
-                onChange={(e) => setCandidateInfo((prev) => ({ ...prev, candidateId: e.target.value }))}
-                className={`w-full px-4 py-2 rounded-lg border ${isDarkMode
-                  ? 'bg-slate-700 border-slate-600 text-white'
-                  : 'bg-white border-gray-300 text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-amber-500`}
-                placeholder="candidate-123"
               />
             </div>
           </div>
