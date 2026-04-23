@@ -11,6 +11,7 @@ import { loadExamData } from './utils';
 import { SuruFloating } from '@/components/Suru';
 import { saveExamResultAction } from '@/actions/exams';
 import ProcessCodeInput from '@/components/labs/ProcessCodeInput';
+import ExamAuthGate from '@/components/labs/ExamAuthGate';
 import type { ExamResult } from './types';
 
 export default function PerformanceExamPage() {
@@ -133,6 +134,7 @@ export default function PerformanceExamPage() {
   ];
 
   return (
+    <ExamAuthGate examName="Examen de Rendimiento / Performance" examEmoji="⚡">
     <div className={`min-h-screen py-12 md:py-16 transition-colors duration-300 ${
       isDarkMode ? 'bg-slate-900' : 'bg-brand-light'
     }`}>
@@ -508,5 +510,6 @@ export default function PerformanceExamPage() {
         </div>
       </div>
     </div>
+    </ExamAuthGate>
   );
 }
