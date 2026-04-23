@@ -1,14 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Alert } from '@/components/common';
 import ExamSimulator from './components/ExamSimulator';
 import { loadExamData } from './utils';
 import { SuruFloating } from '@/components/Suru';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
+import { getExamUserDefaults } from '@/lib/exam-user-defaults';
 
 export default function PerformanceExamPage() {
   const { isDarkMode } = useTheme();
+  const { user } = useSupabaseAuth();
   const [participantName, setParticipantName] = useState('');
   const [githubProfile, setGithubProfile] = useState('');
   const [examPurpose, setExamPurpose] = useState<'capacitacion' | 'postulacion' | 'practica' | 'otro'>('practica');
@@ -16,6 +19,18 @@ export default function PerformanceExamPage() {
   const [examMode, setExamMode] = useState<'exam' | 'training' | null>(null);
   const [hasStarted, setHasStarted] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    const defaults = getExamUserDefaults(user);
+
+    if (defaults.fullName && !participantName) {
+      setParticipantName(defaults.fullName);
+    }
+
+    if (defaults.githubProfile && !githubProfile) {
+      setGithubProfile(defaults.githubProfile);
+    }
+  }, [user, participantName, githubProfile]);
 
   const handleStartExam = (mode: 'exam' | 'training') => {
     if (!participantName.trim()) {

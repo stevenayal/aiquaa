@@ -64,7 +64,7 @@ export default function LoginForm() {
       setAlertType('error');
       setShowAlert(true);
     } else {
-      router.push('/forum');
+      router.push('/ranking');
       router.refresh();
     }
   };

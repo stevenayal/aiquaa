@@ -51,7 +51,7 @@ export const NextAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     try {
       setIsLoading(true);
       const result = await signIn('google', { 
-        callbackUrl: '/forum',
+        callbackUrl: '/ranking',
         redirect: false 
       });
       
@@ -74,7 +74,7 @@ export const NextAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     try {
       setIsLoading(true);
       const result = await signIn('github', { 
-        callbackUrl: '/forum',
+        callbackUrl: '/ranking',
         redirect: false 
       });
       

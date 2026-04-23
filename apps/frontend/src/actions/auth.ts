@@ -15,7 +15,7 @@ export async function loginAction(formData: FormData) {
     return { error: error.message };
   }
 
-  redirect('/forum');
+  redirect('/ranking');
 }
 
 export async function registerAction(formData: FormData) {

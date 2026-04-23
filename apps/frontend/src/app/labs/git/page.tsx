@@ -8,6 +8,7 @@ import { loadExamData } from './utils';
 import ExamAuthGate from '@/components/labs/ExamAuthGate';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { saveExamResultAction } from '@/actions/exams';
+import { getExamUserDefaults } from '@/lib/exam-user-defaults';
 import type { ExamResult } from './types';
 
 export default function GitExamPage() {
@@ -23,10 +24,16 @@ export default function GitExamPage() {
 
   // Pre-fill name from user profile
   useEffect(() => {
-    if (user?.user_metadata?.full_name && !participantName) {
-      setParticipantName(user.user_metadata.full_name);
+    const defaults = getExamUserDefaults(user);
+
+    if (defaults.fullName && !participantName) {
+      setParticipantName(defaults.fullName);
     }
-  }, [user]);
+
+    if (defaults.githubProfile && !githubProfile) {
+      setGithubProfile(defaults.githubProfile);
+    }
+  }, [user, participantName, githubProfile]);
 
   const handleExamComplete = async (result: ExamResult) => {
     await saveExamResultAction({
@@ -79,10 +86,11 @@ export default function GitExamPage() {
   };
 
   const handleReset = () => {
+    const defaults = getExamUserDefaults(user);
     setHasStarted(false);
     setExamMode(null);
-    setParticipantName('');
-    setGithubProfile('');
+    setParticipantName(defaults.fullName);
+    setGithubProfile(defaults.githubProfile);
     setExamPurpose('capacitacion');
     setCompanyName('');
     setError('');

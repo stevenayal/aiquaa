@@ -2,6 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
+import { getExamUserDefaults } from '@/lib/exam-user-defaults';
+import { getCurrentUser } from '../lib/storage';
+import { getCandidateId, setCandidateId } from '../lib/prng';
 import type { TechnicalReport, BugReport, CandidateInfo, TestSession, ImageEvidence } from './types';
 import {
   calculateScore,
@@ -18,6 +22,7 @@ import {
 
 export default function TechnicalReportPage() {
   const { isDarkMode } = useTheme();
+  const { user } = useSupabaseAuth();
 
   // Candidate Info
   const [candidateInfo, setCandidateInfo] = useState<CandidateInfo>({
@@ -100,6 +105,32 @@ export default function TechnicalReportPage() {
       setIsLoadingCache(false);
     }
   }, []);
+
+  useEffect(() => {
+    if (isLoadingCache) return;
+
+    const defaults = getExamUserDefaults(user);
+    const currentTestAppUser = getCurrentUser();
+    const storedCandidateId = getCandidateId();
+    const nextCandidateId =
+      storedCandidateId ||
+      defaults.candidateId ||
+      currentTestAppUser?.id ||
+      '';
+
+    setCandidateInfo((prev) => ({
+      ...prev,
+      fullName: prev.fullName || defaults.fullName || currentTestAppUser?.name || '',
+      email: prev.email || defaults.email || currentTestAppUser?.email || '',
+      githubProfile: prev.githubProfile || defaults.githubProfile,
+      linkedinProfile: prev.linkedinProfile || defaults.linkedinProfile,
+      candidateId: prev.candidateId || nextCandidateId,
+    }));
+
+    if (nextCandidateId && storedCandidateId !== nextCandidateId) {
+      setCandidateId(nextCandidateId);
+    }
+  }, [user, isLoadingCache]);
 
   // Auto-save to cache when state changes
   useEffect(() => {
@@ -276,12 +307,19 @@ export default function TechnicalReportPage() {
       )
     ) {
       clearReportCache();
+      const defaults = getExamUserDefaults(user);
+      const currentTestAppUser = getCurrentUser();
+      const nextCandidateId =
+        getCandidateId() ||
+        defaults.candidateId ||
+        currentTestAppUser?.id ||
+        '';
       setCandidateInfo({
-        fullName: '',
-        email: '',
-        githubProfile: '',
-        linkedinProfile: '',
-        candidateId: '',
+        fullName: defaults.fullName || currentTestAppUser?.name || '',
+        email: defaults.email || currentTestAppUser?.email || '',
+        githubProfile: defaults.githubProfile,
+        linkedinProfile: defaults.linkedinProfile,
+        candidateId: nextCandidateId,
         testDate: new Date(),
       });
       setTestSession({
