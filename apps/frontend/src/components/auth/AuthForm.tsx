@@ -82,212 +82,206 @@ export default function AuthForm({
         : `bg-white text-gray-900 placeholder-gray-500 ${hasError ? 'border-red-300' : 'border-gray-300'}`
     }`;
 
+  const fieldClass = (hasError: boolean) =>
+    `w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-colors ${
+      isDarkMode
+        ? `bg-slate-700/60 text-white placeholder-slate-400 ${hasError ? 'border-red-500 focus:border-red-400' : 'border-slate-600 focus:border-indigo-400'}`
+        : `bg-white text-gray-900 placeholder-gray-400 ${hasError ? 'border-red-400 focus:border-red-400' : 'border-gray-200 focus:border-indigo-400'}`
+    }`;
+
   return (
-    <div className={`min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 ${isDarkMode ? 'bg-slate-900' : 'bg-gray-50'}`}>
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className={`mt-6 text-center text-3xl font-extrabold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-            {title}
-          </h2>
-          <p className={`mt-2 text-center text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
-            O{' '}
-            <Link href={linkHref} className="font-medium text-brand-accent hover:text-brand-primary">
-              {linkText}
-            </Link>
+    <div className={`min-h-screen flex items-center justify-center py-12 px-4 ${
+      isDarkMode
+        ? 'bg-slate-900'
+        : 'bg-gradient-to-br from-indigo-50 via-white to-violet-50'
+    }`}>
+
+      {/* Decorative blobs — light mode only */}
+      {!isDarkMode && (
+        <>
+          <div className="absolute top-0 left-0 w-96 h-96 bg-indigo-100 rounded-full mix-blend-multiply filter blur-3xl opacity-40 -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-violet-100 rounded-full mix-blend-multiply filter blur-3xl opacity-40 translate-x-1/2 translate-y-1/2 pointer-events-none" />
+        </>
+      )}
+
+      <div className="relative max-w-md w-full">
+
+        {/* Brand header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 shadow-lg mb-4">
+            <span className="text-2xl">🎯</span>
+          </div>
+          <h1 className={`text-2xl font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+            AIQUAA
+          </h1>
+          <p className={`text-sm mt-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
+            Plataforma QA de Paraguay
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={onSubmit}>
-          {/* Alertas generales */}
-          {showAlert && (
-            <Alert
-              type={alertType}
-              message={alertMessage}
-              onClose={onClearErrors}
-            />
-          )}
+        {/* Card */}
+        <div className={`rounded-2xl p-8 shadow-xl ${
+          isDarkMode
+            ? 'bg-slate-800 border border-slate-700/60'
+            : 'bg-white border border-gray-100'
+        }`}>
+          <h2 className={`text-xl font-semibold mb-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+            {title}
+          </h2>
+          <p className={`text-sm mb-6 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
+            {isLogin ? '¿No tenés cuenta?' : '¿Ya tenés cuenta?'}{' '}
+            <Link href={linkHref} className="font-medium text-indigo-500 hover:text-indigo-400">
+              {linkText}
+            </Link>
+          </p>
 
-          {/* Reenviar confirmación */}
-          {showResend && onResend && (
-            <button
-              type="button"
-              onClick={onResend}
-              disabled={isResending}
-              className={`w-full flex justify-center items-center gap-2 px-4 py-2 border rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-accent disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${
-                isDarkMode
-                  ? 'border-indigo-500 bg-indigo-900/30 text-indigo-300 hover:bg-indigo-900/50'
-                  : 'border-indigo-300 bg-indigo-50 text-indigo-700 hover:bg-indigo-100'
-              }`}
-            >
-              {isResending ? (
-                <>
-                  <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                  </svg>
-                  {t('auth.resend.loading')}
-                </>
-              ) : (
-                t('auth.resend.button')
-              )}
-            </button>
-          )}
-
-          {/* Alertas de errores de URL */}
-          {error === "OAuthAccountNotLinked" && (
-            <Alert
-              type="error"
-              message={t('auth.error.oauth')}
-              onClose={onClearErrors}
-            />
-          )}
-          {error === "registration_disabled" && (
-            <Alert
-              type="error"
-              message={t('auth.error.registrationDisabled')}
-              onClose={onClearErrors}
-            />
-          )}
-
-          {/* Mensajes de éxito */}
-          {message === "registration_success" && (
-            <Alert
-              type="success"
-              message={t('auth.success.registration')}
-              onClose={onClearErrors}
-            />
-          )}
-
-          {/* Error de OAuth */}
-          {socialLoginError && (
-            <Alert
-              type="error"
-              message={socialLoginError}
-              onClose={() => onSocialError(null)}
-            />
-          )}
-
-          {/* Debug OAuth en desarrollo */}
+          {/* Alerts */}
+          {showAlert && <div className="mb-4"><Alert type={alertType} message={alertMessage} onClose={onClearErrors} /></div>}
+          {error === 'OAuthAccountNotLinked' && <div className="mb-4"><Alert type="error" message={t('auth.error.oauth')} onClose={onClearErrors} /></div>}
+          {error === 'registration_disabled' && <div className="mb-4"><Alert type="error" message={t('auth.error.registrationDisabled')} onClose={onClearErrors} /></div>}
+          {message === 'registration_success' && <div className="mb-4"><Alert type="success" message={t('auth.success.registration')} onClose={onClearErrors} /></div>}
+          {socialLoginError && <div className="mb-4"><Alert type="error" message={socialLoginError} onClose={() => onSocialError(null)} /></div>}
           {process.env.NODE_ENV === 'development' && <OAuthDebug />}
 
-          <div className={`rounded-md shadow-sm -space-y-px ${isDarkMode ? 'shadow-slate-700' : ''}`}>
+          <form onSubmit={onSubmit} className="space-y-4">
+
             {!isLogin && (
               <div>
-                <label htmlFor="name" className="sr-only">{t('auth.field.name')}</label>
+                <label htmlFor="name" className={`block text-xs font-medium mb-1.5 ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}>
+                  {t('auth.field.name')}
+                </label>
                 <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  autoComplete="name"
-                  className={inputClass(!!errors.name, 'rounded-t-md')}
-                  placeholder={t('auth.field.name')}
+                  id="name" name="name" type="text" autoComplete="name"
+                  className={fieldClass(!!errors.name)}
+                  placeholder="Tu nombre completo"
                   value={formData.name || ''}
                   onChange={onFieldChange}
                 />
-                {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
+                {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name}</p>}
               </div>
             )}
 
             <div>
-              <label htmlFor="email" className="sr-only">{t('auth.field.email')}</label>
+              <label htmlFor="email" className={`block text-xs font-medium mb-1.5 ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}>
+                {t('auth.field.email')}
+              </label>
               <input
-                id="email"
-                name="email"
-                type="text"
-                autoComplete="email"
-                className={inputClass(!!errors.email, isLogin ? 'rounded-t-md' : '')}
-                placeholder={t('auth.field.email')}
+                id="email" name="email" type="text" autoComplete="email"
+                className={fieldClass(!!errors.email)}
+                placeholder="tu@email.com"
                 value={formData.email || ''}
                 onChange={onFieldChange}
               />
-              {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
+              {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
             </div>
 
             <div>
-              <label htmlFor="password" className="sr-only">{t('auth.field.password')}</label>
+              <label htmlFor="password" className={`block text-xs font-medium mb-1.5 ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}>
+                {t('auth.field.password')}
+              </label>
               <PasswordInput
                 ref={passwordRef}
-                id="password"
-                name="password"
-                placeholder={t('auth.field.password')}
-                autoComplete={isLogin ? "current-password" : "new-password"}
+                id="password" name="password"
+                placeholder="••••••••"
+                autoComplete={isLogin ? 'current-password' : 'new-password'}
                 onChange={onPasswordChange ?? onFieldChange}
-                className={inputClass(!!errors.password, isLogin ? 'rounded-b-md' : '')}
+                className={fieldClass(!!errors.password)}
                 showStrength={!isLogin}
               />
-              {errors.password && <p className="mt-1 text-sm text-red-500">{errors.password}</p>}
+              {errors.password && <p className="mt-1 text-xs text-red-500">{errors.password}</p>}
             </div>
 
             {!isLogin && (
               <div>
-                <label htmlFor="confirmPassword" className="sr-only">{t('auth.field.confirmPassword')}</label>
+                <label htmlFor="confirmPassword" className={`block text-xs font-medium mb-1.5 ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}>
+                  {t('auth.field.confirmPassword')}
+                </label>
                 <PasswordInput
                   ref={confirmPasswordRef}
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  placeholder={t('auth.field.confirmPassword')}
+                  id="confirmPassword" name="confirmPassword"
+                  placeholder="••••••••"
                   autoComplete="new-password"
                   onChange={onPasswordChange ?? onFieldChange}
-                  className={inputClass(!!errors.confirmPassword, 'rounded-b-md')}
+                  className={fieldClass(!!errors.confirmPassword)}
                 />
-                {errors.confirmPassword && <p className="mt-1 text-sm text-red-500">{errors.confirmPassword}</p>}
+                {errors.confirmPassword && <p className="mt-1 text-xs text-red-500">{errors.confirmPassword}</p>}
               </div>
             )}
-          </div>
 
-          {/* Role selector — solo en registro */}
-          {!isLogin && (
-            <div>
-              <p className={`text-sm font-medium mb-2 ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}>
-                ¿Cuál es tu rol en QA?
-              </p>
-              <div className="grid grid-cols-2 gap-2">
-                {ROLES.map(role => {
-                  const selected = formData.role === role.value;
-                  return (
-                    <button
-                      key={role.value}
-                      type="button"
-                      onClick={() => onRoleChange?.(role.value)}
-                      className={`flex items-center gap-2 px-3 py-2.5 rounded-lg border text-sm font-medium transition-all ${
-                        selected
-                          ? 'border-indigo-500 bg-indigo-600 text-white shadow-sm'
-                          : isDarkMode
-                            ? 'border-slate-600 bg-slate-700 text-slate-300 hover:border-indigo-400 hover:bg-slate-600'
-                            : 'border-gray-300 bg-white text-gray-700 hover:border-indigo-400 hover:bg-indigo-50'
-                      }`}
-                    >
-                      <span>{role.emoji}</span>
-                      <span className="truncate">{role.label}</span>
-                    </button>
-                  );
-                })}
+            {/* Role selector */}
+            {!isLogin && (
+              <div>
+                <p className={`text-xs font-medium mb-2 ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}>
+                  ¿Cuál es tu rol en QA?
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  {ROLES.map(role => {
+                    const selected = formData.role === role.value;
+                    return (
+                      <button
+                        key={role.value}
+                        type="button"
+                        onClick={() => onRoleChange?.(role.value)}
+                        className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition-all ${
+                          selected
+                            ? 'border-indigo-500 bg-indigo-600 text-white shadow-sm'
+                            : isDarkMode
+                              ? 'border-slate-600 bg-slate-700/60 text-slate-300 hover:border-indigo-400'
+                              : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-indigo-300 hover:bg-indigo-50'
+                        }`}
+                      >
+                        <span>{role.emoji}</span>
+                        <span className="truncate">{role.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                {errors.role && <p className="mt-1 text-xs text-red-500">{errors.role}</p>}
               </div>
-              {errors.role && <p className="mt-1 text-sm text-red-500">{errors.role}</p>}
-            </div>
-          )}
+            )}
 
-          <div>
-            <LoadingButton
-              isLoading={isLoading}
-              loadingText={loadingText}
-              type="submit"
-            >
-              {submitText}
-            </LoadingButton>
-          </div>
+            {/* Reenviar confirmación */}
+            {showResend && onResend && (
+              <button
+                type="button"
+                onClick={onResend}
+                disabled={isResending}
+                className={`w-full flex justify-center items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition-colors disabled:opacity-50 ${
+                  isDarkMode
+                    ? 'border-indigo-500 bg-indigo-900/30 text-indigo-300 hover:bg-indigo-900/50'
+                    : 'border-indigo-300 bg-indigo-50 text-indigo-700 hover:bg-indigo-100'
+                }`}
+              >
+                {isResending ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    {t('auth.resend.loading')}
+                  </>
+                ) : t('auth.resend.button')}
+              </button>
+            )}
 
-          {isLogin && (
-            <div className="flex items-center justify-between text-sm">
-              <Link href="/auth/forgot-password" className={`${isDarkMode ? 'text-slate-400 hover:text-slate-200' : 'text-gray-500 hover:text-gray-700'}`}>
-                ¿Olvidaste tu contraseña?
-              </Link>
-              <Link href="/register" className="font-medium text-brand-accent hover:text-brand-primary">
-                {t('auth.register.link')}
-              </Link>
+            <div className="pt-1">
+              <LoadingButton isLoading={isLoading} loadingText={loadingText} type="submit">
+                {submitText}
+              </LoadingButton>
             </div>
-          )}
-        </form>
+
+            {isLogin && (
+              <div className="flex items-center justify-between text-xs pt-1">
+                <Link href="/auth/forgot-password" className={`${isDarkMode ? 'text-slate-400 hover:text-slate-200' : 'text-gray-400 hover:text-gray-600'}`}>
+                  ¿Olvidaste tu contraseña?
+                </Link>
+                <Link href="/register" className="font-medium text-indigo-500 hover:text-indigo-400">
+                  {t('auth.register.link')}
+                </Link>
+              </div>
+            )}
+          </form>
+        </div>
       </div>
     </div>
   );
