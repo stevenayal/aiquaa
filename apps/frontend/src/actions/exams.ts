@@ -24,6 +24,8 @@ interface SaveExamResultPayload {
   language?: string;
   // Analysis
   learning_objectives?: object;
+  // Hiring process
+  process_code?: string;
 }
 
 export async function saveExamResultAction(payload: SaveExamResultPayload) {
