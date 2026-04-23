@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -15,7 +15,7 @@ const EXAM_OPTIONS = [
 ];
 
 export default function NuevoProcesoPage() {
-  const { user } = useSupabaseAuth();
+  const { user, isLoading } = useSupabaseAuth();
   const { isDarkMode } = useTheme();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -29,10 +29,11 @@ export default function NuevoProcesoPage() {
     expires_at: '',
   });
 
-  if (!user) {
-    router.push('/login');
-    return null;
-  }
+  useEffect(() => {
+    if (!isLoading && !user) router.push('/login');
+  }, [user, isLoading, router]);
+
+  if (isLoading || !user) return null;
 
   function toggleExam(value: string) {
     setForm(prev => ({
