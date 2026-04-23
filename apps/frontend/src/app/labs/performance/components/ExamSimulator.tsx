@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
-import type { ExamData, ExamQuestion } from '../types';
+import type { ExamData, ExamQuestion, ExamResult } from '../types';
 import { prepareExamQuestions, formatTime, generateExamResult } from '../utils';
 import QuestionCard from './QuestionCard';
 import ResultsScreen from './ResultsScreen';
@@ -14,6 +14,7 @@ interface ExamSimulatorProps {
   companyName?: string;
   mode: 'exam' | 'training';
   examData: ExamData;
+  onExamComplete?: (result: ExamResult) => void;
 }
 
 export default function ExamSimulator({
@@ -23,6 +24,7 @@ export default function ExamSimulator({
   companyName,
   mode,
   examData,
+  onExamComplete,
 }: ExamSimulatorProps) {
   const onReset = () => {
     window.location.reload();
@@ -202,6 +204,8 @@ export default function ExamSimulator({
       timeSpent,
       examData.examInfo.passingScore,
     );
+
+    onExamComplete?.(result);
 
     return (
       <ResultsScreen

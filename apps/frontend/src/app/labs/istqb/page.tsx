@@ -1,6 +1,9 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Alert } from '@/components/common';
 import ExamSimulator from './components/ExamSimulator';
@@ -9,17 +12,20 @@ import { SuruFloating } from '@/components/Suru';
 import ExamAuthGate from '@/components/labs/ExamAuthGate';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { saveExamResultAction } from '@/actions/exams';
+import ProcessCodeInput from '@/components/labs/ProcessCodeInput';
 import type { ExamResult } from './types';
 
 export default function ISTQBSimulatorPage() {
   const { isDarkMode } = useTheme();
   const { user } = useSupabaseAuth();
+  const searchParams = useSearchParams();
   const [participantName, setParticipantName] = useState('');
   const [examMode, setExamMode] = useState<'exam' | 'training' | null>(null);
   const [hasStarted, setHasStarted] = useState(false);
   const [error, setError] = useState('');
   const [language, setLanguage] = useState<'es' | 'en'>('es');
   const [model, setModel] = useState<'A' | 'B' | 'C'>('A');
+  const [processCode, setProcessCode] = useState(searchParams.get('process')?.toUpperCase() ?? '');
 
   useEffect(() => {
     if (user?.user_metadata?.full_name && !participantName) {
@@ -42,6 +48,7 @@ export default function ISTQBSimulatorPage() {
       model,
       language,
       learning_objectives: result.learningObjectiveAnalysis,
+      process_code: processCode.trim() || undefined,
     });
   };
 
@@ -337,6 +344,12 @@ export default function ISTQBSimulatorPage() {
                   } focus:outline-none focus:ring-2 focus:ring-amber-500`}
               />
             </div>
+
+            <ProcessCodeInput
+              value={processCode}
+              onChange={setProcessCode}
+              autoValidate={!!searchParams.get('process')}
+            />
 
             {error && (
               <Alert type="error" message={error} onClose={() => setError('')} />
