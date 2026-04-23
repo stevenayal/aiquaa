@@ -9,14 +9,12 @@ import { Alert } from '@/components/common';
 import ExamSimulator from './components/ExamSimulator';
 import { loadExamData } from './utils';
 import { SuruFloating } from '@/components/Suru';
-import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { saveExamResultAction } from '@/actions/exams';
 import ProcessCodeInput from '@/components/labs/ProcessCodeInput';
 import type { ExamResult } from './types';
 
 export default function PerformanceExamPage() {
   const { isDarkMode } = useTheme();
-  const { user } = useSupabaseAuth();
   const searchParams = useSearchParams();
   const [participantName, setParticipantName] = useState('');
   const [githubProfile, setGithubProfile] = useState('');
