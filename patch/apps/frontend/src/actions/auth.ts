@@ -32,6 +32,7 @@ export async function registerAction(formData: FormData) {
         full_name: name,
         audience,
         ...(audience === 'empresa' && companyName ? { company_name: companyName } : {}),
+        // Solo enviamos role si es un valor seguro y compatible con triggers comunes
         ...(selectedRole && ['comunidad', 'admin'].includes(selectedRole) ? { role: selectedRole } : {}),
       },
       emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL}/auth/confirm`,
