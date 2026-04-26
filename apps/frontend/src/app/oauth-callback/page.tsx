@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import Image from 'next/image';
+import LogoMark from '@/components/LogoMark';
 
 export default function OAuthCallbackPage() {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
@@ -48,14 +48,8 @@ export default function OAuthCallbackPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <div className="mx-auto h-12 w-12 flex items-center justify-center mb-4">
-            <Image
-              className="h-12 w-auto"
-              src="/images/logo1.png"
-              alt="AIQUAA Logo"
-              width={48}
-              height={48}
-            />
+          <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-slate-900 mb-4">
+            <LogoMark size={32} color="#ffffff" wordmark={false} />
           </div>
           
           {status === 'loading' && (
