@@ -3,9 +3,11 @@
 import { createClient } from '@/lib/supabase/server';
 
 interface SaveExamResultPayload {
-  exam_type: 'git' | 'istqb' | 'performance';
+  exam_type: 'git' | 'istqb' | 'performance' | 'test-app';
   exam_mode: 'exam' | 'training';
   participant_name?: string;
+  participant_email?: string;
+  candidate_id?: string;
   score: number;
   total_questions: number;
   correct_answers: number;
@@ -24,6 +26,10 @@ interface SaveExamResultPayload {
   language?: string;
   // Analysis
   learning_objectives?: object;
+  // Hiring process
+  process_code?: string;
+  // Extra structured data (bugs, sections, etc.)
+  metadata?: object;
 }
 
 export async function saveExamResultAction(payload: SaveExamResultPayload) {

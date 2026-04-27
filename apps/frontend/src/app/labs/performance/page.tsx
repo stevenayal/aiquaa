@@ -1,6 +1,9 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Alert } from '@/components/common';
 import ExamSimulator from './components/ExamSimulator';
@@ -8,10 +11,15 @@ import { loadExamData } from './utils';
 import { SuruFloating } from '@/components/Suru';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { getExamUserDefaults } from '@/lib/exam-user-defaults';
+import { saveExamResultAction } from '@/actions/exams';
+import ProcessCodeInput from '@/components/labs/ProcessCodeInput';
+import ExamAuthGate from '@/components/labs/ExamAuthGate';
+import type { ExamResult } from './types';
 
 export default function PerformanceExamPage() {
   const { isDarkMode } = useTheme();
   const { user } = useSupabaseAuth();
+  const searchParams = useSearchParams();
   const [participantName, setParticipantName] = useState('');
   const [githubProfile, setGithubProfile] = useState('');
   const [examPurpose, setExamPurpose] = useState<'capacitacion' | 'postulacion' | 'practica' | 'otro'>('practica');
@@ -19,6 +27,7 @@ export default function PerformanceExamPage() {
   const [examMode, setExamMode] = useState<'exam' | 'training' | null>(null);
   const [hasStarted, setHasStarted] = useState(false);
   const [error, setError] = useState('');
+  const [processCode, setProcessCode] = useState(searchParams.get('process')?.toUpperCase() ?? '');
 
   useEffect(() => {
     const defaults = getExamUserDefaults(user);
@@ -51,6 +60,26 @@ export default function PerformanceExamPage() {
     setHasStarted(true);
   };
 
+  const handleExamComplete = async (result: ExamResult) => {
+    await saveExamResultAction({
+      exam_type: 'performance',
+      exam_mode: examMode as 'exam' | 'training',
+      participant_name: participantName,
+      score: result.score,
+      total_questions: result.totalQuestions,
+      correct_answers: result.correctAnswers,
+      incorrect_answers: result.incorrectAnswers,
+      passing_score: Math.round(result.totalQuestions * 0.7),
+      passed: result.passed,
+      percentage: result.percentage,
+      time_spent: result.timeSpent,
+      github_profile: githubProfile,
+      exam_purpose: examPurpose,
+      company_name: companyName || undefined,
+      process_code: processCode.trim() || undefined,
+    });
+  };
+
   // Si el examen ha iniciado, mostrar el simulador
   if (hasStarted && examMode) {
     return (
@@ -61,6 +90,7 @@ export default function PerformanceExamPage() {
         companyName={companyName}
         mode={examMode}
         examData={loadExamData()}
+        onExamComplete={handleExamComplete}
       />
     );
   }
@@ -119,6 +149,7 @@ export default function PerformanceExamPage() {
   ];
 
   return (
+    <ExamAuthGate examName="Examen de Rendimiento / Performance" examEmoji="⚡">
     <div className={`min-h-screen py-12 md:py-16 transition-colors duration-300 ${
       isDarkMode ? 'bg-slate-900' : 'bg-brand-light'
     }`}>
@@ -322,6 +353,11 @@ export default function PerformanceExamPage() {
           )}
 
           <div className="space-y-4">
+            <ProcessCodeInput
+              value={processCode}
+              onChange={setProcessCode}
+              autoValidate={!!searchParams.get('process')}
+            />
             <div>
               <label className={`block text-sm font-semibold mb-2 ${
                 isDarkMode ? 'text-slate-300' : 'text-gray-700'
@@ -489,5 +525,6 @@ export default function PerformanceExamPage() {
         </div>
       </div>
     </div>
+    </ExamAuthGate>
   );
 }

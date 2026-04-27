@@ -1,6 +1,9 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { getExamUserDefaults } from '@/lib/exam-user-defaults';
@@ -19,12 +22,18 @@ import {
   clearReportCache,
   formatLastSaved,
 } from './utils';
+import { saveExamResultAction } from '@/actions/exams';
 
 export default function TechnicalReportPage() {
   const { isDarkMode } = useTheme();
-  const { user } = useSupabaseAuth();
+  const { user, isLoading } = useSupabaseAuth();
+  const router = useRouter();
 
-  // Candidate Info
+  useEffect(() => {
+    if (!isLoading && !user) router.push('/login');
+  }, [user, isLoading, router]);
+
+  // Candidate Info — pre-filled from session, github editable
   const [candidateInfo, setCandidateInfo] = useState<CandidateInfo>({
     fullName: '',
     email: '',
@@ -33,6 +42,19 @@ export default function TechnicalReportPage() {
     candidateId: '',
     testDate: new Date(),
   });
+
+  // Sync session data into candidateInfo once user loads
+  useEffect(() => {
+    if (user) {
+      const name = user.user_metadata?.full_name || user.user_metadata?.name || '';
+      const email = user.email || '';
+      setCandidateInfo(prev => ({
+        ...prev,
+        fullName: prev.fullName || name,
+        email: prev.email || email,
+      }));
+    }
+  }, [user]);
 
   // Test Session
   const [testSession, setTestSession] = useState<TestSession>({
@@ -68,6 +90,10 @@ export default function TechnicalReportPage() {
   const [isLoadingCache, setIsLoadingCache] = useState(true);
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+  const [processCode, setProcessCode] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [savedOk, setSavedOk] = useState(false);
+  const [saveError, setSaveError] = useState('');
 
   // Load audit log and cached report from localStorage on mount
   useEffect(() => {
@@ -396,6 +422,56 @@ export default function TechnicalReportPage() {
     score: {} as any,
   });
 
+  const handleSaveToDb = async () => {
+    setIsSaving(true);
+    setSaveError('');
+    const participantName = candidateInfo.fullName || user?.user_metadata?.full_name || user?.email || '';
+    const participantEmail = candidateInfo.email || user?.email || '';
+    const bugsWithoutImages = bugs.map(({ images: _images, ...rest }) => rest);
+    const { error } = await saveExamResultAction({
+      exam_type: 'test-app',
+      exam_mode: 'exam',
+      participant_name: participantName,
+      participant_email: participantEmail || undefined,
+      candidate_id: candidateInfo.candidateId || undefined,
+      score: score.totalPoints,
+      total_questions: score.maxPoints,
+      correct_answers: score.totalPoints,
+      incorrect_answers: score.maxPoints - score.totalPoints,
+      passing_score: Math.round(score.maxPoints * 0.6),
+      passed: score.percentage >= 60,
+      percentage: score.percentage,
+      time_spent: testSession.duration * 60,
+      github_profile: candidateInfo.githubProfile || undefined,
+      process_code: processCode.trim().toUpperCase() || undefined,
+      metadata: {
+        bugs: bugsWithoutImages,
+        exploredSections: testSession.exploredSections,
+        bugCount: bugs.length,
+        severityCounts: {
+          critical: bugs.filter(b => b.severity === 'Critical').length,
+          high: bugs.filter(b => b.severity === 'High').length,
+          medium: bugs.filter(b => b.severity === 'Medium').length,
+          low: bugs.filter(b => b.severity === 'Low').length,
+        },
+      },
+    });
+    setIsSaving(false);
+    if (error) {
+      setSaveError(error);
+    } else {
+      setSavedOk(true);
+    }
+  };
+
+  if (isLoading || !user) {
+    return (
+      <div className={`min-h-screen ${isDarkMode ? 'bg-slate-900' : 'bg-gray-50'} flex items-center justify-center`}>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500" />
+      </div>
+    );
+  }
+
   return (
     <div className={`min-h-screen py-8 ${isDarkMode ? 'bg-slate-900' : 'bg-gray-50'}`}>
       <div className="container mx-auto px-4 max-w-6xl">
@@ -469,70 +545,37 @@ export default function TechnicalReportPage() {
           </div>
         </div>
 
-        {/* Candidate Info */}
+        {/* Candidate Info — read-only from session */}
         <div className={`rounded-lg shadow-lg mb-6 p-6 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
           <h2 className={`text-2xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
             👤 Información del Candidato
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                Nombre Completo *
-              </label>
-              <input
-                type="text"
-                value={candidateInfo.fullName}
-                onChange={(e) => setCandidateInfo((prev) => ({ ...prev, fullName: e.target.value }))}
-                className={`w-full px-4 py-2 rounded-lg border ${isDarkMode
-                  ? 'bg-slate-700 border-slate-600 text-white'
-                  : 'bg-white border-gray-300 text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-amber-500`}
-                placeholder="Ej: Juan Pérez"
-              />
+              <p className={`text-xs font-medium mb-1 uppercase tracking-wider ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Nombre</p>
+              <p className={`text-base font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                {candidateInfo.fullName || user?.email || '—'}
+              </p>
             </div>
             <div>
-              <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                Email *
-              </label>
-              <input
-                type="email"
-                value={candidateInfo.email}
-                onChange={(e) => setCandidateInfo((prev) => ({ ...prev, email: e.target.value }))}
-                className={`w-full px-4 py-2 rounded-lg border ${isDarkMode
-                  ? 'bg-slate-700 border-slate-600 text-white'
-                  : 'bg-white border-gray-300 text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-amber-500`}
-                placeholder="juan@example.com"
-              />
+              <p className={`text-xs font-medium mb-1 uppercase tracking-wider ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>Email</p>
+              <p className={`text-base ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}>
+                {candidateInfo.email || user?.email || '—'}
+              </p>
             </div>
-            <div>
+            <div className="md:col-span-2">
               <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                GitHub Profile
+                GitHub Profile <span className={`font-normal ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>(opcional)</span>
               </label>
               <input
                 type="text"
                 value={candidateInfo.githubProfile}
                 onChange={(e) => setCandidateInfo((prev) => ({ ...prev, githubProfile: e.target.value }))}
-                className={`w-full px-4 py-2 rounded-lg border ${isDarkMode
-                  ? 'bg-slate-700 border-slate-600 text-white'
-                  : 'bg-white border-gray-300 text-gray-900'
+                className={`w-full max-w-sm px-4 py-2 rounded-lg border ${isDarkMode
+                  ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
+                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
                   } focus:outline-none focus:ring-2 focus:ring-amber-500`}
                 placeholder="https://github.com/username"
-              />
-            </div>
-            <div>
-              <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                Candidate ID *
-              </label>
-              <input
-                type="text"
-                value={candidateInfo.candidateId}
-                onChange={(e) => setCandidateInfo((prev) => ({ ...prev, candidateId: e.target.value }))}
-                className={`w-full px-4 py-2 rounded-lg border ${isDarkMode
-                  ? 'bg-slate-700 border-slate-600 text-white'
-                  : 'bg-white border-gray-300 text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-amber-500`}
-                placeholder="candidate-123"
               />
             </div>
           </div>
@@ -909,7 +952,39 @@ export default function TechnicalReportPage() {
           <h2 className={`text-2xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
             📄 Generar Informe
           </h2>
+
+          {/* Process code input */}
+          <div className="mb-5">
+            <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}>
+              Código de proceso <span className={`font-normal ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>(opcional — si participás en un proceso de selección)</span>
+            </label>
+            <input
+              type="text"
+              value={processCode}
+              onChange={e => setProcessCode(e.target.value.toUpperCase())}
+              placeholder="Ej: CLT-2025-ABC"
+              className={`w-full max-w-xs px-3 py-2 rounded-lg border font-mono text-sm outline-none transition-colors ${
+                isDarkMode
+                  ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-indigo-500'
+                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-indigo-500'
+              }`}
+            />
+          </div>
+
           <div className="flex flex-wrap gap-4">
+            <button
+              onClick={handleSaveToDb}
+              disabled={isSaving || savedOk}
+              className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                savedOk
+                  ? isDarkMode ? 'bg-green-900/50 text-green-300 cursor-not-allowed' : 'bg-green-100 text-green-700 cursor-not-allowed'
+                  : isSaving
+                  ? 'bg-indigo-400 text-white cursor-wait'
+                  : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+              }`}
+            >
+              {isSaving ? 'Guardando...' : savedOk ? '✓ Guardado' : '💾 Guardar resultado'}
+            </button>
             <button
               onClick={handleGeneratePDF}
               className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
@@ -947,6 +1022,19 @@ export default function TechnicalReportPage() {
               ← Volver al Test App
             </a>
           </div>
+
+          {saveError && (
+            <div className={`mt-4 p-4 rounded-lg ${isDarkMode ? 'bg-red-900/30 border border-red-700' : 'bg-red-50 border border-red-300'}`}>
+              <p className={`text-sm ${isDarkMode ? 'text-red-300' : 'text-red-700'}`}>{saveError}</p>
+            </div>
+          )}
+          {savedOk && (
+            <div className={`mt-4 p-4 rounded-lg ${isDarkMode ? 'bg-green-900/30 border border-green-700' : 'bg-green-50 border border-green-300'}`}>
+              <p className={`text-sm ${isDarkMode ? 'text-green-300' : 'text-green-800'}`}>
+                ✅ Resultado guardado. El employer puede ver tu informe en el dashboard del proceso.
+              </p>
+            </div>
+          )}
           {emailSent && (
             <div className={`mt-4 p-4 rounded-lg ${isDarkMode ? 'bg-green-900/30 border border-green-700' : 'bg-green-50 border border-green-300'}`}>
               <p className={`text-sm ${isDarkMode ? 'text-green-300' : 'text-green-800'}`}>

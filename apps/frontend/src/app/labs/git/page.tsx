@@ -1,6 +1,9 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Alert } from '@/components/common';
 import ExamSimulator from './components/ExamSimulator';
@@ -9,11 +12,13 @@ import ExamAuthGate from '@/components/labs/ExamAuthGate';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { saveExamResultAction } from '@/actions/exams';
 import { getExamUserDefaults } from '@/lib/exam-user-defaults';
+import ProcessCodeInput from '@/components/labs/ProcessCodeInput';
 import type { ExamResult } from './types';
 
 export default function GitExamPage() {
   const { isDarkMode } = useTheme();
   const { user } = useSupabaseAuth();
+  const searchParams = useSearchParams();
   const [participantName, setParticipantName] = useState('');
   const [githubProfile, setGithubProfile] = useState('');
   const [examPurpose, setExamPurpose] = useState<'capacitacion' | 'postulacion' | 'practica' | 'otro'>('capacitacion');
@@ -21,6 +26,7 @@ export default function GitExamPage() {
   const [examMode, setExamMode] = useState<'exam' | 'training' | null>(null);
   const [hasStarted, setHasStarted] = useState(false);
   const [error, setError] = useState('');
+  const [processCode, setProcessCode] = useState(searchParams.get('process')?.toUpperCase() ?? '');
 
   // Pre-fill name from user profile
   useEffect(() => {
@@ -51,6 +57,7 @@ export default function GitExamPage() {
       exam_purpose: result.examPurpose,
       company_name: result.companyName,
       learning_objectives: result.learningObjectiveAnalysis,
+      process_code: processCode.trim() || undefined,
     });
   };
 
@@ -283,6 +290,12 @@ export default function GitExamPage() {
                 </p>
               </div>
             )}
+
+            <ProcessCodeInput
+              value={processCode}
+              onChange={setProcessCode}
+              autoValidate={!!searchParams.get('process')}
+            />
 
             {error && (
               <Alert type="error" message={error} onClose={() => setError('')} />
