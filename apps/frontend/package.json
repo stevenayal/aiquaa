@@ -16,7 +16,8 @@
     "e2e": "playwright test",
     "e2e:report": "playwright show-report",
     "postbuild": "next-sitemap",
-    "auth:check": "node -e \"fetch(process.env.NEXTAUTH_URL + '/api/auth/signin').then(r=>{if(r.status<400)process.exit(0);process.exit(1)}).catch(()=>process.exit(1))\""
+    "auth:check": "node -e \"fetch(process.env.NEXTAUTH_URL + '/api/auth/signin').then(r=>{if(r.status<400)process.exit(0);process.exit(1)}).catch(()=>process.exit(1))\"",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@aiquaa/allpairs-core": "workspace:*",

@@ -6,6 +6,12 @@ import { NextAuthProvider } from '@/contexts/NextAuthContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 
+// Mock Server Actions — MSW intercepts fetch, not Next.js server actions
+vi.mock('@/actions/auth', () => ({
+  registerAction: vi.fn(),
+  resendConfirmationAction: vi.fn(),
+}));
+
 // Mock del SessionProvider de next-auth
 vi.mock('next-auth/react', () => ({
   SessionProvider: ({ children }: { children: React.ReactNode }) => children,
@@ -26,6 +32,8 @@ vi.mock('next/navigation', () => ({
   }),
 }));
 
+import { registerAction } from '@/actions/auth';
+
 const renderWithProviders = (component: React.ReactElement) => {
   return render(
     <ThemeProvider>
@@ -41,16 +49,17 @@ const renderWithProviders = (component: React.ReactElement) => {
 describe('RegisterForm', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(registerAction).mockResolvedValue({ success: true });
   });
 
   describe('Form Rendering', () => {
     it('renderiza todos los campos del formulario', () => {
       renderWithProviders(<RegisterForm />);
 
-      expect(screen.getByPlaceholderText('Nombre completo')).toBeInTheDocument();
-      expect(screen.getByPlaceholderText('Email')).toBeInTheDocument();
-      expect(screen.getByPlaceholderText('Contraseña')).toBeInTheDocument();
-      expect(screen.getByPlaceholderText('Confirmar contraseña')).toBeInTheDocument();
+      expect(screen.getByLabelText('Nombre completo')).toBeInTheDocument();
+      expect(screen.getByLabelText('Email')).toBeInTheDocument();
+      expect(screen.getByLabelText('Contraseña')).toBeInTheDocument();
+      expect(screen.getByLabelText('Confirmar contraseña')).toBeInTheDocument();
     });
 
     it('renderiza botón de crear cuenta', () => {
@@ -83,7 +92,7 @@ describe('RegisterForm', () => {
       const user = userEvent.setup();
       renderWithProviders(<RegisterForm />);
 
-      const nameInput = screen.getByPlaceholderText('Nombre completo');
+      const nameInput = screen.getByLabelText('Nombre completo');
       await user.type(nameInput, 'A');
 
       const submitButton = screen.getByRole('button', { name: /crear cuenta/i });
@@ -98,7 +107,7 @@ describe('RegisterForm', () => {
       const user = userEvent.setup();
       renderWithProviders(<RegisterForm />);
 
-      const nameInput = screen.getByPlaceholderText('Nombre completo');
+      const nameInput = screen.getByLabelText('Nombre completo');
       await user.type(nameInput, '234234 43234324');
 
       const submitButton = screen.getByRole('button', { name: /crear cuenta/i });
@@ -113,7 +122,7 @@ describe('RegisterForm', () => {
       const user = userEvent.setup();
       renderWithProviders(<RegisterForm />);
 
-      const nameInput = screen.getByPlaceholderText('Nombre completo');
+      const nameInput = screen.getByLabelText('Nombre completo');
       await user.type(nameInput, '   ');
 
       const submitButton = screen.getByRole('button', { name: /crear cuenta/i });
@@ -128,7 +137,7 @@ describe('RegisterForm', () => {
       const user = userEvent.setup();
       renderWithProviders(<RegisterForm />);
 
-      const nameInput = screen.getByPlaceholderText('Nombre completo');
+      const nameInput = screen.getByLabelText('Nombre completo');
       await user.type(nameInput, "María O'Brien-González");
 
       const submitButton = screen.getByRole('button', { name: /crear cuenta/i });
@@ -143,7 +152,7 @@ describe('RegisterForm', () => {
       const user = userEvent.setup();
       renderWithProviders(<RegisterForm />);
 
-      const nameInput = screen.getByPlaceholderText('Nombre completo');
+      const nameInput = screen.getByLabelText('Nombre completo');
       await user.type(nameInput, 'John Doe');
 
       const submitButton = screen.getByRole('button', { name: /crear cuenta/i });
@@ -158,8 +167,8 @@ describe('RegisterForm', () => {
       const user = userEvent.setup();
       renderWithProviders(<RegisterForm />);
 
-      const nameInput = screen.getByPlaceholderText('Nombre completo');
-      const emailInput = screen.getByPlaceholderText('Email');
+      const nameInput = screen.getByLabelText('Nombre completo');
+      const emailInput = screen.getByLabelText('Email');
 
       await user.type(nameInput, 'John Doe');
       await user.type(emailInput, 'invalid-email');
@@ -176,9 +185,9 @@ describe('RegisterForm', () => {
       const user = userEvent.setup();
       renderWithProviders(<RegisterForm />);
 
-      const nameInput = screen.getByPlaceholderText('Nombre completo');
-      const emailInput = screen.getByPlaceholderText('Email');
-      const passwordInput = screen.getByPlaceholderText('Contraseña');
+      const nameInput = screen.getByLabelText('Nombre completo');
+      const emailInput = screen.getByLabelText('Email');
+      const passwordInput = screen.getByLabelText('Contraseña');
 
       await user.type(nameInput, 'John Doe');
       await user.type(emailInput, 'john@example.com');
@@ -196,9 +205,9 @@ describe('RegisterForm', () => {
       const user = userEvent.setup();
       renderWithProviders(<RegisterForm />);
 
-      const nameInput = screen.getByPlaceholderText('Nombre completo');
-      const emailInput = screen.getByPlaceholderText('Email');
-      const passwordInput = screen.getByPlaceholderText('Contraseña');
+      const nameInput = screen.getByLabelText('Nombre completo');
+      const emailInput = screen.getByLabelText('Email');
+      const passwordInput = screen.getByLabelText('Contraseña');
 
       await user.type(nameInput, 'John Doe');
       await user.type(emailInput, 'john@example.com');
@@ -209,7 +218,7 @@ describe('RegisterForm', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText('La contraseña debe contener al menos una mayúscula, una minúscula y un número')
+          screen.getByText('Debe contener mayúscula, minúscula y número')
         ).toBeInTheDocument();
       });
     });
@@ -218,10 +227,10 @@ describe('RegisterForm', () => {
       const user = userEvent.setup();
       renderWithProviders(<RegisterForm />);
 
-      const nameInput = screen.getByPlaceholderText('Nombre completo');
-      const emailInput = screen.getByPlaceholderText('Email');
-      const passwordInput = screen.getByPlaceholderText('Contraseña');
-      const confirmInput = screen.getByPlaceholderText('Confirmar contraseña');
+      const nameInput = screen.getByLabelText('Nombre completo');
+      const emailInput = screen.getByLabelText('Email');
+      const passwordInput = screen.getByLabelText('Contraseña');
+      const confirmInput = screen.getByLabelText('Confirmar contraseña');
 
       await user.type(nameInput, 'John Doe');
       await user.type(emailInput, 'john@example.com');
@@ -247,7 +256,7 @@ describe('RegisterForm', () => {
         expect(screen.getByText('Nombre obligatorio')).toBeInTheDocument();
       });
 
-      const nameInput = screen.getByPlaceholderText('Nombre completo');
+      const nameInput = screen.getByLabelText('Nombre completo');
       await user.type(nameInput, 'John');
 
       await waitFor(() => {
@@ -262,20 +271,22 @@ describe('RegisterForm', () => {
 
       renderWithProviders(<RegisterForm />);
 
-      const nameInput = screen.getByPlaceholderText('Nombre completo');
-      const emailInput = screen.getByPlaceholderText('Email');
-      const passwordInput = screen.getByPlaceholderText('Contraseña');
-      const confirmInput = screen.getByPlaceholderText('Confirmar contraseña');
+      const nameInput = screen.getByLabelText('Nombre completo');
+      const emailInput = screen.getByLabelText('Email');
+      const passwordInput = screen.getByLabelText('Contraseña');
+      const confirmInput = screen.getByLabelText('Confirmar contraseña');
 
       await user.type(nameInput, 'John Doe');
       await user.type(emailInput, 'john@example.com');
       await user.type(passwordInput, 'Password123');
       await user.type(confirmInput, 'Password123');
 
+      const roleButton = screen.getByRole('button', { name: /estudiante/i });
+      await user.click(roleButton);
+
       const submitButton = screen.getByRole('button', { name: /crear cuenta/i });
       await user.click(submitButton);
 
-      // MSW manejará la petición y responderá con éxito
       await waitFor(() => {
         expect(screen.getByText(/registro exitoso/i)).toBeInTheDocument();
       });
@@ -286,15 +297,18 @@ describe('RegisterForm', () => {
 
       renderWithProviders(<RegisterForm />);
 
-      const nameInput = screen.getByPlaceholderText('Nombre completo');
-      const emailInput = screen.getByPlaceholderText('Email');
-      const passwordInput = screen.getByPlaceholderText('Contraseña');
-      const confirmInput = screen.getByPlaceholderText('Confirmar contraseña');
+      const nameInput = screen.getByLabelText('Nombre completo');
+      const emailInput = screen.getByLabelText('Email');
+      const passwordInput = screen.getByLabelText('Contraseña');
+      const confirmInput = screen.getByLabelText('Confirmar contraseña');
 
       await user.type(nameInput, 'John Doe');
       await user.type(emailInput, 'john@example.com');
       await user.type(passwordInput, 'Password123');
       await user.type(confirmInput, 'Password123');
+
+      const roleButton = screen.getByRole('button', { name: /estudiante/i });
+      await user.click(roleButton);
 
       const submitButton = screen.getByRole('button', { name: /crear cuenta/i });
       await user.click(submitButton);
@@ -305,19 +319,24 @@ describe('RegisterForm', () => {
     });
 
     it('muestra error cuando el email ya existe', async () => {
+      vi.mocked(registerAction).mockResolvedValue({ error: 'Email already registered' });
+
       const user = userEvent.setup();
 
       renderWithProviders(<RegisterForm />);
 
-      const nameInput = screen.getByPlaceholderText('Nombre completo');
-      const emailInput = screen.getByPlaceholderText('Email');
-      const passwordInput = screen.getByPlaceholderText('Contraseña');
-      const confirmInput = screen.getByPlaceholderText('Confirmar contraseña');
+      const nameInput = screen.getByLabelText('Nombre completo');
+      const emailInput = screen.getByLabelText('Email');
+      const passwordInput = screen.getByLabelText('Contraseña');
+      const confirmInput = screen.getByLabelText('Confirmar contraseña');
 
       await user.type(nameInput, 'John Doe');
-      await user.type(emailInput, 'existing@example.com'); // Este email dispara error 409 en MSW
+      await user.type(emailInput, 'existing@example.com');
       await user.type(passwordInput, 'Password123');
       await user.type(confirmInput, 'Password123');
+
+      const roleButton = screen.getByRole('button', { name: /estudiante/i });
+      await user.click(roleButton);
 
       const submitButton = screen.getByRole('button', { name: /crear cuenta/i });
       await user.click(submitButton);
@@ -332,10 +351,10 @@ describe('RegisterForm', () => {
 
       renderWithProviders(<RegisterForm />);
 
-      const nameInput = screen.getByPlaceholderText('Nombre completo');
-      const emailInput = screen.getByPlaceholderText('Email');
-      const passwordInput = screen.getByPlaceholderText('Contraseña');
-      const confirmInput = screen.getByPlaceholderText('Confirmar contraseña');
+      const nameInput = screen.getByLabelText('Nombre completo');
+      const emailInput = screen.getByLabelText('Email');
+      const passwordInput = screen.getByLabelText('Contraseña');
+      const confirmInput = screen.getByLabelText('Confirmar contraseña');
 
       await user.type(nameInput, 'J'); // Nombre muy corto para disparar error
       await user.type(emailInput, 'john@example.com');
@@ -355,15 +374,18 @@ describe('RegisterForm', () => {
 
       renderWithProviders(<RegisterForm />);
 
-      const nameInput = screen.getByPlaceholderText('Nombre completo');
-      const emailInput = screen.getByPlaceholderText('Email');
-      const passwordInput = screen.getByPlaceholderText('Contraseña');
-      const confirmInput = screen.getByPlaceholderText('Confirmar contraseña');
+      const nameInput = screen.getByLabelText('Nombre completo');
+      const emailInput = screen.getByLabelText('Email');
+      const passwordInput = screen.getByLabelText('Contraseña');
+      const confirmInput = screen.getByLabelText('Confirmar contraseña');
 
       await user.type(nameInput, 'John Doe');
       await user.type(emailInput, 'john@example.com');
       await user.type(passwordInput, 'Password123');
       await user.type(confirmInput, 'Password123');
+
+      const roleButton = screen.getByRole('button', { name: /estudiante/i });
+      await user.click(roleButton);
 
       const submitButton = screen.getByRole('button', { name: /crear cuenta/i });
       await user.click(submitButton);
@@ -383,7 +405,7 @@ describe('RegisterForm', () => {
       const user = userEvent.setup();
       renderWithProviders(<RegisterForm />);
 
-      const passwordInput = screen.getByPlaceholderText('Contraseña');
+      const passwordInput = screen.getByLabelText('Contraseña');
 
       await user.type(passwordInput, 'weak');
 
