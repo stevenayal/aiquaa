@@ -34,6 +34,15 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: 'AIQUAA' }],
   creator: 'AIQUAA',
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-64.png', sizes: '64x64', type: 'image/png' },
+      { url: '/favicon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: '/favicon-512.png',
+    shortcut: '/favicon.svg',
+  },
   openGraph: {
     type: 'website',
     locale: 'es_PY',
