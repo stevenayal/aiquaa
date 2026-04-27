@@ -33,7 +33,8 @@
     "openapi:print": "node scripts/print-openapi.js",
     "openapi:serve": "pnpm build && pnpm start:prod",
     "test:swagger": "node scripts/test-swagger.js",
-    "check:oauth": "node scripts/check-oauth.js"
+    "check:oauth": "node scripts/check-oauth.js",
+    "type-check": "tsc --noEmit --project tsconfig.json"
   },
   "dependencies": {
     "@nestjs/cache-manager": "^2.1.0",

@@ -27,10 +27,18 @@
     "test:email:contract": "node scripts/run-tests-with-email.js contract",
     "adr:new": "node tools/adr-new.mjs",
     "adr:list": "ls -1 docs/adr | sort",
-    "prepare": "node -e \"try { require('child_process').execSync('husky install', {stdio: 'ignore'}); } catch(e) {}\"",
+    "prepare": "node -e \"try { require('child_process').execSync('husky', {stdio: 'ignore'}); } catch(e) {}\"",
     "commit": "git-cz",
     "lint-staged": "lint-staged",
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "type-check": "pnpm --filter @aiquaa/frontend type-check && pnpm --filter @aiquaa/backend type-check",
+    "pr-check": "bash scripts/pr-check.sh"
+  },
+  "lint-staged": {
+    "apps/frontend/**/*.{ts,tsx}": ["eslint --fix", "prettier --write"],
+    "apps/backend/**/*.ts": ["eslint --fix", "prettier --write"],
+    "packages/**/*.ts": ["prettier --write"],
+    "*.{json,md,yml,yaml}": ["prettier --write"]
   },
   "devDependencies": {
     "concurrently": "^9.0.0",
