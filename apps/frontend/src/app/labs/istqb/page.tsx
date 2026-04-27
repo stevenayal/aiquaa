@@ -12,6 +12,7 @@ import { SuruFloating } from '@/components/Suru';
 import ExamAuthGate from '@/components/labs/ExamAuthGate';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { saveExamResultAction } from '@/actions/exams';
+import { getExamUserDefaults } from '@/lib/exam-user-defaults';
 import ProcessCodeInput from '@/components/labs/ProcessCodeInput';
 import type { ExamResult } from './types';
 
@@ -28,10 +29,11 @@ export default function ISTQBSimulatorPage() {
   const [processCode, setProcessCode] = useState(searchParams.get('process')?.toUpperCase() ?? '');
 
   useEffect(() => {
-    if (user?.user_metadata?.full_name && !participantName) {
-      setParticipantName(user.user_metadata.full_name);
+    const defaults = getExamUserDefaults(user);
+    if (defaults.fullName && !participantName) {
+      setParticipantName(defaults.fullName);
     }
-  }, [user]);
+  }, [user, participantName]);
 
   const handleExamComplete = async (result: ExamResult) => {
     await saveExamResultAction({
@@ -169,9 +171,10 @@ export default function ISTQBSimulatorPage() {
   };
 
   const handleReset = () => {
+    const defaults = getExamUserDefaults(user);
     setHasStarted(false);
     setExamMode(null);
-    setParticipantName('');
+    setParticipantName(defaults.fullName);
     setError('');
   };
 

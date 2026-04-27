@@ -2,13 +2,15 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Alert } from '@/components/common';
 import ExamSimulator from './components/ExamSimulator';
 import { loadExamData } from './utils';
 import { SuruFloating } from '@/components/Suru';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
+import { getExamUserDefaults } from '@/lib/exam-user-defaults';
 import { saveExamResultAction } from '@/actions/exams';
 import ProcessCodeInput from '@/components/labs/ProcessCodeInput';
 import ExamAuthGate from '@/components/labs/ExamAuthGate';
@@ -16,6 +18,7 @@ import type { ExamResult } from './types';
 
 export default function PerformanceExamPage() {
   const { isDarkMode } = useTheme();
+  const { user } = useSupabaseAuth();
   const searchParams = useSearchParams();
   const [participantName, setParticipantName] = useState('');
   const [githubProfile, setGithubProfile] = useState('');
@@ -25,6 +28,18 @@ export default function PerformanceExamPage() {
   const [hasStarted, setHasStarted] = useState(false);
   const [error, setError] = useState('');
   const [processCode, setProcessCode] = useState(searchParams.get('process')?.toUpperCase() ?? '');
+
+  useEffect(() => {
+    const defaults = getExamUserDefaults(user);
+
+    if (defaults.fullName && !participantName) {
+      setParticipantName(defaults.fullName);
+    }
+
+    if (defaults.githubProfile && !githubProfile) {
+      setGithubProfile(defaults.githubProfile);
+    }
+  }, [user, participantName, githubProfile]);
 
   const handleStartExam = (mode: 'exam' | 'training') => {
     if (!participantName.trim()) {

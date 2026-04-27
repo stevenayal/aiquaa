@@ -62,6 +62,7 @@ export default function RegisterForm() {
     if (!confirmPassword) newErrors.confirmPassword = 'Confirmar contraseña obligatorio';
     else if (password !== confirmPassword) newErrors.confirmPassword = 'Las contraseñas no coinciden';
 
+    // Role only required for candidato flow
     if (!isEmpresa && !formData.role) {
       newErrors.role = 'Seleccioná tu rol para continuar';
     }
@@ -147,6 +148,7 @@ export default function RegisterForm() {
 
   const handleAudienceChange = (audience: Audience) => {
     setFormData(prev => ({ ...prev, audience }));
+    // Clear errors that no longer apply
     setErrors({});
     if (showAlert) setShowAlert(false);
   };

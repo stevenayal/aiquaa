@@ -1,7 +1,7 @@
 'use client';
 
-import Image from 'next/image';
 import { useTheme } from '@/contexts/ThemeContext';
+import LogoMark from '@/components/LogoMark';
 import { useLanguage } from '@/contexts/LanguageContext';
 import FAQSection from '@/components/FAQSection';
 import { SuruFloating } from '@/components/Suru';
@@ -47,17 +47,10 @@ export default function AboutPage() {
             </p>
           </div>
           <div className="text-center">
-            <div className={`inline-flex items-center justify-center p-6 rounded-lg shadow-lg transition-colors duration-300 ${
+            <div className={`inline-flex items-center justify-center w-64 h-64 rounded-full shadow-lg transition-colors duration-300 ${
               isDarkMode ? 'bg-slate-800' : 'bg-brand-dark'
             }`}>
-              <Image
-                src="/images/logo1.png"
-                alt="AIQUAA Logo"
-                width={256}
-                height={256}
-                className="w-64 h-64 object-contain"
-                priority
-              />
+              <LogoMark size={180} color="#ffffff" wordmark />
             </div>
           </div>
         </div>

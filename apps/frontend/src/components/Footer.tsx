@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useTheme } from '@/contexts/ThemeContext';
-import Image from 'next/image';
+import LogoMark from '@/components/LogoMark';
 
 const Footer = () => {
   const { isDarkMode } = useTheme();
@@ -17,14 +17,13 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center space-x-3 mb-4">
-              <Image 
-                src="/images/logo1.png" 
-                alt="AIQUAA Logo" 
-                width={40}
-                height={40}
-                className="h-10 w-auto"
-              />
+            <div className="flex items-center gap-3 mb-4">
+              <div className="h-9 w-9 rounded-full bg-white/10 border border-white/20 grid place-items-center">
+                <LogoMark size={24} color="#ffffff" wordmark={false} />
+              </div>
+              <span className="text-white font-bold text-lg tracking-tight" style={{ fontFamily: 'Sora, system-ui, sans-serif' }}>
+                aiquaa
+              </span>
             </div>
             <p className={`mb-4 max-w-md ${
               isDarkMode ? 'text-dark-muted' : 'text-brand-muted'

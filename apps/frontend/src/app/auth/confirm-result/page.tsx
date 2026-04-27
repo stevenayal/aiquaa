@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import Image from 'next/image';
+import LogoMark from '@/components/LogoMark';
 
 export default async function ConfirmResultPage({
   searchParams,
@@ -11,8 +11,8 @@ export default async function ConfirmResultPage({
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
       <div className="max-w-md w-full text-center space-y-6">
-        <div className="mx-auto h-12 w-12 flex items-center justify-center mb-4">
-          <Image src="/images/logo1.png" alt="AIQUAA" width={48} height={48} className="h-12 w-auto" />
+        <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-slate-900 mb-4">
+          <LogoMark size={32} color="#ffffff" wordmark={false} />
         </div>
 
         <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">

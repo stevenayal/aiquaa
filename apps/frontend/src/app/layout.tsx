@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Sora } from 'next/font/google';
 import './globals.css';
 import ErrorBoundary from '../components/ErrorBoundary';
 import Layout from '../components/Layout';
@@ -8,7 +8,7 @@ import { LanguageProvider } from '../contexts/LanguageContext';
 // import { initializeSentry } from '../lib/observability'; // Temporarily disabled for Server Components
 import Providers from './providers';
 
-const inter = Inter({ subsets: ['latin'] });
+const sora = Sora({ subsets: ['latin'], variable: '--font-sora' });
 
 /**
  * Metadatos generales para AIQUAA
@@ -34,6 +34,15 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: 'AIQUAA' }],
   creator: 'AIQUAA',
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-64.png', sizes: '64x64', type: 'image/png' },
+      { url: '/favicon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: '/favicon-512.png',
+    shortcut: '/favicon.svg',
+  },
   openGraph: {
     type: 'website',
     locale: 'es_PY',
@@ -70,7 +79,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className={inter.className}>
+      <body className={sora.className}>
         <ErrorBoundary>
           <Providers>
             <LanguageProvider>

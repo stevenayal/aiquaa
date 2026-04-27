@@ -43,7 +43,7 @@ export async function middleware(request: NextRequest) {
   // Redirect authenticated users away from auth pages
   const isAuthRoute = AUTH_ROUTES.some(route => pathname === route);
   if (user && isAuthRoute) {
-    return NextResponse.redirect(new URL('/forum', request.url));
+    return NextResponse.redirect(new URL('/ranking', request.url));
   }
 
   return supabaseResponse;
