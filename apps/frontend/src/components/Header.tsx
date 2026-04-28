@@ -20,6 +20,14 @@ const navLinks = [
   { href: '/about', label: 'nav.about', emoji: '' },
 ];
 
+const empresaNavLinks = [
+  { href: '/empresa', label: 'Panel', emoji: '🏢' },
+  { href: '/empresa/procesos', label: 'Mis procesos', emoji: '📂' },
+  { href: '/empresa/candidatos', label: 'Candidatos', emoji: '👥' },
+  { href: '/forum', label: 'Foro', emoji: '💬' },
+  { href: '/about', label: 'Nosotros', emoji: '' },
+];
+
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -27,6 +35,8 @@ const Header = () => {
   const { isDarkMode, toggleDarkMode } = useTheme();
   const { t } = useLanguage();
   const { user, isAuthenticated, isLoading } = useSupabaseAuth();
+  const isEmpresa = user?.user_metadata?.audience === 'empresa';
+  const activeNavLinks = isEmpresa ? empresaNavLinks : navLinks;
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
@@ -106,6 +116,17 @@ const Header = () => {
                         {user?.email}
                       </p>
                     </div>
+                    {isEmpresa && (
+                      <Link
+                        href="/empresa"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors ${
+                          isDarkMode ? 'text-indigo-300 hover:bg-slate-700' : 'text-indigo-600 hover:bg-indigo-50'
+                        }`}
+                      >
+                        🏢 Panel de empresa
+                      </Link>
+                    )}
                     <Link
                       href="/perfil"
                       onClick={() => setIsUserMenuOpen(false)}
@@ -115,15 +136,17 @@ const Header = () => {
                     >
                       👤 Mi perfil
                     </Link>
-                    <Link
-                      href="/forum"
-                      onClick={() => setIsUserMenuOpen(false)}
-                      className={`flex items-center gap-2 px-4 py-2.5 text-sm transition-colors ${
-                        isDarkMode ? 'text-slate-200 hover:bg-slate-700' : 'text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      💬 Foro
-                    </Link>
+                    {!isEmpresa && (
+                      <Link
+                        href="/forum"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        className={`flex items-center gap-2 px-4 py-2.5 text-sm transition-colors ${
+                          isDarkMode ? 'text-slate-200 hover:bg-slate-700' : 'text-gray-700 hover:bg-gray-50'
+                        }`}
+                      >
+                        💬 Foro
+                      </Link>
+                    )}
                     <div className={`border-t ${isDarkMode ? 'border-slate-700' : 'border-gray-100'}`} />
                     <button
                       onClick={handleLogout}
@@ -208,7 +231,7 @@ const Header = () => {
           role="navigation"
           aria-label="Navegación principal"
         >
-          {navLinks.map((link, i) => (
+          {activeNavLinks.map((link, i) => (
             <span key={link.href} className="flex items-center">
               {i > 0 && (
                 <span className={`mx-2 text-xs select-none ${isDarkMode ? 'text-dark-secondary' : 'text-white/20'}`}>
@@ -217,7 +240,7 @@ const Header = () => {
               )}
               <Link href={link.href} className={`${linkClass} flex items-center gap-1`}>
                 {link.emoji && <span>{link.emoji}</span>}
-                {t(link.label)}
+                {link.label.startsWith('nav.') ? t(link.label) : link.label}
               </Link>
             </span>
           ))}
@@ -233,7 +256,7 @@ const Header = () => {
               <LanguageSelector />
             </div>
 
-            {navLinks.map((link) => (
+            {activeNavLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -243,7 +266,7 @@ const Header = () => {
                 }`}
               >
                 {link.emoji && <span>{link.emoji}</span>}
-                {t(link.label)}
+                {link.label.startsWith('nav.') ? t(link.label) : link.label}
               </Link>
             ))}
 
@@ -267,6 +290,17 @@ const Header = () => {
                     </p>
                   </div>
                 </div>
+                {isEmpresa && (
+                  <Link
+                    href="/empresa"
+                    onClick={closeMobileMenu}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-md text-base font-semibold transition-colors duration-200 ${
+                      isDarkMode ? 'text-indigo-300 hover:bg-dark-secondary' : 'text-indigo-300 hover:bg-white/10'
+                    }`}
+                  >
+                    🏢 Panel de empresa
+                  </Link>
+                )}
                 <Link
                   href="/perfil"
                   onClick={closeMobileMenu}

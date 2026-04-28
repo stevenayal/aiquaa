@@ -8,10 +8,12 @@ export async function loginAction(formData: FormData) {
   const password = formData.get('password') as string;
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) return { error: error.message };
-  redirect('/forum');
+
+  const audience = data.user?.user_metadata?.audience;
+  redirect(audience === 'empresa' ? '/empresa' : '/ranking?welcome=1');
 }
 
 export async function registerAction(formData: FormData) {

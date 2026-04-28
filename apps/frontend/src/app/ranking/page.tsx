@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { getLeaderboardAction } from '@/actions/exams';
 import type { Reporter } from '@/app/api/github/reporters/route';
 
@@ -213,9 +215,26 @@ function ReportadoresTab({ isDarkMode }: { isDarkMode: boolean }) {
 
 export default function RankingPage() {
   const { isDarkMode } = useTheme();
+  const { user } = useSupabaseAuth();
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabKey>('reportes');
   const [examData, setExamData] = useState<Record<string, LeaderboardEntry[]>>({ git: [], istqb: [], performance: [] });
   const [examLoading, setExamLoading] = useState<Record<string, boolean>>({ git: true, istqb: true, performance: true });
+  const [showWelcome, setShowWelcome] = useState(false);
+
+  const isWelcome = searchParams.get('welcome') === '1';
+
+  useEffect(() => {
+    if (isWelcome) {
+      setShowWelcome(true);
+      // Remove param from URL without re-render
+      router.replace('/ranking', { scroll: false });
+      // Auto-dismiss after 6s
+      const t = setTimeout(() => setShowWelcome(false), 6000);
+      return () => clearTimeout(t);
+    }
+  }, [isWelcome, router]);
 
   useEffect(() => {
     (['git', 'istqb', 'performance'] as const).forEach((key) => {
@@ -234,9 +253,38 @@ export default function RankingPage() {
   const top3 = entries.slice(0, 3);
   const rest = entries.slice(3);
 
+  const firstName = user?.user_metadata?.full_name?.split(' ')[0] ?? 'por acá';
+
   return (
     <div className={`min-h-screen py-10 px-4 ${isDarkMode ? 'bg-slate-900' : 'bg-gray-50'}`}>
       <div className="max-w-3xl mx-auto space-y-8">
+
+        {/* Welcome banner */}
+        {showWelcome && (
+          <div
+            className={`rounded-2xl border px-5 py-4 flex items-start gap-4 transition-all duration-500 ${
+              isDarkMode
+                ? 'bg-indigo-900/40 border-indigo-700/60 text-indigo-100'
+                : 'bg-indigo-50 border-indigo-200 text-indigo-900'
+            }`}
+          >
+            <span className="text-3xl shrink-0">👋</span>
+            <div className="flex-1 min-w-0">
+              <p className="font-bold text-base">¡Bienvenido/a, {firstName}!</p>
+              <p className={`text-sm mt-0.5 ${isDarkMode ? 'text-indigo-300' : 'text-indigo-600'}`}>
+                Ya sos parte de AIQUAA. Acá podés ver el ranking de los mejores puntajes.
+                ¿Te animás a aparecer?
+              </p>
+            </div>
+            <button
+              onClick={() => setShowWelcome(false)}
+              className={`shrink-0 text-lg leading-none transition-opacity hover:opacity-60 ${isDarkMode ? 'text-indigo-300' : 'text-indigo-400'}`}
+              aria-label="Cerrar"
+            >
+              ×
+            </button>
+          </div>
+        )}
 
         {/* Header */}
         <div className="text-center space-y-2">
