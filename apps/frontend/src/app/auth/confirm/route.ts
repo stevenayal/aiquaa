@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
+function getDefaultRedirect(audience?: string | null): string {
+  if (audience === 'empresa') return '/empresa';
+  return '/ranking?welcome=1';
+}
+
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
   const token_hash = searchParams.get('token_hash');
   const type = searchParams.get('type');
-  const next = searchParams.get('next') ?? '/forum';
+  const next = searchParams.get('next');
   const errorParam = searchParams.get('error');
 
   if (errorParam) {
@@ -16,9 +21,11 @@ export async function GET(request: NextRequest) {
   const supabase = createClient();
 
   if (code) {
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      return NextResponse.redirect(`${origin}${next}`);
+      const audience = data.user?.user_metadata?.audience;
+      const destination = next ?? getDefaultRedirect(audience);
+      return NextResponse.redirect(`${origin}${destination}`);
     }
   }
 
@@ -28,7 +35,10 @@ export async function GET(request: NextRequest) {
       type: type as 'signup' | 'recovery' | 'invite' | 'magiclink' | 'email',
     });
     if (!error) {
-      return NextResponse.redirect(`${origin}${next}`);
+      const { data: { user } } = await supabase.auth.getUser();
+      const audience = user?.user_metadata?.audience;
+      const destination = next ?? getDefaultRedirect(audience);
+      return NextResponse.redirect(`${origin}${destination}`);
     }
   }
 
