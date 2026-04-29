@@ -1,3 +1,9 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
+
+# Windows git-bash: pnpm lives in corepack shims, not in the restricted PATH
+if ! command -v pnpm >/dev/null 2>&1; then
+  export PATH="$PATH:/c/Program Files/nodejs/node_modules/corepack/shims"
+fi
+
 pnpm lint-staged
