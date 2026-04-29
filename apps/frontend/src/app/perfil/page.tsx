@@ -4,7 +4,11 @@ import React, { useState, useRef, useTransition, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
-import { updateProfileAction, uploadAvatarAction, changePasswordAction } from '@/actions/profile';
+import {
+  updateProfileAction,
+  uploadAvatarAction,
+  changePasswordAction,
+} from '@/actions/profile';
 import { getExamResultsAction } from '@/actions/exams';
 import Avatar from '@/components/ui/Avatar';
 
@@ -30,13 +34,13 @@ const formatTime = (s: number) => {
 };
 
 const ROLES: Record<string, { label: string; emoji: string }> = {
-  estudiante:  { label: 'Estudiante',       emoji: '🎓' },
-  qa_junior:   { label: 'Tester QA Junior',  emoji: '🌱' },
-  qa_senior:   { label: 'Tester QA Senior',  emoji: '⭐' },
-  qa_engineer: { label: 'QA Engineer',       emoji: '⚙️' },
-  analista_qa: { label: 'Analista QA',       emoji: '🔍' },
-  developer:   { label: 'Developer',         emoji: '💻' },
-  otro:        { label: 'Otro rol',          emoji: '🙋' },
+  estudiante: { label: 'Estudiante', emoji: '🎓' },
+  qa_junior: { label: 'Tester QA Junior', emoji: '🌱' },
+  qa_senior: { label: 'Tester QA Senior', emoji: '⭐' },
+  qa_engineer: { label: 'QA Engineer', emoji: '⚙️' },
+  analista_qa: { label: 'Analista QA', emoji: '🔍' },
+  developer: { label: 'Developer', emoji: '💻' },
+  otro: { label: 'Otro rol', emoji: '🙋' },
 };
 
 export default function PerfilPage() {
@@ -47,9 +51,18 @@ export default function PerfilPage() {
   const [isPending, startTransition] = useTransition();
   const [isPwPending, startPwTransition] = useTransition();
   const [isUploading, setIsUploading] = useState(false);
-  const [alert, setAlert] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
-  const [pwAlert, setPwAlert] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
-  const [pwForm, setPwForm] = useState({ new_password: '', confirm_password: '' });
+  const [alert, setAlert] = useState<{
+    type: 'success' | 'error';
+    msg: string;
+  } | null>(null);
+  const [pwAlert, setPwAlert] = useState<{
+    type: 'success' | 'error';
+    msg: string;
+  } | null>(null);
+  const [pwForm, setPwForm] = useState({
+    new_password: '',
+    confirm_password: '',
+  });
   const [showPw, setShowPw] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [examResults, setExamResults] = useState<ExamResultRow[]>([]);
@@ -126,7 +139,10 @@ export default function PerfilPage() {
       if (result.error) {
         setPwAlert({ type: 'error', msg: result.error });
       } else {
-        setPwAlert({ type: 'success', msg: 'Contraseña actualizada correctamente' });
+        setPwAlert({
+          type: 'success',
+          msg: 'Contraseña actualizada correctamente',
+        });
         setPwForm({ new_password: '', confirm_password: '' });
       }
     });
@@ -161,43 +177,71 @@ export default function PerfilPage() {
       : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
   }`;
 
-  const currentAvatarUrl = previewUrl || user?.user_metadata?.avatar_url || null;
+  const isEmpresa = user?.user_metadata?.audience === 'empresa';
+  const currentAvatarUrl =
+    previewUrl || user?.user_metadata?.avatar_url || null;
 
   if (isLoading || !user) {
     return (
-      <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'bg-slate-900' : 'bg-gray-50'}`}>
+      <div
+        className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'bg-slate-900' : 'bg-gray-50'}`}
+      >
         <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-indigo-500" />
       </div>
     );
   }
 
   return (
-    <div className={`min-h-screen py-10 px-4 ${isDarkMode ? 'bg-slate-900' : 'bg-gray-50'}`}>
+    <div
+      className={`min-h-screen py-10 px-4 ${isDarkMode ? 'bg-slate-900' : 'bg-gray-50'}`}
+    >
       <div className="max-w-2xl mx-auto space-y-6">
-
         {/* Header */}
         <div>
-          <h1 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Mi Perfil</h1>
-          <p className={`text-sm mt-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
-            Completá tu información para que la comunidad te conozca
+          <h1
+            className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+          >
+            Mi Perfil
+          </h1>
+          <p
+            className={`text-sm mt-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+          >
+            {isEmpresa
+              ? 'Actualizá los datos de tu empresa'
+              : 'Completá tu información para que la comunidad te conozca'}
           </p>
         </div>
 
         {/* Alert */}
         {alert && (
-          <div className={`px-4 py-3 rounded-lg text-sm font-medium flex items-center justify-between ${
-            alert.type === 'success'
-              ? isDarkMode ? 'bg-emerald-900/40 text-emerald-300 border border-emerald-700' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-              : isDarkMode ? 'bg-red-900/40 text-red-300 border border-red-700' : 'bg-red-50 text-red-700 border border-red-200'
-          }`}>
-            <span>{alert.type === 'success' ? '✅' : '❌'} {alert.msg}</span>
-            <button onClick={() => setAlert(null)} className="ml-4 opacity-60 hover:opacity-100">✕</button>
+          <div
+            className={`px-4 py-3 rounded-lg text-sm font-medium flex items-center justify-between ${
+              alert.type === 'success'
+                ? isDarkMode
+                  ? 'bg-emerald-900/40 text-emerald-300 border border-emerald-700'
+                  : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                : isDarkMode
+                  ? 'bg-red-900/40 text-red-300 border border-red-700'
+                  : 'bg-red-50 text-red-700 border border-red-200'
+            }`}
+          >
+            <span>
+              {alert.type === 'success' ? '✅' : '❌'} {alert.msg}
+            </span>
+            <button
+              onClick={() => setAlert(null)}
+              className="ml-4 opacity-60 hover:opacity-100"
+            >
+              ✕
+            </button>
           </div>
         )}
 
         {/* Avatar Card */}
         <div className={`${card} rounded-xl p-6`}>
-          <h2 className={`text-base font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+          <h2
+            className={`text-base font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+          >
             Foto de perfil
           </h2>
           <div className="flex items-center gap-6">
@@ -223,7 +267,9 @@ export default function PerfilPage() {
               >
                 {isUploading ? 'Subiendo...' : '📷 Cambiar foto'}
               </button>
-              <p className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>
+              <p
+                className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+              >
                 JPG, PNG o GIF · Máx 5MB
               </p>
               <input
@@ -238,8 +284,13 @@ export default function PerfilPage() {
         </div>
 
         {/* Profile Form */}
-        <form onSubmit={handleSave} className={`${card} rounded-xl p-6 space-y-5`}>
-          <h2 className={`text-base font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+        <form
+          onSubmit={handleSave}
+          className={`${card} rounded-xl p-6 space-y-5`}
+        >
+          <h2
+            className={`text-base font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+          >
             Información personal
           </h2>
 
@@ -252,7 +303,9 @@ export default function PerfilPage() {
               disabled
               className={`${inputClass} opacity-60 cursor-not-allowed`}
             />
-            <p className={`text-xs mt-1 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>
+            <p
+              className={`text-xs mt-1 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+            >
               El email no se puede cambiar desde aquí
             </p>
           </div>
@@ -263,7 +316,9 @@ export default function PerfilPage() {
             <input
               type="text"
               value={formData.full_name}
-              onChange={e => setFormData(p => ({ ...p, full_name: e.target.value }))}
+              onChange={(e) =>
+                setFormData((p) => ({ ...p, full_name: e.target.value }))
+              }
               placeholder="Tu nombre completo"
               className={inputClass}
               maxLength={60}
@@ -274,19 +329,30 @@ export default function PerfilPage() {
           <div>
             <label className={labelClass}>Nombre de usuario</label>
             <div className="relative">
-              <span className={`absolute left-3 top-1/2 -translate-y-1/2 text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-400'}`}>
+              <span
+                className={`absolute left-3 top-1/2 -translate-y-1/2 text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-400'}`}
+              >
                 @
               </span>
               <input
                 type="text"
                 value={formData.username}
-                onChange={e => setFormData(p => ({ ...p, username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '') }))}
+                onChange={(e) =>
+                  setFormData((p) => ({
+                    ...p,
+                    username: e.target.value
+                      .toLowerCase()
+                      .replace(/[^a-z0-9_]/g, ''),
+                  }))
+                }
                 placeholder="tu_usuario"
                 className={`${inputClass} pl-7`}
                 maxLength={30}
               />
             </div>
-            <p className={`text-xs mt-1 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>
+            <p
+              className={`text-xs mt-1 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+            >
               Solo letras, números y guión bajo
             </p>
           </div>
@@ -296,48 +362,62 @@ export default function PerfilPage() {
             <label className={labelClass}>Bio</label>
             <textarea
               value={formData.bio}
-              onChange={e => setFormData(p => ({ ...p, bio: e.target.value }))}
+              onChange={(e) =>
+                setFormData((p) => ({ ...p, bio: e.target.value }))
+              }
               placeholder="Contale a la comunidad sobre vos — tu experiencia en QA, herramientas favoritas..."
               rows={3}
               maxLength={200}
               className={`${inputClass} resize-none`}
             />
-            <p className={`text-xs mt-1 text-right ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>
+            <p
+              className={`text-xs mt-1 text-right ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+            >
               {formData.bio.length}/200
             </p>
           </div>
 
-          {/* Role */}
-          <div>
-            <label className={labelClass}>Tu rol en QA</label>
-            <div className="grid grid-cols-2 gap-2">
-              {Object.entries(ROLES).map(([value, { label, emoji }]) => {
-                const selected = formData.role === value;
-                return (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => setFormData(p => ({ ...p, role: value }))}
-                    className={`flex items-center gap-2 px-3 py-2.5 rounded-lg border text-sm font-medium transition-all ${
-                      selected
-                        ? 'border-indigo-500 bg-indigo-600 text-white shadow-sm'
-                        : isDarkMode
-                          ? 'border-slate-600 bg-slate-700 text-slate-300 hover:border-indigo-400 hover:bg-slate-600'
-                          : 'border-gray-300 bg-white text-gray-700 hover:border-indigo-400 hover:bg-indigo-50'
-                    }`}
-                  >
-                    <span>{emoji}</span>
-                    <span className="truncate">{label}</span>
-                  </button>
-                );
-              })}
+          {/* Role — candidatos only */}
+          {!isEmpresa && (
+            <div>
+              <label className={labelClass}>Tu rol en QA</label>
+              <div className="grid grid-cols-2 gap-2">
+                {Object.entries(ROLES).map(([value, { label, emoji }]) => {
+                  const selected = formData.role === value;
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() =>
+                        setFormData((p) => ({ ...p, role: value }))
+                      }
+                      className={`flex items-center gap-2 px-3 py-2.5 rounded-lg border text-sm font-medium transition-all ${
+                        selected
+                          ? 'border-indigo-500 bg-indigo-600 text-white shadow-sm'
+                          : isDarkMode
+                            ? 'border-slate-600 bg-slate-700 text-slate-300 hover:border-indigo-400 hover:bg-slate-600'
+                            : 'border-gray-300 bg-white text-gray-700 hover:border-indigo-400 hover:bg-indigo-50'
+                      }`}
+                    >
+                      <span>{emoji}</span>
+                      <span className="truncate">{label}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Member since */}
-          <div className={`text-xs pt-2 border-t ${isDarkMode ? 'border-slate-700 text-slate-500' : 'border-gray-100 text-gray-400'}`}>
+          <div
+            className={`text-xs pt-2 border-t ${isDarkMode ? 'border-slate-700 text-slate-500' : 'border-gray-100 text-gray-400'}`}
+          >
             Miembro desde{' '}
-            {new Date(user.created_at).toLocaleDateString('es-PY', { year: 'numeric', month: 'long', day: 'numeric' })}
+            {new Date(user.created_at).toLocaleDateString('es-PY', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
           </div>
 
           <button
@@ -350,19 +430,38 @@ export default function PerfilPage() {
         </form>
 
         {/* Change Password */}
-        <form onSubmit={handlePasswordSave} className={`${card} rounded-xl p-6 space-y-5`}>
-          <h2 className={`text-base font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+        <form
+          onSubmit={handlePasswordSave}
+          className={`${card} rounded-xl p-6 space-y-5`}
+        >
+          <h2
+            className={`text-base font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+          >
             🔐 Cambiar contraseña
           </h2>
 
           {pwAlert && (
-            <div className={`px-4 py-3 rounded-lg text-sm font-medium flex items-center justify-between ${
-              pwAlert.type === 'success'
-                ? isDarkMode ? 'bg-emerald-900/40 text-emerald-300 border border-emerald-700' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                : isDarkMode ? 'bg-red-900/40 text-red-300 border border-red-700' : 'bg-red-50 text-red-700 border border-red-200'
-            }`}>
-              <span>{pwAlert.type === 'success' ? '✅' : '❌'} {pwAlert.msg}</span>
-              <button type="button" onClick={() => setPwAlert(null)} className="ml-4 opacity-60 hover:opacity-100">✕</button>
+            <div
+              className={`px-4 py-3 rounded-lg text-sm font-medium flex items-center justify-between ${
+                pwAlert.type === 'success'
+                  ? isDarkMode
+                    ? 'bg-emerald-900/40 text-emerald-300 border border-emerald-700'
+                    : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                  : isDarkMode
+                    ? 'bg-red-900/40 text-red-300 border border-red-700'
+                    : 'bg-red-50 text-red-700 border border-red-200'
+              }`}
+            >
+              <span>
+                {pwAlert.type === 'success' ? '✅' : '❌'} {pwAlert.msg}
+              </span>
+              <button
+                type="button"
+                onClick={() => setPwAlert(null)}
+                className="ml-4 opacity-60 hover:opacity-100"
+              >
+                ✕
+              </button>
             </div>
           )}
 
@@ -372,7 +471,9 @@ export default function PerfilPage() {
               <input
                 type={showPw ? 'text' : 'password'}
                 value={pwForm.new_password}
-                onChange={e => setPwForm(p => ({ ...p, new_password: e.target.value }))}
+                onChange={(e) =>
+                  setPwForm((p) => ({ ...p, new_password: e.target.value }))
+                }
                 placeholder="Mínimo 8 caracteres"
                 className={`${inputClass} pr-10`}
                 minLength={8}
@@ -380,7 +481,7 @@ export default function PerfilPage() {
               />
               <button
                 type="button"
-                onClick={() => setShowPw(v => !v)}
+                onClick={() => setShowPw((v) => !v)}
                 className={`absolute right-3 top-1/2 -translate-y-1/2 text-sm ${isDarkMode ? 'text-slate-400 hover:text-slate-200' : 'text-gray-400 hover:text-gray-600'}`}
               >
                 {showPw ? '🙈' : '👁️'}
@@ -393,24 +494,35 @@ export default function PerfilPage() {
             <input
               type={showPw ? 'text' : 'password'}
               value={pwForm.confirm_password}
-              onChange={e => setPwForm(p => ({ ...p, confirm_password: e.target.value }))}
+              onChange={(e) =>
+                setPwForm((p) => ({ ...p, confirm_password: e.target.value }))
+              }
               placeholder="Repetí la contraseña"
               className={inputClass}
               minLength={8}
               autoComplete="new-password"
             />
-            {pwForm.confirm_password && pwForm.new_password !== pwForm.confirm_password && (
-              <p className="text-xs mt-1 text-red-500">Las contraseñas no coinciden</p>
-            )}
+            {pwForm.confirm_password &&
+              pwForm.new_password !== pwForm.confirm_password && (
+                <p className="text-xs mt-1 text-red-500">
+                  Las contraseñas no coinciden
+                </p>
+              )}
           </div>
 
-          <p className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>
-            La contraseña es gestionada por Supabase. Si te registraste con email podés cambiarla acá. Si usás un proveedor externo (Google, GitHub) esta opción no aplica.
+          <p
+            className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+          >
+            La contraseña es gestionada por Supabase. Si te registraste con
+            email podés cambiarla acá. Si usás un proveedor externo (Google,
+            GitHub) esta opción no aplica.
           </p>
 
           <button
             type="submit"
-            disabled={isPwPending || !pwForm.new_password || !pwForm.confirm_password}
+            disabled={
+              isPwPending || !pwForm.new_password || !pwForm.confirm_password
+            }
             className="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isPwPending ? 'Actualizando...' : '🔑 Actualizar contraseña'}
@@ -419,7 +531,9 @@ export default function PerfilPage() {
 
         {/* Exam History */}
         <div className={`${card} rounded-xl p-6`}>
-          <h2 className={`text-base font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+          <h2
+            className={`text-base font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+          >
             📊 Historial de exámenes
           </h2>
 
@@ -428,55 +542,114 @@ export default function PerfilPage() {
               <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-indigo-500" />
             </div>
           ) : examResults.length === 0 ? (
-            <div className={`text-center py-8 rounded-lg ${isDarkMode ? 'bg-slate-700/40' : 'bg-gray-50'}`}>
+            <div
+              className={`text-center py-8 rounded-lg ${isDarkMode ? 'bg-slate-700/40' : 'bg-gray-50'}`}
+            >
               <p className="text-3xl mb-2">📝</p>
-              <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
+              <p
+                className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+              >
                 Todavía no rendiste ningún examen.
               </p>
               <div className="flex justify-center gap-3 mt-4 flex-wrap">
-                <a href="/labs/istqb" className="text-xs text-indigo-400 hover:underline">📋 ISTQB CTFL</a>
-                <span className={isDarkMode ? 'text-slate-600' : 'text-gray-300'}>·</span>
-                <a href="/labs/git" className="text-xs text-indigo-400 hover:underline">🌿 GIT</a>
-                <span className={isDarkMode ? 'text-slate-600' : 'text-gray-300'}>·</span>
-                <a href="/labs/performance" className="text-xs text-indigo-400 hover:underline">⚡ Performance</a>
+                <a
+                  href="/labs/istqb"
+                  className="text-xs text-indigo-400 hover:underline"
+                >
+                  📋 ISTQB CTFL
+                </a>
+                <span
+                  className={isDarkMode ? 'text-slate-600' : 'text-gray-300'}
+                >
+                  ·
+                </span>
+                <a
+                  href="/labs/git"
+                  className="text-xs text-indigo-400 hover:underline"
+                >
+                  🌿 GIT
+                </a>
+                <span
+                  className={isDarkMode ? 'text-slate-600' : 'text-gray-300'}
+                >
+                  ·
+                </span>
+                <a
+                  href="/labs/performance"
+                  className="text-xs text-indigo-400 hover:underline"
+                >
+                  ⚡ Performance
+                </a>
               </div>
             </div>
           ) : (
             <div className="space-y-3">
-              {examResults.map(r => (
-                <div key={r.id} className={`flex items-center justify-between px-4 py-3 rounded-lg ${isDarkMode ? 'bg-slate-700/50' : 'bg-gray-50'}`}>
+              {examResults.map((r) => (
+                <div
+                  key={r.id}
+                  className={`flex items-center justify-between px-4 py-3 rounded-lg ${isDarkMode ? 'bg-slate-700/50' : 'bg-gray-50'}`}
+                >
                   <div className="flex items-center gap-3 min-w-0">
                     <span className="text-lg shrink-0">
-                      {r.exam_type === 'git' ? '🌿' : r.exam_type === 'performance' ? '⚡' : '📋'}
+                      {r.exam_type === 'git'
+                        ? '🌿'
+                        : r.exam_type === 'performance'
+                          ? '⚡'
+                          : '📋'}
                     </span>
                     <div className="min-w-0">
-                      <p className={`text-sm font-medium ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}>
-                        {r.exam_type === 'git' ? 'GIT' : r.exam_type === 'performance' ? 'Performance' : `ISTQB CTFL${r.model ? ` · Modelo ${r.model}` : ''}`}
+                      <p
+                        className={`text-sm font-medium ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}
+                      >
+                        {r.exam_type === 'git'
+                          ? 'GIT'
+                          : r.exam_type === 'performance'
+                            ? 'Performance'
+                            : `ISTQB CTFL${r.model ? ` · Modelo ${r.model}` : ''}`}
                         {' · '}
-                        <span className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
+                        <span
+                          className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                        >
                           {r.exam_mode === 'exam' ? 'Examen' : 'Entrenamiento'}
                         </span>
                       </p>
-                      <p className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>
-                        {new Date(r.created_at).toLocaleDateString('es-PY', { day: '2-digit', month: 'short', year: 'numeric' })}
-                        {' · '}{formatTime(r.time_spent)}
+                      <p
+                        className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+                      >
+                        {new Date(r.created_at).toLocaleDateString('es-PY', {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric',
+                        })}
+                        {' · '}
+                        {formatTime(r.time_spent)}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
                     <div className="text-right">
-                      <p className={`text-sm font-bold ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}>
+                      <p
+                        className={`text-sm font-bold ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}
+                      >
                         {r.score}/{r.total_questions}
                       </p>
-                      <p className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>
+                      <p
+                        className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+                      >
                         {r.percentage.toFixed(0)}%
                       </p>
                     </div>
-                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                      r.passed
-                        ? isDarkMode ? 'bg-emerald-900/40 text-emerald-300' : 'bg-emerald-100 text-emerald-700'
-                        : isDarkMode ? 'bg-red-900/40 text-red-300' : 'bg-red-100 text-red-700'
-                    }`}>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                        r.passed
+                          ? isDarkMode
+                            ? 'bg-emerald-900/40 text-emerald-300'
+                            : 'bg-emerald-100 text-emerald-700'
+                          : isDarkMode
+                            ? 'bg-red-900/40 text-red-300'
+                            : 'bg-red-100 text-red-700'
+                      }`}
+                    >
                       {r.passed ? '✓ Aprobado' : '✗ No aprobado'}
                     </span>
                   </div>
@@ -485,7 +658,6 @@ export default function PerfilPage() {
             </div>
           )}
         </div>
-
       </div>
     </div>
   );
