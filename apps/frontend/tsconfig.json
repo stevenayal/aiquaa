@@ -20,22 +20,12 @@
     "baseUrl": ".",
     "strict": true,
     "strictNullChecks": true,
+    "types": ["vitest/globals"],
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@shared/*": [
-        "../../packages/shared/src/*"
-      ]
+      "@/*": ["./src/*"],
+      "@shared/*": ["../../packages/shared/src/*"]
     }
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules", "e2e", "test", "**/__tests__/**"]
 }

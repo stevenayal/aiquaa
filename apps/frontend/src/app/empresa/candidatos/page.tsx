@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { createClient } from '@/lib/supabase/client';
 
@@ -25,29 +25,52 @@ type HiringProcess = {
   status: string;
 };
 
+const EXAM_LABELS: Record<string, string> = {
+  istqb: 'ISTQB CTFL',
+  git: 'Git',
+  performance: 'Performance',
+};
+
+type SortKey = 'percentage' | 'created_at' | 'participant_name';
+type SortDir = 'asc' | 'desc';
+
 export default function CandidatosPage() {
   const { isDarkMode } = useTheme();
   const [processes, setProcesses] = useState<HiringProcess[]>([]);
   const [results, setResults] = useState<ExamResult[]>([]);
-  const [selectedCode, setSelectedCode] = useState<string | 'all'>('all');
   const [loading, setLoading] = useState(true);
+
+  // Filters
+  const [search, setSearch] = useState('');
+  const [selectedCode, setSelectedCode] = useState<string>('all');
+  const [filterExam, setFilterExam] = useState<string>('all');
+  const [filterPassed, setFilterPassed] = useState<'all' | 'passed' | 'failed'>(
+    'all'
+  );
+  const [sortKey, setSortKey] = useState<SortKey>('percentage');
+  const [sortDir, setSortDir] = useState<SortDir>('desc');
 
   useEffect(() => {
     const load = async () => {
       const supabase = createClient();
-
       const [{ data: procs }, { data: res }] = await Promise.all([
-        supabase.from('hiring_processes').select('id, code, position_name, status').order('created_at', { ascending: false }),
+        supabase
+          .from('hiring_processes')
+          .select('id, code, position_name, status')
+          .order('created_at', { ascending: false }),
         supabase
           .from('exam_results')
-          .select('id, participant_name, participant_email, exam_type, score, percentage, passed, time_spent, created_at, process_code')
+          .select(
+            'id, participant_name, participant_email, exam_type, score, percentage, passed, time_spent, created_at, process_code'
+          )
           .not('process_code', 'is', null)
           .order('created_at', { ascending: false }),
       ]);
 
-      // Filter results to only those whose process_code belongs to this employer
-      const myCodes = new Set((procs ?? []).map(p => p.code));
-      const myResults = (res ?? []).filter(r => r.process_code && myCodes.has(r.process_code));
+      const myCodes = new Set((procs ?? []).map((p) => p.code));
+      const myResults = (res ?? []).filter(
+        (r) => r.process_code && myCodes.has(r.process_code)
+      );
 
       setProcesses(procs ?? []);
       setResults(myResults);
@@ -56,137 +79,383 @@ export default function CandidatosPage() {
     load();
   }, []);
 
-  const filtered = selectedCode === 'all'
-    ? results
-    : results.filter(r => r.process_code === selectedCode);
+  const availableExamTypes = useMemo(
+    () => [...new Set(results.map((r) => r.exam_type))],
+    [results]
+  );
 
-  const mins = (secs: number) => `${Math.floor(secs / 60)}m ${secs % 60}s`;
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase();
+    return results
+      .filter((r) => {
+        const matchSearch =
+          !q ||
+          (r.participant_name?.toLowerCase().includes(q) ?? false) ||
+          (r.participant_email?.toLowerCase().includes(q) ?? false);
+        const matchCode =
+          selectedCode === 'all' || r.process_code === selectedCode;
+        const matchExam = filterExam === 'all' || r.exam_type === filterExam;
+        const matchPassed =
+          filterPassed === 'all' ||
+          (filterPassed === 'passed' && r.passed) ||
+          (filterPassed === 'failed' && !r.passed);
+        return matchSearch && matchCode && matchExam && matchPassed;
+      })
+      .sort((a, b) => {
+        let cmp = 0;
+        if (sortKey === 'percentage') cmp = a.percentage - b.percentage;
+        else if (sortKey === 'created_at')
+          cmp =
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        else if (sortKey === 'participant_name') {
+          cmp = (a.participant_name ?? '').localeCompare(
+            b.participant_name ?? ''
+          );
+        }
+        return sortDir === 'asc' ? cmp : -cmp;
+      });
+  }, [
+    results,
+    search,
+    selectedCode,
+    filterExam,
+    filterPassed,
+    sortKey,
+    sortDir,
+  ]);
+
+  const toggleSort = (key: SortKey) => {
+    if (sortKey === key) setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
+    else {
+      setSortKey(key);
+      setSortDir('desc');
+    }
+  };
+
+  const passCount = filtered.filter((r) => r.passed).length;
+  const avgScore = filtered.length
+    ? Math.round(
+        filtered.reduce((a, r) => a + r.percentage, 0) / filtered.length
+      )
+    : null;
+
+  const mins = (s: number) => `${Math.floor(s / 60)}m ${s % 60}s`;
+
+  const card = isDarkMode
+    ? 'bg-dark-secondary border-slate-700'
+    : 'bg-white border-gray-200';
+  const inputClass = `rounded-lg border px-3 py-2 text-sm outline-none transition-colors focus:ring-2 focus:ring-indigo-500 ${
+    isDarkMode
+      ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
+      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+  }`;
+
+  const SortIcon = ({ k }: { k: SortKey }) =>
+    sortKey !== k ? (
+      <span className="opacity-30 ml-1">↕</span>
+    ) : sortDir === 'desc' ? (
+      <span className="ml-1">↓</span>
+    ) : (
+      <span className="ml-1">↑</span>
+    );
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-dark-bg' : 'bg-gray-50'}`}>
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-              Candidatos
-            </h1>
-            <p className={`text-sm mt-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
-              Resultados de exámenes técnicos por proceso
-            </p>
-          </div>
+    <div
+      className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-dark-bg' : 'bg-gray-50'}`}
+    >
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-6">
+        {/* Header */}
+        <div>
+          <h1
+            className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+          >
+            Candidatos
+          </h1>
+          <p
+            className={`text-sm mt-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+          >
+            Resultados de exámenes técnicos de todos tus procesos
+          </p>
         </div>
 
-        {/* Filter by process */}
-        {processes.length > 0 && (
-          <div className="flex gap-2 flex-wrap mb-6">
-            <button
-              onClick={() => setSelectedCode('all')}
-              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                selectedCode === 'all'
-                  ? 'bg-indigo-600 text-white'
-                  : (isDarkMode ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')
-              }`}
-            >
-              Todos
-            </button>
-            {processes.map(p => (
-              <button
-                key={p.code}
-                onClick={() => setSelectedCode(p.code)}
-                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                  selectedCode === p.code
-                    ? 'bg-indigo-600 text-white'
-                    : (isDarkMode ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')
-                }`}
-              >
-                {p.position_name} <span className="opacity-60">({p.code})</span>
-              </button>
+        {/* Stats */}
+        {!loading && results.length > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              { label: 'Total resultados', value: results.length.toString() },
+              { label: 'Mostrando', value: filtered.length.toString() },
+              {
+                label: 'Aprobados (vista)',
+                value: filtered.length
+                  ? `${passCount} (${Math.round((passCount / filtered.length) * 100)}%)`
+                  : '—',
+              },
+              {
+                label: 'Puntaje promedio',
+                value: avgScore != null ? `${avgScore}%` : '—',
+              },
+            ].map(({ label, value }) => (
+              <div key={label} className={`rounded-xl border p-4 ${card}`}>
+                <p
+                  className={`text-xs font-semibold uppercase tracking-wide ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                >
+                  {label}
+                </p>
+                <p
+                  className={`text-lg font-bold mt-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                >
+                  {value}
+                </p>
+              </div>
             ))}
           </div>
         )}
 
-        {loading && (
-          <div className={`text-center py-16 ${isDarkMode ? 'text-slate-400' : 'text-gray-400'}`}>
+        {/* Search + Filters */}
+        <div className={`rounded-xl border p-5 space-y-4 ${card}`}>
+          <div className="flex gap-3 flex-wrap">
+            <div className="relative flex-1 min-w-56">
+              <span
+                className={`absolute left-3 top-1/2 -translate-y-1/2 text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-400'}`}
+              >
+                🔍
+              </span>
+              <input
+                type="text"
+                placeholder="Buscar por nombre o email..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className={`${inputClass} w-full pl-8`}
+              />
+            </div>
+            <select
+              value={selectedCode}
+              onChange={(e) => setSelectedCode(e.target.value)}
+              className={inputClass}
+            >
+              <option value="all">Todos los procesos</option>
+              {processes.map((p) => (
+                <option key={p.code} value={p.code}>
+                  {p.position_name} ({p.code})
+                </option>
+              ))}
+            </select>
+            <select
+              value={filterExam}
+              onChange={(e) => setFilterExam(e.target.value)}
+              className={inputClass}
+            >
+              <option value="all">Todos los exámenes</option>
+              {availableExamTypes.map((e) => (
+                <option key={e} value={e}>
+                  {EXAM_LABELS[e] ?? e}
+                </option>
+              ))}
+            </select>
+            <select
+              value={filterPassed}
+              onChange={(e) =>
+                setFilterPassed(e.target.value as typeof filterPassed)
+              }
+              className={inputClass}
+            >
+              <option value="all">Todos</option>
+              <option value="passed">✓ Aprobados</option>
+              <option value="failed">✗ No aprobados</option>
+            </select>
+          </div>
+
+          {(search ||
+            selectedCode !== 'all' ||
+            filterExam !== 'all' ||
+            filterPassed !== 'all') && (
+            <button
+              onClick={() => {
+                setSearch('');
+                setSelectedCode('all');
+                setFilterExam('all');
+                setFilterPassed('all');
+              }}
+              className={`text-xs ${isDarkMode ? 'text-slate-400 hover:text-slate-200' : 'text-gray-400 hover:text-gray-600'} transition-colors`}
+            >
+              ✕ Limpiar filtros
+            </button>
+          )}
+        </div>
+
+        {/* Table */}
+        {loading ? (
+          <div
+            className={`text-center py-16 ${isDarkMode ? 'text-slate-400' : 'text-gray-400'}`}
+          >
             Cargando...
           </div>
-        )}
-
-        {!loading && filtered.length === 0 && (
-          <div className={`text-center py-16 rounded-xl border-2 border-dashed ${
-            isDarkMode ? 'border-slate-700 text-slate-500' : 'border-gray-200 text-gray-400'
-          }`}>
+        ) : results.length === 0 ? (
+          <div
+            className={`text-center py-16 rounded-xl border-2 border-dashed ${isDarkMode ? 'border-slate-700 text-slate-500' : 'border-gray-200 text-gray-400'}`}
+          >
             <p className="text-4xl mb-3">👥</p>
             <p className="font-medium mb-1">Sin resultados todavía</p>
-            <p className="text-sm">Compartí el código del proceso con tus candidatos para que rindan los exámenes</p>
+            <p className="text-sm mb-5">
+              Compartí el código de un proceso con tus candidatos
+            </p>
+            <Link
+              href="/empresa/procesos"
+              className="text-sm text-indigo-400 hover:underline"
+            >
+              Ver mis procesos →
+            </Link>
           </div>
-        )}
-
-        {!loading && filtered.length > 0 && (
-          <div className={`rounded-xl border overflow-hidden ${isDarkMode ? 'border-slate-700' : 'border-gray-200'}`}>
-            <table className="w-full text-sm">
-              <thead>
-                <tr className={isDarkMode ? 'bg-slate-800' : 'bg-gray-50'}>
-                  {['Candidato', 'Examen', 'Proceso', 'Puntaje', 'Tiempo', 'Fecha'].map(h => (
-                    <th key={h} className={`px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
-                      {h}
+        ) : filtered.length === 0 ? (
+          <div className={`text-center py-12 rounded-xl border ${card}`}>
+            <p
+              className={`text-sm ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+            >
+              Sin resultados para los filtros aplicados
+            </p>
+          </div>
+        ) : (
+          <div className={`rounded-xl border overflow-hidden ${card}`}>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className={isDarkMode ? 'bg-slate-800/60' : 'bg-gray-50'}>
+                    <th
+                      className={`px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide cursor-pointer select-none ${isDarkMode ? 'text-slate-400 hover:text-slate-200' : 'text-gray-500 hover:text-gray-700'}`}
+                      onClick={() => toggleSort('participant_name')}
+                    >
+                      Candidato <SortIcon k="participant_name" />
                     </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((r, i) => (
-                  <tr
-                    key={r.id}
-                    className={`border-t transition-colors ${
-                      isDarkMode
-                        ? `border-slate-700 ${i % 2 === 0 ? 'bg-dark-secondary' : 'bg-slate-800/50'}`
-                        : `border-gray-100 ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`
-                    }`}
-                  >
-                    <td className="px-4 py-3">
-                      <div className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                        {r.participant_name || '—'}
-                      </div>
-                      {r.participant_email && (
-                        <div className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
-                          {r.participant_email}
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`font-mono text-xs px-2 py-0.5 rounded ${isDarkMode ? 'bg-slate-700 text-slate-300' : 'bg-gray-100 text-gray-600'}`}>
-                        {r.exam_type}
-                      </span>
-                    </td>
-                    <td className={`px-4 py-3 text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
-                      {r.process_code}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <span className={`font-bold ${r.passed ? 'text-green-500' : 'text-red-500'}`}>
-                          {r.percentage}%
-                        </span>
-                        <span className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>
-                          ({r.score} pts)
-                        </span>
-                      </div>
-                    </td>
-                    <td className={`px-4 py-3 text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
-                      {mins(r.time_spent)}
-                    </td>
-                    <td className={`px-4 py-3 text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
-                      {new Date(r.created_at).toLocaleDateString('es-PY')}
-                    </td>
+                    <th
+                      className={`px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                    >
+                      Examen
+                    </th>
+                    <th
+                      className={`px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                    >
+                      Proceso
+                    </th>
+                    <th
+                      className={`px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide cursor-pointer select-none ${isDarkMode ? 'text-slate-400 hover:text-slate-200' : 'text-gray-500 hover:text-gray-700'}`}
+                      onClick={() => toggleSort('percentage')}
+                    >
+                      Puntaje <SortIcon k="percentage" />
+                    </th>
+                    <th
+                      className={`px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                    >
+                      Tiempo
+                    </th>
+                    <th
+                      className={`px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide cursor-pointer select-none ${isDarkMode ? 'text-slate-400 hover:text-slate-200' : 'text-gray-500 hover:text-gray-700'}`}
+                      onClick={() => toggleSort('created_at')}
+                    >
+                      Fecha <SortIcon k="created_at" />
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filtered.map((r, i) => {
+                    const proc = processes.find(
+                      (p) => p.code === r.process_code
+                    );
+                    return (
+                      <tr
+                        key={r.id}
+                        className={`border-t ${isDarkMode ? 'border-slate-700' : 'border-gray-100'} ${
+                          i % 2 === 0
+                            ? isDarkMode
+                              ? 'bg-dark-secondary'
+                              : 'bg-white'
+                            : isDarkMode
+                              ? 'bg-slate-800/30'
+                              : 'bg-gray-50/50'
+                        }`}
+                      >
+                        <td className="px-5 py-3">
+                          <div
+                            className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                          >
+                            {r.participant_name || '—'}
+                          </div>
+                          {r.participant_email && (
+                            <div
+                              className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                            >
+                              {r.participant_email}
+                            </div>
+                          )}
+                        </td>
+                        <td className="px-5 py-3">
+                          <span
+                            className={`font-mono text-xs px-2 py-0.5 rounded ${isDarkMode ? 'bg-slate-700 text-slate-300' : 'bg-gray-100 text-gray-600'}`}
+                          >
+                            {EXAM_LABELS[r.exam_type] ?? r.exam_type}
+                          </span>
+                        </td>
+                        <td className="px-5 py-3">
+                          {proc ? (
+                            <Link
+                              href={`/empresa/procesos/${proc.id}`}
+                              className={`text-xs hover:underline ${isDarkMode ? 'text-indigo-400' : 'text-indigo-600'}`}
+                            >
+                              {proc.position_name}
+                            </Link>
+                          ) : (
+                            <span
+                              className={`text-xs font-mono ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                            >
+                              {r.process_code}
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-5 py-3">
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={`font-bold text-base ${r.passed ? 'text-green-500' : 'text-red-500'}`}
+                            >
+                              {r.percentage}%
+                            </span>
+                            <span
+                              className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
+                                r.passed
+                                  ? isDarkMode
+                                    ? 'bg-green-900/40 text-green-300'
+                                    : 'bg-green-50 text-green-700'
+                                  : isDarkMode
+                                    ? 'bg-red-900/40 text-red-300'
+                                    : 'bg-red-50 text-red-700'
+                              }`}
+                            >
+                              {r.passed ? '✓' : '✗'}
+                            </span>
+                          </div>
+                        </td>
+                        <td
+                          className={`px-5 py-3 text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                        >
+                          {mins(r.time_spent)}
+                        </td>
+                        <td
+                          className={`px-5 py-3 text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                        >
+                          {new Date(r.created_at).toLocaleDateString('es-PY')}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 
-        <div className="mt-8">
-          <Link href="/empresa" className={`text-sm ${isDarkMode ? 'text-slate-500 hover:text-slate-300' : 'text-gray-400 hover:text-gray-600'} transition-colors`}>
+        <div>
+          <Link
+            href="/empresa"
+            className={`text-sm ${isDarkMode ? 'text-slate-500 hover:text-slate-300' : 'text-gray-400 hover:text-gray-600'} transition-colors`}
+          >
             ← Volver al panel
           </Link>
         </div>
