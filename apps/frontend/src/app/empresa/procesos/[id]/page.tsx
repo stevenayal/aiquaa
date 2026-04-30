@@ -462,10 +462,6 @@ export default function ProcesoDetailPage() {
       )
     : null;
 
-  const avgScore = results.length
-    ? Math.round(results.reduce((a, r) => a + r.percentage, 0) / results.length)
-    : null;
-
   const mins = (s: number) => `${Math.floor(s / 60)}m ${s % 60}s`;
 
   const card = isDarkMode
