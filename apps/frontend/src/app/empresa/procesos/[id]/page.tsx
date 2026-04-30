@@ -1,10 +1,19 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { createClient } from '@/lib/supabase/client';
+import {
+  getProspectsForProcessAction,
+  addProspectAction,
+  updateProspectStatusAction,
+  deleteProspectAction,
+  getCvSignedUrlAction,
+  type Prospect,
+  type ProspectStatus,
+} from '@/actions/prospects';
 
 type HiringProcess = {
   id: string;
@@ -51,11 +60,269 @@ const STATUS_LABELS: Record<
   },
 };
 
+const PROSPECT_STATUS_CONFIG: Record<
+  ProspectStatus,
+  { label: string; color: string; darkColor: string }
+> = {
+  pendiente: {
+    label: 'Pendiente',
+    color: 'bg-gray-100 text-gray-600',
+    darkColor: 'bg-slate-700 text-slate-400',
+  },
+  invitado: {
+    label: 'Invitado',
+    color: 'bg-blue-100 text-blue-700',
+    darkColor: 'bg-blue-900/40 text-blue-300',
+  },
+  rendido: {
+    label: 'Rindió',
+    color: 'bg-purple-100 text-purple-700',
+    darkColor: 'bg-purple-900/40 text-purple-300',
+  },
+  descartado: {
+    label: 'Descartado',
+    color: 'bg-red-100 text-red-600',
+    darkColor: 'bg-red-900/40 text-red-300',
+  },
+};
+
 const EXAM_LABELS: Record<string, string> = {
   istqb: 'ISTQB CTFL',
   git: 'Git',
   performance: 'Performance',
 };
+
+const SOURCES = [
+  { value: 'linkedin', label: 'LinkedIn' },
+  { value: 'referido', label: 'Referido' },
+  { value: 'bolsa', label: 'Bolsa de trabajo' },
+  { value: 'otro', label: 'Otro' },
+];
+
+// ─── Add Prospect Modal ────────────────────────────────────────────────────────
+
+function AddProspectModal({
+  processId,
+  isDarkMode,
+  onClose,
+  onAdded,
+}: {
+  processId: string;
+  isDarkMode: boolean;
+  onClose: () => void;
+  onAdded: (p: Prospect) => void;
+}) {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [source, setSource] = useState('linkedin');
+  const [notes, setNotes] = useState('');
+  const [file, setFile] = useState<File | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const inputClass = `w-full rounded-lg border px-3 py-2 text-sm outline-none transition-colors focus:ring-2 focus:ring-indigo-500 ${
+    isDarkMode
+      ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
+      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+  }`;
+
+  const labelClass = `block text-xs font-semibold mb-1 ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`;
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0] ?? null;
+    if (f && f.size > 5 * 1024 * 1024) {
+      setError('CV no puede superar 5 MB');
+      return;
+    }
+    setFile(f);
+    setError(null);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) {
+      setError('El nombre es requerido');
+      return;
+    }
+
+    setSaving(true);
+    setError(null);
+
+    let cv_base64: string | undefined;
+    let cv_filename: string | undefined;
+
+    if (file) {
+      const buf = await file.arrayBuffer();
+      cv_base64 = Buffer.from(buf).toString('base64');
+      cv_filename = file.name;
+    }
+
+    const { data, error: err } = await addProspectAction({
+      process_id: processId,
+      name: name.trim(),
+      email: email.trim() || undefined,
+      phone: phone.trim() || undefined,
+      source,
+      notes: notes.trim() || undefined,
+      cv_base64,
+      cv_filename,
+    });
+
+    setSaving(false);
+
+    if (err || !data) {
+      setError(err ?? 'Error al guardar');
+      return;
+    }
+    onAdded(data);
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div
+        className={`w-full max-w-lg rounded-2xl shadow-2xl ${
+          isDarkMode ? 'bg-slate-800' : 'bg-white'
+        }`}
+      >
+        <div
+          className={`flex items-center justify-between px-6 py-4 border-b ${isDarkMode ? 'border-slate-700' : 'border-gray-200'}`}
+        >
+          <h2
+            className={`font-semibold text-base ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+          >
+            Agregar prospecto
+          </h2>
+          <button
+            onClick={onClose}
+            className={`text-lg leading-none ${isDarkMode ? 'text-slate-400 hover:text-white' : 'text-gray-400 hover:text-gray-600'}`}
+          >
+            ✕
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
+          <div>
+            <label className={labelClass}>Nombre *</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Ej: María García"
+              className={inputClass}
+              autoFocus
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className={labelClass}>Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="maria@ejemplo.com"
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Teléfono</label>
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="+595 9xx xxx xxx"
+                className={inputClass}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className={labelClass}>Fuente</label>
+            <select
+              value={source}
+              onChange={(e) => setSource(e.target.value)}
+              className={inputClass}
+            >
+              {SOURCES.map((s) => (
+                <option key={s.value} value={s.value}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className={labelClass}>CV (PDF, máx 5 MB)</label>
+            <div
+              onClick={() => fileRef.current?.click()}
+              className={`cursor-pointer rounded-lg border-2 border-dashed px-4 py-3 text-sm text-center transition-colors ${
+                isDarkMode
+                  ? 'border-slate-600 text-slate-400 hover:border-indigo-500'
+                  : 'border-gray-300 text-gray-400 hover:border-indigo-400'
+              }`}
+            >
+              {file ? (
+                <span
+                  className={isDarkMode ? 'text-indigo-300' : 'text-indigo-600'}
+                >
+                  📄 {file.name}
+                </span>
+              ) : (
+                'Hacé click para subir el CV'
+              )}
+            </div>
+            <input
+              ref={fileRef}
+              type="file"
+              accept=".pdf,.doc,.docx"
+              className="hidden"
+              onChange={handleFileChange}
+            />
+          </div>
+
+          <div>
+            <label className={labelClass}>Notas</label>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={2}
+              placeholder="Observaciones, perfil, referencias..."
+              className={`${inputClass} resize-none`}
+            />
+          </div>
+
+          {error && <p className="text-sm text-red-500">{error}</p>}
+
+          <div className="flex justify-end gap-2 pt-1">
+            <button
+              type="button"
+              onClick={onClose}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                isDarkMode
+                  ? 'text-slate-300 hover:bg-slate-700'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={saving}
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+            >
+              {saving ? 'Guardando...' : 'Guardar prospecto'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// ─── Main Page ─────────────────────────────────────────────────────────────────
 
 export default function ProcesoDetailPage() {
   const { isDarkMode } = useTheme();
@@ -65,10 +332,15 @@ export default function ProcesoDetailPage() {
 
   const [process, setProcess] = useState<HiringProcess | null>(null);
   const [results, setResults] = useState<ExamResult[]>([]);
+  const [prospects, setProspects] = useState<Prospect[]>([]);
+  const [activeTab, setActiveTab] = useState<'postulantes' | 'prospectos'>(
+    'postulantes'
+  );
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [search, setSearch] = useState('');
   const [filterExam, setFilterExam] = useState<string>('all');
   const [filterPassed, setFilterPassed] = useState<'all' | 'passed' | 'failed'>(
@@ -98,18 +370,21 @@ export default function ProcesoDetailPage() {
         setLoading(false);
         return;
       }
-
       setProcess(proc);
 
-      const { data: res } = await supabase
-        .from('exam_results')
-        .select(
-          'id, participant_name, participant_email, exam_type, score, percentage, passed, time_spent, created_at'
-        )
-        .eq('process_code', proc.code)
-        .order('percentage', { ascending: false });
+      const [{ data: res }, { data: prsp }] = await Promise.all([
+        supabase
+          .from('exam_results')
+          .select(
+            'id, participant_name, participant_email, exam_type, score, percentage, passed, time_spent, created_at'
+          )
+          .eq('process_code', proc.code)
+          .order('percentage', { ascending: false }),
+        getProspectsForProcessAction(proc.id),
+      ]);
 
       setResults(res ?? []);
+      setProspects(prsp.data ?? []);
       setLoading(false);
     };
     load();
@@ -135,7 +410,39 @@ export default function ProcesoDetailPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const filtered = results.filter((r) => {
+  const openCv = async (cv_url: string) => {
+    const { url, error } = await getCvSignedUrlAction(cv_url);
+    if (error || !url) {
+      alert('No se pudo obtener el CV');
+      return;
+    }
+    window.open(url, '_blank');
+  };
+
+  const handleStatusChange = async (
+    prospect_id: string,
+    status: ProspectStatus
+  ) => {
+    const { error } = await updateProspectStatusAction(prospect_id, status);
+    if (!error) {
+      setProspects((prev) =>
+        prev.map((p) => (p.id === prospect_id ? { ...p, status } : p))
+      );
+    }
+  };
+
+  const handleDelete = async (prospect_id: string) => {
+    if (!confirm('¿Eliminar este prospecto?')) return;
+    const { error } = await deleteProspectAction(prospect_id);
+    if (!error)
+      setProspects((prev) => prev.filter((p) => p.id !== prospect_id));
+  };
+
+  const rendidosEmails = new Set(
+    results.map((r) => r.participant_email?.toLowerCase()).filter(Boolean)
+  );
+
+  const filteredResults = results.filter((r) => {
     const q = search.toLowerCase();
     const matchSearch =
       !q ||
@@ -235,7 +542,6 @@ export default function ProcesoDetailPage() {
             )}
           </div>
 
-          {/* Actions */}
           <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={copyCode}
@@ -267,7 +573,7 @@ export default function ProcesoDetailPage() {
           </div>
         </div>
 
-        {/* Info cards */}
+        {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
             {
@@ -276,14 +582,11 @@ export default function ProcesoDetailPage() {
                 .map((e) => EXAM_LABELS[e] ?? e)
                 .join(', '),
             },
-            { label: 'Candidatos', value: results.length.toString() },
+            { label: 'Postulantes', value: results.length.toString() },
+            { label: 'Prospectos', value: prospects.length.toString() },
             {
               label: 'Tasa aprobación',
               value: passRate != null ? `${passRate}%` : '—',
-            },
-            {
-              label: 'Puntaje promedio',
-              value: avgScore != null ? `${avgScore}%` : '—',
             },
           ].map(({ label, value }) => (
             <div key={label} className={`rounded-xl border p-4 ${card}`}>
@@ -297,167 +600,383 @@ export default function ProcesoDetailPage() {
           ))}
         </div>
 
-        {/* Candidates */}
+        {/* Tabs */}
         <div className={`rounded-xl border ${card}`}>
-          <div className="p-5 border-b border-inherit">
-            <h2
-              className={`font-semibold text-base mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
-            >
-              Candidatos ({filtered.length})
-            </h2>
-
-            {/* Filters */}
-            <div className="flex gap-3 flex-wrap">
-              <input
-                type="text"
-                placeholder="Buscar por nombre o email..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className={`${inputClass} flex-1 min-w-48`}
-              />
-              <select
-                value={filterExam}
-                onChange={(e) => setFilterExam(e.target.value)}
-                className={inputClass}
+          <div
+            className={`flex border-b ${isDarkMode ? 'border-slate-700' : 'border-gray-200'}`}
+          >
+            {(['postulantes', 'prospectos'] as const).map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-6 py-3.5 text-sm font-medium transition-colors capitalize border-b-2 -mb-px ${
+                  activeTab === tab
+                    ? `border-indigo-500 ${isDarkMode ? 'text-indigo-300' : 'text-indigo-600'}`
+                    : `border-transparent ${isDarkMode ? 'text-slate-400 hover:text-slate-200' : 'text-gray-500 hover:text-gray-700'}`
+                }`}
               >
-                <option value="all">Todos los exámenes</option>
-                {process!.exam_types.map((e) => (
-                  <option key={e} value={e}>
-                    {EXAM_LABELS[e] ?? e}
-                  </option>
-                ))}
-              </select>
-              <select
-                value={filterPassed}
-                onChange={(e) =>
-                  setFilterPassed(e.target.value as typeof filterPassed)
-                }
-                className={inputClass}
-              >
-                <option value="all">Todos</option>
-                <option value="passed">Aprobados</option>
-                <option value="failed">No aprobados</option>
-              </select>
-            </div>
+                {tab === 'postulantes'
+                  ? `Postulantes (${results.length})`
+                  : `Prospectos (${prospects.length})`}
+              </button>
+            ))}
           </div>
 
-          {results.length === 0 ? (
-            <div
-              className={`text-center py-12 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
-            >
-              <p className="text-3xl mb-2">👥</p>
-              <p className="font-medium">Sin candidatos todavía</p>
-              <p className="text-sm mt-1">
-                Compartí el código{' '}
-                <button
-                  onClick={copyCode}
-                  className="text-indigo-400 hover:underline font-mono"
+          {/* ── Tab: Postulantes ── */}
+          {activeTab === 'postulantes' && (
+            <>
+              <div className="p-5 border-b border-inherit">
+                <div className="flex gap-3 flex-wrap">
+                  <input
+                    type="text"
+                    placeholder="Buscar por nombre o email..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className={`${inputClass} flex-1 min-w-48`}
+                  />
+                  <select
+                    value={filterExam}
+                    onChange={(e) => setFilterExam(e.target.value)}
+                    className={inputClass}
+                  >
+                    <option value="all">Todos los exámenes</option>
+                    {process!.exam_types.map((e) => (
+                      <option key={e} value={e}>
+                        {EXAM_LABELS[e] ?? e}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    value={filterPassed}
+                    onChange={(e) =>
+                      setFilterPassed(e.target.value as typeof filterPassed)
+                    }
+                    className={inputClass}
+                  >
+                    <option value="all">Todos</option>
+                    <option value="passed">Aprobados</option>
+                    <option value="failed">No aprobados</option>
+                  </select>
+                </div>
+              </div>
+
+              {results.length === 0 ? (
+                <div
+                  className={`text-center py-12 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
                 >
-                  {process!.code}
-                </button>{' '}
-                con tus candidatos
-              </p>
-            </div>
-          ) : filtered.length === 0 ? (
-            <div
-              className={`text-center py-12 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
-            >
-              <p className="text-sm">
-                Sin resultados para los filtros aplicados
-              </p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className={isDarkMode ? 'bg-slate-800/60' : 'bg-gray-50'}>
-                    {['Candidato', 'Examen', 'Puntaje', 'Tiempo', 'Fecha'].map(
-                      (h) => (
-                        <th
-                          key={h}
-                          className={`px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-                        >
-                          {h}
-                        </th>
-                      )
-                    )}
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.map((r, i) => (
-                    <tr
-                      key={r.id}
-                      className={`border-t ${isDarkMode ? 'border-slate-700' : 'border-gray-100'} ${
-                        i % 2 === 0
-                          ? isDarkMode
-                            ? 'bg-dark-secondary'
-                            : 'bg-white'
-                          : isDarkMode
-                            ? 'bg-slate-800/30'
-                            : 'bg-gray-50/50'
-                      }`}
+                  <p className="text-3xl mb-2">👥</p>
+                  <p className="font-medium">Sin postulantes todavía</p>
+                  <p className="text-sm mt-1">
+                    Compartí el código{' '}
+                    <button
+                      onClick={copyCode}
+                      className="text-indigo-400 hover:underline font-mono"
                     >
-                      <td className="px-5 py-3">
-                        <div
-                          className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
-                        >
-                          {r.participant_name || '—'}
-                        </div>
-                        {r.participant_email && (
-                          <div
-                            className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                      {process!.code}
+                    </button>{' '}
+                    con tus candidatos
+                  </p>
+                </div>
+              ) : filteredResults.length === 0 ? (
+                <div
+                  className={`text-center py-12 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+                >
+                  <p className="text-sm">
+                    Sin resultados para los filtros aplicados
+                  </p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr
+                        className={
+                          isDarkMode ? 'bg-slate-800/60' : 'bg-gray-50'
+                        }
+                      >
+                        {[
+                          'Candidato',
+                          'Examen',
+                          'Puntaje',
+                          'Tiempo',
+                          'Fecha',
+                        ].map((h) => (
+                          <th
+                            key={h}
+                            className={`px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
                           >
-                            {r.participant_email}
-                          </div>
-                        )}
-                      </td>
-                      <td className="px-5 py-3">
-                        <span
-                          className={`font-mono text-xs px-2 py-0.5 rounded ${isDarkMode ? 'bg-slate-700 text-slate-300' : 'bg-gray-100 text-gray-600'}`}
+                            {h}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredResults.map((r, i) => (
+                        <tr
+                          key={r.id}
+                          className={`border-t ${isDarkMode ? 'border-slate-700' : 'border-gray-100'} ${
+                            i % 2 === 0
+                              ? isDarkMode
+                                ? 'bg-dark-secondary'
+                                : 'bg-white'
+                              : isDarkMode
+                                ? 'bg-slate-800/30'
+                                : 'bg-gray-50/50'
+                          }`}
                         >
-                          {EXAM_LABELS[r.exam_type] ?? r.exam_type}
-                        </span>
-                      </td>
-                      <td className="px-5 py-3">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`font-bold text-base ${r.passed ? 'text-green-500' : 'text-red-500'}`}
+                          <td className="px-5 py-3">
+                            <div
+                              className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                            >
+                              {r.participant_name || '—'}
+                            </div>
+                            {r.participant_email && (
+                              <div
+                                className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                              >
+                                {r.participant_email}
+                              </div>
+                            )}
+                          </td>
+                          <td className="px-5 py-3">
+                            <span
+                              className={`font-mono text-xs px-2 py-0.5 rounded ${isDarkMode ? 'bg-slate-700 text-slate-300' : 'bg-gray-100 text-gray-600'}`}
+                            >
+                              {EXAM_LABELS[r.exam_type] ?? r.exam_type}
+                            </span>
+                          </td>
+                          <td className="px-5 py-3">
+                            <div className="flex items-center gap-2">
+                              <span
+                                className={`font-bold text-base ${r.passed ? 'text-green-500' : 'text-red-500'}`}
+                              >
+                                {r.percentage}%
+                              </span>
+                              <span
+                                className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
+                                  r.passed
+                                    ? isDarkMode
+                                      ? 'bg-green-900/40 text-green-300'
+                                      : 'bg-green-50 text-green-700'
+                                    : isDarkMode
+                                      ? 'bg-red-900/40 text-red-300'
+                                      : 'bg-red-50 text-red-700'
+                                }`}
+                              >
+                                {r.passed ? '✓' : '✗'}
+                              </span>
+                            </div>
+                          </td>
+                          <td
+                            className={`px-5 py-3 text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
                           >
-                            {r.percentage}%
-                          </span>
-                          <span
-                            className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
-                              r.passed
+                            {mins(r.time_spent)}
+                          </td>
+                          <td
+                            className={`px-5 py-3 text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                          >
+                            {new Date(r.created_at).toLocaleDateString('es-PY')}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* ── Tab: Prospectos ── */}
+          {activeTab === 'prospectos' && (
+            <>
+              <div
+                className={`flex items-center justify-between px-5 py-4 border-b ${isDarkMode ? 'border-slate-700' : 'border-gray-200'}`}
+              >
+                <p
+                  className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                >
+                  Candidatos que ya tenés identificados. Si coincide el email
+                  con un postulante, se marca como{' '}
+                  <span className="font-medium">Ya rindió</span>.
+                </p>
+                <button
+                  onClick={() => setShowModal(true)}
+                  className="ml-4 shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition-colors"
+                >
+                  + Agregar prospecto
+                </button>
+              </div>
+
+              {prospects.length === 0 ? (
+                <div
+                  className={`text-center py-12 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+                >
+                  <p className="text-3xl mb-2">🔍</p>
+                  <p className="font-medium">Sin prospectos cargados</p>
+                  <p className="text-sm mt-1">
+                    Agregá candidatos que ya tenés en mente para compararlos con
+                    los postulantes
+                  </p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr
+                        className={
+                          isDarkMode ? 'bg-slate-800/60' : 'bg-gray-50'
+                        }
+                      >
+                        {[
+                          'Prospecto',
+                          'Fuente',
+                          'Estado',
+                          'CV',
+                          'Notas',
+                          '',
+                        ].map((h) => (
+                          <th
+                            key={h}
+                            className={`px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                          >
+                            {h}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {prospects.map((p, i) => {
+                        const yaRindio = p.email
+                          ? rendidosEmails.has(p.email.toLowerCase())
+                          : false;
+                        const sc =
+                          PROSPECT_STATUS_CONFIG[p.status] ??
+                          PROSPECT_STATUS_CONFIG.pendiente;
+                        return (
+                          <tr
+                            key={p.id}
+                            className={`border-t ${isDarkMode ? 'border-slate-700' : 'border-gray-100'} ${
+                              i % 2 === 0
                                 ? isDarkMode
-                                  ? 'bg-green-900/40 text-green-300'
-                                  : 'bg-green-50 text-green-700'
+                                  ? 'bg-dark-secondary'
+                                  : 'bg-white'
                                 : isDarkMode
-                                  ? 'bg-red-900/40 text-red-300'
-                                  : 'bg-red-50 text-red-700'
+                                  ? 'bg-slate-800/30'
+                                  : 'bg-gray-50/50'
                             }`}
                           >
-                            {r.passed ? '✓' : '✗'}
-                          </span>
-                        </div>
-                      </td>
-                      <td
-                        className={`px-5 py-3 text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-                      >
-                        {mins(r.time_spent)}
-                      </td>
-                      <td
-                        className={`px-5 py-3 text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-                      >
-                        {new Date(r.created_at).toLocaleDateString('es-PY')}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                            <td className="px-5 py-3">
+                              <div className="flex items-center gap-2">
+                                <div>
+                                  <div
+                                    className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                                  >
+                                    {p.name}
+                                  </div>
+                                  {p.email && (
+                                    <div
+                                      className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                                    >
+                                      {p.email}
+                                    </div>
+                                  )}
+                                  {p.phone && (
+                                    <div
+                                      className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+                                    >
+                                      {p.phone}
+                                    </div>
+                                  )}
+                                </div>
+                                {yaRindio && (
+                                  <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 shrink-0">
+                                    Ya rindió ✓
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                            <td
+                              className={`px-5 py-3 text-xs capitalize ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                            >
+                              {SOURCES.find((s) => s.value === p.source)
+                                ?.label ??
+                                p.source ??
+                                '—'}
+                            </td>
+                            <td className="px-5 py-3">
+                              <select
+                                value={p.status}
+                                onChange={(e) =>
+                                  handleStatusChange(
+                                    p.id,
+                                    e.target.value as ProspectStatus
+                                  )
+                                }
+                                className={`text-xs rounded-full px-2 py-0.5 font-medium border-0 cursor-pointer focus:ring-1 focus:ring-indigo-500 ${
+                                  isDarkMode
+                                    ? sc.darkColor + ' bg-transparent'
+                                    : sc.color
+                                }`}
+                              >
+                                {Object.entries(PROSPECT_STATUS_CONFIG).map(
+                                  ([val, cfg]) => (
+                                    <option key={val} value={val}>
+                                      {cfg.label}
+                                    </option>
+                                  )
+                                )}
+                              </select>
+                            </td>
+                            <td className="px-5 py-3">
+                              {p.cv_url ? (
+                                <button
+                                  onClick={() => openCv(p.cv_url!)}
+                                  className="text-xs text-indigo-400 hover:underline"
+                                >
+                                  Ver CV
+                                </button>
+                              ) : (
+                                <span
+                                  className={`text-xs ${isDarkMode ? 'text-slate-600' : 'text-gray-300'}`}
+                                >
+                                  —
+                                </span>
+                              )}
+                            </td>
+                            <td
+                              className={`px-5 py-3 text-xs max-w-xs truncate ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                            >
+                              {p.notes || '—'}
+                            </td>
+                            <td className="px-5 py-3">
+                              <button
+                                onClick={() => handleDelete(p.id)}
+                                className={`text-xs ${isDarkMode ? 'text-slate-500 hover:text-red-400' : 'text-gray-300 hover:text-red-500'} transition-colors`}
+                                title="Eliminar prospecto"
+                              >
+                                ✕
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
+
+      {showModal && (
+        <AddProspectModal
+          processId={process!.id}
+          isDarkMode={isDarkMode}
+          onClose={() => setShowModal(false)}
+          onAdded={(p) => setProspects((prev) => [p, ...prev])}
+        />
+      )}
     </div>
   );
 }
