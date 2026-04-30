@@ -384,7 +384,7 @@ export default function ProcesoDetailPage() {
       ]);
 
       setResults(res ?? []);
-      setProspects(prsp.data ?? []);
+      setProspects(prsp ?? []);
       setLoading(false);
     };
     load();
@@ -460,10 +460,6 @@ export default function ProcesoDetailPage() {
     ? Math.round(
         (results.filter((r) => r.passed).length / results.length) * 100
       )
-    : null;
-
-  const avgScore = results.length
-    ? Math.round(results.reduce((a, r) => a + r.percentage, 0) / results.length)
     : null;
 
   const mins = (s: number) => `${Math.floor(s / 60)}m ${s % 60}s`;
