@@ -384,7 +384,7 @@ export default function ProcesoDetailPage() {
       ]);
 
       setResults(res ?? []);
-      setProspects(prsp.data ?? []);
+      setProspects(prsp ?? []);
       setLoading(false);
     };
     load();
