@@ -20,6 +20,7 @@ export default function RegisterForm() {
     role: '',
     audience: 'candidato' as Audience,
     companyName: '',
+    ruc: '',
   });
 
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -31,7 +32,9 @@ export default function RegisterForm() {
 
     const trimmedName = formData.name.trim();
     if (!trimmedName) {
-      newErrors.name = isEmpresa ? 'Nombre de contacto obligatorio' : 'Nombre obligatorio';
+      newErrors.name = isEmpresa
+        ? 'Nombre de contacto obligatorio'
+        : 'Nombre obligatorio';
     } else if (trimmedName.length < 2 || trimmedName.length > 50) {
       newErrors.name = 'El nombre debe tener entre 2 y 50 caracteres';
     } else if (!/^[a-zA-ZÀ-ÿñÑ\s'\-]+$/.test(trimmedName)) {
@@ -41,14 +44,26 @@ export default function RegisterForm() {
     if (isEmpresa) {
       const company = formData.companyName.trim();
       if (!company) newErrors.companyName = 'Nombre de la empresa obligatorio';
-      else if (company.length < 2) newErrors.companyName = 'Nombre demasiado corto';
+      else if (company.length < 2)
+        newErrors.companyName = 'Nombre demasiado corto';
+
+      const ruc = formData.ruc.trim();
+      if (!ruc) {
+        newErrors.ruc = 'RUC obligatorio';
+      } else if (!/^\d{6,8}-\d$/.test(ruc)) {
+        newErrors.ruc = 'Formato inválido. Ej: 80000001-1';
+      }
     }
 
     if (!formData.email.trim()) {
       newErrors.email = 'Correo obligatorio';
-    } else if (!/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(formData.email)) {
+    } else if (
+      !/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(formData.email)
+    ) {
       newErrors.email = 'Correo inválido';
-    } else if (/\.(con|cmo|gmal|gamil|yaho|homail|outlok)$/i.test(formData.email)) {
+    } else if (
+      /\.(con|cmo|gmal|gamil|yaho|homail|outlok)$/i.test(formData.email)
+    ) {
       newErrors.email = 'Parece un error tipográfico en el email';
     }
 
@@ -56,11 +71,15 @@ export default function RegisterForm() {
     const confirmPassword = confirmPasswordRef.current?.value ?? '';
 
     if (!password) newErrors.password = 'Contraseña obligatoria';
-    else if (password.length < 8) newErrors.password = 'La contraseña debe tener al menos 8 caracteres';
-    else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) newErrors.password = 'Debe contener mayúscula, minúscula y número';
+    else if (password.length < 8)
+      newErrors.password = 'La contraseña debe tener al menos 8 caracteres';
+    else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password))
+      newErrors.password = 'Debe contener mayúscula, minúscula y número';
 
-    if (!confirmPassword) newErrors.confirmPassword = 'Confirmar contraseña obligatorio';
-    else if (password !== confirmPassword) newErrors.confirmPassword = 'Las contraseñas no coinciden';
+    if (!confirmPassword)
+      newErrors.confirmPassword = 'Confirmar contraseña obligatorio';
+    else if (password !== confirmPassword)
+      newErrors.confirmPassword = 'Las contraseñas no coinciden';
 
     if (!isEmpresa && !formData.role) {
       newErrors.role = 'Seleccioná tu rol para continuar';
@@ -84,6 +103,7 @@ export default function RegisterForm() {
     data.set('audience', formData.audience);
     if (formData.audience === 'empresa') {
       data.set('companyName', formData.companyName.trim());
+      data.set('ruc', formData.ruc.trim());
     } else {
       data.set('role', formData.role);
     }
@@ -99,7 +119,9 @@ export default function RegisterForm() {
         setAlertType('error');
         setShowAlert(true);
       } else if (result?.success) {
-        setAlertMessage('¡Registro exitoso! Revisá tu email para confirmar tu cuenta.');
+        setAlertMessage(
+          '¡Registro exitoso! Revisá tu email para confirmar tu cuenta.'
+        );
         setAlertType('success');
         setShowAlert(true);
         setShowResend(true);
@@ -123,9 +145,13 @@ export default function RegisterForm() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
-      setErrors(prev => { const n = { ...prev }; delete n[name]; return n; });
+      setErrors((prev) => {
+        const n = { ...prev };
+        delete n[name];
+        return n;
+      });
     }
     if (showAlert) setShowAlert(false);
   };
@@ -133,20 +159,28 @@ export default function RegisterForm() {
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name } = e.target;
     if (errors[name]) {
-      setErrors(prev => { const n = { ...prev }; delete n[name]; return n; });
+      setErrors((prev) => {
+        const n = { ...prev };
+        delete n[name];
+        return n;
+      });
     }
     if (showAlert) setShowAlert(false);
   };
 
   const handleRoleChange = (role: string) => {
-    setFormData(prev => ({ ...prev, role }));
+    setFormData((prev) => ({ ...prev, role }));
     if (errors.role) {
-      setErrors(prev => { const n = { ...prev }; delete n.role; return n; });
+      setErrors((prev) => {
+        const n = { ...prev };
+        delete n.role;
+        return n;
+      });
     }
   };
 
   const handleAudienceChange = (audience: Audience) => {
-    setFormData(prev => ({ ...prev, audience }));
+    setFormData((prev) => ({ ...prev, audience }));
     setErrors({});
     if (showAlert) setShowAlert(false);
   };
@@ -162,7 +196,10 @@ export default function RegisterForm() {
       onPasswordChange={handlePasswordChange}
       onRoleChange={handleRoleChange}
       onAudienceChange={handleAudienceChange}
-      onClearErrors={() => { setErrors({}); setShowAlert(false); }}
+      onClearErrors={() => {
+        setErrors({});
+        setShowAlert(false);
+      }}
       socialLoginError={socialLoginError}
       onSocialError={() => {}}
       showAlert={showAlert}

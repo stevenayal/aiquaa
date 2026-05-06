@@ -29,7 +29,10 @@ export interface ProcessCandidate {
 }
 
 function generateCode(company: string): string {
-  const slug = company.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+  const slug = company
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '')
+    .slice(0, 6);
   const year = new Date().getFullYear();
   const rand = Math.random().toString(36).substring(2, 5).toUpperCase();
   return `${slug}-${year}-${rand}`;
@@ -43,14 +46,30 @@ export async function createHiringProcessAction(payload: {
   expires_at?: string;
 }) {
   const supabase = createClient();
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
   if (userError || !user) return { error: 'No autenticado' };
 
   const code = generateCode(payload.company_name);
 
+  // Attach empresa_id so all empresa members can access this process
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('empresa_id')
+    .eq('id', user.id)
+    .single();
+
   const { data, error } = await supabase
     .from('hiring_processes')
-    .insert({ ...payload, code, created_by: user.id, status: 'active' })
+    .insert({
+      ...payload,
+      code,
+      created_by: user.id,
+      status: 'active',
+      ...(profile?.empresa_id ? { empresa_id: profile.empresa_id } : {}),
+    })
     .select()
     .single();
 
@@ -60,13 +79,16 @@ export async function createHiringProcessAction(payload: {
 
 export async function getMyProcessesAction() {
   const supabase = createClient();
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
   if (userError || !user) return { error: 'No autenticado', data: null };
 
+  // RLS already filters to empresa members + own processes — no extra filter needed
   const { data, error } = await supabase
     .from('hiring_processes')
     .select('*')
-    .eq('created_by', user.id)
     .order('created_at', { ascending: false });
 
   if (error) return { error: error.message, data: null };
@@ -75,21 +97,28 @@ export async function getMyProcessesAction() {
 
 export async function getProcessCandidatesAction(code: string) {
   const supabase = createClient();
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
-  if (userError || !user) return { error: 'No autenticado', data: null, process: null };
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+  if (userError || !user)
+    return { error: 'No autenticado', data: null, process: null };
 
+  // RLS already enforces empresa membership — remove created_by filter
   const { data: process, error: procError } = await supabase
     .from('hiring_processes')
     .select('*')
     .eq('code', code)
-    .eq('created_by', user.id)
     .single();
 
-  if (procError || !process) return { error: 'Proceso no encontrado', data: null, process: null };
+  if (procError || !process)
+    return { error: 'Proceso no encontrado', data: null, process: null };
 
   const { data, error } = await supabase
     .from('exam_results')
-    .select('id, user_id, participant_name, exam_type, score, percentage, passed, time_spent, created_at')
+    .select(
+      'id, user_id, participant_name, exam_type, score, percentage, passed, time_spent, created_at'
+    )
     .eq('process_code', code)
     .order('percentage', { ascending: false });
 
@@ -110,16 +139,22 @@ export async function validateProcessCodeAction(code: string) {
   return { valid: true, process: data };
 }
 
-export async function updateProcessStatusAction(code: string, status: 'active' | 'closed') {
+export async function updateProcessStatusAction(
+  code: string,
+  status: 'active' | 'closed'
+) {
   const supabase = createClient();
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
   if (userError || !user) return { error: 'No autenticado' };
 
+  // RLS enforces empresa membership access
   const { error } = await supabase
     .from('hiring_processes')
     .update({ status })
-    .eq('code', code)
-    .eq('created_by', user.id);
+    .eq('code', code);
 
   if (error) return { error: error.message };
   return { success: true };
