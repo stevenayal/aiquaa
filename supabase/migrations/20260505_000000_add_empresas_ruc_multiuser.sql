@@ -243,7 +243,7 @@ BEGIN
     'candidato'
   );
 
-  INSERT INTO public.profiles (id, full_name, email, audience, company_name)
+  INSERT INTO public.profiles (id, display_name, email, audience, company_name)
   VALUES (
     new.id,
     coalesce(new.raw_user_meta_data ->> 'full_name', ''),
@@ -252,7 +252,7 @@ BEGIN
     new.raw_user_meta_data ->> 'company_name'
   )
   ON CONFLICT (id) DO UPDATE SET
-    full_name    = excluded.full_name,
+    display_name = excluded.display_name,
     email        = excluded.email,
     audience     = excluded.audience,
     company_name = excluded.company_name;

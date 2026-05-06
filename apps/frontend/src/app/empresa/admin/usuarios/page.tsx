@@ -53,7 +53,7 @@ export default function AdminUsuariosPage() {
   const [inviteRole, setInviteRole] = useState<EmpresaMemberRole>('member');
   const [activateDirectly, setActivateDirectly] = useState(false);
   const [searchResult, setSearchResult] = useState<
-    | { user_id: string; full_name: string; already_member: boolean }
+    | { user_id: string; display_name: string; already_member: boolean }
     | null
     | 'not_found'
   >(undefined as any);
@@ -240,7 +240,7 @@ export default function AdminUsuariosPage() {
                 className={`rounded-lg border p-4 space-y-3 ${isDarkMode ? 'border-slate-600 bg-slate-700/40' : 'border-gray-200 bg-gray-50'}`}
               >
                 <p className={`text-sm font-medium ${textPrimary}`}>
-                  {searchResult.full_name}
+                  {searchResult.display_name}
                   {searchResult.already_member && (
                     <span className="ml-2 text-xs text-yellow-600 dark:text-yellow-400">
                       (ya es miembro)
@@ -324,7 +324,7 @@ export default function AdminUsuariosPage() {
                       <p
                         className={`text-sm font-medium truncate ${textPrimary}`}
                       >
-                        {m.profiles?.full_name || 'Sin nombre'}
+                        {m.profiles?.display_name || 'Sin nombre'}
                         {isMe && (
                           <span className={`ml-2 text-xs ${textSecondary}`}>
                             (vos)

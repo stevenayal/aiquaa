@@ -22,7 +22,7 @@ export interface EmpresaMiembro {
   status: EmpresaMemberStatus;
   invited_at: string;
   joined_at: string | null;
-  profiles: { full_name: string; email: string | null } | null;
+  profiles: { display_name: string; email: string | null } | null;
 }
 
 // ── read ──────────────────────────────────────────────────────────────
@@ -75,7 +75,7 @@ export async function getEmpresaMembersAction(): Promise<{
 
   const { data, error } = await supabase
     .from('empresa_miembros')
-    .select('*, profiles(full_name, email)')
+    .select('*, profiles(display_name, email)')
     .order('role', { ascending: true })
     .order('joined_at', { ascending: true });
 
