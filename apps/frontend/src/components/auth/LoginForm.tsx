@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { resendConfirmationAction } from '@/actions/auth';
 import { createClient } from '@/lib/supabase/client';
 import AuthForm from './AuthForm';
+import { Audience } from './AudienceToggle';
 
 export default function LoginForm() {
   const router = useRouter();
@@ -15,10 +16,12 @@ export default function LoginForm() {
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState<'success' | 'error'>('error');
   const [socialLoginError] = useState<string | null>(null);
-  const [formData, setFormData] = useState({ email: '' });
+  const [formData, setFormData] = useState({
+    email: '',
+    audience: 'candidato' as Audience,
+  });
   const [showResend, setShowResend] = useState(false);
 
-  // Password value stays in DOM only — never in React state
   const passwordRef = useRef<HTMLInputElement>(null);
 
   const validateForm = (): boolean => {
@@ -46,7 +49,7 @@ export default function LoginForm() {
 
     setIsLoading(true);
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: formData.email,
       password: passwordRef.current?.value ?? '',
     });
@@ -57,14 +60,16 @@ export default function LoginForm() {
       if (error.message.includes('Invalid login')) {
         msg = 'Credenciales inválidas. Verificá tu email y contraseña.';
       } else if (error.message.includes('Email not confirmed')) {
-        msg = 'Tu email aún no fue confirmado. Revisá tu bandeja de entrada o reenviá el correo.';
+        msg =
+          'Tu email aún no fue confirmado. Revisá tu bandeja de entrada o reenviá el correo.';
         setShowResend(true);
       }
       setAlertMessage(msg);
       setAlertType('error');
       setShowAlert(true);
     } else {
-      router.push('/forum');
+      const audience = data.user?.user_metadata?.audience;
+      router.push(audience === 'empresa' ? '/empresa' : '/ranking?welcome=1');
       router.refresh();
     }
   };
@@ -83,7 +88,9 @@ export default function LoginForm() {
       setAlertMessage('Error al reenviar: ' + result.error);
       setAlertType('error');
     } else {
-      setAlertMessage('Correo de confirmación reenviado. Revisá tu bandeja de entrada.');
+      setAlertMessage(
+        'Correo de confirmación reenviado. Revisá tu bandeja de entrada.'
+      );
       setAlertType('success');
       setShowResend(false);
     }
@@ -92,19 +99,32 @@ export default function LoginForm() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
-      setErrors(prev => { const n = { ...prev }; delete n[name]; return n; });
+      setErrors((prev) => {
+        const n = { ...prev };
+        delete n[name];
+        return n;
+      });
     }
     if (showAlert) setShowAlert(false);
   };
 
-  // Password field: only clear errors, never store value in state
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name } = e.target;
     if (errors[name]) {
-      setErrors(prev => { const n = { ...prev }; delete n[name]; return n; });
+      setErrors((prev) => {
+        const n = { ...prev };
+        delete n[name];
+        return n;
+      });
     }
+    if (showAlert) setShowAlert(false);
+  };
+
+  const handleAudienceChange = (audience: Audience) => {
+    setFormData((prev) => ({ ...prev, audience }));
+    setErrors({});
     if (showAlert) setShowAlert(false);
   };
 
@@ -117,7 +137,12 @@ export default function LoginForm() {
       formData={formData}
       onFieldChange={handleChange}
       onPasswordChange={handlePasswordChange}
-      onClearErrors={() => { setErrors({}); setShowAlert(false); setShowResend(false); }}
+      onAudienceChange={handleAudienceChange}
+      onClearErrors={() => {
+        setErrors({});
+        setShowAlert(false);
+        setShowResend(false);
+      }}
       socialLoginError={socialLoginError}
       onSocialError={() => {}}
       showAlert={showAlert}

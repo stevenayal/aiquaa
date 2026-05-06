@@ -327,10 +327,20 @@ export async function inviteNewUserByEmailAction(
   if (!membership || !['owner', 'admin'].includes(membership.role))
     return { error: 'No tenés permisos para invitar usuarios' };
 
+  // Fetch empresa name to include in the invite email
+  const { data: empresa } = await supabase
+    .from('empresas')
+    .select('razon_social, nombre_comercial')
+    .eq('id', empresaId)
+    .single();
+
+  const empresaNombre =
+    empresa?.nombre_comercial || empresa?.razon_social || 'tu empresa';
+
   const adminClient = createAdminClient();
   const { data: inviteData, error: inviteErr } =
     await adminClient.auth.admin.inviteUserByEmail(email.toLowerCase().trim(), {
-      data: { audience: 'candidato' },
+      data: { audience: 'candidato', company_name: empresaNombre },
     });
 
   if (inviteErr) {

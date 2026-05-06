@@ -74,11 +74,22 @@ export default function AuthForm({
 
   const isLogin = mode === 'login';
   const audience: Audience = (formData.audience as Audience) || 'candidato';
-  const isEmpresa = !isLogin && audience === 'empresa';
+  const isEmpresa = audience === 'empresa';
 
-  const title = isLogin ? t('auth.login.title') : t('auth.register.title');
+  const title = isLogin
+    ? isEmpresa
+      ? 'Portal empresa'
+      : t('auth.login.title')
+    : t('auth.register.title');
+  const subtitle = isLogin
+    ? isEmpresa
+      ? 'Accedé al panel de tu empresa'
+      : 'Plataforma QA de Paraguay'
+    : 'Plataforma QA de Paraguay';
   const submitText = isLogin
-    ? t('auth.login.submit')
+    ? isEmpresa
+      ? 'Ingresar al portal'
+      : t('auth.login.submit')
     : t('auth.register.submit');
   const loadingText = isLogin
     ? t('auth.login.loading')
@@ -86,7 +97,11 @@ export default function AuthForm({
   const linkText = isLogin
     ? t('auth.login.linkText')
     : t('auth.register.linkText');
-  const linkHref = isLogin ? '/register' : '/login';
+  const linkHref = isLogin
+    ? isEmpresa
+      ? '/empresa/registro'
+      : '/register'
+    : '/login';
 
   const fieldClass = (hasError: boolean) =>
     `w-full px-4 py-2.5 rounded-xl border text-sm outline-none shadow-sm transition-all duration-200 focus-visible:ring-2 focus-visible:ring-indigo-400/70 focus-visible:ring-offset-1 ${
@@ -135,7 +150,7 @@ export default function AuthForm({
           <p
             className={`text-sm mt-1 ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}
           >
-            Plataforma QA de Paraguay
+            {subtitle}
           </p>
         </div>
 
@@ -155,17 +170,21 @@ export default function AuthForm({
           <p
             className={`text-sm mb-6 ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}
           >
-            {isLogin ? '¿No tenés cuenta?' : '¿Ya tenés cuenta?'}{' '}
+            {isLogin
+              ? isEmpresa
+                ? '¿Registrás una empresa nueva?'
+                : '¿No tenés cuenta?'
+              : '¿Ya tenés cuenta?'}{' '}
             <Link
               href={linkHref}
               className="font-semibold text-indigo-500 hover:text-indigo-400 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 rounded-sm"
             >
-              {linkText}
+              {isLogin && isEmpresa ? 'Registrá tu empresa' : linkText}
             </Link>
           </p>
 
-          {/* Audience toggle — register only */}
-          {!isLogin && onAudienceChange && (
+          {/* Audience toggle */}
+          {onAudienceChange && (
             <AudienceToggle value={audience} onChange={onAudienceChange} />
           )}
 
@@ -463,7 +482,7 @@ export default function AuthForm({
                 loadingText={loadingText}
                 type="submit"
               >
-                {isEmpresa ? 'Crear cuenta empresa' : submitText}
+                {submitText}
               </LoadingButton>
             </div>
 

@@ -5,7 +5,11 @@ import { registerAction, resendConfirmationAction } from '@/actions/auth';
 import AuthForm from './AuthForm';
 import { Audience } from './AudienceToggle';
 
-export default function RegisterForm() {
+interface RegisterFormProps {
+  lockedAudience?: Audience;
+}
+
+export default function RegisterForm({ lockedAudience }: RegisterFormProps) {
   const [isPending, startTransition] = useTransition();
   const [isResending, setIsResending] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -18,7 +22,7 @@ export default function RegisterForm() {
     name: '',
     email: '',
     role: '',
-    audience: 'candidato' as Audience,
+    audience: (lockedAudience ?? 'candidato') as Audience,
     companyName: '',
     ruc: '',
   });
@@ -195,7 +199,7 @@ export default function RegisterForm() {
       onFieldChange={handleChange}
       onPasswordChange={handlePasswordChange}
       onRoleChange={handleRoleChange}
-      onAudienceChange={handleAudienceChange}
+      onAudienceChange={lockedAudience ? undefined : handleAudienceChange}
       onClearErrors={() => {
         setErrors({});
         setShowAlert(false);
