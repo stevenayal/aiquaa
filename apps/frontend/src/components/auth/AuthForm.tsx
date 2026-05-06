@@ -12,13 +12,13 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const ROLES = [
-  { value: 'estudiante',  label: 'Estudiante',      emoji: '🎓' },
-  { value: 'qa_junior',   label: 'Tester QA Junior', emoji: '🌱' },
-  { value: 'qa_senior',   label: 'Tester QA Senior', emoji: '⭐' },
-  { value: 'qa_engineer', label: 'QA Engineer',      emoji: '⚙️' },
-  { value: 'analista_qa', label: 'Analista QA',      emoji: '🔍' },
-  { value: 'developer',   label: 'Developer',        emoji: '💻' },
-  { value: 'otro',        label: 'Otro rol',         emoji: '🙋' },
+  { value: 'estudiante', label: 'Estudiante', emoji: '🎓' },
+  { value: 'qa_junior', label: 'Tester QA Junior', emoji: '🌱' },
+  { value: 'qa_senior', label: 'Tester QA Senior', emoji: '⭐' },
+  { value: 'qa_engineer', label: 'QA Engineer', emoji: '⚙️' },
+  { value: 'analista_qa', label: 'Analista QA', emoji: '🔍' },
+  { value: 'developer', label: 'Developer', emoji: '💻' },
+  { value: 'otro', label: 'Otro rol', emoji: '🙋' },
 ];
 
 interface AuthFormProps {
@@ -77,9 +77,15 @@ export default function AuthForm({
   const isEmpresa = !isLogin && audience === 'empresa';
 
   const title = isLogin ? t('auth.login.title') : t('auth.register.title');
-  const submitText = isLogin ? t('auth.login.submit') : t('auth.register.submit');
-  const loadingText = isLogin ? t('auth.login.loading') : t('auth.register.loading');
-  const linkText = isLogin ? t('auth.login.linkText') : t('auth.register.linkText');
+  const submitText = isLogin
+    ? t('auth.login.submit')
+    : t('auth.register.submit');
+  const loadingText = isLogin
+    ? t('auth.login.loading')
+    : t('auth.register.loading');
+  const linkText = isLogin
+    ? t('auth.login.linkText')
+    : t('auth.register.linkText');
   const linkHref = isLogin ? '/register' : '/login';
 
   const fieldClass = (hasError: boolean) =>
@@ -90,12 +96,13 @@ export default function AuthForm({
     }`;
 
   return (
-    <div className={`min-h-screen flex items-center justify-center py-12 px-4 ${
-      isDarkMode
-        ? 'bg-slate-900'
-        : 'bg-gradient-to-br from-indigo-50 via-white to-violet-50'
-    }`}>
-
+    <div
+      className={`min-h-screen flex items-center justify-center py-12 px-4 ${
+        isDarkMode
+          ? 'bg-slate-900'
+          : 'bg-gradient-to-br from-indigo-50 via-white to-violet-50'
+      }`}
+    >
       {/* Decorative blobs — light mode only */}
       {!isDarkMode && (
         <>
@@ -105,36 +112,54 @@ export default function AuthForm({
       )}
 
       <div className="relative max-w-md w-full">
-
         {/* Brand header — circular LogoMark */}
         <div className="text-center mb-8">
-          <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 shadow-md ${
-            isDarkMode
-              ? 'bg-slate-800 border border-slate-600'
-              : 'bg-white border border-slate-200'
-          }`}>
-            <LogoMark size={42} color={isDarkMode ? '#fff' : '#0f172a'} wordmark={false} />
+          <div
+            className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 shadow-md ${
+              isDarkMode
+                ? 'bg-slate-800 border border-slate-600'
+                : 'bg-white border border-slate-200'
+            }`}
+          >
+            <LogoMark
+              size={42}
+              color={isDarkMode ? '#fff' : '#0f172a'}
+              wordmark={false}
+            />
           </div>
-          <h1 className={`text-2xl font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+          <h1
+            className={`text-2xl font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+          >
             AIQUAA
           </h1>
-          <p className={`text-sm mt-1 ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}>
+          <p
+            className={`text-sm mt-1 ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}
+          >
             Plataforma QA de Paraguay
           </p>
         </div>
 
         {/* Card */}
-        <div className={`rounded-2xl p-6 sm:p-8 shadow-xl backdrop-blur-sm ${
-          isDarkMode
-            ? 'bg-slate-800/95 border border-slate-600/60'
-            : 'bg-white/95 border border-gray-200'
-        }`}>
-          <h2 className={`text-xl font-semibold mb-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+        <div
+          className={`rounded-2xl p-6 sm:p-8 shadow-xl backdrop-blur-sm ${
+            isDarkMode
+              ? 'bg-slate-800/95 border border-slate-600/60'
+              : 'bg-white/95 border border-gray-200'
+          }`}
+        >
+          <h2
+            className={`text-xl font-semibold mb-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+          >
             {title}
           </h2>
-          <p className={`text-sm mb-6 ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}>
+          <p
+            className={`text-sm mb-6 ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}
+          >
             {isLogin ? '¿No tenés cuenta?' : '¿Ya tenés cuenta?'}{' '}
-            <Link href={linkHref} className="font-semibold text-indigo-500 hover:text-indigo-400 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 rounded-sm">
+            <Link
+              href={linkHref}
+              className="font-semibold text-indigo-500 hover:text-indigo-400 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 rounded-sm"
+            >
               {linkText}
             </Link>
           </p>
@@ -145,103 +170,223 @@ export default function AuthForm({
           )}
 
           {/* Alerts */}
-          {showAlert && <div className="mb-4"><Alert type={alertType} message={alertMessage} onClose={onClearErrors} /></div>}
-          {error === 'OAuthAccountNotLinked' && <div className="mb-4"><Alert type="error" message={t('auth.error.oauth')} onClose={onClearErrors} /></div>}
-          {error === 'registration_disabled' && <div className="mb-4"><Alert type="error" message={t('auth.error.registrationDisabled')} onClose={onClearErrors} /></div>}
-          {message === 'registration_success' && <div className="mb-4"><Alert type="success" message={t('auth.success.registration')} onClose={onClearErrors} /></div>}
-          {socialLoginError && <div className="mb-4"><Alert type="error" message={socialLoginError} onClose={() => onSocialError(null)} /></div>}
+          {showAlert && (
+            <div className="mb-4">
+              <Alert
+                type={alertType}
+                message={alertMessage}
+                onClose={onClearErrors}
+              />
+            </div>
+          )}
+          {error === 'OAuthAccountNotLinked' && (
+            <div className="mb-4">
+              <Alert
+                type="error"
+                message={t('auth.error.oauth')}
+                onClose={onClearErrors}
+              />
+            </div>
+          )}
+          {error === 'registration_disabled' && (
+            <div className="mb-4">
+              <Alert
+                type="error"
+                message={t('auth.error.registrationDisabled')}
+                onClose={onClearErrors}
+              />
+            </div>
+          )}
+          {message === 'registration_success' && (
+            <div className="mb-4">
+              <Alert
+                type="success"
+                message={t('auth.success.registration')}
+                onClose={onClearErrors}
+              />
+            </div>
+          )}
+          {socialLoginError && (
+            <div className="mb-4">
+              <Alert
+                type="error"
+                message={socialLoginError}
+                onClose={() => onSocialError(null)}
+              />
+            </div>
+          )}
           {process.env.NODE_ENV === 'development' && <OAuthDebug />}
 
           <form onSubmit={onSubmit} className="space-y-4">
-
             {!isLogin && (
               <div>
-                <label htmlFor="name" className={`block text-xs font-medium mb-1.5 ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}>
+                <label
+                  htmlFor="name"
+                  className={`block text-xs font-medium mb-1.5 ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}
+                >
                   {isEmpresa ? 'Nombre de contacto' : t('auth.field.name')}
                 </label>
                 <input
-                  id="name" name="name" type="text" autoComplete="name"
+                  id="name"
+                  name="name"
+                  type="text"
+                  autoComplete="name"
                   className={fieldClass(!!errors.name)}
-                  placeholder={isEmpresa ? 'Nombre y apellido' : 'Tu nombre completo'}
+                  placeholder={
+                    isEmpresa ? 'Nombre y apellido' : 'Tu nombre completo'
+                  }
                   value={formData.name || ''}
                   onChange={onFieldChange}
                 />
-                {errors.name && <p className="mt-1 text-xs text-red-500 dark:text-red-400 leading-relaxed">{errors.name}</p>}
+                {errors.name && (
+                  <p className="mt-1 text-xs text-red-500 dark:text-red-400 leading-relaxed">
+                    {errors.name}
+                  </p>
+                )}
               </div>
             )}
 
-            {/* Empresa-only field */}
+            {/* Empresa-only fields */}
             {isEmpresa && (
-              <div>
-                <label htmlFor="companyName" className={`block text-xs font-medium mb-1.5 ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}>
-                  Nombre de la empresa
-                </label>
-                <input
-                  id="companyName" name="companyName" type="text" autoComplete="organization"
-                  className={fieldClass(!!errors.companyName)}
-                  placeholder="Tu Empresa S.A."
-                  value={formData.companyName || ''}
-                  onChange={onFieldChange}
-                />
-                {errors.companyName && <p className="mt-1 text-xs text-red-500 dark:text-red-400 leading-relaxed">{errors.companyName}</p>}
-              </div>
+              <>
+                <div>
+                  <label
+                    htmlFor="companyName"
+                    className={`block text-xs font-medium mb-1.5 ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}
+                  >
+                    Nombre de la empresa
+                  </label>
+                  <input
+                    id="companyName"
+                    name="companyName"
+                    type="text"
+                    autoComplete="organization"
+                    className={fieldClass(!!errors.companyName)}
+                    placeholder="Tu Empresa S.A."
+                    value={formData.companyName || ''}
+                    onChange={onFieldChange}
+                  />
+                  {errors.companyName && (
+                    <p className="mt-1 text-xs text-red-500 dark:text-red-400 leading-relaxed">
+                      {errors.companyName}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label
+                    htmlFor="ruc"
+                    className={`block text-xs font-medium mb-1.5 ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}
+                  >
+                    RUC
+                  </label>
+                  <input
+                    id="ruc"
+                    name="ruc"
+                    type="text"
+                    className={fieldClass(!!errors.ruc)}
+                    placeholder="80000001-1"
+                    value={formData.ruc || ''}
+                    onChange={onFieldChange}
+                    maxLength={12}
+                  />
+                  {errors.ruc ? (
+                    <p className="mt-1 text-xs text-red-500 dark:text-red-400 leading-relaxed">
+                      {errors.ruc}
+                    </p>
+                  ) : (
+                    <p
+                      className={`mt-1 text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+                    >
+                      Formato: 80000001-1
+                    </p>
+                  )}
+                </div>
+              </>
             )}
 
             <div>
-              <label htmlFor="email" className={`block text-xs font-medium mb-1.5 ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}>
+              <label
+                htmlFor="email"
+                className={`block text-xs font-medium mb-1.5 ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}
+              >
                 {isEmpresa ? 'Email corporativo' : t('auth.field.email')}
               </label>
               <input
-                id="email" name="email" type="text" autoComplete="email"
+                id="email"
+                name="email"
+                type="text"
+                autoComplete="email"
                 className={fieldClass(!!errors.email)}
                 placeholder={isEmpresa ? 'tu@empresa.com' : 'tu@email.com'}
                 value={formData.email || ''}
                 onChange={onFieldChange}
               />
-              {errors.email && <p className="mt-1 text-xs text-red-500 dark:text-red-400 leading-relaxed">{errors.email}</p>}
+              {errors.email && (
+                <p className="mt-1 text-xs text-red-500 dark:text-red-400 leading-relaxed">
+                  {errors.email}
+                </p>
+              )}
             </div>
 
             <div>
-              <label htmlFor="password" className={`block text-xs font-medium mb-1.5 ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}>
+              <label
+                htmlFor="password"
+                className={`block text-xs font-medium mb-1.5 ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}
+              >
                 {t('auth.field.password')}
               </label>
               <PasswordInput
                 ref={passwordRef}
-                id="password" name="password"
+                id="password"
+                name="password"
                 placeholder="••••••••"
                 autoComplete={isLogin ? 'current-password' : 'new-password'}
                 onChange={onPasswordChange ?? onFieldChange}
                 className={fieldClass(!!errors.password)}
                 showStrength={!isLogin}
               />
-              {errors.password && <p className="mt-1 text-xs text-red-500 dark:text-red-400 leading-relaxed">{errors.password}</p>}
+              {errors.password && (
+                <p className="mt-1 text-xs text-red-500 dark:text-red-400 leading-relaxed">
+                  {errors.password}
+                </p>
+              )}
             </div>
 
             {!isLogin && (
               <div>
-                <label htmlFor="confirmPassword" className={`block text-xs font-medium mb-1.5 ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}>
+                <label
+                  htmlFor="confirmPassword"
+                  className={`block text-xs font-medium mb-1.5 ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}
+                >
                   {t('auth.field.confirmPassword')}
                 </label>
                 <PasswordInput
                   ref={confirmPasswordRef}
-                  id="confirmPassword" name="confirmPassword"
+                  id="confirmPassword"
+                  name="confirmPassword"
                   placeholder="••••••••"
                   autoComplete="new-password"
                   onChange={onPasswordChange ?? onFieldChange}
                   className={fieldClass(!!errors.confirmPassword)}
                 />
-                {errors.confirmPassword && <p className="mt-1 text-xs text-red-500 dark:text-red-400 leading-relaxed">{errors.confirmPassword}</p>}
+                {errors.confirmPassword && (
+                  <p className="mt-1 text-xs text-red-500 dark:text-red-400 leading-relaxed">
+                    {errors.confirmPassword}
+                  </p>
+                )}
               </div>
             )}
 
             {/* Role selector — candidato only */}
             {!isLogin && !isEmpresa && (
               <div>
-                <p className={`text-xs font-medium mb-2 ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}>
+                <p
+                  className={`text-xs font-medium mb-2 ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}
+                >
                   ¿Cuál es tu rol en QA?
                 </p>
                 <div className="grid grid-cols-2 gap-2">
-                  {ROLES.map(role => {
+                  {ROLES.map((role) => {
                     const selected = formData.role === role.value;
                     return (
                       <button
@@ -262,7 +407,11 @@ export default function AuthForm({
                     );
                   })}
                 </div>
-                {errors.role && <p className="mt-1 text-xs text-red-500 dark:text-red-400 leading-relaxed">{errors.role}</p>}
+                {errors.role && (
+                  <p className="mt-1 text-xs text-red-500 dark:text-red-400 leading-relaxed">
+                    {errors.role}
+                  </p>
+                )}
               </div>
             )}
 
@@ -280,28 +429,56 @@ export default function AuthForm({
               >
                 {isResending ? (
                   <>
-                    <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    <svg
+                      className="animate-spin h-4 w-4"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                      />
                     </svg>
                     {t('auth.resend.loading')}
                   </>
-                ) : t('auth.resend.button')}
+                ) : (
+                  t('auth.resend.button')
+                )}
               </button>
             )}
 
             <div className="pt-1">
-              <LoadingButton isLoading={isLoading} loadingText={loadingText} type="submit">
+              <LoadingButton
+                isLoading={isLoading}
+                loadingText={loadingText}
+                type="submit"
+              >
                 {isEmpresa ? 'Crear cuenta empresa' : submitText}
               </LoadingButton>
             </div>
 
             {isLogin && (
               <div className="flex items-center justify-between text-xs pt-1">
-                <Link href="/auth/forgot-password" className={`${isDarkMode ? 'text-slate-300 hover:text-white' : 'text-gray-500 hover:text-gray-700'} transition-colors`}>
+                <Link
+                  href="/auth/forgot-password"
+                  className={`${isDarkMode ? 'text-slate-300 hover:text-white' : 'text-gray-500 hover:text-gray-700'} transition-colors`}
+                >
                   ¿Olvidaste tu contraseña?
                 </Link>
-                <Link href="/register" className="font-semibold text-indigo-500 hover:text-indigo-400 underline-offset-4 hover:underline">
+                <Link
+                  href="/register"
+                  className="font-semibold text-indigo-500 hover:text-indigo-400 underline-offset-4 hover:underline"
+                >
                   {t('auth.register.link')}
                 </Link>
               </div>
