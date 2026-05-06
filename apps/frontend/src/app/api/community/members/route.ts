@@ -1,16 +1,15 @@
 import { NextResponse } from 'next/server';
-import { createAdminClient } from '@/lib/supabase/admin';
+import { createClient } from '@supabase/supabase-js';
 
 export async function GET() {
   try {
-    const supabase = createAdminClient();
-    const { count, error } = await supabase
-      .from('profiles')
-      .select('*', { count: 'exact', head: true });
-
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+    const { data, error } = await supabase.rpc('get_registered_user_count');
     if (error) throw error;
-
-    return NextResponse.json({ count: count ?? 0 });
+    return NextResponse.json({ count: data ?? 0 });
   } catch {
     return NextResponse.json({ count: 0 });
   }
