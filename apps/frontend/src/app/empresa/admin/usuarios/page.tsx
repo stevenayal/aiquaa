@@ -8,6 +8,7 @@ import {
   getEmpresaMembersAction,
   findUserForInviteAction,
   inviteMemberAction,
+  inviteNewUserByEmailAction,
   updateMemberStatusAction,
   updateMemberRoleAction,
   removeMemberAction,
@@ -127,6 +128,26 @@ export default function AdminUsuariosPage() {
     });
   }
 
+  async function handleEmailInvite() {
+    startTransition(async () => {
+      const result = await inviteNewUserByEmailAction(
+        inviteEmail,
+        inviteRole,
+        activateDirectly
+      );
+      if (result.error) {
+        setInviteMsg(result.error);
+      } else {
+        setInviteEmail('');
+        setSearchResult(undefined as any);
+        setInviteMsg(
+          'Invitación enviada. El usuario recibirá un email para crear su contraseña.'
+        );
+        reload();
+      }
+    });
+  }
+
   function handleStatusChange(memberId: string, status: EmpresaMemberStatus) {
     startTransition(async () => {
       const result = await updateMemberStatusAction(memberId, status);
@@ -230,9 +251,38 @@ export default function AdminUsuariosPage() {
 
             {/* Search result */}
             {searchResult === 'not_found' && (
-              <p className={`text-sm ${textSecondary}`}>
-                Usuario no encontrado. Debe estar registrado en AIQUAA.
-              </p>
+              <div
+                className={`rounded-lg border p-4 space-y-3 ${isDarkMode ? 'border-slate-600 bg-slate-700/40' : 'border-gray-200 bg-gray-50'}`}
+              >
+                <p className={`text-sm ${textSecondary}`}>
+                  No tiene cuenta en AIQUAA todavía. Podés enviarle una
+                  invitación para que cree su contraseña.
+                </p>
+                <div className="flex flex-wrap gap-3 items-end">
+                  <div>
+                    <label className={`block text-xs mb-1 ${textSecondary}`}>
+                      Rol
+                    </label>
+                    <select
+                      value={inviteRole}
+                      onChange={(e) =>
+                        setInviteRole(e.target.value as EmpresaMemberRole)
+                      }
+                      className={`${inputClass} w-auto`}
+                    >
+                      <option value="member">Miembro</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  </div>
+                  <button
+                    onClick={handleEmailInvite}
+                    disabled={isPending}
+                    className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium disabled:opacity-40 transition-colors"
+                  >
+                    Enviar invitación por email
+                  </button>
+                </div>
+              </div>
             )}
 
             {searchResult && searchResult !== 'not_found' && (

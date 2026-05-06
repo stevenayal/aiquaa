@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 export type EmpresaMemberRole = 'owner' | 'admin' | 'member';
 export type EmpresaMemberStatus = 'pending' | 'active' | 'disabled';
@@ -287,5 +288,78 @@ export async function declineInvitationAction() {
     .eq('status', 'pending');
 
   if (error) return { error: error.message };
+  return { success: true };
+}
+
+// ── invite new user by email (creates account + links to empresa) ─────
+
+export async function inviteNewUserByEmailAction(
+  email: string,
+  role: EmpresaMemberRole = 'member',
+  activateDirectly = false
+) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: authErr,
+  } = await supabase.auth.getUser();
+  if (authErr || !user) return { error: 'No autenticado' };
+
+  const { data: callerProfile } = await supabase
+    .from('profiles')
+    .select('empresa_id')
+    .eq('id', user.id)
+    .single();
+
+  if (!callerProfile?.empresa_id)
+    return { error: 'No pertenecés a ninguna empresa' };
+
+  const empresaId = callerProfile.empresa_id;
+
+  const { data: membership } = await supabase
+    .from('empresa_miembros')
+    .select('role')
+    .eq('user_id', user.id)
+    .eq('empresa_id', empresaId)
+    .eq('status', 'active')
+    .single();
+
+  if (!membership || !['owner', 'admin'].includes(membership.role))
+    return { error: 'No tenés permisos para invitar usuarios' };
+
+  const adminClient = createAdminClient();
+  const { data: inviteData, error: inviteErr } =
+    await adminClient.auth.admin.inviteUserByEmail(email.toLowerCase().trim(), {
+      data: { audience: 'candidato' },
+    });
+
+  if (inviteErr) {
+    if (inviteErr.message.includes('already been registered'))
+      return {
+        error:
+          'Ese email ya tiene una cuenta. Buscalo por email para agregarlo.',
+      };
+    return { error: inviteErr.message };
+  }
+
+  const newUserId = inviteData.user.id;
+
+  await adminClient
+    .from('profiles')
+    .update({ empresa_id: empresaId, audience: 'empresa' })
+    .eq('id', newUserId);
+
+  const { error: memberErr } = await adminClient
+    .from('empresa_miembros')
+    .insert({
+      empresa_id: empresaId,
+      user_id: newUserId,
+      role,
+      status: activateDirectly ? 'active' : 'pending',
+      invited_by: user.id,
+      joined_at: activateDirectly ? new Date().toISOString() : null,
+    });
+
+  if (memberErr) return { error: memberErr.message };
   return { success: true };
 }
