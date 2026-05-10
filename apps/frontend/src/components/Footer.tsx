@@ -190,34 +190,34 @@ const Footer = () => {
               isDarkMode ? 'text-dark-muted' : 'text-brand-muted'
             }`}>
               <p className="mb-2">
-                El contenido de AIQUAA está licenciado bajo{' '}
+                El contenido educativo de AIQUAA está licenciado bajo{' '}
                 <a
-                  href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
+                  href="https://creativecommons.org/licenses/by-sa/4.0/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`underline hover:no-underline transition-all duration-200 ${
-                    isDarkMode 
-                      ? 'text-dark-accent hover:text-dark-text' 
+                    isDarkMode
+                      ? 'text-dark-accent hover:text-dark-text'
                       : 'text-brand-accent hover:text-brand-light'
                   }`}
-                  aria-label="Licencia Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International"
+                  aria-label="Licencia Creative Commons Attribution-ShareAlike 4.0 International"
                 >
-                  CC BY-NC-SA 4.0
+                  CC BY-SA 4.0
                 </a>
               </p>
               <p className="text-sm opacity-80">
-                Atribución • No Comercial • Compartir Igual
+                Atribución • Compartir Igual
               </p>
             </div>
           </div>
-          
+
           {/* Información adicional de la licencia */}
           <div className={`mt-6 pt-6 border-t text-center text-sm ${
             isDarkMode ? 'border-dark-secondary text-dark-muted' : 'border-gray-300 text-brand-muted'
           }`}>
             <p>
-              Puedes compartir, adaptar y usar este contenido para fines no comerciales, 
-              siempre que proporciones atribución a AIQUAA y distribuyas tu trabajo bajo la misma licencia.
+              El contenido educativo de AIQUAA está licenciado bajo CC BY-SA 4.0.
+              El software y las herramientas son propiedad de AIQUAA.
             </p>
           </div>
         </div>
