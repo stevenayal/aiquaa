@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     template: '%s | AIQUAA',
   },
   description:
-    'Comunidad y herramientas QA en español para Paraguay y LATAM. Testing de software, pruebas técnicas, recursos ISTQB y JMeter. Totalmente gratis y open source.',
+    'Plataforma freemium de QA con IA para LATAM. Simulador ISTQB, generador de casos con IA y automatización con Playwright. Hecho en Paraguay.',
   keywords: [
     'QA',
     'testing',
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     url: '/',
     siteName: 'AIQUAA',
     title: 'AIQUAA - Comunidad y Herramientas de QA en Paraguay',
-    description: 'Comunidad y herramientas QA en español. Testing, pruebas técnicas, ISTQB y JMeter.',
+    description: 'Plataforma freemium de QA con IA para LATAM. Simulador ISTQB, generador de casos con IA y automatización con Playwright. Hecho en Paraguay.',
     images: [
       {
         url: '/api/og?title=AIQUAA&subtitle=Comunidad%20y%20herramientas%20QA%20en%20español&section=Home',
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'AIQUAA - Comunidad y Herramientas de QA',
-    description: 'Comunidad y herramientas QA en español para Paraguay y LATAM',
+    description: 'Plataforma freemium de QA con IA para LATAM. Simulador ISTQB, generador de casos con IA y automatización con Playwright. Hecho en Paraguay.',
     images: ['/api/og?title=AIQUAA&subtitle=Comunidad%20QA%20en%20español&section=Home'],
   },
 };

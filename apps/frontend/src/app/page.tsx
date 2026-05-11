@@ -11,14 +11,27 @@ import { SuruFloating } from '@/components/Suru';
 export default function HomePage() {
   const { isDarkMode } = useTheme();
   const { t } = useLanguage();
-  const [memberCount, setMemberCount] = useState<string>('...');
+  const [memberCount, setMemberCount] = useState<string>('50+');
+  const [memberLabel, setMemberLabel] = useState<string>('testers activos');
 
   useEffect(() => {
     fetch('/api/community/members')
       .then(r => r.json())
-      .then(data => setMemberCount(String(data.count)))
-      .catch(() => setMemberCount('—'));
-  }, []);
+      .then(data => {
+        const count: number = data.count ?? 0;
+        if (count >= 50) {
+          setMemberCount(String(count));
+          setMemberLabel(t('home.hero.stats.community'));
+        } else if (count > 0) {
+          setMemberCount(String(count));
+          // keep 'testers activos'
+        }
+        // count === 0: keep '50+' and 'testers activos'
+      })
+      .catch(() => {
+        // keep '50+' and 'testers activos'
+      });
+  }, [t]);
 
   const featuredTools = [
     { id: 'istqb',     icon: '📚', title: 'Simulador ISTQB',   subtitle: 'Certificación CTFL v4.0', description: 'Practica con 40 preguntas del syllabus oficial',          color: 'from-amber-500 to-amber-600', href: '/labs/istqb',     badge: '🔥 Más Popular' },
@@ -96,7 +109,7 @@ export default function HomePage() {
                   {[
                     { value: '15+',          label: t('home.hero.stats.tools') },
                     { value: '50+',          label: t('home.hero.stats.resources') },
-                    { value: memberCount,    label: t('home.hero.stats.community') },
+                    { value: memberCount,    label: memberLabel },
                   ].map((stat) => (
                     <div key={stat.label} className="text-center lg:text-left min-w-0">
                       <div className={`text-2xl sm:text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{stat.value}</div>
@@ -218,6 +231,159 @@ export default function HomePage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Planes / Pricing */}
+      <section className={`py-16 md:py-20 transition-colors duration-300 ${
+        isDarkMode ? 'bg-slate-800' : 'bg-gradient-to-br from-indigo-50 via-white to-purple-50'
+      }`}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${
+              isDarkMode ? 'text-white' : 'text-slate-900'
+            }`}>
+              Elegí tu plan
+            </h2>
+            <p className={`text-lg max-w-2xl mx-auto ${
+              isDarkMode ? 'text-slate-300' : 'text-slate-600'
+            }`}>
+              Empezá gratis, crecé a tu ritmo
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 items-stretch">
+            {/* Free */}
+            <div className={`relative rounded-2xl border-2 border-indigo-500 shadow-xl flex flex-col ${
+              isDarkMode ? 'bg-slate-900' : 'bg-white'
+            }`}>
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                <span className="bg-indigo-600 text-white text-xs font-bold px-4 py-1 rounded-full shadow">
+                  ACTUAL
+                </span>
+              </div>
+              <div className="p-8 flex flex-col flex-1">
+                <div className="mb-6">
+                  <h3 className={`text-xl font-bold mb-1 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                    Free
+                  </h3>
+                  <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                    Siempre gratis
+                  </p>
+                  <div className={`mt-4 text-4xl font-extrabold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                    $0
+                    <span className={`text-base font-normal ml-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>/mes</span>
+                  </div>
+                </div>
+                <ul className="space-y-3 flex-1">
+                  {['Labs completo', 'Simulador ISTQB', 'Comunidad'].map(item => (
+                    <li key={item} className="flex items-center gap-3">
+                      <svg className="w-5 h-5 text-indigo-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                      </svg>
+                      <span className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-8">
+                  <Link
+                    href="/labs"
+                    className="block w-full text-center px-6 py-3 rounded-xl font-bold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-lg hover:scale-105 transition-all duration-200"
+                  >
+                    Empezar gratis
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* Pro */}
+            <div className={`relative rounded-2xl border-2 flex flex-col opacity-80 ${
+              isDarkMode
+                ? 'bg-slate-900 border-slate-700'
+                : 'bg-white border-slate-200'
+            }`}>
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                <span className="bg-amber-500 text-white text-xs font-bold px-4 py-1 rounded-full shadow">
+                  PRÓXIMAMENTE
+                </span>
+              </div>
+              <div className="p-8 flex flex-col flex-1">
+                <div className="mb-6">
+                  <h3 className={`text-xl font-bold mb-1 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                    Pro
+                  </h3>
+                  <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                    Para profesionales
+                  </p>
+                  <div className={`mt-4 text-4xl font-extrabold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                    ~$9
+                    <span className={`text-base font-normal ml-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>/mes</span>
+                  </div>
+                </div>
+                <ul className="space-y-3 flex-1">
+                  {['Cursos con certificado', 'Rutas de aprendizaje IA', 'Soporte prioritario'].map(item => (
+                    <li key={item} className="flex items-center gap-3">
+                      <svg className="w-5 h-5 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                      </svg>
+                      <span className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-8">
+                  <button
+                    disabled
+                    className={`block w-full text-center px-6 py-3 rounded-xl font-bold cursor-not-allowed ${
+                      isDarkMode
+                        ? 'bg-slate-700 text-slate-400'
+                        : 'bg-slate-100 text-slate-400'
+                    }`}
+                  >
+                    Próximamente
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Empresas */}
+            <div className={`relative rounded-2xl border-2 flex flex-col ${
+              isDarkMode
+                ? 'bg-gradient-to-br from-slate-900 to-indigo-950 border-indigo-800'
+                : 'bg-gradient-to-br from-slate-900 to-indigo-900 border-indigo-700'
+            }`}>
+              <div className="p-8 flex flex-col flex-1">
+                <div className="mb-6">
+                  <h3 className="text-xl font-bold mb-1 text-white">
+                    Empresas
+                  </h3>
+                  <p className="text-sm text-indigo-300">
+                    A medida para tu equipo
+                  </p>
+                  <div className="mt-4 text-4xl font-extrabold text-white">
+                    Custom
+                  </div>
+                </div>
+                <ul className="space-y-3 flex-1">
+                  {['Capacitación de equipos QA', 'Onboarding corporativo', 'Contactanos'].map(item => (
+                    <li key={item} className="flex items-center gap-3">
+                      <svg className="w-5 h-5 text-indigo-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                      </svg>
+                      <span className="text-sm text-indigo-100">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-8">
+                  <a
+                    href="mailto:hola@aiquaa.com"
+                    className="block w-full text-center px-6 py-3 rounded-xl font-bold text-indigo-900 bg-white hover:bg-indigo-50 hover:scale-105 transition-all duration-200 shadow-lg"
+                  >
+                    Contactanos
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
