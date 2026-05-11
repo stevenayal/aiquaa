@@ -61,28 +61,6 @@ export async function registerAction(formData: FormData) {
     return { error: error.message };
   }
 
-  if (audience === 'empresa') {
-    const backendUrl = process.env.BACKEND_INTERNAL_URL;
-    const secret = process.env.INTERNAL_NOTIFY_SECRET;
-    if (backendUrl && secret) {
-      fetch(`${backendUrl}/mailer/interna/nueva-empresa`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-internal-secret': secret,
-        },
-        body: JSON.stringify({
-          companyName: companyName || name,
-          ownerName: name,
-          ownerEmail: email,
-          ruc: ruc?.trim() || undefined,
-        }),
-      }).catch(() => {
-        // Fire-and-forget: no bloquear el registro si falla la notificación
-      });
-    }
-  }
-
   return {
     success: true,
     message: 'Revisá tu email para confirmar tu cuenta.',
