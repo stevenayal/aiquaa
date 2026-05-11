@@ -4,9 +4,19 @@ import LogoMark from '@/components/LogoMark';
 export default async function ConfirmResultPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; next?: string }>;
 }) {
-  const { error } = await searchParams;
+  const { error, next } = await searchParams;
+
+  const isExpired = error === 'link_expired' || error === 'access_denied';
+  const isPasswordReset = next?.includes('reset-password');
+
+  const message = isExpired
+    ? 'El enlace expiró o ya fue usado. Solicitá uno nuevo.'
+    : 'Ocurrió un error durante la confirmación. Intentá de nuevo.';
+
+  const actionHref = isPasswordReset ? '/auth/forgot-password' : '/register';
+  const actionLabel = isPasswordReset ? 'Solicitar nuevo link' : 'Volver al registro';
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
@@ -22,18 +32,22 @@ export default async function ConfirmResultPage({
         </div>
 
         <h2 className="text-2xl font-bold text-gray-900">Error de confirmación</h2>
-        <p className="text-gray-600">
-          {error === 'link_expired'
-            ? 'El enlace expiró o ya fue usado. Solicitá uno nuevo.'
-            : 'Ocurrió un error durante la confirmación. Intentá de nuevo.'}
-        </p>
+        <p className="text-gray-600">{message}</p>
 
         <Link
-          href="/register"
+          href={actionHref}
           className="inline-block w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-medium"
         >
-          Volver al registro
+          {actionLabel}
         </Link>
+
+        {isPasswordReset && (
+          <p className="text-sm text-gray-500">
+            <Link href="/login" className="text-indigo-600 hover:text-indigo-500">
+              ← Volver al login
+            </Link>
+          </p>
+        )}
       </div>
     </div>
   );

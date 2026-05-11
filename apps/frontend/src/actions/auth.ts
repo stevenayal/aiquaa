@@ -83,7 +83,7 @@ export async function resendConfirmationAction(email: string) {
 export async function forgotPasswordAction(email: string) {
   const supabase = createClient();
   const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || '';
+    process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || 'https://aiquaa.com';
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${siteUrl}/auth/confirm?next=/auth/reset-password`,
   });

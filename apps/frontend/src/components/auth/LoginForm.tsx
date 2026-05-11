@@ -63,6 +63,12 @@ export default function LoginForm() {
         msg =
           'Tu email aún no fue confirmado. Revisá tu bandeja de entrada o reenviá el correo.';
         setShowResend(true);
+      } else if (
+        error.message.toLowerCase().includes('fetch') ||
+        error.message.toLowerCase().includes('network') ||
+        error.message.toLowerCase().includes('failed')
+      ) {
+        msg = 'Error de conexión. Verificá tu internet e intentá de nuevo.';
       }
       setAlertMessage(msg);
       setAlertType('error');

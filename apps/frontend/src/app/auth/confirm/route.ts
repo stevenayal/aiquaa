@@ -15,7 +15,10 @@ export async function GET(request: NextRequest) {
   const errorParam = searchParams.get('error');
 
   if (errorParam) {
-    return NextResponse.redirect(`${origin}/auth/confirm-result?error=${encodeURIComponent(errorParam)}`);
+    const resultUrl = new URL(`${origin}/auth/confirm-result`);
+    resultUrl.searchParams.set('error', errorParam);
+    if (next) resultUrl.searchParams.set('next', next);
+    return NextResponse.redirect(resultUrl.toString());
   }
 
   const supabase = createClient();
@@ -42,5 +45,8 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  return NextResponse.redirect(`${origin}/auth/confirm-result?error=link_expired`);
+  const fallbackUrl = new URL(`${origin}/auth/confirm-result`);
+  fallbackUrl.searchParams.set('error', 'link_expired');
+  if (next) fallbackUrl.searchParams.set('next', next);
+  return NextResponse.redirect(fallbackUrl.toString());
 }
