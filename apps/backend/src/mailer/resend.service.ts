@@ -20,15 +20,30 @@ export class ResendService {
     this.logger.log('MailerService inicializado con AWS SES SMTP');
   }
 
-  private async sendMail(options: { from: string; to: string | string[]; subject: string; html: string }): Promise<string> {
+  private async sendMail(options: {
+    from: string;
+    to: string | string[];
+    subject: string;
+    html: string;
+  }): Promise<string> {
     const info = await this.transporter.sendMail(options);
     return info.messageId;
   }
 
-  async sendVerificationEmail(email: string, token: string, name: string): Promise<void> {
-    const frontendUrl = this.configService.get<string>('FRONTEND_URL', 'http://localhost:3000');
+  async sendVerificationEmail(
+    email: string,
+    token: string,
+    name: string
+  ): Promise<void> {
+    const frontendUrl = this.configService.get<string>(
+      'FRONTEND_URL',
+      'http://localhost:3000'
+    );
     const verificationUrl = `${frontendUrl}/verify-email?token=${token}`;
-    const fromEmail = this.configService.get<string>('SES_FROM_EMAIL', 'noreply@aiquaa.com');
+    const fromEmail = this.configService.get<string>(
+      'SES_FROM_EMAIL',
+      'noreply@aiquaa.com'
+    );
 
     try {
       const messageId = await this.sendMail({
@@ -39,15 +54,130 @@ export class ResendService {
       });
       this.logger.log(`Email de verificación enviado a ${email}: ${messageId}`);
     } catch (error) {
-      this.logger.error(`Error enviando email de verificación a ${email}`, error);
+      this.logger.error(
+        `Error enviando email de verificación a ${email}`,
+        error
+      );
       throw error;
     }
   }
 
-  async sendPasswordResetEmail(email: string, token: string, name: string): Promise<void> {
-    const frontendUrl = this.configService.get<string>('FRONTEND_URL', 'http://localhost:3000');
+  async sendNewEmpresaAlert(data: {
+    companyName: string;
+    ownerName: string;
+    ownerEmail: string;
+    ruc?: string;
+    registeredAt: string;
+  }): Promise<void> {
+    const adminEmail = this.configService.get<string>(
+      'ADMIN_EMAIL',
+      'admin@aiquaa.com'
+    );
+    const fromEmail = this.configService.get<string>(
+      'SES_FROM_EMAIL',
+      'noreply@aiquaa.com'
+    );
+
+    try {
+      const messageId = await this.sendMail({
+        from: fromEmail,
+        to: adminEmail,
+        subject: `🏢 Nueva empresa registrada: ${data.companyName}`,
+        html: this.getNewEmpresaAlertTemplate(data),
+      });
+      this.logger.log(
+        `Alerta nueva empresa enviada a ${adminEmail}: ${messageId}`
+      );
+    } catch (error) {
+      this.logger.error(
+        `Error enviando alerta de nueva empresa a ${adminEmail}`,
+        error
+      );
+      throw error;
+    }
+  }
+
+  private getNewEmpresaAlertTemplate(data: {
+    companyName: string;
+    ownerName: string;
+    ownerEmail: string;
+    ruc?: string;
+    registeredAt: string;
+  }): string {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Nueva empresa registrada — AIQUAA</title>
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #059669, #10B981); color: white; padding: 30px; text-align: center; border-radius: 12px 12px 0 0; }
+          .content { background: #ffffff; padding: 40px; border-radius: 0 0 12px 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+          .field { margin-bottom: 16px; padding: 12px 16px; background: #F9FAFB; border-radius: 8px; border-left: 4px solid #10B981; }
+          .label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #6B7280; margin-bottom: 2px; }
+          .value { font-size: 15px; font-weight: 500; color: #111827; }
+          .footer { text-align: center; margin-top: 32px; color: #9CA3AF; font-size: 13px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1 style="margin: 0; font-size: 24px;">🏢 Nueva empresa</h1>
+            <p style="margin: 8px 0 0 0; font-size: 15px; opacity: 0.9;">Se registró una empresa en AIQUAA</p>
+          </div>
+          <div class="content">
+            <div class="field">
+              <div class="label">Empresa</div>
+              <div class="value">${data.companyName}</div>
+            </div>
+            ${
+              data.ruc
+                ? `
+            <div class="field">
+              <div class="label">RUC</div>
+              <div class="value">${data.ruc}</div>
+            </div>`
+                : ''
+            }
+            <div class="field">
+              <div class="label">Responsable</div>
+              <div class="value">${data.ownerName}</div>
+            </div>
+            <div class="field">
+              <div class="label">Email</div>
+              <div class="value"><a href="mailto:${data.ownerEmail}" style="color: #059669;">${data.ownerEmail}</a></div>
+            </div>
+            <div class="field">
+              <div class="label">Fecha de registro</div>
+              <div class="value">${data.registeredAt}</div>
+            </div>
+          </div>
+          <div class="footer">
+            <p>Notificación automática de AIQUAA · admin@aiquaa.com</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  async sendPasswordResetEmail(
+    email: string,
+    token: string,
+    name: string
+  ): Promise<void> {
+    const frontendUrl = this.configService.get<string>(
+      'FRONTEND_URL',
+      'http://localhost:3000'
+    );
     const resetUrl = `${frontendUrl}/auth/reset-password?token=${token}`;
-    const fromEmail = this.configService.get<string>('SES_FROM_EMAIL', 'noreply@aiquaa.com');
+    const fromEmail = this.configService.get<string>(
+      'SES_FROM_EMAIL',
+      'noreply@aiquaa.com'
+    );
 
     try {
       const messageId = await this.sendMail({
@@ -56,14 +186,22 @@ export class ResendService {
         subject: 'Restablece tu contraseña - AIQUAA',
         html: this.getPasswordResetEmailTemplate(name, resetUrl),
       });
-      this.logger.log(`Email de reset de contraseña enviado a ${email}: ${messageId}`);
+      this.logger.log(
+        `Email de reset de contraseña enviado a ${email}: ${messageId}`
+      );
     } catch (error) {
-      this.logger.error(`Error enviando email de reset de contraseña a ${email}`, error);
+      this.logger.error(
+        `Error enviando email de reset de contraseña a ${email}`,
+        error
+      );
       throw error;
     }
   }
 
-  private getVerificationEmailTemplate(name: string, verificationUrl: string): string {
+  private getVerificationEmailTemplate(
+    name: string,
+    verificationUrl: string
+  ): string {
     return `
       <!DOCTYPE html>
       <html>
@@ -109,7 +247,10 @@ export class ResendService {
     `;
   }
 
-  private getPasswordResetEmailTemplate(name: string, resetUrl: string): string {
+  private getPasswordResetEmailTemplate(
+    name: string,
+    resetUrl: string
+  ): string {
     return `
       <!DOCTYPE html>
       <html>
