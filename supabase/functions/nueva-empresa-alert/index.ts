@@ -39,11 +39,11 @@ serve(async (req: Request) => {
   });
 
   const adminEmail = Deno.env.get('ADMIN_EMAIL') ?? 'admin@aiquaa.com';
-  const resendApiKey = Deno.env.get('RESEND_API_KEY');
+  const sendgridApiKey = Deno.env.get('API_KEY');
 
-  if (!resendApiKey) {
-    console.error('RESEND_API_KEY no configurada');
-    return new Response('Missing RESEND_API_KEY', { status: 500 });
+  if (!sendgridApiKey) {
+    console.error('API_KEY (SendGrid) no configurada');
+    return new Response('Missing API_KEY', { status: 500 });
   }
 
   const html = `
@@ -88,17 +88,17 @@ serve(async (req: Request) => {
     </html>
   `;
 
-  const res = await fetch('https://api.resend.com/emails', {
+  const res = await fetch('https://api.sendgrid.com/v3/mail/send', {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${resendApiKey}`,
+      Authorization: `Bearer ${sendgridApiKey}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: 'AIQUAA <noreply@aiquaa.com>',
-      to: [adminEmail],
-      subject: `🏢 Nueva empresa: ${companyName}`,
-      html,
+      personalizations: [{ to: [{ email: adminEmail }] }],
+      from: { email: 'noreply@aiquaa.com', name: 'AIQUAA' },
+      subject: `Nueva empresa registrada: ${companyName}`,
+      content: [{ type: 'text/html', value: html }],
     }),
   });
 
