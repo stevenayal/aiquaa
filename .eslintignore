@@ -6,3 +6,4 @@ build
 coverage
 *.d.ts
 generated
+supabase/functions

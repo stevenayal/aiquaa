@@ -5,17 +5,33 @@ import { ResendService } from './resend.service';
 export class MailerService {
   private readonly logger = new Logger(MailerService.name);
 
-  constructor(
-    private resendService: ResendService,
-  ) {
+  constructor(private resendService: ResendService) {
     this.logger.log('MailerService inicializado con AWS SES SMTP');
   }
 
-  async sendVerificationEmail(email: string, token: string, name: string): Promise<void> {
+  async sendVerificationEmail(
+    email: string,
+    token: string,
+    name: string
+  ): Promise<void> {
     return this.resendService.sendVerificationEmail(email, token, name);
   }
 
-  async sendPasswordResetEmail(email: string, token: string, name: string): Promise<void> {
+  async sendPasswordResetEmail(
+    email: string,
+    token: string,
+    name: string
+  ): Promise<void> {
     return this.resendService.sendPasswordResetEmail(email, token, name);
+  }
+
+  async sendNewEmpresaAlert(data: {
+    companyName: string;
+    ownerName: string;
+    ownerEmail: string;
+    ruc?: string;
+    registeredAt: string;
+  }): Promise<void> {
+    return this.resendService.sendNewEmpresaAlert(data);
   }
 }
