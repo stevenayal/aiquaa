@@ -3,6 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 const PROTECTED_ROUTES = ['/dashboard', '/labs', '/perfil', '/empresa'];
 const AUTH_ROUTES = ['/login', '/register'];
+const PUBLIC_PATHS = ['/empresa/registro'];
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -32,7 +33,9 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Redirect unauthenticated users away from protected routes
-  const isProtected = PROTECTED_ROUTES.some(route => pathname.startsWith(route));
+  const isProtected =
+    PROTECTED_ROUTES.some(route => pathname.startsWith(route)) &&
+    !PUBLIC_PATHS.some(path => pathname.startsWith(path));
   if (!user && isProtected) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = '/login';
