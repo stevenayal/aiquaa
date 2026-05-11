@@ -24,6 +24,7 @@ const empresaNavLinks = [
   { href: '/empresa', label: 'Panel', emoji: '🏢' },
   { href: '/empresa/procesos', label: 'Mis procesos', emoji: '📂' },
   { href: '/empresa/candidatos', label: 'Candidatos', emoji: '👥' },
+  { href: '/empresa/admin/usuarios', label: 'Usuarios', emoji: '👤' },
   { href: '/ranking', label: 'Tops', emoji: '🏆' },
   { href: '/labs', label: 'Herramientas', emoji: '🧪' },
   { href: '/about', label: 'Nosotros', emoji: '' },
