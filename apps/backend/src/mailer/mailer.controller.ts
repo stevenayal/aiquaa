@@ -13,9 +13,9 @@ import { ApiExcludeController } from '@nestjs/swagger';
 import { MailerService } from './mailer.service';
 
 class NuevaEmpresaDto {
-  companyName: string;
-  ownerName: string;
-  ownerEmail: string;
+  companyName!: string;
+  ownerName!: string;
+  ownerEmail!: string;
   ruc?: string;
 }
 
