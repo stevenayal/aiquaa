@@ -311,12 +311,12 @@ const translations: Record<Language, Record<string, string>> = {
     'about.tools.jwt.desc': 'Analiza tokens JWT',
 
     // Team / Founders
-    'about.founder.title': 'Co-Fundadores',
-    'about.founder.role': 'Co-Fundador y Creador de AIQUAA',
+    'about.founder.title': 'Equipo Fundador',
+    'about.founder.role': 'Fundador y Creador de AIQUAA',
     'about.founder.bio':
       'QA Engineer apasionado por la educación, las pruebas de software y la comunidad tech en Paraguay. Creador de AIQUAA con la visión de democratizar el acceso a herramientas y conocimiento de QA en español.',
     'about.cofounder.name': 'Ana Duarte',
-    'about.cofounder.role': 'Co-Fundadora · Analista de Datos',
+    'about.cofounder.role': 'Co-Fundadora & Analista de Datos',
     'about.cofounder.bio':
       'Analista de Datos con experiencia en inteligencia de negocios, visualización de datos y toma de decisiones basada en métricas. Co-fundadora de AIQUAA, impulsando la dimensión analítica y de datos de la plataforma para fortalecer la comunidad QA de Paraguay.',
 
@@ -705,12 +705,12 @@ const translations: Record<Language, Record<string, string>> = {
     'about.tools.jwt.desc': 'Analyze JWT tokens',
 
     // Team / Founders
-    'about.founder.title': 'Co-Founders',
-    'about.founder.role': 'Co-Founder and Creator of AIQUAA',
+    'about.founder.title': 'Founding Team',
+    'about.founder.role': 'Founder and Creator of AIQUAA',
     'about.founder.bio':
       'QA Engineer passionate about education, software testing, and the tech community in Paraguay. Creator of AIQUAA with the vision to democratize access to QA tools and knowledge in Spanish.',
     'about.cofounder.name': 'Ana Duarte',
-    'about.cofounder.role': 'Co-Founder · Data Analyst',
+    'about.cofounder.role': 'Co-Founder & Data Analyst',
     'about.cofounder.bio':
       'Data Analyst with experience in business intelligence, data visualization, and metrics-driven decision making. Co-founder of AIQUAA, driving the analytical and data dimension of the platform to strengthen the QA community in Paraguay.',
 
