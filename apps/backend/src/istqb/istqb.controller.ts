@@ -1,7 +1,20 @@
-import { Controller, Post, Get, Body, Param, Query, Logger, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Param,
+  Query,
+  Logger,
+  HttpCode,
+  HttpStatus,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { IstqbService } from './istqb.service';
 import { SubmitExamDto } from './dto/submit-exam.dto';
+import { OptionalJwtGuard } from '../auth/guards/optional-jwt.guard';
 
 @ApiTags('ISTQB')
 @Controller('istqb')
@@ -11,10 +24,12 @@ export class IstqbController {
   constructor(private readonly istqbService: IstqbService) {}
 
   @Post('submit-exam')
+  @UseGuards(OptionalJwtGuard)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: 'Enviar resultados de examen ISTQB',
-    description: 'Guarda los resultados del examen en la base de datos y envía un informe por email al administrador',
+    description:
+      'Guarda los resultados del examen. Si se incluye un JWT válido, el examen se vincula al usuario y se otorga XP de gamificación.',
   })
   @ApiResponse({
     status: 201,
@@ -29,29 +44,42 @@ export class IstqbController {
   })
   @ApiResponse({ status: 400, description: 'Datos de entrada inválidos' })
   @ApiResponse({ status: 500, description: 'Error interno del servidor' })
-  async submitExamResult(@Body() examData: SubmitExamDto) {
+  async submitExamResult(@Body() examData: SubmitExamDto, @Request() req: any) {
     this.logger.log(
-      `Recibiendo resultado de examen: ${examData.participantName} - ${examData.passed ? 'Aprobado' : 'Reprobado'}`,
+      `Recibiendo resultado de examen: ${examData.participantName} - ${examData.passed ? 'Aprobado' : 'Reprobado'}`
     );
 
+    const userId: number | undefined = req.user?.id;
+
     try {
-      const result = await this.istqbService.submitExamResult(examData);
-      return result;
+      return await this.istqbService.submitExamResult(examData, userId);
     } catch (error) {
       const err = error as Error;
-      this.logger.error(`Error procesando resultado de examen: ${err.message}`, err.stack);
+      this.logger.error(
+        `Error procesando resultado de examen: ${err.message}`,
+        err.stack
+      );
       throw error;
     }
   }
 
   @Get('results')
   @ApiOperation({ summary: 'Obtener todos los resultados de exámenes' })
-  @ApiQuery({ name: 'email', required: false, description: 'Filtrar por email del participante' })
-  @ApiQuery({ name: 'passed', required: false, description: 'Filtrar por estado de aprobación', type: Boolean })
+  @ApiQuery({
+    name: 'email',
+    required: false,
+    description: 'Filtrar por email del participante',
+  })
+  @ApiQuery({
+    name: 'passed',
+    required: false,
+    description: 'Filtrar por estado de aprobación',
+    type: Boolean,
+  })
   @ApiResponse({ status: 200, description: 'Lista de resultados' })
   async getResults(
     @Query('email') email?: string,
-    @Query('passed') passed?: string,
+    @Query('passed') passed?: string
   ) {
     const filters: any = {};
 
