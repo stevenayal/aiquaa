@@ -2,6 +2,10 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { SubmitExamDto } from './dto/submit-exam.dto';
 import { Decimal } from '@prisma/client/runtime/library';
+import { GamificationService } from '../gamification/gamification.service';
+import { GamificationEvent } from '../gamification/constants/xp-events.enum';
+
+const HIGH_SCORE_THRESHOLD = 90;
 
 @Injectable()
 export class IstqbService {
@@ -9,60 +13,89 @@ export class IstqbService {
 
   constructor(
     private prisma: PrismaService,
+    private gamification: GamificationService
   ) {}
 
-  async submitExamResult(examData: SubmitExamDto) {
-    try {
-      // Guardar resultado en la base de datos
-      const result = await this.prisma.istqbExamResult.create({
-        data: {
-          participantName: examData.participantName,
-          participantEmail: examData.participantEmail || null,
-          startTime: new Date(examData.startTime),
-          endTime: new Date(examData.endTime),
-          timeSpentSeconds: examData.timeSpent,
-          score: examData.score,
-          totalQuestions: examData.totalQuestions,
-          percentage: new Decimal(examData.percentage.toFixed(2)),
-          passed: examData.passed,
-          mode: examData.mode,
-          answers: examData.answers as any,
-          learningObjectives: examData.learningObjectiveAnalysis as any,
-        },
-      });
+  async submitExamResult(examData: SubmitExamDto, userId?: number) {
+    const result = await this.prisma.istqbExamResult.create({
+      data: {
+        participantName: examData.participantName,
+        participantEmail: examData.participantEmail || null,
+        userId: userId ?? null,
+        startTime: new Date(examData.startTime),
+        endTime: new Date(examData.endTime),
+        timeSpentSeconds: examData.timeSpent,
+        score: examData.score,
+        totalQuestions: examData.totalQuestions,
+        percentage: new Decimal(examData.percentage.toFixed(2)),
+        passed: examData.passed,
+        mode: examData.mode,
+        answers: examData.answers as any,
+        learningObjectives: examData.learningObjectiveAnalysis as any,
+      },
+    });
 
-      this.logger.log(
-        `Resultado de examen guardado: ${result.id} - ${examData.participantName}`,
-      );
+    this.logger.log(
+      `Resultado de examen guardado: ${result.id} - ${examData.participantName}`
+    );
 
-      // Enviar email al administrador de forma asíncrona (no bloqueante)
-      this.sendAdminNotification(examData, result.id).catch((error) => {
+    // Grant XP only to authenticated users
+    if (userId) {
+      this.grantIstqbXp(userId, result.id, examData).catch((err) => {
         this.logger.error(
-          `Error enviando notificación al admin: ${error.message}`,
-          error.stack,
+          `Error granting ISTQB XP for user=${userId}: ${err.message}`,
+          err.stack
         );
       });
-
-      return {
-        success: true,
-        message: 'Resultado guardado exitosamente',
-        id: result.id,
-      };
-    } catch (error) {
-      const err = error as Error;
-      this.logger.error(
-        `Error guardando resultado de examen: ${err.message}`,
-        err.stack,
-      );
-      throw error;
     }
+
+    return {
+      success: true,
+      message: 'Resultado guardado exitosamente',
+      id: result.id,
+    };
   }
 
-  private async sendAdminNotification(
-    _examData: SubmitExamDto,
-    _resultId: number,
+  private async grantIstqbXp(
+    userId: number,
+    examId: number,
+    examData: SubmitExamDto
   ): Promise<void> {
-    // Email notifications disabled — only registration and password reset emails are sent
+    const source = 'ISTQB_SIMULATOR';
+    const sourceIdBase = examId.toString();
+
+    // XP for completing (always, regardless of pass/fail, except TRAINING mode)
+    if (examData.mode !== 'TRAINING') {
+      await this.gamification.grantXp({
+        userId,
+        eventType: GamificationEvent.ISTQB_COMPLETED,
+        source,
+        sourceId: `${GamificationEvent.ISTQB_COMPLETED}:${sourceIdBase}`,
+        metadata: { examId, mode: examData.mode },
+      });
+    }
+
+    // XP for passing
+    if (examData.passed) {
+      await this.gamification.grantXp({
+        userId,
+        eventType: GamificationEvent.ISTQB_PASSED,
+        source,
+        sourceId: `${GamificationEvent.ISTQB_PASSED}:${sourceIdBase}`,
+        metadata: { examId, percentage: examData.percentage },
+      });
+    }
+
+    // XP for high score (>= 90%)
+    if (examData.percentage >= HIGH_SCORE_THRESHOLD) {
+      await this.gamification.grantXp({
+        userId,
+        eventType: GamificationEvent.ISTQB_HIGH_SCORE,
+        source,
+        sourceId: `${GamificationEvent.ISTQB_HIGH_SCORE}:${sourceIdBase}`,
+        metadata: { examId, percentage: examData.percentage },
+      });
+    }
   }
 
   async getExamResults(filters?: {

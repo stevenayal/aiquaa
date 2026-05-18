@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import * as argon2 from 'argon2';
+import { seedGamification } from './seed-gamification';
 
 const prisma = new PrismaClient();
 
@@ -79,6 +80,8 @@ async function main() {
       },
     }),
   ]);
+
+  await seedGamification();
 
   console.log('✅ Database seeded successfully!');
   console.log('👤 Admin user created:', adminUser.email);

@@ -35,6 +35,12 @@ model User {
   ideas                Idea[]
   ideaVotes            IdeaVote[]
   ideaComments         IdeaComment[]
+  istqbResults         IstqbExamResult[]
+
+  // Gamification
+  userXp           UserXp?
+  userAchievements UserAchievement[]
+  xpHistory        XpHistory[]
 
   @@map("users")
   @@index([deletedAt])
@@ -274,6 +280,8 @@ model IstqbExamResult {
   id                  Int      @id @default(autoincrement())
   participantName     String
   participantEmail    String?
+  userId              Int?
+  user                User?    @relation(fields: [userId], references: [id])
   startTime           DateTime
   endTime             DateTime
   timeSpentSeconds    Int      // Tiempo total en segundos
@@ -288,6 +296,7 @@ model IstqbExamResult {
 
   @@map("istqb_exam_results")
   @@index([participantEmail])
+  @@index([userId])
   @@index([createdAt])
   @@index([passed])
 }
@@ -424,4 +433,104 @@ enum IdeaStatus {
   IN_PROGRESS  // En desarrollo
   COMPLETED    // Implementada
   REJECTED     // Rechazada
+}
+
+// ============================================================
+// GAMIFICATION MODELS
+// ============================================================
+
+// XP rules configurable via DB — no deploy needed to change values
+model XpRule {
+  id          Int      @id @default(autoincrement())
+  eventType   String   @unique
+  xpAmount    Int
+  description String
+  dailyLimit  Int?     // null = unlimited per day
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  xpHistory XpHistory[]
+
+  @@map("xp_rules")
+  @@index([eventType, isActive])
+}
+
+// Achievement definitions
+model Achievement {
+  id            Int      @id @default(autoincrement())
+  key           String   @unique
+  name          String
+  description   String
+  criteriaType  String   // ISTQB_COMPLETED_COUNT | ISTQB_PASSED_COUNT | ALLPAIRS_COUNT | ALLPAIRS_LARGE_COUNT | STREAK_DAYS | DAILY_LOGIN_COUNT | USER_LEVEL
+  criteriaValue Int?
+  xpBonus       Int      @default(0)
+  icon          String?
+  category      String   // ISTQB | ALLPAIRS | STREAK | COMMUNITY | GENERAL
+  difficulty    String   // EASY | MEDIUM | HARD | LEGENDARY
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  userAchievements UserAchievement[]
+
+  @@map("achievements")
+  @@index([isActive, category])
+}
+
+// Unlocked achievements per user
+model UserAchievement {
+  id            Int         @id @default(autoincrement())
+  userId        Int
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievementId Int
+  achievement   Achievement @relation(fields: [achievementId], references: [id])
+  unlockedAt    DateTime    @default(now())
+  source        String      // eventType that triggered the unlock
+  xpAwarded     Int         @default(0)
+  metadata      Json?
+
+  @@unique([userId, achievementId])
+  @@map("user_achievements")
+  @@index([userId, unlockedAt(sort: Desc)])
+  @@index([achievementId])
+}
+
+// Full XP event history — audit trail + idempotency
+model XpHistory {
+  id               Int      @id @default(autoincrement())
+  userId           Int
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  xpRuleId         Int?
+  xpRule           XpRule?  @relation(fields: [xpRuleId], references: [id])
+  eventType        String
+  xpAmount         Int
+  source           String
+  sourceId         String?
+  // Prevents double-grants: set to "eventType:sourceId" when sourceId exists
+  deduplicationKey String?
+  metadata         Json?
+  createdAt        DateTime @default(now())
+
+  @@map("xp_history")
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([userId, eventType, createdAt])
+  @@index([userId, deduplicationKey])
+}
+
+// Aggregate XP state per user — single source of truth for leaderboard
+model UserXp {
+  id             Int       @id @default(autoincrement())
+  userId         Int       @unique
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  totalXp        Int       @default(0)
+  level          Int       @default(1)
+  currentStreak  Int       @default(0)
+  longestStreak  Int       @default(0)
+  lastActivityAt DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@map("user_xp")
+  @@index([totalXp(sort: Desc)])
 }
