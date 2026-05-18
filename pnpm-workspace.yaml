@@ -1,3 +1,13 @@
 packages:
   - 'apps/*'
   - 'packages/*'
+
+# Security: Only allow installing packages published at least 24 hours ago
+# This prevents installing packages that may be malicious or have compromised versions
+# 1440 minutes = 24 hours (configured in package.json under pnpm.security)
+onlyBuiltDependencies:
+  - '@nestjs/core'
+  - '@nestjs/common'
+  - '@nestjs/platform-express'
+  - esbuild
+  - esbuild-register
