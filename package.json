@@ -1,8 +1,11 @@
 {
   "name": "aiquaa-monorepo",
   "private": true,
-  "packageManager": "pnpm@8.15.0",
-  "workspaces": ["apps/*", "packages/*"],
+  "packageManager": "pnpm@9.15.9",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "build": "pnpm -r build",
     "build:vercel": "pnpm --filter @aiquaa/allpairs-core build && pnpm --filter @aiquaa/frontend run build",
@@ -35,10 +38,20 @@
     "pr-check": "bash scripts/pr-check.sh"
   },
   "lint-staged": {
-    "apps/frontend/**/*.{ts,tsx}": ["eslint --fix", "prettier --write"],
-    "apps/backend/**/*.ts": ["eslint --fix", "prettier --write"],
-    "packages/**/*.ts": ["prettier --write"],
-    "*.{json,md,yml,yaml}": ["prettier --write"]
+    "apps/frontend/**/*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "apps/backend/**/*.ts": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "packages/**/*.ts": [
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
   },
   "devDependencies": {
     "concurrently": "^9.0.0",
@@ -53,6 +66,16 @@
   "pnpm": {
     "overrides": {
       "next-auth": "4.24.11"
+    },
+    "onlyBuiltDependencies": [
+      "@nestjs/core",
+      "@nestjs/common",
+      "@nestjs/platform-express",
+      "esbuild",
+      "esbuild-register"
+    ],
+    "security": {
+      "minimumReleaseAge": "1440m"
     }
   }
 }
