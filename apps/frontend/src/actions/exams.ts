@@ -66,12 +66,12 @@ export async function getXpRankingAction(page = 1, limit = 20) {
   const supabase = createClient();
   const offset = (page - 1) * limit;
 
+  // ranking_candidatos view excludes audience='empresa' at DB level
+  // and includes achievement_count via subquery in the view
   const { data, error, count } = await supabase
-    .from('user_xp')
+    .from('ranking_candidatos')
     .select(
-      `total_xp, level, current_streak, last_activity_at,
-       profiles!inner(display_name, avatar_url),
-       user_achievements(count)`,
+      'total_xp, level, current_streak, last_activity_at, display_name, avatar_url, achievement_count',
       { count: 'exact' }
     )
     .order('total_xp', { ascending: false })
@@ -81,12 +81,12 @@ export async function getXpRankingAction(page = 1, limit = 20) {
 
   const entries = (data ?? []).map((row: any, i: number) => ({
     position: offset + i + 1,
-    displayName: row.profiles?.display_name ?? 'Anónimo',
-    avatarUrl: row.profiles?.avatar_url ?? null,
+    displayName: row.display_name ?? 'Anónimo',
+    avatarUrl: row.avatar_url ?? null,
     totalXp: row.total_xp,
     level: row.level,
     currentStreak: row.current_streak,
-    achievementCount: row.user_achievements?.[0]?.count ?? 0,
+    achievementCount: row.achievement_count ?? 0,
     lastActivityAt: row.last_activity_at,
   }));
 
