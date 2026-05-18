@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-const PROTECTED_ROUTES = ['/dashboard', '/labs', '/perfil', '/empresa'];
+const PROTECTED_ROUTES = ['/dashboard', '/perfil', '/empresa'];
 const AUTH_ROUTES = ['/login', '/register'];
 const PUBLIC_PATHS = ['/empresa/registro'];
 
@@ -17,7 +17,9 @@ export async function middleware(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          );
           supabaseResponse = NextResponse.next({ request });
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
@@ -29,13 +31,15 @@ export async function middleware(request: NextRequest) {
 
   // Verify session only for matched routes — avoids Supabase rate limiting from
   // calling getUser() on every single request across the entire site.
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const { pathname } = request.nextUrl;
 
   // Redirect unauthenticated users away from protected routes
   const isProtected =
-    PROTECTED_ROUTES.some(route => pathname.startsWith(route)) &&
-    !PUBLIC_PATHS.some(path => pathname.startsWith(path));
+    PROTECTED_ROUTES.some((route) => pathname.startsWith(route)) &&
+    !PUBLIC_PATHS.some((path) => pathname.startsWith(path));
   if (!user && isProtected) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = '/login';
@@ -44,7 +48,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Redirect authenticated users away from auth pages
-  const isAuthRoute = AUTH_ROUTES.some(route => pathname === route);
+  const isAuthRoute = AUTH_ROUTES.some((route) => pathname === route);
   if (user && isAuthRoute) {
     return NextResponse.redirect(new URL('/ranking', request.url));
   }
@@ -55,7 +59,6 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/dashboard/:path*',
-    '/labs/:path*',
     '/perfil/:path*',
     '/empresa',
     '/empresa/:path*',
