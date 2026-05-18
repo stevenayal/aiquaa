@@ -6,6 +6,9 @@ import React from 'react';
 // Hacer React disponible globalmente para JSX
 (global as any).React = React;
 
+// Compatibilidad para tests escritos con API de Jest
+(global as any).jest = vi;
+
 // Polyfill para crypto en tests
 if (typeof globalThis.crypto === 'undefined') {
   const { webcrypto } = require('crypto');
