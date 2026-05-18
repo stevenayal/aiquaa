@@ -1,5 +1,29 @@
 import { createClient } from '@/lib/supabase/client';
 
+/**
+ * Sanitizes a search term before embedding it in a PostgREST .or() filter string.
+ *
+ * PostgREST parses the .or() argument as a filter expression — injecting commas,
+ * parentheses, or dots lets attackers add extra filter conditions and potentially
+ * exfiltrate columns that are not in the SELECT list.
+ *
+ * What we strip:
+ *   , ( ) [ ]  — PostgREST structural characters (condition separator / grouping)
+ *
+ * What we escape (prepend \):
+ *   % _        — PostgreSQL ILIKE wildcards; without escaping, a user can craft
+ *                overly-broad patterns that hammer the DB (DoS via full-table scan).
+ *
+ * We also hard-cap the string at 100 chars to bound query cost.
+ */
+function sanitizeSearchTerm(raw: string): string {
+  return raw
+    .replace(/[,()[\]]/g, '') // remove PostgREST injection chars
+    .replace(/[%_]/g, '\\$&') // escape SQL pattern wildcards
+    .trim()
+    .slice(0, 100);
+}
+
 export interface Thread {
   id: string;
   title: string;
@@ -101,7 +125,10 @@ class ForumService {
       if (error) throw error;
       return { success: true, data: data.map((c) => c.name) };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : 'Error' };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Error',
+      };
     }
   }
 
@@ -116,12 +143,17 @@ class ForumService {
       if (error) throw error;
       return { success: true, data };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : 'Error' };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Error',
+      };
     }
   }
 
   // Threads
-  async getThreads(filters: ForumFilters = {}): Promise<ForumResponse<Thread[]>> {
+  async getThreads(
+    filters: ForumFilters = {}
+  ): Promise<ForumResponse<Thread[]>> {
     try {
       const supabase = createClient();
       const page = filters.page ?? 1;
@@ -131,11 +163,14 @@ class ForumService {
 
       let query = supabase
         .from('forum_threads')
-        .select(`
+        .select(
+          `
           *,
           author:profiles!forum_threads_author_id_fkey(id, display_name, avatar_url),
           category:forum_categories!forum_threads_category_id_fkey(name, slug)
-        `, { count: 'exact' })
+        `,
+          { count: 'exact' }
+        )
         .is('deleted_at', null)
         .range(from, to);
 
@@ -149,13 +184,24 @@ class ForumService {
       }
 
       if (filters.search) {
-        query = query.or(`title.ilike.%${filters.search}%,content.ilike.%${filters.search}%`);
+        const safeTerm = sanitizeSearchTerm(filters.search);
+        if (safeTerm) {
+          query = query.or(
+            `title.ilike.%${safeTerm}%,content.ilike.%${safeTerm}%`
+          );
+        }
       }
 
-      if (filters.sortBy === 'oldest') query = query.order('created_at', { ascending: true });
-      else if (filters.sortBy === 'mostViewed') query = query.order('view_count', { ascending: false });
-      else if (filters.sortBy === 'mostReplied') query = query.order('reply_count', { ascending: false });
-      else query = query.order('is_pinned', { ascending: false }).order('created_at', { ascending: false });
+      if (filters.sortBy === 'oldest')
+        query = query.order('created_at', { ascending: true });
+      else if (filters.sortBy === 'mostViewed')
+        query = query.order('view_count', { ascending: false });
+      else if (filters.sortBy === 'mostReplied')
+        query = query.order('reply_count', { ascending: false });
+      else
+        query = query
+          .order('is_pinned', { ascending: false })
+          .order('created_at', { ascending: false });
 
       const { data, error, count } = await query;
       if (error) throw error;
@@ -176,7 +222,10 @@ class ForumService {
         },
       };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : 'Error' };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Error',
+      };
     }
   }
 
@@ -189,27 +238,43 @@ class ForumService {
 
       const { data, error } = await supabase
         .from('forum_threads')
-        .select(`
+        .select(
+          `
           *,
           author:profiles!forum_threads_author_id_fkey(id, display_name, avatar_url),
           category:forum_categories!forum_threads_category_id_fkey(name, slug)
-        `)
+        `
+        )
         .eq('id', id)
         .is('deleted_at', null)
         .single();
 
       if (error) throw error;
-      return { success: true, data: { ...data, category: data.category?.name ?? '' } };
+      return {
+        success: true,
+        data: { ...data, category: data.category?.name ?? '' },
+      };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : 'Error' };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Error',
+      };
     }
   }
 
-  async createThread(threadData: CreateThreadData): Promise<ForumResponse<Thread>> {
+  async createThread(
+    threadData: CreateThreadData
+  ): Promise<ForumResponse<Thread>> {
     try {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return { success: false, error: 'Debés iniciar sesión para crear un thread' };
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user)
+        return {
+          success: false,
+          error: 'Debés iniciar sesión para crear un thread',
+        };
 
       const { data: cat, error: catError } = await supabase
         .from('forum_categories')
@@ -217,7 +282,8 @@ class ForumService {
         .eq('name', threadData.category)
         .single();
 
-      if (catError || !cat) return { success: false, error: 'Categoría no encontrada' };
+      if (catError || !cat)
+        return { success: false, error: 'Categoría no encontrada' };
 
       const { data, error } = await supabase
         .from('forum_threads')
@@ -228,21 +294,32 @@ class ForumService {
           category_id: cat.id,
           tags: threadData.tags,
         })
-        .select(`
+        .select(
+          `
           *,
           author:profiles!forum_threads_author_id_fkey(id, display_name, avatar_url),
           category:forum_categories!forum_threads_category_id_fkey(name, slug)
-        `)
+        `
+        )
         .single();
 
       if (error) throw error;
-      return { success: true, data: { ...data, category: data.category?.name ?? '' } };
+      return {
+        success: true,
+        data: { ...data, category: data.category?.name ?? '' },
+      };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : 'Error' };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Error',
+      };
     }
   }
 
-  async updateThread(id: string, threadData: UpdateThreadData): Promise<ForumResponse<Thread>> {
+  async updateThread(
+    id: string,
+    threadData: UpdateThreadData
+  ): Promise<ForumResponse<Thread>> {
     try {
       const supabase = createClient();
       const updates: Record<string, unknown> = {};
@@ -264,17 +341,25 @@ class ForumService {
         .from('forum_threads')
         .update(updates)
         .eq('id', id)
-        .select(`
+        .select(
+          `
           *,
           author:profiles!forum_threads_author_id_fkey(id, display_name, avatar_url),
           category:forum_categories!forum_threads_category_id_fkey(name, slug)
-        `)
+        `
+        )
         .single();
 
       if (error) throw error;
-      return { success: true, data: { ...data, category: data.category?.name ?? '' } };
+      return {
+        success: true,
+        data: { ...data, category: data.category?.name ?? '' },
+      };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : 'Error' };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Error',
+      };
     }
   }
 
@@ -289,12 +374,19 @@ class ForumService {
       if (error) throw error;
       return { success: true, data: { message: 'Thread eliminado' } };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : 'Error' };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Error',
+      };
     }
   }
 
   // Posts
-  async getPosts(threadId: string, page = 1, limit = 20): Promise<ForumResponse<Post[]>> {
+  async getPosts(
+    threadId: string,
+    page = 1,
+    limit = 20
+  ): Promise<ForumResponse<Post[]>> {
     try {
       const supabase = createClient();
       const from = (page - 1) * limit;
@@ -302,10 +394,13 @@ class ForumService {
 
       const { data, error, count } = await supabase
         .from('forum_posts')
-        .select(`
+        .select(
+          `
           *,
           author:profiles!forum_posts_author_id_fkey(id, display_name, avatar_url)
-        `, { count: 'exact' })
+        `,
+          { count: 'exact' }
+        )
         .eq('thread_id', threadId)
         .is('deleted_at', null)
         .order('created_at', { ascending: true })
@@ -315,50 +410,80 @@ class ForumService {
       return {
         success: true,
         data: data ?? [],
-        pagination: { page, limit, total: count ?? 0, totalPages: Math.ceil((count ?? 0) / limit) },
+        pagination: {
+          page,
+          limit,
+          total: count ?? 0,
+          totalPages: Math.ceil((count ?? 0) / limit),
+        },
       };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : 'Error' };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Error',
+      };
     }
   }
 
   async createPost(postData: CreatePostData): Promise<ForumResponse<Post>> {
     try {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return { success: false, error: 'Debés iniciar sesión para responder' };
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user)
+        return { success: false, error: 'Debés iniciar sesión para responder' };
 
       const { data, error } = await supabase
         .from('forum_posts')
-        .insert({ content: postData.content, author_id: user.id, thread_id: postData.threadId })
-        .select(`*, author:profiles!forum_posts_author_id_fkey(id, display_name, avatar_url)`)
+        .insert({
+          content: postData.content,
+          author_id: user.id,
+          thread_id: postData.threadId,
+        })
+        .select(
+          `*, author:profiles!forum_posts_author_id_fkey(id, display_name, avatar_url)`
+        )
         .single();
 
       if (error) throw error;
 
       // Actualizar reply_count
-      await supabase.rpc('increment_thread_replies', { thread_id: postData.threadId });
+      await supabase.rpc('increment_thread_replies', {
+        thread_id: postData.threadId,
+      });
 
       return { success: true, data };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : 'Error' };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Error',
+      };
     }
   }
 
-  async updatePost(id: string, postData: UpdatePostData): Promise<ForumResponse<Post>> {
+  async updatePost(
+    id: string,
+    postData: UpdatePostData
+  ): Promise<ForumResponse<Post>> {
     try {
       const supabase = createClient();
       const { data, error } = await supabase
         .from('forum_posts')
         .update({ content: postData.content })
         .eq('id', id)
-        .select(`*, author:profiles!forum_posts_author_id_fkey(id, display_name, avatar_url)`)
+        .select(
+          `*, author:profiles!forum_posts_author_id_fkey(id, display_name, avatar_url)`
+        )
         .single();
 
       if (error) throw error;
       return { success: true, data };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : 'Error' };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Error',
+      };
     }
   }
 
@@ -373,7 +498,10 @@ class ForumService {
       if (error) throw error;
       return { success: true, data: { message: 'Post eliminado' } };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : 'Error' };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Error',
+      };
     }
   }
 
@@ -384,23 +512,45 @@ class ForumService {
         .from('forum_posts')
         .update({ is_solution: true })
         .eq('id', postId)
-        .select(`*, author:profiles!forum_posts_author_id_fkey(id, display_name, avatar_url)`)
+        .select(
+          `*, author:profiles!forum_posts_author_id_fkey(id, display_name, avatar_url)`
+        )
         .single();
 
       if (error) throw error;
       return { success: true, data };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : 'Error' };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Error',
+      };
     }
   }
 
-  async getForumStats(): Promise<ForumResponse<{ totalThreads: number; totalPosts: number; totalUsers: number; activeUsers: number }>> {
+  async getForumStats(): Promise<
+    ForumResponse<{
+      totalThreads: number;
+      totalPosts: number;
+      totalUsers: number;
+      activeUsers: number;
+    }>
+  > {
     try {
       const supabase = createClient();
 
-      const [{ count: totalThreads }, { count: totalPosts }, { count: totalUsers }] = await Promise.all([
-        supabase.from('forum_threads').select('*', { count: 'exact', head: true }).is('deleted_at', null),
-        supabase.from('forum_posts').select('*', { count: 'exact', head: true }).is('deleted_at', null),
+      const [
+        { count: totalThreads },
+        { count: totalPosts },
+        { count: totalUsers },
+      ] = await Promise.all([
+        supabase
+          .from('forum_threads')
+          .select('*', { count: 'exact', head: true })
+          .is('deleted_at', null),
+        supabase
+          .from('forum_posts')
+          .select('*', { count: 'exact', head: true })
+          .is('deleted_at', null),
         supabase.from('profiles').select('*', { count: 'exact', head: true }),
       ]);
 
@@ -412,7 +562,8 @@ class ForumService {
         .is('deleted_at', null)
         .gte('created_at', today.toISOString());
 
-      const activeUsers = new Set((activeData ?? []).map((p) => p.author_id)).size;
+      const activeUsers = new Set((activeData ?? []).map((p) => p.author_id))
+        .size;
 
       return {
         success: true,
@@ -424,7 +575,10 @@ class ForumService {
         },
       };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : 'Error' };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Error',
+      };
     }
   }
 
@@ -437,10 +591,15 @@ class ForumService {
         .is('deleted_at', null);
 
       if (error) throw error;
-      const allTags = [...new Set((data ?? []).flatMap((t) => t.tags ?? []))].sort();
+      const allTags = [
+        ...new Set((data ?? []).flatMap((t) => t.tags ?? [])),
+      ].sort();
       return { success: true, data: allTags };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : 'Error' };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Error',
+      };
     }
   }
 }
