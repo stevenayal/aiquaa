@@ -14,66 +14,73 @@ export default function LabsPage() {
     {
       id: 'formacion',
       name: '🎓 Formación y Certificación',
-      description: 'Prepárate para certificaciones y evalúa tus conocimientos técnicos',
+      description:
+        'Prepárate para certificaciones y evalúa tus conocimientos técnicos',
       tools: [
         {
           id: 'istqb',
           name: 'Simulador ISTQB CTFL v4.0',
-          description: 'Examen de práctica completo con 40 preguntas oficiales del syllabus v4.0',
+          description:
+            'Examen de práctica completo con 40 preguntas oficiales del syllabus v4.0',
           icon: '📚',
           color: 'from-amber-500 to-amber-600',
           href: '/labs/istqb',
           featured: true,
-          implementedDate: 'Sep 2025'
+          implementedDate: 'Sep 2025',
         },
         {
           id: 'git',
           name: 'Examen Técnico GIT',
-          description: 'Evalúa tus conocimientos de Git con 40 preguntas de fundamentos de control de versiones',
+          description:
+            'Evalúa tus conocimientos de Git con 40 preguntas de fundamentos de control de versiones',
           icon: '🔀',
           color: 'from-orange-500 to-orange-600',
           href: '/labs/git',
           featured: true,
-          implementedDate: 'Nov 2025'
+          implementedDate: 'Nov 2025',
         },
         {
           id: 'performance',
           name: 'Examen de Performance Testing',
-          description: 'Prueba técnica de 30 preguntas sobre fundamentos, métricas y herramientas de pruebas de rendimiento',
+          description:
+            'Prueba técnica de 30 preguntas sobre fundamentos, métricas y herramientas de pruebas de rendimiento',
           icon: '⚡',
           color: 'from-cyan-500 to-blue-600',
           href: '/labs/performance',
           featured: true,
-          implementedDate: 'Nov 2025'
-        }
-      ]
+          implementedDate: 'Nov 2025',
+        },
+      ],
     },
     {
       id: 'evaluacion',
       name: '🐛 Testing & Evaluación',
-      description: 'Aplicaciones para practicar y evaluar habilidades de testing',
+      description:
+        'Aplicaciones para practicar y evaluar habilidades de testing',
       tools: [
         {
           id: 'test-app',
           name: 'AIQUAA Test App',
-          description: 'App con bugs intencionales para Bug Hunting - Evaluación práctica de 30 min',
+          description:
+            'App con bugs intencionales para Bug Hunting - Evaluación práctica de 30 min',
           icon: '🐞',
           color: 'from-red-500 to-rose-600',
           href: '/labs/test-app',
           featured: true,
-          implementedDate: 'Oct 2025'
+          implementedDate: 'Oct 2025',
         },
         {
           id: 'test-report',
           name: 'Generador de Informe Técnico',
-          description: 'Crea informes profesionales en PDF de pruebas de Bug Hunting con puntuación automática',
+          description:
+            'Crea informes profesionales en PDF de pruebas de Bug Hunting con puntuación automática',
           icon: '📋',
           color: 'from-purple-500 to-purple-600',
           href: '/labs/test-app/report',
           featured: true,
-          implementedDate: 'Nov 2025'
-        }
-      ]
+          implementedDate: 'Nov 2025',
+        },
+      ],
     },
     {
       id: 'validadores',
@@ -83,69 +90,76 @@ export default function LabsPage() {
         {
           id: 'json-validator',
           name: 'Validador de JSON',
-          description: 'Valida sintaxis JSON, formatea y detecta errores en tiempo real',
+          description:
+            'Valida sintaxis JSON, formatea y detecta errores en tiempo real',
           icon: '🔍',
           color: 'from-blue-500 to-blue-600',
           href: '/labs/json-validator',
           featured: true,
-          implementedDate: 'Ago 2025'
+          implementedDate: 'Ago 2025',
         },
         {
           id: 'jwt-decoder',
           name: 'Decodificador JWT',
-          description: 'Decodifica tokens JWT y verifica estructura de header, payload y firma',
+          description:
+            'Decodifica tokens JWT y verifica estructura de header, payload y firma',
           icon: '🔐',
           color: 'from-red-500 to-red-600',
           href: '/labs/jwt-decoder',
-          implementedDate: 'Sep 2025'
+          implementedDate: 'Sep 2025',
         },
         {
           id: 'cron-validator',
           name: 'Validador de Cron',
-          description: 'Valida expresiones cron y calcula próximas 10 ejecuciones programadas',
+          description:
+            'Valida expresiones cron y calcula próximas 10 ejecuciones programadas',
           icon: '⏰',
           color: 'from-indigo-500 to-indigo-600',
           href: '/labs/cron-validator',
-          implementedDate: 'Sep 2025'
+          implementedDate: 'Sep 2025',
         },
         {
           id: 'yaml-validator',
           name: 'Validador de YAML',
-          description: 'Valida sintaxis YAML, formatea código y convierte entre YAML y JSON',
+          description:
+            'Valida sintaxis YAML, formatea código y convierte entre YAML y JSON',
           icon: '📝',
           color: 'from-purple-500 to-purple-600',
           href: '/labs/yaml-validator',
           featured: true,
-          implementedDate: 'Nov 2025'
-        }
-      ]
+          implementedDate: 'Nov 2025',
+        },
+      ],
     },
     {
       id: 'generadores',
       name: '🧪 Generadores de Datos',
-      description: 'Crea datos sintéticos para pruebas funcionales y de cobertura',
+      description:
+        'Crea datos sintéticos para pruebas funcionales y de cobertura',
       tools: [
         {
           id: 'data-generator',
           name: 'Generador de Datos',
-          description: 'Genera nombres, emails, teléfonos y datos aleatorios para testing',
+          description:
+            'Genera nombres, emails, teléfonos y datos aleatorios para testing',
           icon: '📊',
           color: 'from-green-500 to-green-600',
           href: '/labs/data-generator',
           featured: true,
-          implementedDate: 'Ago 2025'
+          implementedDate: 'Ago 2025',
         },
         {
           id: 'allpairs',
           name: 'All Pairs Generator',
-          description: 'Reduce casos de prueba combinatorios con técnica pairwise (2-way coverage)',
+          description:
+            'Reduce casos de prueba combinatorios con técnica pairwise (2-way coverage)',
           icon: '🔀',
           color: 'from-teal-500 to-teal-600',
           href: '/labs/allpairs',
           featured: true,
-          implementedDate: 'Sep 2025'
-        }
-      ]
+          implementedDate: 'Sep 2025',
+        },
+      ],
     },
     {
       id: 'utilidades',
@@ -155,40 +169,44 @@ export default function LabsPage() {
         {
           id: 'checklist',
           name: 'Checklist de Pruebas',
-          description: 'Plantillas de verificación para testing funcional, regresión, humo y más',
+          description:
+            'Plantillas de verificación para testing funcional, regresión, humo y más',
           icon: '✅',
           color: 'from-purple-500 to-purple-600',
           href: '/labs/checklist',
-          implementedDate: 'Ago 2025'
+          implementedDate: 'Ago 2025',
         },
         {
           id: 'json-to-testplans',
           name: 'JSON to Test Plans',
-          description: 'Convierte análisis de IA (JSON/YAML) en planes CSV importables a TestRail/Zephyr',
+          description:
+            'Convierte análisis de IA (JSON/YAML) en planes CSV importables a TestRail/Zephyr',
           icon: '📋',
           color: 'from-cyan-500 to-cyan-600',
           href: '/labs/json-to-testplans',
-          implementedDate: 'Sep 2025'
+          implementedDate: 'Sep 2025',
         },
         {
           id: 'req-lint',
           name: 'Análisis de Requisitos',
-          description: 'Detecta ambigüedades, falta de testabilidad y problemas según heurísticas ISTQB',
+          description:
+            'Detecta ambigüedades, falta de testabilidad y problemas según heurísticas ISTQB',
           icon: '📝',
           color: 'from-blue-500 to-blue-600',
           href: '/labs/req-lint',
-          implementedDate: 'Oct 2025'
+          implementedDate: 'Oct 2025',
         },
         {
           id: 'risk-matrix',
           name: 'Matriz de Riesgos',
-          description: 'Evalúa y prioriza riesgos del proyecto con matriz de probabilidad vs impacto',
+          description:
+            'Evalúa y prioriza riesgos del proyecto con matriz de probabilidad vs impacto',
           icon: '🎯',
           color: 'from-pink-500 to-pink-600',
           href: '/labs/risk-matrix',
-          implementedDate: 'Oct 2025'
-        }
-      ]
+          implementedDate: 'Oct 2025',
+        },
+      ],
     },
     {
       id: 'conversores',
@@ -198,13 +216,14 @@ export default function LabsPage() {
         {
           id: 'base64-converter',
           name: 'Convertidor Base64',
-          description: 'Codifica texto a Base64 y decodifica de Base64 a texto plano',
+          description:
+            'Codifica texto a Base64 y decodifica de Base64 a texto plano',
           icon: '🔄',
           color: 'from-orange-500 to-orange-600',
           href: '/labs/base64-converter',
-          implementedDate: 'Sep 2025'
-        }
-      ]
+          implementedDate: 'Sep 2025',
+        },
+      ],
     },
     {
       id: 'comunidad',
@@ -214,53 +233,110 @@ export default function LabsPage() {
         {
           id: 'ideas-board',
           name: 'Ideas Board',
-          description: 'Propone nuevas herramientas, mejoras y features. Vota por tus favoritas y ayuda a dar forma al futuro de AIQUAA',
+          description:
+            'Propone nuevas herramientas, mejoras y features. Vota por tus favoritas y ayuda a dar forma al futuro de AIQUAA',
           icon: '💡',
           color: 'from-yellow-500 to-yellow-600',
           href: '/ideas-board',
           featured: true,
-          implementedDate: 'Dic 2025'
-        }
-      ]
-    }
+          implementedDate: 'Dic 2025',
+        },
+      ],
+    },
   ];
 
   return (
-    <div className={`min-h-screen py-12 md:py-16 transition-colors duration-300 ${
-      isDarkMode ? 'bg-slate-900' : 'bg-brand-light'
-    }`}>
+    <div
+      className={`min-h-screen py-12 md:py-16 transition-colors duration-300 ${
+        isDarkMode ? 'bg-slate-900' : 'bg-brand-light'
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Login/Register Banner */}
+        <div
+          className={`mb-8 rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 ${
+            isDarkMode
+              ? 'bg-slate-800 border border-slate-700'
+              : 'bg-white border border-gray-200 shadow-sm'
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">📝</span>
+            <div>
+              <p
+                className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+              >
+                ¿Quieres guardar tu progreso?
+              </p>
+              <p
+                className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+              >
+                Regístrate gratis para acceder a simuladores, generar informes y
+                más.
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <Link
+              href="/login"
+              className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700"
+            >
+              Iniciar sesión
+            </Link>
+            <Link
+              href="/register"
+              className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${
+                isDarkMode
+                  ? 'border-slate-600 text-slate-300 hover:bg-slate-700'
+                  : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              Crear cuenta
+            </Link>
+          </div>
+        </div>
+
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className={`text-4xl md:text-5xl font-bold mb-6 ${
-            isDarkMode ? 'text-white' : 'text-brand-text'
-          }`}>
+          <h1
+            className={`text-4xl md:text-5xl font-bold mb-6 ${
+              isDarkMode ? 'text-white' : 'text-brand-text'
+            }`}
+          >
             🧪 {t('labs.page.title')}
           </h1>
-          <p className={`text-xl max-w-3xl mx-auto ${
-            isDarkMode ? 'text-slate-300' : 'text-brand-muted'
-          }`}>
+          <p
+            className={`text-xl max-w-3xl mx-auto ${
+              isDarkMode ? 'text-slate-300' : 'text-brand-muted'
+            }`}
+          >
             {t('labs.page.subtitle')}
           </p>
         </div>
 
         {/* Featured Tools of the Month */}
-        <div className={`mb-12 rounded-lg shadow-lg p-8 ${
-          isDarkMode
-            ? 'bg-gradient-to-r from-purple-900/40 to-blue-900/40 border border-purple-700/50'
-            : 'bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200'
-        }`}>
+        <div
+          className={`mb-12 rounded-lg shadow-lg p-8 ${
+            isDarkMode
+              ? 'bg-gradient-to-r from-purple-900/40 to-blue-900/40 border border-purple-700/50'
+              : 'bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200'
+          }`}
+        >
           <div className="flex items-center gap-3 mb-6">
             <span className="text-3xl">🔥</span>
             <div>
-              <h2 className={`text-2xl font-bold ${
-                isDarkMode ? 'text-white' : 'text-brand-text'
-              }`}>
+              <h2
+                className={`text-2xl font-bold ${
+                  isDarkMode ? 'text-white' : 'text-brand-text'
+                }`}
+              >
                 {t('labs.featured.title')}
               </h2>
-              <p className={`text-sm ${
-                isDarkMode ? 'text-slate-300' : 'text-brand-muted'
-              }`}>
+              <p
+                className={`text-sm ${
+                  isDarkMode ? 'text-slate-300' : 'text-brand-muted'
+                }`}
+              >
                 {t('labs.featured.subtitle')}
               </p>
             </div>
@@ -268,8 +344,8 @@ export default function LabsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {toolCategories
-              .flatMap(cat => cat.tools)
-              .filter(tool => tool.featured)
+              .flatMap((cat) => cat.tools)
+              .filter((tool) => tool.featured)
               .slice(0, 3)
               .map((tool, index) => (
                 <Link
@@ -282,27 +358,33 @@ export default function LabsPage() {
                   }`}
                 >
                   <div className="flex items-start gap-3">
-                    <div className={`text-2xl font-bold ${
-                      index === 0
-                        ? 'text-yellow-500'
-                        : index === 1
-                        ? 'text-gray-400'
-                        : 'text-orange-600'
-                    }`}>
+                    <div
+                      className={`text-2xl font-bold ${
+                        index === 0
+                          ? 'text-yellow-500'
+                          : index === 1
+                            ? 'text-gray-400'
+                            : 'text-orange-600'
+                      }`}
+                    >
                       #{index + 1}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="text-xl">{tool.icon}</span>
-                        <h3 className={`font-bold ${
-                          isDarkMode ? 'text-white' : 'text-brand-text'
-                        }`}>
+                        <h3
+                          className={`font-bold ${
+                            isDarkMode ? 'text-white' : 'text-brand-text'
+                          }`}
+                        >
                           {tool.name}
                         </h3>
                       </div>
-                      <p className={`text-xs ${
-                        isDarkMode ? 'text-slate-400' : 'text-brand-muted'
-                      }`}>
+                      <p
+                        className={`text-xs ${
+                          isDarkMode ? 'text-slate-400' : 'text-brand-muted'
+                        }`}
+                      >
                         {tool.description}
                       </p>
                     </div>
@@ -318,14 +400,18 @@ export default function LabsPage() {
             <div key={category.id}>
               {/* Category Header */}
               <div className="mb-6">
-                <h2 className={`text-2xl md:text-3xl font-bold mb-2 ${
-                  isDarkMode ? 'text-white' : 'text-brand-text'
-                }`}>
+                <h2
+                  className={`text-2xl md:text-3xl font-bold mb-2 ${
+                    isDarkMode ? 'text-white' : 'text-brand-text'
+                  }`}
+                >
                   {category.name}
                 </h2>
-                <p className={`text-base ${
-                  isDarkMode ? 'text-slate-400' : 'text-brand-muted'
-                }`}>
+                <p
+                  className={`text-base ${
+                    isDarkMode ? 'text-slate-400' : 'text-brand-muted'
+                  }`}
+                >
                   {category.description}
                 </p>
               </div>
@@ -340,17 +426,21 @@ export default function LabsPage() {
                       isDarkMode ? 'bg-slate-800' : 'bg-white'
                     }`}
                   >
-                    <div className={`bg-gradient-to-r ${tool.color} p-6 text-white relative`}>
+                    <div
+                      className={`bg-gradient-to-r ${tool.color} p-6 text-white relative`}
+                    >
                       {/* Badges Container */}
                       <div className="flex items-start justify-between gap-2 mb-3">
                         <div className="text-3xl">{tool.icon}</div>
                         <div className="flex flex-col items-end gap-2">
                           {tool.featured && (
-                            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                              isDarkMode
-                                ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/50'
-                                : 'bg-yellow-100 text-yellow-800 border border-yellow-300'
-                            }`}>
+                            <span
+                              className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                                isDarkMode
+                                  ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/50'
+                                  : 'bg-yellow-100 text-yellow-800 border border-yellow-300'
+                              }`}
+                            >
                               ⭐ Destacada
                             </span>
                           )}
@@ -362,13 +452,19 @@ export default function LabsPage() {
                         </div>
                       </div>
                       <h3 className="text-xl font-bold mb-2">{tool.name}</h3>
-                      <p className="text-white/90 text-sm">{tool.description}</p>
+                      <p className="text-white/90 text-sm">
+                        {tool.description}
+                      </p>
                     </div>
                     <div className="p-6">
                       <div className="flex items-center justify-between">
-                        <span className={`text-sm ${
-                          isDarkMode ? 'text-slate-400' : 'text-brand-muted'
-                        }`}>{t('labs.action')}</span>
+                        <span
+                          className={`text-sm ${
+                            isDarkMode ? 'text-slate-400' : 'text-brand-muted'
+                          }`}
+                        >
+                          {t('labs.action')}
+                        </span>
                         <svg
                           className={`w-5 h-5 transition-colors ${
                             isDarkMode
@@ -379,7 +475,12 @@ export default function LabsPage() {
                           stroke="currentColor"
                           viewBox="0 0 24 24"
                         >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5l7 7-7 7"
+                          />
                         </svg>
                       </div>
                     </div>
@@ -391,18 +492,24 @@ export default function LabsPage() {
         </div>
 
         {/* Info Section */}
-        <div className={`mt-16 rounded-lg shadow-lg p-8 transition-colors duration-300 ${
-          isDarkMode ? 'bg-slate-800' : 'bg-white'
-        }`}>
+        <div
+          className={`mt-16 rounded-lg shadow-lg p-8 transition-colors duration-300 ${
+            isDarkMode ? 'bg-slate-800' : 'bg-white'
+          }`}
+        >
           <div className="text-center mb-8">
-            <h2 className={`text-3xl font-bold mb-4 ${
-              isDarkMode ? 'text-white' : 'text-brand-text'
-            }`}>
+            <h2
+              className={`text-3xl font-bold mb-4 ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}
+            >
               {t('labs.why.title')}
             </h2>
-            <p className={`text-lg max-w-2xl mx-auto ${
-              isDarkMode ? 'text-slate-300' : 'text-brand-muted'
-            }`}>
+            <p
+              className={`text-lg max-w-2xl mx-auto ${
+                isDarkMode ? 'text-slate-300' : 'text-brand-muted'
+              }`}
+            >
               {t('labs.why.subtitle')}
             </p>
           </div>
@@ -410,27 +517,39 @@ export default function LabsPage() {
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="text-4xl mb-4">🚀</div>
-              <h3 className={`text-xl font-bold mb-3 ${
-                isDarkMode ? 'text-white' : 'text-brand-text'
-              }`}>{t('labs.why.free')}</h3>
+              <h3
+                className={`text-xl font-bold mb-3 ${
+                  isDarkMode ? 'text-white' : 'text-brand-text'
+                }`}
+              >
+                {t('labs.why.free')}
+              </h3>
               <p className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>
                 {t('labs.why.free.desc')}
               </p>
             </div>
             <div className="text-center">
               <div className="text-4xl mb-4">🇵🇾</div>
-              <h3 className={`text-xl font-bold mb-3 ${
-                isDarkMode ? 'text-white' : 'text-brand-text'
-              }`}>{t('labs.why.local')}</h3>
+              <h3
+                className={`text-xl font-bold mb-3 ${
+                  isDarkMode ? 'text-white' : 'text-brand-text'
+                }`}
+              >
+                {t('labs.why.local')}
+              </h3>
               <p className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>
                 {t('labs.why.local.desc')}
               </p>
             </div>
             <div className="text-center">
               <div className="text-4xl mb-4">💡</div>
-              <h3 className={`text-xl font-bold mb-3 ${
-                isDarkMode ? 'text-white' : 'text-brand-text'
-              }`}>{t('labs.why.updated')}</h3>
+              <h3
+                className={`text-xl font-bold mb-3 ${
+                  isDarkMode ? 'text-white' : 'text-brand-text'
+                }`}
+              >
+                {t('labs.why.updated')}
+              </h3>
               <p className={isDarkMode ? 'text-slate-400' : 'text-brand-muted'}>
                 {t('labs.why.updated.desc')}
               </p>
@@ -440,17 +559,15 @@ export default function LabsPage() {
 
         {/* CTA Section */}
         <div className="mt-16 text-center">
-          <div className={`rounded-lg p-8 text-white transition-colors duration-300 ${
-            isDarkMode
-              ? 'bg-gradient-to-r from-blue-600 to-indigo-700'
-              : 'bg-gradient-to-r from-brand-accent to-brand-primary'
-          }`}>
-            <h2 className="text-3xl font-bold mb-4">
-              {t('labs.cta.title')}
-            </h2>
-            <p className="text-xl mb-6 opacity-90">
-              {t('labs.cta.subtitle')}
-            </p>
+          <div
+            className={`rounded-lg p-8 text-white transition-colors duration-300 ${
+              isDarkMode
+                ? 'bg-gradient-to-r from-blue-600 to-indigo-700'
+                : 'bg-gradient-to-r from-brand-accent to-brand-primary'
+            }`}
+          >
+            <h2 className="text-3xl font-bold mb-4">{t('labs.cta.title')}</h2>
+            <p className="text-xl mb-6 opacity-90">{t('labs.cta.subtitle')}</p>
             <Link
               href="/comunidad"
               className={`inline-flex items-center gap-2 px-8 py-3 rounded-lg font-semibold transition-colors ${
