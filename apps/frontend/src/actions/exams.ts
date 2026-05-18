@@ -34,7 +34,10 @@ interface SaveExamResultPayload {
 
 export async function saveExamResultAction(payload: SaveExamResultPayload) {
   const supabase = createClient();
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
   if (userError || !user) return { error: 'No autenticado' };
 
   const { error } = await supabase.from('exam_results').insert({
@@ -46,7 +49,10 @@ export async function saveExamResultAction(payload: SaveExamResultPayload) {
   return { success: true };
 }
 
-export async function getLeaderboardAction(examType: 'git' | 'istqb' | 'performance', limit = 20) {
+export async function getLeaderboardAction(
+  examType: 'git' | 'istqb' | 'performance',
+  limit = 20
+) {
   const supabase = createClient();
   const { data, error } = await supabase.rpc('get_leaderboard', {
     p_exam_type: examType,
@@ -56,14 +62,55 @@ export async function getLeaderboardAction(examType: 'git' | 'istqb' | 'performa
   return { data };
 }
 
+export async function getXpRankingAction(page = 1, limit = 20) {
+  const supabase = createClient();
+  const offset = (page - 1) * limit;
+
+  const { data, error, count } = await supabase
+    .from('user_xp')
+    .select(
+      `total_xp, level, current_streak, last_activity_at,
+       profiles!inner(display_name, avatar_url),
+       user_achievements(count)`,
+      { count: 'exact' }
+    )
+    .order('total_xp', { ascending: false })
+    .range(offset, offset + limit - 1);
+
+  if (error) return { error: error.message, data: null, total: 0 };
+
+  const entries = (data ?? []).map((row: any, i: number) => ({
+    position: offset + i + 1,
+    displayName: row.profiles?.display_name ?? 'Anónimo',
+    avatarUrl: row.profiles?.avatar_url ?? null,
+    totalXp: row.total_xp,
+    level: row.level,
+    currentStreak: row.current_streak,
+    achievementCount: row.user_achievements?.[0]?.count ?? 0,
+    lastActivityAt: row.last_activity_at,
+  }));
+
+  return {
+    data: entries,
+    total: count ?? 0,
+    page,
+    totalPages: Math.ceil((count ?? 0) / limit),
+  };
+}
+
 export async function getExamResultsAction() {
   const supabase = createClient();
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
   if (userError || !user) return { error: 'No autenticado', data: null };
 
   const { data, error } = await supabase
     .from('exam_results')
-    .select('id, exam_type, exam_mode, score, total_questions, passing_score, passed, percentage, time_spent, model, language, created_at')
+    .select(
+      'id, exam_type, exam_mode, score, total_questions, passing_score, passed, percentage, time_spent, model, language, created_at'
+    )
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     .limit(20);

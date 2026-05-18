@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
-import { getLeaderboardAction } from '@/actions/exams';
+import { getLeaderboardAction, getXpRankingAction } from '@/actions/exams';
 import type { Reporter } from '@/app/api/github/reporters/route';
 
 interface LeaderboardEntry {
@@ -203,10 +203,19 @@ function XpComunidadTab({ isDarkMode }: { isDarkMode: boolean }) {
 
   useEffect(() => {
     setLoading(true);
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '';
-    fetch(`${apiUrl}/api/v1/gamification/ranking?page=${page}&limit=20`)
-      .then((r) => r.json())
-      .then((d: XpRankingResponse) => setData(d))
+    getXpRankingAction(page, 20)
+      .then((res) => {
+        if (res.error || !res.data) {
+          setData(null);
+          return;
+        }
+        setData({
+          data: res.data as unknown as XpRankingEntry[],
+          total: res.total,
+          page: res.page,
+          totalPages: res.totalPages,
+        });
+      })
       .catch(() => setData(null))
       .finally(() => setLoading(false));
   }, [page]);
