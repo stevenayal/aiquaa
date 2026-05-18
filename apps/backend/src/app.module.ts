@@ -13,6 +13,7 @@ import { IstqbModule } from './istqb/istqb.module';
 import { PerformanceModule } from './performance/performance.module';
 import { LabsModule } from './labs/labs.module';
 import { IdeasBoardModule } from './ideas-board/ideas-board.module';
+import { GamificationModule } from './gamification/gamification.module';
 import { validateEnv } from './config/env.validation';
 
 @Module({
@@ -35,6 +36,7 @@ import { validateEnv } from './config/env.validation';
     PerformanceModule,
     LabsModule,
     IdeasBoardModule,
+    GamificationModule,
   ],
 })
 export class AppModule {}
