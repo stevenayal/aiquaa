@@ -43,7 +43,10 @@ export async function middleware(request: NextRequest) {
   if (!user && isProtected) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = '/login';
-    loginUrl.searchParams.set('redirectedFrom', pathname);
+    // Only store relative paths — prevents open redirect (e.g. ?redirectedFrom=//evil.com)
+    if (pathname.startsWith('/') && !pathname.startsWith('//')) {
+      loginUrl.searchParams.set('redirectedFrom', pathname);
+    }
     return NextResponse.redirect(loginUrl);
   }
 

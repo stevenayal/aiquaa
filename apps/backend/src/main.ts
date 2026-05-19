@@ -12,7 +12,10 @@ import { HttpLoggingInterceptor } from './observability/http-logging.interceptor
 import { LoggingContextMiddleware } from './observability/logging-context.middleware';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: false, bufferLogs: true });
+  const app = await NestFactory.create(AppModule, {
+    cors: false,
+    bufferLogs: true,
+  });
 
   // Enable trust proxy for proper IP handling
   const expressApp = app.getHttpAdapter().getInstance();
@@ -38,10 +41,14 @@ async function bootstrap() {
   app.use(cookieParser());
 
   // CORS configuration robusta con función de validación - DEBE IR ANTES que otros middlewares
+  // Vercel preview deployments use <hash>-<team>.vercel.app — restrict to the
+  // project slug so only our own preview URLs pass, not arbitrary vercel.app apps.
+  const VERCEL_PROJECT_SLUG = process.env.VERCEL_PROJECT_NAME || 'aiquaa';
   const allowlist = [
     'https://aiquaa.com',
     'https://www.aiquaa.com',
-    /^https:\/\/.*\.vercel\.app$/,
+    // Only our own Vercel project previews (aiquaa-*.vercel.app)
+    new RegExp(`^https://${VERCEL_PROJECT_SLUG}[a-z0-9-]*\\.vercel\\.app$`),
     'http://localhost:3000',
     'http://localhost:3001',
   ];
@@ -78,11 +85,11 @@ async function bootstrap() {
       'X-Request-ID',
       'X-Forwarded-For',
       'X-Forwarded-Proto',
-      'X-Forwarded-Host'
+      'X-Forwarded-Host',
     ],
     credentials: true,
     maxAge: 86400,
-    exposedHeaders: ['Location', 'X-Request-ID']
+    exposedHeaders: ['Location', 'X-Request-ID'],
   });
 
   // Global prefix
@@ -101,12 +108,18 @@ async function bootstrap() {
   app.useGlobalFilters(new GlobalExceptionFilter());
 
   // Manejar OPTIONS explícitamente
-  app.use((req: { method: string }, res: { sendStatus: (code: number) => void }, next: () => void) => {
-    if (req.method === 'OPTIONS') {
-      return res.sendStatus(204);
+  app.use(
+    (
+      req: { method: string },
+      res: { sendStatus: (code: number) => void },
+      next: () => void
+    ) => {
+      if (req.method === 'OPTIONS') {
+        return res.sendStatus(204);
+      }
+      next();
     }
-    next();
-  });
+  );
 
   // Validation pipe
   app.useGlobalPipes(
@@ -114,7 +127,7 @@ async function bootstrap() {
       whitelist: true,
       transform: true,
       forbidNonWhitelisted: true,
-    }),
+    })
   );
 
   // Interceptor global de logging
@@ -123,7 +136,8 @@ async function bootstrap() {
   // Swagger documentation
   const config = new DocumentBuilder()
     .setTitle('AIQUAA API')
-    .setDescription(`
+    .setDescription(
+      `
       ## 🚀 API para la plataforma AIQUAA - Herramientas de QA en Paraguay
 
       ### Acerca de AIQUAA
@@ -207,13 +221,17 @@ async function bootstrap() {
       - Las respuestas siguen un formato estándar JSON
       - Los errores incluyen códigos HTTP descriptivos
       - La paginación está disponible en endpoints de listado
-    `)
+    `
+    )
     .setVersion('1.0.0')
     .setContact('AIQUAA Team', 'https://aiquaa.com', 'contact@aiquaa.com')
     .setLicense('MIT', 'https://opensource.org/licenses/MIT')
     .setTermsOfService('https://aiquaa.com/terms')
     .addServer('http://localhost:3001', 'Desarrollo Local')
-    .addServer('https://aiquaa-backend-production.up.railway.app', 'Producción (Railway)')
+    .addServer(
+      'https://aiquaa-backend-production.up.railway.app',
+      'Producción (Railway)'
+    )
     .addBearerAuth(
       {
         type: 'http',
@@ -225,16 +243,23 @@ async function bootstrap() {
       },
       'JWT-auth'
     )
-    .addTag('Auth', '🔐 Autenticación y autorización - Login, registro, 2FA, OAuth')
+    .addTag(
+      'Auth',
+      '🔐 Autenticación y autorización - Login, registro, 2FA, OAuth'
+    )
     .addTag('Users', '👥 Gestión de usuarios y perfiles')
     .addTag('Forum', '💬 Sistema de foro - Threads, posts, categorías y tags')
     .addTag('Billing', '💳 Gestión de suscripciones y pagos (Stripe)')
     .addTag('Health', '🏥 Monitoreo y estado del sistema')
-    .addTag('Labs', '🧪 Herramientas de QA - All Pairs, validadores, generadores')
+    .addTag(
+      'Labs',
+      '🧪 Herramientas de QA - All Pairs, validadores, generadores'
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config, {
-    operationIdFactory: (_controllerKey: string, methodKey: string) => methodKey,
+    operationIdFactory: (_controllerKey: string, methodKey: string) =>
+      methodKey,
   });
 
   // Configurar Swagger UI con opciones personalizadas
@@ -249,7 +274,7 @@ async function bootstrap() {
       tryItOutEnabled: true,
       syntaxHighlight: {
         activate: true,
-        theme: 'agate'
+        theme: 'agate',
       },
       defaultModelsExpandDepth: 3,
       defaultModelExpandDepth: 3,
@@ -365,29 +390,50 @@ async function bootstrap() {
   });
 
   // Endpoint adicional para obtener la especificación OpenAPI en JSON
-  app.use('/api/v1/docs-json', (_req: unknown, res: { setHeader: (k: string, v: string) => void; send: (d: unknown) => void }) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.send(document);
-  });
+  app.use(
+    '/api/v1/docs-json',
+    (
+      _req: unknown,
+      res: {
+        setHeader: (k: string, v: string) => void;
+        send: (d: unknown) => void;
+      }
+    ) => {
+      res.setHeader('Content-Type', 'application/json');
+      res.send(document);
+    }
+  );
 
   // Redirección desde /docs y / a /api/v1/docs para facilitar el acceso
   const httpAdapter = app.getHttpAdapter();
-  httpAdapter.get('/', (_req: unknown, res: { redirect: (code: number, url: string) => void }) => {
-    res.redirect(301, '/api/v1/docs');
-  });
-  httpAdapter.get('/docs', (_req: unknown, res: { redirect: (code: number, url: string) => void }) => {
-    res.redirect(301, '/api/v1/docs');
-  });
+  httpAdapter.get(
+    '/',
+    (_req: unknown, res: { redirect: (code: number, url: string) => void }) => {
+      res.redirect(301, '/api/v1/docs');
+    }
+  );
+  httpAdapter.get(
+    '/docs',
+    (_req: unknown, res: { redirect: (code: number, url: string) => void }) => {
+      res.redirect(301, '/api/v1/docs');
+    }
+  );
 
   // Health check endpoint usando el adaptador HTTP
-  httpAdapter.get('/health', (_req: unknown, res: { status: (code: number) => { json: (data: unknown) => void } }) => {
-    res.status(200).json({
-      status: 'ok',
-      time: new Date().toISOString(),
-      uptime: process.uptime(),
-      environment: process.env.NODE_ENV || 'development'
-    });
-  });
+  httpAdapter.get(
+    '/health',
+    (
+      _req: unknown,
+      res: { status: (code: number) => { json: (data: unknown) => void } }
+    ) => {
+      res.status(200).json({
+        status: 'ok',
+        time: new Date().toISOString(),
+        uptime: process.uptime(),
+        environment: process.env.NODE_ENV || 'development',
+      });
+    }
+  );
 
   const port = process.env.PORT || process.env.BACKEND_PORT || 3001;
   await app.listen(port, '0.0.0.0'); // Railway requiere escuchar en 0.0.0.0

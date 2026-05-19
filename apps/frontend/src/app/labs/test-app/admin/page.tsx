@@ -15,7 +15,9 @@ import { seedData } from '../lib/seedData';
 import { clearAllData, resetSession } from '../lib/storage';
 import { clearAuditLog } from '../lib/auditLog';
 
-const ADMIN_KEY = process.env.NEXT_PUBLIC_ADMIN_KEY || 'aiquaa-test-admin-2024';
+// SECURITY: No hardcoded fallback — if NEXT_PUBLIC_ADMIN_KEY is not set,
+// the admin page remains inaccessible. Set this env var in Vercel dashboard.
+const ADMIN_KEY = process.env.NEXT_PUBLIC_ADMIN_KEY || '';
 
 export default function AdminPage() {
   const searchParams = useSearchParams();
@@ -27,7 +29,8 @@ export default function AdminPage() {
 
   useEffect(() => {
     const key = searchParams?.get('key');
-    if (key === ADMIN_KEY) {
+    // Empty ADMIN_KEY means admin is disabled — reject even empty-string match
+    if (ADMIN_KEY && key === ADMIN_KEY) {
       setAuthorized(true);
       const currentId = getCandidateId() || 'default';
       setCandId(currentId);
@@ -90,8 +93,12 @@ export default function AdminPage() {
     return (
       <TestAppLayout>
         <div className="max-w-md mx-auto mt-12 bg-white rounded-lg shadow-md p-8">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">Acceso Denegado</h1>
-          <p className="text-gray-600 mb-4">Se requiere clave de administrador para acceder.</p>
+          <h1 className="text-2xl font-bold text-red-600 mb-4">
+            Acceso Denegado
+          </h1>
+          <p className="text-gray-600 mb-4">
+            Se requiere clave de administrador para acceder.
+          </p>
           <p className="text-sm text-gray-500">
             Accede con: /labs/test-app/admin?key=&lt;ADMIN_KEY&gt;
           </p>
@@ -105,9 +112,12 @@ export default function AdminPage() {
       {ToastComponent}
       <div>
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Panel de Administración</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Panel de Administración
+          </h1>
           <p className="text-sm text-gray-600">
-            <strong>Objetivo:</strong> Gestionar bugs, datos y sesiones de prueba
+            <strong>Objetivo:</strong> Gestionar bugs, datos y sesiones de
+            prueba
           </p>
         </div>
 
@@ -130,7 +140,8 @@ export default function AdminPage() {
             </button>
           </div>
           <p className="text-xs text-gray-500 mt-2">
-            Cambiar el ID regenerará todos los datos (productos, bugs activos, etc.)
+            Cambiar el ID regenerará todos los datos (productos, bugs activos,
+            etc.)
           </p>
         </div>
 
@@ -161,7 +172,9 @@ export default function AdminPage() {
                       className="w-5 h-5 text-amber-600 focus:ring-amber-500 rounded"
                     />
                     <div>
-                      <h3 className="font-semibold text-gray-900">{bug.name}</h3>
+                      <h3 className="font-semibold text-gray-900">
+                        {bug.name}
+                      </h3>
                       <p className="text-sm text-gray-600">{bug.description}</p>
                     </div>
                   </div>
@@ -172,15 +185,17 @@ export default function AdminPage() {
                       bug.severity === 'critical'
                         ? 'bg-red-100 text-red-800'
                         : bug.severity === 'high'
-                        ? 'bg-orange-100 text-orange-800'
-                        : bug.severity === 'medium'
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-green-100 text-green-800'
+                          ? 'bg-orange-100 text-orange-800'
+                          : bug.severity === 'medium'
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : 'bg-green-100 text-green-800'
                     }`}
                   >
                     {bug.severity}
                   </span>
-                  <span className="text-xs text-gray-500">{bug.affectedFeature}</span>
+                  <span className="text-xs text-gray-500">
+                    {bug.affectedFeature}
+                  </span>
                 </div>
               </div>
             ))}
@@ -189,7 +204,9 @@ export default function AdminPage() {
 
         {/* Session Management */}
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Gestión de Sesión</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-4">
+            Gestión de Sesión
+          </h2>
           <div className="space-y-2">
             <button
               onClick={handleResetSession}
@@ -198,7 +215,8 @@ export default function AdminPage() {
               Reset Session (Limpia carrito, órdenes, tickets, usuario actual)
             </button>
             <p className="text-xs text-gray-500">
-              Los productos y el audit log se mantendrán, solo se limpian datos del usuario
+              Los productos y el audit log se mantendrán, solo se limpian datos
+              del usuario
             </p>
           </div>
         </div>

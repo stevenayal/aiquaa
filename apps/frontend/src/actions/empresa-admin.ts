@@ -137,6 +137,25 @@ export async function inviteMemberAction(
   return { success: true };
 }
 
+/**
+ * Returns the caller's active membership with role, scoped to their empresa.
+ * All mutation actions call this first — if the caller has no active membership
+ * or lacks the required role, the action is rejected before touching any data.
+ */
+async function getCallerMembership(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  callerId: string
+) {
+  const { data, error } = await supabase
+    .from('empresa_miembros')
+    .select('id, empresa_id, role, status')
+    .eq('user_id', callerId)
+    .eq('status', 'active')
+    .single();
+  if (error || !data) return null;
+  return data;
+}
+
 export async function updateMemberStatusAction(
   memberId: string,
   status: EmpresaMemberStatus
@@ -148,15 +167,38 @@ export async function updateMemberStatusAction(
   } = await supabase.auth.getUser();
   if (authErr || !user) return { error: 'No autenticado' };
 
+  // Verify caller has admin/owner role in an empresa
+  const callerMembership = await getCallerMembership(supabase, user.id);
+  if (!callerMembership || !['owner', 'admin'].includes(callerMembership.role))
+    return { error: 'Sin permisos suficientes' };
+
+  // Verify target member belongs to the SAME empresa (prevents cross-tenant mutation)
+  const { data: target, error: targetErr } = await supabase
+    .from('empresa_miembros')
+    .select('id, empresa_id, role')
+    .eq('id', memberId)
+    .eq('empresa_id', callerMembership.empresa_id) // same empresa only
+    .single();
+
+  if (targetErr || !target) return { error: 'Miembro no encontrado' };
+
+  // Only owners can touch other admins/owners
+  if (
+    ['owner', 'admin'].includes(target.role) &&
+    callerMembership.role !== 'owner'
+  )
+    return { error: 'Solo el owner puede modificar admins' };
+
   const update: Record<string, unknown> = { status };
   if (status === 'active') update.joined_at = new Date().toISOString();
 
   const { error } = await supabase
     .from('empresa_miembros')
     .update(update)
-    .eq('id', memberId);
+    .eq('id', memberId)
+    .eq('empresa_id', callerMembership.empresa_id); // double-lock
 
-  if (error) return { error: error.message };
+  if (error) return { error: 'Error al actualizar' };
   return { success: true };
 }
 
@@ -171,12 +213,30 @@ export async function updateMemberRoleAction(
   } = await supabase.auth.getUser();
   if (authErr || !user) return { error: 'No autenticado' };
 
+  // Only owners can change roles
+  const callerMembership = await getCallerMembership(supabase, user.id);
+  if (!callerMembership || callerMembership.role !== 'owner')
+    return { error: 'Solo el owner puede cambiar roles' };
+
+  // Cannot demote yourself
+  const { data: target, error: targetErr } = await supabase
+    .from('empresa_miembros')
+    .select('id, user_id, empresa_id')
+    .eq('id', memberId)
+    .eq('empresa_id', callerMembership.empresa_id)
+    .single();
+
+  if (targetErr || !target) return { error: 'Miembro no encontrado' };
+  if (target.user_id === user.id)
+    return { error: 'No podés cambiar tu propio rol' };
+
   const { error } = await supabase
     .from('empresa_miembros')
     .update({ role })
-    .eq('id', memberId);
+    .eq('id', memberId)
+    .eq('empresa_id', callerMembership.empresa_id);
 
-  if (error) return { error: error.message };
+  if (error) return { error: 'Error al actualizar' };
   return { success: true };
 }
 
@@ -188,12 +248,36 @@ export async function removeMemberAction(memberId: string) {
   } = await supabase.auth.getUser();
   if (authErr || !user) return { error: 'No autenticado' };
 
+  const callerMembership = await getCallerMembership(supabase, user.id);
+  if (!callerMembership || !['owner', 'admin'].includes(callerMembership.role))
+    return { error: 'Sin permisos suficientes' };
+
+  // Target must be in the same empresa
+  const { data: target, error: targetErr } = await supabase
+    .from('empresa_miembros')
+    .select('id, user_id, empresa_id, role')
+    .eq('id', memberId)
+    .eq('empresa_id', callerMembership.empresa_id)
+    .single();
+
+  if (targetErr || !target) return { error: 'Miembro no encontrado' };
+  // Cannot remove yourself
+  if (target.user_id === user.id)
+    return { error: 'No podés removerte a vos mismo' };
+  // Only owners can remove other admins
+  if (
+    ['owner', 'admin'].includes(target.role) &&
+    callerMembership.role !== 'owner'
+  )
+    return { error: 'Solo el owner puede remover admins' };
+
   const { error } = await supabase
     .from('empresa_miembros')
     .delete()
-    .eq('id', memberId);
+    .eq('id', memberId)
+    .eq('empresa_id', callerMembership.empresa_id);
 
-  if (error) return { error: error.message };
+  if (error) return { error: 'Error al remover' };
   return { success: true };
 }
 
