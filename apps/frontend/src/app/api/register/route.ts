@@ -14,14 +14,14 @@ export async function POST(request: NextRequest) {
   try {
     // Leer el body de la request
     const body = await request.json();
-    
+
     // Log de la request entrante
     console.log(`[${requestId}] Registration proxy request:`, {
       origin: request.headers.get('origin'),
       referer: request.headers.get('referer'),
       userAgent: request.headers.get('user-agent'),
       bodySize: JSON.stringify(body).length,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
     // Validar que el body tenga los campos requeridos
@@ -62,7 +62,9 @@ export async function POST(request: NextRequest) {
     // Sanitizar el nombre (remover caracteres peligrosos)
     const sanitizedName = body.name.replace(/[<>\"'&]/g, '');
     if (sanitizedName !== body.name) {
-      console.warn(`[${requestId}] Name contained dangerous characters, sanitized`);
+      console.warn(
+        `[${requestId}] Name contained dangerous characters, sanitized`
+      );
       body.name = sanitizedName;
     }
 
@@ -72,22 +74,25 @@ export async function POST(request: NextRequest) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'User-Agent': 'AIQUAA-Frontend-Proxy/1.0',
         'X-Request-ID': requestId,
-        'X-Forwarded-For': request.ip || request.headers.get('x-forwarded-for') || 'unknown',
-        'X-Forwarded-Proto': request.headers.get('x-forwarded-proto') || 'https',
-        'X-Forwarded-Host': request.headers.get('host') || 'unknown'
+        'X-Forwarded-For':
+          request.ip || request.headers.get('x-forwarded-for') || 'unknown',
+        'X-Forwarded-Proto':
+          request.headers.get('x-forwarded-proto') || 'https',
+        'X-Forwarded-Host': request.headers.get('host') || 'unknown',
       },
       body: JSON.stringify(body),
       // Timeout de 30 segundos
-      signal: AbortSignal.timeout(30000)
+      signal: AbortSignal.timeout(30000),
     });
 
     // Leer la respuesta del backend
     const responseText = await backendResponse.text();
 
-    const contentType = backendResponse.headers.get('content-type') || 'text/plain';
+    const contentType =
+      backendResponse.headers.get('content-type') || 'text/plain';
 
     // Log de la respuesta del backend
     console.log(`[${requestId}] Backend response:`, {
@@ -95,7 +100,7 @@ export async function POST(request: NextRequest) {
       statusText: backendResponse.statusText,
       responseSize: responseText.length,
       durationMs: Date.now() - startedAt,
-      target
+      target,
     });
 
     // Si el backend dice JSON, intentar devolver JSON crudo
@@ -106,8 +111,8 @@ export async function POST(request: NextRequest) {
           status: backendResponse.status,
           headers: {
             'X-Request-ID': requestId,
-            'X-Proxy-Source': 'AIQUAA-Frontend'
-          }
+            'X-Proxy-Source': 'AIQUAA-Frontend',
+          },
         });
       } catch {
         // caer a texto si JSON inválido
@@ -120,16 +125,16 @@ export async function POST(request: NextRequest) {
       headers: {
         'Content-Type': contentType,
         'X-Request-ID': requestId,
-        'X-Proxy-Source': 'AIQUAA-Frontend'
-      }
+        'X-Proxy-Source': 'AIQUAA-Frontend',
+      },
     });
-
   } catch (error) {
+    // Log stack server-side only — never sent to client
     console.error(`[${requestId}] Proxy error:`, {
       error: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
+      // stack is internal — NOT forwarded to response
       timestamp: new Date().toISOString(),
-      durationMs: Date.now() - startedAt
+      durationMs: Date.now() - startedAt,
     });
 
     // Manejar diferentes tipos de errores
@@ -140,10 +145,13 @@ export async function POST(request: NextRequest) {
           { status: 504 }
         );
       }
-      
+
       if (error.message.includes('fetch')) {
         return NextResponse.json(
-          { error: 'No se pudo contactar con el servidor. Verifica tu conexión.' },
+          {
+            error:
+              'No se pudo contactar con el servidor. Verifica tu conexión.',
+          },
           { status: 502 }
         );
       }
@@ -156,15 +164,25 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Manejar OPTIONS para CORS preflight
-export async function OPTIONS() {
+// CORS preflight — only allow the app's own origin, never wildcard
+export async function OPTIONS(request: NextRequest) {
+  const ALLOWED_ORIGINS = [
+    process.env.NEXT_PUBLIC_SITE_URL,
+    'https://aiquaa.com',
+    'https://www.aiquaa.com',
+  ].filter(Boolean) as string[];
+
+  const origin = request.headers.get('origin') ?? '';
+  const isAllowed = ALLOWED_ORIGINS.includes(origin);
+
   return new NextResponse(null, {
-    status: 204,
+    status: isAllowed ? 204 : 403,
     headers: {
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': isAllowed ? origin : '',
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Accept, Authorization, X-Requested-With',
-      'Access-Control-Max-Age': '86400'
-    }
+      'Access-Control-Allow-Headers': 'Content-Type, Accept',
+      'Access-Control-Max-Age': '86400',
+      Vary: 'Origin',
+    },
   });
 }

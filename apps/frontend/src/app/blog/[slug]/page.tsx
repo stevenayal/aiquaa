@@ -1,8 +1,48 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import sanitizeHtml from 'sanitize-html';
 import { getPost, listPosts, formatDate } from '@/lib/devto';
 import Comments from '@/components/Comments';
+
+/**
+ * Sanitize HTML from the dev.to API before rendering.
+ * Allows the tags/attrs that Markdown-generated HTML legitimately produces,
+ * strips anything that could carry XSS payloads (script, onerror, onclick, etc.).
+ */
+function sanitizeBlogHtml(raw: string): string {
+  return sanitizeHtml(raw, {
+    allowedTags: sanitizeHtml.defaults.allowedTags.concat([
+      'img',
+      'details',
+      'summary',
+      'mark',
+      'kbd',
+      'figure',
+      'figcaption',
+    ]),
+    allowedAttributes: {
+      ...sanitizeHtml.defaults.allowedAttributes,
+      '*': ['class', 'id'],
+      a: ['href', 'name', 'target', 'rel'],
+      img: ['src', 'alt', 'title', 'width', 'height', 'loading'],
+      code: ['class'],
+      pre: ['class'],
+    },
+    // Force external links to be safe
+    transformTags: {
+      a: (tagName, attribs) => ({
+        tagName,
+        attribs: {
+          ...attribs,
+          ...(attribs.href?.startsWith('http')
+            ? { rel: 'noopener noreferrer', target: '_blank' }
+            : {}),
+        },
+      }),
+    },
+  });
+}
 
 export const revalidate = 1800; // ISR: revalidate every 30 minutes
 
@@ -26,7 +66,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${post.title} | AIQUAA Blog`,
     description: post.description || post.title,
-    authors: [{ name: post.user.name, url: `https://dev.to/${post.user.username}` }],
+    authors: [
+      { name: post.user.name, url: `https://dev.to/${post.user.username}` },
+    ],
     openGraph: {
       title: post.title,
       description: post.description || post.title,
@@ -174,7 +216,7 @@ export default async function BlogPostPage({ params }: Props) {
             prose-blockquote:text-gray-700 dark:prose-blockquote:text-gray-300
             prose-img:rounded-lg
             prose-hr:border-gray-200 dark:prose-hr:border-dark-secondary"
-          dangerouslySetInnerHTML={{ __html: post.body_html }}
+          dangerouslySetInnerHTML={{ __html: sanitizeBlogHtml(post.body_html) }}
         />
 
         {/* Engagement Stats */}
@@ -207,7 +249,8 @@ export default async function BlogPostPage({ params }: Props) {
             >
               DEV.to
             </a>
-            . Para interactuar con la comunidad de DEV, visitá el artículo original.
+            . Para interactuar con la comunidad de DEV, visitá el artículo
+            original.
           </p>
         </div>
 
