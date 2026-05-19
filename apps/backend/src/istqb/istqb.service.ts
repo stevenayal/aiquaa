@@ -1,11 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { EventBus } from '@nestjs/cqrs';
 import { PrismaService } from '../prisma/prisma.service';
 import { SubmitExamDto } from './dto/submit-exam.dto';
 import { Decimal } from '@prisma/client/runtime/library';
-import { GamificationService } from '../gamification/gamification.service';
-import { GamificationEvent } from '../gamification/constants/xp-events.enum';
-
-const HIGH_SCORE_THRESHOLD = 90;
+import { IstqbExamCompletedEvent } from './events/istqb-exam-completed.event';
 
 @Injectable()
 export class IstqbService {
@@ -13,7 +11,7 @@ export class IstqbService {
 
   constructor(
     private prisma: PrismaService,
-    private gamification: GamificationService
+    private eventBus: EventBus
   ) {}
 
   async submitExamResult(examData: SubmitExamDto, userId?: number) {
@@ -39,14 +37,16 @@ export class IstqbService {
       `Resultado de examen guardado: ${result.id} - ${examData.participantName}`
     );
 
-    // Grant XP only to authenticated users
     if (userId) {
-      this.grantIstqbXp(userId, result.id, examData).catch((err) => {
-        this.logger.error(
-          `Error granting ISTQB XP for user=${userId}: ${err.message}`,
-          err.stack
-        );
-      });
+      this.eventBus.publish(
+        new IstqbExamCompletedEvent(
+          userId,
+          result.id,
+          examData.passed,
+          examData.percentage,
+          examData.mode
+        )
+      );
     }
 
     return {
@@ -54,48 +54,6 @@ export class IstqbService {
       message: 'Resultado guardado exitosamente',
       id: result.id,
     };
-  }
-
-  private async grantIstqbXp(
-    userId: number,
-    examId: number,
-    examData: SubmitExamDto
-  ): Promise<void> {
-    const source = 'ISTQB_SIMULATOR';
-    const sourceIdBase = examId.toString();
-
-    // XP for completing (always, regardless of pass/fail, except TRAINING mode)
-    if (examData.mode !== 'TRAINING') {
-      await this.gamification.grantXp({
-        userId,
-        eventType: GamificationEvent.ISTQB_COMPLETED,
-        source,
-        sourceId: `${GamificationEvent.ISTQB_COMPLETED}:${sourceIdBase}`,
-        metadata: { examId, mode: examData.mode },
-      });
-    }
-
-    // XP for passing
-    if (examData.passed) {
-      await this.gamification.grantXp({
-        userId,
-        eventType: GamificationEvent.ISTQB_PASSED,
-        source,
-        sourceId: `${GamificationEvent.ISTQB_PASSED}:${sourceIdBase}`,
-        metadata: { examId, percentage: examData.percentage },
-      });
-    }
-
-    // XP for high score (>= 90%)
-    if (examData.percentage >= HIGH_SCORE_THRESHOLD) {
-      await this.gamification.grantXp({
-        userId,
-        eventType: GamificationEvent.ISTQB_HIGH_SCORE,
-        source,
-        sourceId: `${GamificationEvent.ISTQB_HIGH_SCORE}:${sourceIdBase}`,
-        metadata: { examId, percentage: examData.percentage },
-      });
-    }
   }
 
   async getExamResults(filters?: {
@@ -126,16 +84,12 @@ export class IstqbService {
 
     return this.prisma.istqbExamResult.findMany({
       where,
-      orderBy: {
-        createdAt: 'desc',
-      },
+      orderBy: { createdAt: 'desc' },
     });
   }
 
   async getExamResultById(id: number) {
-    return this.prisma.istqbExamResult.findUnique({
-      where: { id },
-    });
+    return this.prisma.istqbExamResult.findUnique({ where: { id } });
   }
 
   async getExamStats() {
@@ -146,10 +100,7 @@ export class IstqbService {
     const failed = total - passed;
 
     const avgScore = await this.prisma.istqbExamResult.aggregate({
-      _avg: {
-        score: true,
-        percentage: true,
-      },
+      _avg: { score: true, percentage: true },
     });
 
     return {

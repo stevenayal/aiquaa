@@ -25,6 +25,10 @@ export class MailerService {
     return this.resendService.sendPasswordResetEmail(email, token, name);
   }
 
+  async sendTwoFactorCode(email: string, code: string): Promise<void> {
+    return this.resendService.sendTwoFactorCode(email, code);
+  }
+
   async sendNewEmpresaAlert(data: {
     companyName: string;
     ownerName: string;

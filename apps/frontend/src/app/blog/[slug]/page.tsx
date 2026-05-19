@@ -31,7 +31,7 @@ function sanitizeBlogHtml(raw: string): string {
     },
     // Force external links to be safe
     transformTags: {
-      a: (tagName, attribs) => ({
+      a: (tagName: string, attribs: Record<string, string>) => ({
         tagName,
         attribs: {
           ...attribs,

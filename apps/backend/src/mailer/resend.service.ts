@@ -298,4 +298,30 @@ export class ResendService {
       </html>
     `;
   }
+
+  async sendTwoFactorCode(email: string, code: string): Promise<void> {
+    const fromEmail =
+      process.env.SES_FROM_EMAIL || 'AIQUAA <noreply@aiquaa.com>';
+    try {
+      await this.sendMail({
+        from: fromEmail,
+        to: email,
+        subject: 'Tu código de verificación - AIQUAA',
+        html: `
+          <div style="font-family: -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h2 style="color: #4F46E5;">Verificación de dos factores</h2>
+            <p>Tu código de verificación es:</p>
+            <div style="font-size: 32px; font-weight: bold; letter-spacing: 8px; text-align: center; padding: 20px; background: #F3F4F6; border-radius: 8px; margin: 20px 0;">
+              ${code}
+            </div>
+            <p style="color: #6B7280; font-size: 14px;">Este código expira en 10 minutos. No compartas este código con nadie.</p>
+          </div>
+        `,
+      });
+      this.logger.log(`Código 2FA enviado a ${email}`);
+    } catch (error) {
+      this.logger.error(`Error enviando código 2FA a ${email}`, error);
+      throw error;
+    }
+  }
 }

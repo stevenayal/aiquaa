@@ -1,8 +1,18 @@
-import { Injectable, UnauthorizedException, BadRequestException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  BadRequestException,
+  ConflictException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
-import { LoginDto, RegisterDto, RequestResetDto, ResetPasswordDto } from './dto';
+import {
+  LoginDto,
+  RegisterDto,
+  RequestResetDto,
+  ResetPasswordDto,
+} from './dto';
 import { MessageResponseDto } from './dto';
 import * as argon2 from 'argon2';
 import { createHash, randomBytes } from 'crypto';
@@ -33,7 +43,7 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
     private prisma: PrismaService,
-    private mailerService: MailerService,
+    private mailerService: MailerService
   ) {}
 
   async register(registerDto: RegisterDto): Promise<MessageResponseDto> {
@@ -66,13 +76,13 @@ export class AuthService {
     const verificationToken = await this.createVerificationToken(
       user.id,
       email,
-      'VERIFY_EMAIL',
+      'VERIFY_EMAIL'
     );
 
     await this.mailerService.sendVerificationEmail(
       email,
       verificationToken.token,
-      name || email,
+      name || email
     );
 
     return {
@@ -143,7 +153,11 @@ export class AuthService {
         include: { user: true },
       });
 
-      if (!tokenRecord || tokenRecord.revokedAt || tokenRecord.expiresAt < new Date()) {
+      if (
+        !tokenRecord ||
+        tokenRecord.revokedAt ||
+        tokenRecord.expiresAt < new Date()
+      ) {
         throw new UnauthorizedException('Token de refresh inválido o expirado');
       }
 
@@ -152,7 +166,9 @@ export class AuthService {
           where: { userId: tokenRecord.userId },
           data: { revokedAt: new Date() },
         });
-        throw new UnauthorizedException('Token de refresh reutilizado - sesión inválida');
+        throw new UnauthorizedException(
+          'Token de refresh reutilizado - sesión inválida'
+        );
       }
 
       await this.prisma.refreshToken.update({
@@ -196,7 +212,10 @@ export class AuthService {
     return { message: 'Sesión cerrada exitosamente' };
   }
 
-  async logoutFromDevice(userId: number, tokenId: number): Promise<MessageResponseDto> {
+  async logoutFromDevice(
+    userId: number,
+    tokenId: number
+  ): Promise<MessageResponseDto> {
     // Revocar un token específico
     const token = await this.prisma.refreshToken.findFirst({
       where: { id: tokenId, userId },
@@ -240,7 +259,11 @@ export class AuthService {
       where: { tokenHash: this.hashToken(token) },
     });
 
-    if (!tokenRecord || tokenRecord.type !== 'VERIFY_EMAIL' || tokenRecord.consumedAt) {
+    if (
+      !tokenRecord ||
+      tokenRecord.type !== 'VERIFY_EMAIL' ||
+      tokenRecord.consumedAt
+    ) {
       throw new BadRequestException('Token de verificación inválido');
     }
 
@@ -260,12 +283,12 @@ export class AuthService {
       data: { consumedAt: new Date() },
     });
 
-
-
     return { message: 'Email verificado exitosamente' };
   }
 
-  async requestReset(requestResetDto: RequestResetDto): Promise<MessageResponseDto> {
+  async requestReset(
+    requestResetDto: RequestResetDto
+  ): Promise<MessageResponseDto> {
     const { email } = requestResetDto;
 
     const user = await this.prisma.user.findUnique({
@@ -294,24 +317,31 @@ export class AuthService {
       await this.mailerService.sendPasswordResetEmail(
         email,
         verificationToken.token,
-        user.name || email,
+        user.name || email
       );
     }
 
     // Siempre devolver el mismo mensaje por seguridad
     return {
-      message: 'Si el email existe, se enviará un enlace para restablecer la contraseña',
+      message:
+        'Si el email existe, se enviará un enlace para restablecer la contraseña',
     };
   }
 
-  async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<MessageResponseDto> {
+  async resetPassword(
+    resetPasswordDto: ResetPasswordDto
+  ): Promise<MessageResponseDto> {
     const { token, password: newPassword } = resetPasswordDto;
 
     const tokenRecord = await this.prisma.verificationToken.findUnique({
       where: { tokenHash: this.hashToken(token) },
     });
 
-    if (!tokenRecord || tokenRecord.type !== 'RESET_PASSWORD' || tokenRecord.consumedAt) {
+    if (
+      !tokenRecord ||
+      tokenRecord.type !== 'RESET_PASSWORD' ||
+      tokenRecord.consumedAt
+    ) {
       throw new BadRequestException('Token de reset inválido');
     }
 
@@ -348,7 +378,11 @@ export class AuthService {
     return { message: 'Contraseña restablecida exitosamente' };
   }
 
-  async changePassword(userId: number, currentPassword: string, newPassword: string): Promise<MessageResponseDto> {
+  async changePassword(
+    userId: number,
+    currentPassword: string,
+    newPassword: string
+  ): Promise<MessageResponseDto> {
     // Verificar contraseña actual
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -358,7 +392,10 @@ export class AuthService {
       throw new UnauthorizedException('Usuario no encontrado');
     }
 
-    const isCurrentPasswordValid = await argon2.verify(user.passwordHash, currentPassword);
+    const isCurrentPasswordValid = await argon2.verify(
+      user.passwordHash,
+      currentPassword
+    );
     if (!isCurrentPasswordValid) {
       throw new BadRequestException('Contraseña actual incorrecta');
     }
@@ -438,7 +475,12 @@ export class AuthService {
         userId: user.id,
         tokenHash,
         expiresAt: new Date(
-          Date.now() + parseInt(this.configService.get<string>('JWT_REFRESH_TTL', '2592000'), 10) * 1000,
+          Date.now() +
+            parseInt(
+              this.configService.get<string>('JWT_REFRESH_TTL', '2592000'),
+              10
+            ) *
+              1000
         ),
         ip: this.getClientIP(), // Agregar IP del cliente
         userAgent: this.getUserAgent(), // Agregar User-Agent
@@ -451,7 +493,7 @@ export class AuthService {
   private async createVerificationToken(
     userId: number,
     email: string,
-    type: 'VERIFY_EMAIL' | 'RESET_PASSWORD',
+    type: 'VERIFY_EMAIL' | 'RESET_PASSWORD'
   ): Promise<{ token: string; record: { id: number } }> {
     const token = randomBytes(32).toString('hex');
     const tokenHash = this.hashToken(token);
@@ -520,12 +562,17 @@ export class AuthService {
       },
     });
 
+    await this.mailerService.sendTwoFactorCode(user.email, code);
+
     return {
       message: 'Código de verificación enviado a tu email',
     };
   }
 
-  async verifyTwoFactorCode(email: string, code: string): Promise<MessageResponseDto> {
+  async verifyTwoFactorCode(
+    email: string,
+    code: string
+  ): Promise<MessageResponseDto> {
     const user = await this.prisma.user.findUnique({
       where: { email: email.toLowerCase() },
     });
@@ -562,7 +609,10 @@ export class AuthService {
     };
   }
 
-  async completeTwoFactorLogin(email: string, code: string): Promise<AuthTokensResult> {
+  async completeTwoFactorLogin(
+    email: string,
+    code: string
+  ): Promise<AuthTokensResult> {
     const user = await this.prisma.user.findUnique({
       where: { email: email.toLowerCase() },
     });
@@ -681,10 +731,7 @@ export class AuthService {
     // Limpiar tokens de refresh expirados o revocados
     await this.prisma.refreshToken.deleteMany({
       where: {
-        OR: [
-          { expiresAt: { lt: new Date() } },
-          { revokedAt: { not: null } },
-        ],
+        OR: [{ expiresAt: { lt: new Date() } }, { revokedAt: { not: null } }],
       },
     });
   }

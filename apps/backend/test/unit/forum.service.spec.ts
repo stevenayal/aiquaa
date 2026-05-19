@@ -1,12 +1,26 @@
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { ForumService } from '../../src/forum/forum.service';
+import { ThreadService } from '../../src/forum/services/thread.service';
+import { PostService } from '../../src/forum/services/post.service';
+import { ForumMetaService } from '../../src/forum/services/forum-meta.service';
+import { ThreadRepository } from '../../src/forum/repositories/thread.repository';
+import { PostRepository } from '../../src/forum/repositories/post.repository';
 import { PrismaService } from '../../src/prisma/prisma.service';
 import { CacheService } from '../../src/cache/cache.service';
 
-describe('ForumService', () => {
+function makeThreadRepo(prisma: any): ThreadRepository {
+  const repo = new ThreadRepository(prisma as PrismaService);
+  return repo;
+}
+
+function makePostRepo(prisma: any): PostRepository {
+  return new PostRepository(prisma as PrismaService);
+}
+
+describe('ForumService (facade + sub-services)', () => {
   let service: ForumService;
   let prisma: any;
-  let cacheService: jest.Mocked<CacheService>;
+  let cache: jest.Mocked<CacheService>;
 
   beforeEach(() => {
     prisma = {
@@ -22,25 +36,26 @@ describe('ForumService', () => {
         count: jest.fn(),
         findMany: jest.fn(),
       },
-      category: {
-        findMany: jest.fn(),
-      },
-      threadTag: {
-        findMany: jest.fn(),
-      },
-      user: {
-        count: jest.fn(),
-      },
+      category: { findMany: jest.fn() },
+      threadTag: { findMany: jest.fn() },
+      user: { count: jest.fn() },
       $transaction: jest.fn(),
     };
 
-    cacheService = {
+    cache = {
       invalidateThreads: jest.fn(),
       invalidatePosts: jest.fn(),
       getOrSet: jest.fn(),
     } as unknown as jest.Mocked<CacheService>;
 
-    service = new ForumService(prisma as PrismaService, cacheService);
+    const eventBus = { publish: jest.fn() } as any;
+    const threadRepo = makeThreadRepo(prisma);
+    const postRepo = makePostRepo(prisma);
+    const threadSvc = new ThreadService(threadRepo, cache, eventBus);
+    const postSvc = new PostService(postRepo, cache, eventBus);
+    const metaSvc = new ForumMetaService(prisma as PrismaService);
+
+    service = new ForumService(threadSvc, postSvc, metaSvc);
   });
 
   it('creates a unique slug when the base slug already exists', async () => {
@@ -71,7 +86,7 @@ describe('ForumService', () => {
     });
 
     expect(prisma.thread.create.mock.calls[0][0].data.slug).toBe('mi-thread-2');
-    expect(cacheService.invalidateThreads).toHaveBeenCalled();
+    expect(cache.invalidateThreads).toHaveBeenCalled();
     expect(result.title).toBe('Mi Thread');
   });
 
@@ -79,7 +94,7 @@ describe('ForumService', () => {
     prisma.thread.findFirst.mockResolvedValue(null);
 
     await expect(
-      service.createPost({ threadId: 10, authorId: 1, content: 'respuesta' }),
+      service.createPost({ threadId: 10, authorId: 1, content: 'respuesta' })
     ).rejects.toThrow(NotFoundException);
   });
 
@@ -88,24 +103,39 @@ describe('ForumService', () => {
     prisma.post.create.mockResolvedValue({ id: 99, content: 'respuesta' });
     prisma.thread.update = jest.fn();
 
-    await service.createPost({ threadId: 10, authorId: 1, content: 'respuesta' });
+    await service.createPost({
+      threadId: 10,
+      authorId: 1,
+      content: 'respuesta',
+    });
 
-    expect(cacheService.invalidateThreads).toHaveBeenCalled();
-    expect(cacheService.invalidatePosts).toHaveBeenCalledWith(10);
+    expect(cache.invalidateThreads).toHaveBeenCalled();
+    expect(cache.invalidatePosts).toHaveBeenCalledWith(10);
     expect(prisma.thread.update).not.toHaveBeenCalled();
   });
 
   it('throws ForbiddenException when a non-owner updates a thread', async () => {
-    prisma.thread.findFirst.mockResolvedValue({ authorId: 7, title: 'Original' });
+    prisma.thread.findFirst.mockResolvedValue({
+      id: 12,
+      authorId: 7,
+      title: 'Original',
+      isLocked: false,
+    });
 
     await expect(
-      service.updateThread(12, { title: 'Nuevo titulo' }, 3),
+      service.updateThread(12, { title: 'Nuevo titulo' }, 3)
     ).rejects.toThrow(ForbiddenException);
   });
 
   it('throws ForbiddenException when a non-owner deletes a thread', async () => {
-    prisma.thread.findFirst.mockResolvedValue({ authorId: 7 });
+    prisma.thread.findFirst.mockResolvedValue({
+      id: 12,
+      authorId: 7,
+      isLocked: false,
+    });
 
-    await expect(service.deleteThread(12, 3)).rejects.toThrow(ForbiddenException);
+    await expect(service.deleteThread(12, 3)).rejects.toThrow(
+      ForbiddenException
+    );
   });
 });
