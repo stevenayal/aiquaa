@@ -1,6 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { EventBus } from '@nestjs/cqrs';
 import { PrismaService } from '../prisma/prisma.service';
 import { SubmitPerformanceExamDto } from './dto/submit-exam.dto';
+import { PerformanceExamCompletedEvent } from './events/performance-exam-completed.event';
 import { Decimal } from '@prisma/client/runtime/library';
 
 @Injectable()
@@ -8,12 +10,12 @@ export class PerformanceService {
   private readonly logger = new Logger(PerformanceService.name);
 
   constructor(
-    private prisma: PrismaService,
+    private readonly prisma: PrismaService,
+    private readonly eventBus: EventBus
   ) {}
 
-  async submitExamResult(examData: SubmitPerformanceExamDto) {
+  async submitExamResult(examData: SubmitPerformanceExamDto, userId?: number) {
     try {
-      // Guardar resultado en la base de datos
       const result = await this.prisma.performanceExamResult.create({
         data: {
           participantName: examData.participantName,
@@ -34,16 +36,20 @@ export class PerformanceService {
       });
 
       this.logger.log(
-        `Resultado de examen de Performance guardado: ${result.id} - ${examData.participantName}`,
+        `Resultado de examen de Performance guardado: ${result.id} - ${examData.participantName}`
       );
 
-      // Enviar email al administrador de forma asíncrona (no bloqueante)
-      this.sendAdminNotification(examData, result.id).catch((error) => {
-        this.logger.error(
-          `Error enviando notificación al admin: ${error.message}`,
-          error.stack,
+      if (userId) {
+        this.eventBus.publish(
+          new PerformanceExamCompletedEvent(
+            userId,
+            result.id,
+            examData.passed,
+            examData.percentage,
+            examData.mode
+          )
         );
-      });
+      }
 
       return {
         success: true,
@@ -54,17 +60,10 @@ export class PerformanceService {
       const err = error as Error;
       this.logger.error(
         `Error guardando resultado de examen: ${err.message}`,
-        err.stack,
+        err.stack
       );
       throw error;
     }
-  }
-
-  private async sendAdminNotification(
-    _examData: SubmitPerformanceExamDto,
-    _resultId: number,
-  ): Promise<void> {
-    // Email notifications disabled — only registration and password reset emails are sent
   }
 
   async getExamResults(filters?: {

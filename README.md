@@ -4,84 +4,92 @@ Plataforma educativa y de herramientas para la comunidad QA en Paraguay.
 
 ---
 
-## ¿Cómo funciona AIQUAA hoy?
-
-AIQUAA es una aplicación **Next.js desplegada en Vercel** que usa **Supabase** como backend-as-a-service (base de datos, autenticación y storage). No existe un servidor backend propio en producción.
+## Arquitectura de producción
 
 ```
 Browser
   └── Next.js (Vercel)
         ├── App Router + Server Components
         ├── Server Actions  →  Supabase (PostgreSQL + Auth + Storage)
-        ├── API Routes      →  GitHub API / AWS SES SMTP
+        ├── API Routes      →  GitHub API / dev.to API / AWS SES SMTP
         └── Client Components (React)
 ```
 
-### Stack de producción
+### Stack
 
-| Capa | Tecnología |
-|---|---|
-| Frontend + SSR | Next.js 13 (App Router) en Vercel |
-| Base de datos | Supabase PostgreSQL |
-| Autenticación | Supabase Auth (email/password con verificación) |
-| Email | AWS SES SMTP via nodemailer |
-| Bug reports | GitHub Issues via Octokit |
-| Cache API externa | `next: { revalidate }` en fetch calls |
-
-### NestJS — solo desarrollo local
-
-El directorio `apps/backend/` contiene una API NestJS con Prisma que se usa únicamente en desarrollo local. **No está desplegado en producción.** Si quieres correrlo localmente para explorar o hacer pruebas, sigue las instrucciones de la sección [Desarrollo local](#-desarrollo-local).
+| Capa              | Tecnología                                      |
+| ----------------- | ----------------------------------------------- |
+| Frontend + SSR    | Next.js 13 (App Router) en Vercel               |
+| Base de datos     | Supabase PostgreSQL                             |
+| Autenticación     | Supabase Auth (email/password con verificación) |
+| Email             | AWS SES SMTP via nodemailer                     |
+| Bug reports       | GitHub Issues via Octokit                       |
+| Contenido técnico | dev.to API                                      |
+| Cache frontend    | `next: { revalidate }` en fetch calls           |
 
 ---
 
-## Funcionalidades actuales
+## Funcionalidades
 
 ### Autenticación
+
 - Registro con email y verificación por link (SES SMTP)
 - Login con email y contraseña
 - Reset de contraseña por email
-- Rutas protegidas via middleware (`/labs/*`, `/perfil`)
+- Rutas protegidas via middleware (`/labs/*`, `/perfil`, `/dashboard/*`)
 
-### Laboratorios (Labs)
+### Laboratorios
 
-Todos los exámenes requieren cuenta y guardan resultados en Supabase (`exam_results`).
+| Lab                     | Descripción                                                    |
+| ----------------------- | -------------------------------------------------------------- |
+| **ISTQB CTFL v4.0**     | Simulacro de 40 preguntas, modo examen y entrenamiento         |
+| **Performance Testing** | Examen sobre fundamentos y herramientas de performance         |
+| **Examen GIT**          | Evaluación técnica de control de versiones                     |
+| **All Pairs**           | Generador pairwise para diseño de pruebas                      |
+| **Test App**            | App ficticia con bugs intencionales para ejercitar exploración |
+| **Cron Validator**      | Validador y explicador de expresiones cron                     |
+| **JSON / YAML / JWT**   | Validadores y decodificadores                                  |
+| **Risk Matrix**         | Matriz de riesgo para planificación de pruebas                 |
+| **Req Lint**            | Análisis de calidad de requerimientos                          |
+| **Checklist**           | Generador de checklists de pruebas                             |
+| **Data Generator**      | Generador de datos de prueba                                   |
 
-| Lab | Descripción |
-|---|---|
-| **ISTQB CTFL v4.0** | Simulacro de 40 preguntas, modo examen y entrenamiento |
-| **Examen GIT** | Evaluación técnica de control de versiones |
-| **Performance Testing** | Examen sobre fundamentos y herramientas de performance |
-| **All Pairs** | Generador de combinaciones pairwise para diseño de pruebas |
-| **Test App** | App ficticia con bugs intencionales para ejercitar exploración |
-| **Cron Validator** | Validador y explicador de expresiones cron |
-| **JSON Validator** | Validador y formateador de JSON |
-| **YAML Validator** | Validador de YAML |
-| **JWT Decoder** | Decodificador de tokens JWT |
-| **Risk Matrix** | Matriz de riesgo para planificación de pruebas |
-| **Req Lint** | Análisis de calidad de requerimientos |
-| **Checklist** | Generador de checklists de pruebas |
-| **Data Generator** | Generador de datos de prueba |
+### Gamificación
 
-### Ranking
-- Leaderboard por tipo de examen: **GIT**, **ISTQB**, **Performance**
-- Tab **Reportadores**: lista de usuarios que abrieron issues en el repositorio de GitHub, con conteo de issues abiertos/resueltos y links directos
+- **XP** por completar exámenes, crear contenido en el foro e ideas board
+- **Niveles** calculados sobre XP acumulado
+- **Logros** desbloqueables con criterios configurables en Supabase (`xp_rules`, `achievements`)
+- **Ranking** público con XP, nivel y racha
+- **Check-in diario** con bonus de racha
 
 ### Foro
-- Categorías, hilos y posts gestionados directamente en Supabase
-- RLS (Row Level Security) para control de acceso
-- Categorías precargadas al iniciar el proyecto
 
-### Comunidad
-- Página de comunidad con timeline de hitos, eventos pasados y sección de YouTube
-- Integración con GitHub Issues y Discussions
-- Widget de reporte de bugs (crea issues en GitHub automáticamente)
+- Threads con categorías, tags, paginación y búsqueda
+- Slug único generado automáticamente
 
 ### Ideas Board
-- Los usuarios pueden proponer y votar ideas para la plataforma
+
+- Proponer y votar ideas con score calculado
+- Comentarios y estados (PENDING → APPROVED / IN_PROGRESS / COMPLETED / REJECTED)
+
+### Ranking
+
+- Leaderboard por XP
+- Leaderboard por tipo de examen: GIT, ISTQB, Performance
+- Tab **Reportadores**: usuarios con issues abiertos/resueltos en GitHub
 
 ### Perfil
-- Historial de exámenes del usuario con scores, fechas y estado aprobado/reprobado
+
+- Historial de exámenes con scores y estado
+- Progreso de XP y logros
 - Actualización de avatar
+
+### Comunidad
+
+- Timeline de hitos y eventos
+- Integración con GitHub Issues y Discussions
+- Widget de reporte de bugs (crea issues automáticamente)
+- Artículos técnicos via dev.to API
 
 ---
 
@@ -90,23 +98,49 @@ Todos los exámenes requieren cuenta y guardan resultados en Supabase (`exam_res
 ```
 aiquaa/
 ├── apps/
-│   ├── frontend/          # Next.js 13 — app de producción (Vercel)
+│   ├── frontend/              # Next.js 13 — app de producción (Vercel)
 │   │   └── src/
-│   │       ├── app/       # Páginas y API routes (App Router)
-│   │       ├── actions/   # Server Actions (Supabase)
+│   │       ├── app/           # Páginas y API routes (App Router)
+│   │       ├── actions/       # Server Actions (Supabase)
 │   │       ├── components/
 │   │       ├── contexts/
 │   │       ├── hooks/
-│   │       ├── lib/       # Clientes Supabase, utilidades
-│   │       └── services/
-│   └── backend/           # NestJS + Prisma — solo desarrollo local
+│   │       ├── lib/           # Clientes Supabase, utilidades
+│   │       └── services/      # Clientes HTTP para APIs externas
+│   └── backend/               # NestJS + Prisma — solo desarrollo local
+│       └── src/
+│           ├── auth/          # JWT, 2FA, OAuth, refresh tokens
+│           ├── forum/         # Facade → ThreadService + PostService + ForumMetaService
+│           │   ├── repositories/
+│           │   └── services/
+│           ├── ideas-board/   # Facade → IdeaService + IdeaVoteService
+│           │   ├── repositories/
+│           │   └── services/
+│           ├── gamification/  # XP, logros, ranking, check-in
+│           │   └── handlers/  # EventBus handlers (CQRS)
+│           ├── istqb/         # Simulacro ISTQB + EventBus
+│           ├── performance/   # Examen Performance + EventBus
+│           ├── labs/          # AllPairs tracking + EventBus
+│           ├── cache/         # Redis tag-based invalidation
+│           ├── mailer/        # AWS SES SMTP
+│           └── security/      # Rate limiting, anti-spam, helmet
 ├── packages/
-│   ├── allpairs-core/     # Algoritmo pairwise (TypeScript puro)
-│   └── shared/            # Tipos compartidos
+│   ├── allpairs-core/         # Algoritmo pairwise (TypeScript puro, 52 tests)
+│   └── shared/                # Tipos compartidos
 ├── docs/
-│   └── adr/               # Architecture Decision Records
+│   └── adr/                   # Architecture Decision Records
 └── Makefile
 ```
+
+### NestJS — solo desarrollo local
+
+El directorio `apps/backend/` contiene una API NestJS con Prisma que se usa únicamente en desarrollo local para explorar y probar la arquitectura del sistema. **No está desplegado en producción.** En producción toda la lógica corre en Vercel (Next.js) con Supabase.
+
+**Patrones implementados en el backend local:**
+
+- **EventBus (CQRS)** — módulos desacoplados: ISTQB, Labs y Performance publican eventos; Gamification los consume via handlers
+- **Repository Pattern** — queries complejas encapsuladas (ThreadRepository, IdeaRepository, etc.)
+- **Facade Pattern** — ForumService e IdeasBoardService delegan a sub-servicios especializados
 
 ---
 
@@ -116,30 +150,41 @@ aiquaa/
 
 - Node.js 20+
 - pnpm 9+
-- Cuenta en [Supabase](https://supabase.com) (o proyecto existente)
 
-### Frontend (producción-equivalente)
+### Frontend (equivalente a producción)
 
 ```bash
 pnpm install
-
-# Configurar variables de entorno del frontend
 cp apps/frontend/.env.local.example apps/frontend/.env.local
-# Editar con tus claves de Supabase
+# Completar con claves de Supabase
 
-# Iniciar frontend (puerto 3001)
 make dev-front
 # o
 pnpm dev:front
 ```
 
-### Variables de entorno — Frontend
+### Backend NestJS (opcional)
+
+Solo necesario para explorar o probar la API localmente. Requiere Docker.
+
+```bash
+make db-up       # PostgreSQL + Redis via Docker
+make db-seed     # Migraciones Prisma + seed
+
+make dev-back
+```
+
+---
+
+## Variables de entorno
+
+### Frontend (`apps/frontend/.env.local`)
 
 ```bash
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL=https://<project>.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon-key>
-SUPABASE_SERVICE_ROLE_KEY=<service-role-key>   # solo servidor
+SUPABASE_SERVICE_ROLE_KEY=<service-role-key>
 
 # Email (AWS SES SMTP)
 SES_SMTP_HOST=email-smtp.<region>.amazonaws.com
@@ -152,7 +197,7 @@ SES_FROM_EMAIL=noreply@tudominio.com
 NEXT_PUBLIC_SITE_URL=https://tuapp.vercel.app
 FRONTEND_URL=https://tuapp.vercel.app
 
-# Bug reports
+# Integraciones externas
 GITHUB_TOKEN=<personal-access-token>
 GITHUB_REPO=owner/repo
 
@@ -160,76 +205,69 @@ GITHUB_REPO=owner/repo
 NEXT_PUBLIC_DISABLE_REGISTRATION=false
 ```
 
-### Backend NestJS (opcional, solo local)
+### Backend NestJS (`apps/backend/.env`) — solo local
 
-Solo necesario si quieres explorar o probar la API NestJS localmente:
-
-```bash
-# Requiere Docker para PostgreSQL y Redis
-make db-up
-make db-seed
-
-# Iniciar backend (puerto 3000)
-make dev-back
-```
-
-Variables adicionales para el backend:
 ```bash
 DATABASE_URL=postgresql://user:password@localhost:5432/aiquaa
 JWT_SECRET=tu-jwt-secret
-PORT=3000
+PORT=3001
 REDIS_URL=redis://localhost:6379
+SES_SMTP_HOST=...
+SES_SMTP_USER=...
+SES_SMTP_PASS=...
+SES_FROM_EMAIL=...
+FRONTEND_URL=http://localhost:3001
 ```
 
 ---
 
 ## 🗄️ Base de datos (Supabase)
 
-Las tablas principales en producción:
+| Tabla               | Descripción                                      |
+| ------------------- | ------------------------------------------------ |
+| `profiles`          | Perfil público del usuario                       |
+| `exam_results`      | Resultados de exámenes (ISTQB, GIT, Performance) |
+| `xp_rules`          | Reglas de XP por tipo de evento (configurable)   |
+| `xp_history`        | Historial de XP otorgado (con deduplicación)     |
+| `user_xp`           | XP total, nivel y racha por usuario              |
+| `achievements`      | Definición de logros                             |
+| `user_achievements` | Logros desbloqueados por usuario                 |
 
-| Tabla | Descripción |
-|---|---|
-| `profiles` | Perfil público del usuario (display_name, avatar_url) |
-| `exam_results` | Resultados de exámenes (ISTQB, GIT, Performance) |
-| `forum_categories` | Categorías del foro |
-| `forum_threads` | Hilos del foro |
-| `forum_posts` | Posts/respuestas del foro |
+**Funciones RPC:**
 
-### RLS
-Todas las tablas tienen Row Level Security activo. Los usuarios solo pueden leer/escribir sus propios registros donde corresponde.
-
-### Funciones RPC
 - `get_leaderboard(p_exam_type, p_limit)` — ranking por tipo de examen
-- `increment_thread_views(thread_id)` — vistas de hilos
-- `increment_thread_replies(thread_id)` — conteo de respuestas
+- `ranking_candidatos` — view para ranking XP
+
+**RLS:** todas las tablas con Row Level Security activo.
 
 ---
 
 ## 📧 Emails
 
-Solo se envían dos tipos de emails vía AWS SES SMTP:
+Se envían vía AWS SES SMTP desde las API routes de Next.js:
 
 1. **Verificación de cuenta** — al registrarse
 2. **Reset de contraseña** — al solicitar cambio de clave
 
-No se envían emails de exámenes, notificaciones de foro ni bienvenida.
-
 ---
 
-## 🧪 Pruebas
+## 🧪 Tests
 
 ```bash
-# Tests unitarios backend
-pnpm --filter @aiquaa/backend test
+# Backend — unit tests (config local)
+cd apps/backend && npx jest --config jest.unit.local.config.ts
 
-# Tests unitarios frontend
+# Backend — contract tests
+pnpm --filter @aiquaa/backend test:contract
+
+# Frontend — unit tests
 pnpm --filter @aiquaa/frontend test
 
-# Tests del paquete allpairs-core (52 tests)
-cd packages/allpairs-core && pnpm test:cov
-
-# E2E con Playwright
+# Frontend — E2E (Playwright)
 pnpm --filter @aiquaa/frontend e2e
+
+# allpairs-core (52 tests)
+cd packages/allpairs-core && pnpm test:cov
 ```
 
 ---
@@ -237,13 +275,14 @@ pnpm --filter @aiquaa/frontend e2e
 ## 🚢 Despliegue
 
 ### Frontend → Vercel
-- Auto-deploy desde rama `main`
-- Comando de build: `pnpm build:vercel`
-- Variables de entorno configuradas en el dashboard de Vercel
+
+- Auto-deploy desde `main`
+- Build: `pnpm build:vercel`
+- Variables de entorno en el dashboard de Vercel
 
 ### Base de datos → Supabase
-- Migraciones aplicadas via MCP de Supabase o Supabase CLI
-- No se usa Prisma en producción
+
+- Migraciones via MCP de Supabase o Supabase CLI
 
 ---
 

@@ -1,9 +1,22 @@
 import { validateEnv } from '../../src/config/env.validation';
 
+const BASE_CONFIG = {
+  DATABASE_URL: 'postgres://db',
+  JWT_SECRET: 'supersecret',
+  FRONT_ORIGIN: 'https://aiquaa.com',
+  APP_URL: 'https://api.aiquaa.com',
+  FRONTEND_URL: 'https://aiquaa.com',
+  BACKEND_URL: 'https://api.aiquaa.com',
+  SES_SMTP_HOST: 'smtp.example.com',
+  SES_SMTP_USER: 'user@example.com',
+  SES_SMTP_PASS: 'realpass',
+  SES_FROM_EMAIL: 'AIQUAA <noreply@aiquaa.com>',
+};
+
 describe('validateEnv', () => {
   it('throws when required variables are missing', () => {
     expect(() => validateEnv({ NODE_ENV: 'production' })).toThrow(
-      /Missing required environment variables/i,
+      /Missing required environment variables/i
     );
   });
 
@@ -11,14 +24,9 @@ describe('validateEnv', () => {
     expect(() =>
       validateEnv({
         NODE_ENV: 'production',
-        DATABASE_URL: 'postgres://db',
+        ...BASE_CONFIG,
         JWT_SECRET: 'change-me',
-        FRONT_ORIGIN: 'https://aiquaa.com',
-        APP_URL: 'https://api.aiquaa.com',
-        BACKEND_URL: 'https://api.aiquaa.com',
-        RESEND_API_KEY: 're_real',
-        RESEND_FROM_EMAIL: 'AIQUAA <test@aiquaa.com>',
-      }),
+      })
     ).toThrow(/Unsafe placeholder values/i);
   });
 
@@ -26,14 +34,9 @@ describe('validateEnv', () => {
     expect(
       validateEnv({
         NODE_ENV: 'test',
-        DATABASE_URL: 'postgres://db',
+        ...BASE_CONFIG,
         JWT_SECRET: 'change-me',
-        FRONT_ORIGIN: 'http://localhost:3000',
-        APP_URL: 'http://localhost:3001',
-        BACKEND_URL: 'http://localhost:3001',
-        RESEND_API_KEY: 're_test',
-        RESEND_FROM_EMAIL: 'AIQUAA <test@aiquaa.com>',
-      }),
+      })
     ).toBeDefined();
   });
 });

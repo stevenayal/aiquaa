@@ -41,13 +41,14 @@ export default defineConfig({
       '/vercel/path0/apps/frontend/test/**/*.spec.tsx',
       '/vercel/path0/apps/frontend/test/**/*.test.tsx',
       '/vercel/path0/apps/frontend/test/**/*.spec.ts',
-      '/vercel/path0/apps/frontend/test/**/*.test.ts'
+      '/vercel/path0/apps/frontend/test/**/*.test.ts',
     ],
     exclude: [
       '**/node_modules/**',
       '**/dist/**',
       '**/.next/**',
-      '**/coverage/**'
+      '**/coverage/**',
+      '**/e2e/**',
     ],
   },
   resolve: {

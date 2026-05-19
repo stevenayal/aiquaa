@@ -1,5 +1,28 @@
 import '@testing-library/jest-dom';
 import { beforeAll, afterEach, afterAll, vi } from 'vitest';
+
+vi.mock('@/contexts/ThemeContext', () => ({
+  ThemeProvider: ({ children }: { children: React.ReactNode }) => children,
+  useTheme: () => ({ theme: 'light', toggleTheme: vi.fn() }),
+}));
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    back: vi.fn(),
+    prefetch: vi.fn(),
+  }),
+  useSearchParams: () => ({ get: vi.fn().mockReturnValue(null) }),
+  usePathname: () => '/',
+  redirect: vi.fn(),
+}));
+
+vi.mock('next/headers', () => ({
+  cookies: vi
+    .fn()
+    .mockReturnValue({ get: vi.fn(), set: vi.fn(), delete: vi.fn() }),
+}));
 import { server } from './mocks/server';
 import React from 'react';
 

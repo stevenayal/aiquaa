@@ -15,10 +15,7 @@ import {
 } from '@nestjs/swagger';
 import { LabsService } from './labs.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import {
-  TrackAllPairsDto,
-  GrantXpResponseDto,
-} from '../gamification/dto/gamification.dto';
+import { TrackAllPairsDto } from '../gamification/dto/gamification.dto';
 import { randomUUID } from 'crypto';
 
 class SendGitExamResultDto {
@@ -70,18 +67,18 @@ export class LabsController {
       'Otorga XP al usuario autenticado por generar combinaciones con All Pairs. ' +
       'Más de 20 combinaciones otorga XP adicional. Llamar desde el frontend después de generar.',
   })
-  @ApiResponse({ status: 200, type: GrantXpResponseDto })
+  @ApiResponse({ status: 200, description: 'XP event queued' })
   @ApiResponse({ status: 401, description: 'No autenticado' })
   async trackAllPairs(
     @Body() dto: TrackAllPairsDto,
     @Request() req: any
-  ): Promise<GrantXpResponseDto> {
-    // Session ID generated server-side to prevent client manipulation
+  ): Promise<{ success: boolean }> {
     const sessionId = randomUUID();
-    return this.labsService.trackAllPairsGeneration(
+    await this.labsService.trackAllPairsGeneration(
       req.user.id as number,
       dto.combinationsCount,
       sessionId
     );
+    return { success: true };
   }
 }
