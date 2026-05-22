@@ -74,13 +74,10 @@ export default function AuthForm({
 
   const isLogin = mode === 'login';
   const audience: Audience = (formData.audience as Audience) || 'candidato';
-  const isEmpresa = audience === 'empresa';
+  const effectiveAudience: Audience = isLogin ? 'candidato' : audience;
+  const isEmpresa = effectiveAudience === 'empresa';
 
-  const title = isLogin
-    ? isEmpresa
-      ? 'Portal empresa'
-      : t('auth.login.title')
-    : t('auth.register.title');
+  const title = isLogin ? t('auth.login.title') : t('auth.register.title');
   const subtitle = isLogin
     ? isEmpresa
       ? 'Accedé al panel de tu empresa'
@@ -184,7 +181,7 @@ export default function AuthForm({
           </p>
 
           {/* Audience toggle */}
-          {onAudienceChange && (
+          {!isLogin && onAudienceChange && (
             <AudienceToggle value={audience} onChange={onAudienceChange} />
           )}
 
