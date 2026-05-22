@@ -4,6 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { SubmitExamDto } from './dto/submit-exam.dto';
 import { Decimal } from '@prisma/client/runtime/library';
 import { IstqbExamCompletedEvent } from './events/istqb-exam-completed.event';
+import { AiquaaTalentWebhookService } from '../integrations/aiquaa-talent/aiquaa-talent-webhook.service';
 
 @Injectable()
 export class IstqbService {
@@ -11,7 +12,8 @@ export class IstqbService {
 
   constructor(
     private prisma: PrismaService,
-    private eventBus: EventBus
+    private eventBus: EventBus,
+    private readonly talentWebhook: AiquaaTalentWebhookService
   ) {}
 
   async submitExamResult(examData: SubmitExamDto, userId?: number) {
@@ -47,6 +49,33 @@ export class IstqbService {
           examData.mode
         )
       );
+    }
+
+    // Fire Aiquaa Talent webhook best-effort (non-blocking)
+    if (
+      examData.talentProcessId ||
+      examData.talentApplicationId ||
+      examData.talentPublicLinkToken
+    ) {
+      this.talentWebhook
+        .sendEvaluationCompleted({
+          evaluationId: result.id.toString(),
+          evaluationType: 'ISTQB',
+          candidateEmail: examData.participantEmail ?? examData.participantName,
+          companyId: 'aiquaa',
+          processId: examData.talentProcessId,
+          applicationId: examData.talentApplicationId,
+          publicLinkToken: examData.talentPublicLinkToken,
+          score: examData.score,
+          maxScore: examData.totalQuestions,
+          passed: examData.passed,
+          summary: `${examData.participantName} — ${examData.percentage.toFixed(1)}%`,
+        })
+        .catch((err: Error) =>
+          this.logger.error(
+            `[AiquaaTalent] Unhandled error sending webhook for result=${result.id}: ${err.message}`
+          )
+        );
     }
 
     return {

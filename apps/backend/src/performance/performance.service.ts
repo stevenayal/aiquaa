@@ -1,9 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
 import { PrismaService } from '../prisma/prisma.service';
-import { SubmitPerformanceExamDto } from './dto/submit-exam.dto';
+import { SubmitPerformanceExamDto, ExamPurpose } from './dto/submit-exam.dto';
 import { PerformanceExamCompletedEvent } from './events/performance-exam-completed.event';
 import { Decimal } from '@prisma/client/runtime/library';
+import { AiquaaTalentWebhookService } from '../integrations/aiquaa-talent/aiquaa-talent-webhook.service';
 
 @Injectable()
 export class PerformanceService {
@@ -11,7 +12,8 @@ export class PerformanceService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly eventBus: EventBus
+    private readonly eventBus: EventBus,
+    private readonly talentWebhook: AiquaaTalentWebhookService
   ) {}
 
   async submitExamResult(examData: SubmitPerformanceExamDto, userId?: number) {
@@ -49,6 +51,30 @@ export class PerformanceService {
             examData.mode
           )
         );
+      }
+
+      // Fire Aiquaa Talent webhook best-effort (non-blocking)
+      if (examData.examPurpose === ExamPurpose.POSTULACION) {
+        this.talentWebhook
+          .sendEvaluationCompleted({
+            evaluationId: result.id.toString(),
+            evaluationType: 'PERFORMANCE',
+            candidateEmail: examData.candidateEmail ?? examData.githubProfile,
+            candidateExternalId: examData.githubProfile,
+            companyId: examData.companyName ?? 'unknown',
+            processId: examData.talentProcessId,
+            applicationId: examData.talentApplicationId,
+            publicLinkToken: examData.talentPublicLinkToken,
+            score: examData.score,
+            maxScore: examData.totalQuestions,
+            passed: examData.passed,
+            summary: `${examData.participantName} — ${examData.percentage.toFixed(1)}%`,
+          })
+          .catch((err: Error) =>
+            this.logger.error(
+              `[AiquaaTalent] Unhandled error sending webhook for result=${result.id}: ${err.message}`
+            )
+          );
       }
 
       return {
