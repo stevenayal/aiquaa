@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsString,
+  IsEmail,
   IsDateString,
   IsInt,
   IsNumber,
@@ -9,6 +10,7 @@ import {
   IsArray,
   ValidateNested,
   IsEnum,
+  IsOptional,
   Min,
   Max,
 } from 'class-validator';
@@ -48,7 +50,9 @@ export class AnswerDetailDto {
   @IsBoolean()
   isCorrect!: boolean;
 
-  @ApiProperty({ description: 'Sección de la pregunta (Fundamentos, Métricas, Herramientas)' })
+  @ApiProperty({
+    description: 'Sección de la pregunta (Fundamentos, Métricas, Herramientas)',
+  })
   @IsString()
   learningObjective!: string;
 
@@ -83,11 +87,17 @@ export class LearningObjectiveResultDto {
 }
 
 export class SubmitPerformanceExamDto {
-  @ApiProperty({ description: 'Nombre del participante', example: 'Juan Pérez' })
+  @ApiProperty({
+    description: 'Nombre del participante',
+    example: 'Juan Pérez',
+  })
   @IsString()
   participantName!: string;
 
-  @ApiProperty({ description: 'Perfil de GitHub del participante', example: '@juanperez' })
+  @ApiProperty({
+    description: 'Perfil de GitHub del participante',
+    example: '@juanperez',
+  })
   @IsString()
   githubProfile!: string;
 
@@ -115,7 +125,10 @@ export class SubmitPerformanceExamDto {
   @IsDateString()
   endTime!: string;
 
-  @ApiProperty({ description: 'Tiempo total empleado en segundos', example: 3600 })
+  @ApiProperty({
+    description: 'Tiempo total empleado en segundos',
+    example: 3600,
+  })
   @IsInt()
   @Min(0)
   timeSpent!: number;
@@ -175,4 +188,38 @@ export class SubmitPerformanceExamDto {
   @ValidateNested({ each: true })
   @Type(() => LearningObjectiveResultDto)
   learningObjectiveAnalysis!: LearningObjectiveResultDto[];
+
+  // ── Aiquaa Talent integration fields ────────────────────────────────────────
+  @ApiProperty({
+    description:
+      'Email del candidato para notificar a Aiquaa Talent (requerido si examPurpose=postulacion)',
+    required: false,
+  })
+  @IsOptional()
+  @IsEmail()
+  candidateEmail?: string;
+
+  @ApiProperty({
+    description: 'ID del proceso de selección en Aiquaa Talent',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  talentProcessId?: string;
+
+  @ApiProperty({
+    description: 'ID de postulación en Aiquaa Talent',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  talentApplicationId?: string;
+
+  @ApiProperty({
+    description: 'Token de enlace público de postulación en Aiquaa Talent',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  talentPublicLinkToken?: string;
 }

@@ -78,7 +78,10 @@ export class LearningObjectiveResultDto {
 }
 
 export class SubmitExamDto {
-  @ApiProperty({ description: 'Nombre del participante', example: 'Juan Pérez' })
+  @ApiProperty({
+    description: 'Nombre del participante',
+    example: 'Juan Pérez',
+  })
   @IsString()
   participantName!: string;
 
@@ -99,7 +102,10 @@ export class SubmitExamDto {
   @IsDateString()
   endTime!: string;
 
-  @ApiProperty({ description: 'Tiempo total empleado en segundos', example: 3600 })
+  @ApiProperty({
+    description: 'Tiempo total empleado en segundos',
+    example: 3600,
+  })
   @IsInt()
   @Min(0)
   timeSpent!: number;
@@ -159,4 +165,29 @@ export class SubmitExamDto {
   @ValidateNested({ each: true })
   @Type(() => LearningObjectiveResultDto)
   learningObjectiveAnalysis!: LearningObjectiveResultDto[];
+
+  // ── Aiquaa Talent integration fields ────────────────────────────────────────
+  @ApiProperty({
+    description: 'ID del proceso de selección en Aiquaa Talent',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  talentProcessId?: string;
+
+  @ApiProperty({
+    description: 'ID de postulación en Aiquaa Talent',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  talentApplicationId?: string;
+
+  @ApiProperty({
+    description: 'Token de enlace público de postulación en Aiquaa Talent',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  talentPublicLinkToken?: string;
 }
