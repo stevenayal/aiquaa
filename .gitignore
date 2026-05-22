@@ -91,3 +91,8 @@ temp/
 
 .vercel
 /.claude
+AGENTS.md
+aiquaa-pr32-resolve/
+.codex/config.toml
+.claire/worktrees/nifty-jang-d16912/apps/backend/src/integrations/aiquaa-talent/aiquaa-talent-webhook.client.spec.ts
+aiquaa/

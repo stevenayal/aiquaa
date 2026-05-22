@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { resendConfirmationAction } from '@/actions/auth';
 import { createClient } from '@/lib/supabase/client';
 import AuthForm from './AuthForm';
-import { Audience } from './AudienceToggle';
 
 export default function LoginForm() {
   const router = useRouter();
@@ -18,7 +17,6 @@ export default function LoginForm() {
   const [socialLoginError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     email: '',
-    audience: 'candidato' as Audience,
   });
   const [showResend, setShowResend] = useState(false);
 
@@ -128,12 +126,6 @@ export default function LoginForm() {
     if (showAlert) setShowAlert(false);
   };
 
-  const handleAudienceChange = (audience: Audience) => {
-    setFormData((prev) => ({ ...prev, audience }));
-    setErrors({});
-    if (showAlert) setShowAlert(false);
-  };
-
   return (
     <AuthForm
       mode="login"
@@ -143,7 +135,6 @@ export default function LoginForm() {
       formData={formData}
       onFieldChange={handleChange}
       onPasswordChange={handlePasswordChange}
-      onAudienceChange={handleAudienceChange}
       onClearErrors={() => {
         setErrors({});
         setShowAlert(false);

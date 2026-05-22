@@ -6,6 +6,21 @@ import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { getMyMembershipAction } from '@/actions/empresa-admin';
 import type { EmpresaMemberRole } from '@/actions/empresa-admin';
+import {
+  getEmpresaDashboardStatsAction,
+  type EmpresaDashboardStats,
+} from '@/actions/employer';
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 
 const BASE_LINKS = [
   {
@@ -45,11 +60,15 @@ export default function EmpresaDashboardPage() {
   const { user } = useSupabaseAuth();
   const { isDarkMode } = useTheme();
   const [myRole, setMyRole] = useState<EmpresaMemberRole | null>(null);
+  const [stats, setStats] = useState<EmpresaDashboardStats | null>(null);
 
   useEffect(() => {
     if (!user) return;
     getMyMembershipAction().then(({ data }) => {
       if (data) setMyRole(data.role as EmpresaMemberRole);
+    });
+    getEmpresaDashboardStatsAction().then(({ data }) => {
+      if (data) setStats(data);
     });
   }, [user]);
 
@@ -135,6 +154,144 @@ export default function EmpresaDashboardPage() {
             </Link>
           ))}
         </div>
+
+        {stats && (
+          <div className="mt-10 space-y-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              {[
+                {
+                  label: 'Procesos',
+                  value: stats.totalProcesses,
+                  color: 'text-indigo-500',
+                },
+                {
+                  label: 'Activos',
+                  value: stats.activeProcesses,
+                  color: 'text-green-500',
+                },
+                {
+                  label: 'Cerrados',
+                  value: stats.closedProcesses,
+                  color: 'text-slate-500',
+                },
+                {
+                  label: 'Candidatos',
+                  value: stats.totalCandidates,
+                  color: 'text-amber-500',
+                },
+                {
+                  label: 'Aprobación',
+                  value: `${stats.passRate}%`,
+                  color: 'text-emerald-500',
+                },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className={`rounded-xl border p-4 ${
+                    isDarkMode
+                      ? 'bg-dark-secondary border-dark-secondary'
+                      : 'bg-white border-gray-200'
+                  }`}
+                >
+                  <p className={`text-2xl font-bold ${item.color}`}>
+                    {item.value}
+                  </p>
+                  <p
+                    className={`text-xs mt-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                  >
+                    {item.label}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div
+                className={`rounded-xl border p-4 ${
+                  isDarkMode
+                    ? 'bg-dark-secondary border-dark-secondary'
+                    : 'bg-white border-gray-200'
+                }`}
+              >
+                <h3 className="text-sm font-semibold mb-3">
+                  Procesos creados (6 meses)
+                </h3>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={stats.monthlyProcesses}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" />
+                      <YAxis allowDecimals={false} />
+                      <Tooltip />
+                      <Bar
+                        dataKey="value"
+                        fill="#6366f1"
+                        radius={[6, 6, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              <div
+                className={`rounded-xl border p-4 ${
+                  isDarkMode
+                    ? 'bg-dark-secondary border-dark-secondary'
+                    : 'bg-white border-gray-200'
+                }`}
+              >
+                <h3 className="text-sm font-semibold mb-3">
+                  Candidatos evaluados (6 meses)
+                </h3>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={stats.monthlyCandidates}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" />
+                      <YAxis allowDecimals={false} />
+                      <Tooltip />
+                      <Bar
+                        dataKey="value"
+                        fill="#f59e0b"
+                        radius={[6, 6, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+
+            <div
+              className={`rounded-xl border p-4 ${
+                isDarkMode
+                  ? 'bg-dark-secondary border-dark-secondary'
+                  : 'bg-white border-gray-200'
+              }`}
+            >
+              <h3 className="text-sm font-semibold mb-3">
+                Distribución de procesos
+              </h3>
+              <div className="h-72">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={[
+                        { name: 'Activos', value: stats.activeProcesses },
+                        { name: 'Cerrados', value: stats.closedProcesses },
+                      ]}
+                      dataKey="value"
+                      nameKey="name"
+                      outerRadius={96}
+                      fill="#6366f1"
+                      label
+                    />
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Footer link to forum */}
         <div className="mt-10 text-center">
