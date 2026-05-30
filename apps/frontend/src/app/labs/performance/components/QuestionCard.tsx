@@ -29,7 +29,7 @@ export default function QuestionCard({
     es: {
       question: 'Pregunta',
       marked: '(Marcada 🚩)',
-      selectTwo: 'Seleccionar DOS opciones',
+      selectMultiple: (count: number) => `Seleccionar ${['UNA', 'DOS', 'TRES', 'CUATRO', 'CINCO'][count - 1] ?? count} opcion${count === 1 ? '' : 'es'}`,
       selectOne: 'Seleccionar UNA opción',
       selected: 'seleccionadas',
       of: 'de',
@@ -44,7 +44,7 @@ export default function QuestionCard({
     en: {
       question: 'Question',
       marked: '(Marked 🚩)',
-      selectTwo: 'Select TWO options',
+      selectMultiple: (count: number) => `Select ${['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE'][count - 1] ?? count} option${count === 1 ? '' : 's'}`,
       selectOne: 'Select ONE option',
       selected: 'selected',
       of: 'of',
@@ -73,6 +73,7 @@ export default function QuestionCard({
   };
 
   const handleMultipleAnswer = (label: string, checked: boolean) => {
+    if (checked && selectedAnswers.length >= question.correctAnswer.length) return;
     const newAnswers = checked
       ? [...selectedAnswers, label]
       : selectedAnswers.filter((a) => a !== label);
@@ -144,7 +145,7 @@ export default function QuestionCard({
                 <span className="text-blue-600 dark:text-blue-400">ℹ️</span>
                 <p className={`font-semibold ${isDarkMode ? 'text-blue-300' : 'text-blue-900'}`}>
                   {isMultiple
-                    ? text.selectTwo
+                    ? text.selectMultiple(question.correctAnswer.length)
                     : text.selectOne}
                 </p>
               </div>
