@@ -28,6 +28,7 @@ export default function PerformanceExamPage() {
   const [hasStarted, setHasStarted] = useState(false);
   const [error, setError] = useState('');
   const [processCode, setProcessCode] = useState(searchParams.get('process')?.toUpperCase() ?? '');
+  const [examData] = useState(() => loadExamData());
 
   useEffect(() => {
     const defaults = getExamUserDefaults(user);
@@ -89,7 +90,7 @@ export default function PerformanceExamPage() {
         examPurpose={examPurpose}
         companyName={companyName}
         mode={examMode}
-        examData={loadExamData()}
+        examData={examData}
         onExamComplete={handleExamComplete}
       />
     );
