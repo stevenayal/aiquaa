@@ -73,6 +73,8 @@ export default function QuestionCard({
   };
 
   const handleMultipleAnswer = (label: string, checked: boolean) => {
+    const maxSelections = question.correctAnswer.length;
+    if (checked && selectedAnswers.length >= maxSelections) return;
     const newAnswers = checked
       ? [...selectedAnswers, label]
       : selectedAnswers.filter((a) => a !== label);

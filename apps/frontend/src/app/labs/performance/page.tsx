@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Alert } from '@/components/common';
@@ -80,6 +80,9 @@ export default function PerformanceExamPage() {
     });
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const examData = useMemo(() => loadExamData(), []);
+
   // Si el examen ha iniciado, mostrar el simulador
   if (hasStarted && examMode) {
     return (
@@ -89,7 +92,7 @@ export default function PerformanceExamPage() {
         examPurpose={examPurpose}
         companyName={companyName}
         mode={examMode}
-        examData={loadExamData()}
+        examData={examData}
         onExamComplete={handleExamComplete}
       />
     );
