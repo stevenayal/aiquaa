@@ -3,12 +3,14 @@
 import Link from 'next/link';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import BugReportWidget from '@/components/BugReportWidget';
 import { SuruFloating } from '@/components/Suru';
 
 export default function LabsPage() {
   const { isDarkMode } = useTheme();
   const { t } = useLanguage();
+  const { user } = useSupabaseAuth();
 
   const toolCategories = [
     {
@@ -252,8 +254,8 @@ export default function LabsPage() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Login/Register Banner */}
-        <div
+        {/* Login/Register Banner — only for guests */}
+        {!user && <div
           className={`mb-8 rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 ${
             isDarkMode
               ? 'bg-slate-800 border border-slate-700'
@@ -294,7 +296,7 @@ export default function LabsPage() {
               Crear cuenta
             </Link>
           </div>
-        </div>
+        </div>}
 
         {/* Header */}
         <div className="text-center mb-12">

@@ -71,7 +71,7 @@ export async function getXpRankingAction(page = 1, limit = 20) {
   const { data, error, count } = await supabase
     .from('ranking_candidatos')
     .select(
-      'total_xp, level, current_streak, last_activity_at, display_name, avatar_url, achievement_count',
+      'total_xp, level, current_streak, last_activity_at, display_name, avatar_url, achievement_count, main_badge',
       { count: 'exact' }
     )
     .order('total_xp', { ascending: false })
@@ -88,6 +88,7 @@ export async function getXpRankingAction(page = 1, limit = 20) {
     currentStreak: row.current_streak,
     achievementCount: row.achievement_count ?? 0,
     lastActivityAt: row.last_activity_at,
+    mainBadge: row.main_badge ?? null,
   }));
 
   return {
