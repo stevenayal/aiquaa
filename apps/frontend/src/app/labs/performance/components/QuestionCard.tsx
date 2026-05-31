@@ -73,6 +73,7 @@ export default function QuestionCard({
   };
 
   const handleMultipleAnswer = (label: string, checked: boolean) => {
+    if (checked && selectedAnswers.length >= question.correctAnswer.length) return;
     const newAnswers = checked
       ? [...selectedAnswers, label]
       : selectedAnswers.filter((a) => a !== label);

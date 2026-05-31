@@ -220,7 +220,7 @@ export default function ExamSimulator({
   }
 
   const currentQuestion = questions[currentQuestionIndex];
-  const answeredCount = answers.size;
+  const answeredCount = [...answers.values()].filter((v) => v.length > 0).length;
   const progress = (answeredCount / questions.length) * 100;
   const unansweredCount = questions.length - answeredCount;
   const isLastQuestion = currentQuestionIndex === questions.length - 1;
