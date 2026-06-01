@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import type { ExamData, ExamQuestion, ExamResult } from '../types';
 import { prepareExamQuestions, formatTime, generateExamResult } from '../utils';
@@ -42,6 +42,8 @@ export default function ExamSimulator({
   const [showSubmitDialog, setShowSubmitDialog] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [startTime] = useState(Date.now());
+  const questionsInitialized = useRef(false);
+  const submitRef = useRef<(autoSubmit?: boolean) => void>(() => {});
 
   const t = {
     es: {
@@ -111,6 +113,12 @@ export default function ExamSimulator({
     [],
   );
 
+  // Keep a stable ref so the timer effect never needs to re-run when the callback identity
+  // changes, preventing interval accumulation (Issue #58).
+  useEffect(() => {
+    submitRef.current = handleSubmitExam;
+  });
+
   const confirmSubmit = useCallback(() => {
     setShowSubmitDialog(false);
     setIsRunning(false);
@@ -155,7 +163,11 @@ export default function ExamSimulator({
     }
   }, [currentQuestionIndex]);
 
+  // Initialize questions only once — re-running on examData changes would re-shuffle
+  // mid-exam and desync the answers Map (Issue #58).
   useEffect(() => {
+    if (questionsInitialized.current) return;
+    questionsInitialized.current = true;
     const preparedQuestions = prepareExamQuestions(
       examData.questions,
       examData.examInfo.totalQuestions,
@@ -170,7 +182,7 @@ export default function ExamSimulator({
     const timer = setInterval(() => {
       setTimeRemaining((prev: number) => {
         if (prev <= 1) {
-          handleSubmitExam(true);
+          submitRef.current(true);
           return 0;
         }
         return prev - 1;
@@ -178,7 +190,7 @@ export default function ExamSimulator({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isRunning, mode, handleSubmitExam]);
+  }, [isRunning, mode]);
 
   if (questions.length === 0) {
     return (
