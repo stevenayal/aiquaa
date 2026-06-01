@@ -8,6 +8,8 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { Alert } from '@/components/common';
 import ExamSimulator from './components/ExamSimulator';
 import { loadExamData } from './utils';
+
+const EXAM_DATA = loadExamData();
 import { SuruFloating } from '@/components/Suru';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { getExamUserDefaults } from '@/lib/exam-user-defaults';
@@ -89,7 +91,7 @@ export default function PerformanceExamPage() {
         examPurpose={examPurpose}
         companyName={companyName}
         mode={examMode}
-        examData={loadExamData()}
+        examData={EXAM_DATA}
         onExamComplete={handleExamComplete}
       />
     );

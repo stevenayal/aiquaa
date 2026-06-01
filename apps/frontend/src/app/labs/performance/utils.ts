@@ -70,7 +70,7 @@ export function loadExamData(): ExamData {
     version: rawData.metadata.version,
     totalQuestions: allQuestions.length,
     passingScore: Math.ceil(allQuestions.length * (rawData.metadata.passing_score_percentage / 100)),
-    timeLimit: rawData.metadata.estimated_duration_minutes * 60, // Convertir a segundos
+    timeLimit: rawData.metadata.estimated_duration_minutes,
     pointsPerQuestion: 1
   };
 
