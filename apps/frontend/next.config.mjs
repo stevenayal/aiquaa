@@ -37,8 +37,8 @@ const securityHeaders = [
       `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
       // Fonts: Google Fonts
       `font-src 'self' https://fonts.gstatic.com`,
-      // Images: self + Supabase Storage + GitHub avatars + Google avatars + YouTube thumbnails
-      `img-src 'self' data: blob: ${SUPABASE_URL} https://*.supabase.co https://avatars.githubusercontent.com https://lh3.googleusercontent.com https://img.youtube.com https://*.vercel.app`,
+      // Images: self + Supabase Storage + GitHub avatars + Google avatars + YouTube thumbnails + DEV.to blog images
+      `img-src 'self' data: blob: ${SUPABASE_URL} https://*.supabase.co https://avatars.githubusercontent.com https://lh3.googleusercontent.com https://img.youtube.com https://*.vercel.app https://res.cloudinary.com https://dev-to-uploads.s3.amazonaws.com https://media.dev.to https://media2.dev.to`,
       // API connections: Supabase + backend + Vercel
       `connect-src 'self' ${SUPABASE_URL} https://*.supabase.co ${BACKEND_URL} https://vercel.live wss://*.supabase.co`,
       // Frames: only self (no iframes from third parties)
@@ -68,6 +68,11 @@ const nextConfig = {
       { protocol: 'https', hostname: 'img.youtube.com' },
       { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
       { protocol: 'https', hostname: 'avatars.githubusercontent.com' },
+      // DEV.to blog images
+      { protocol: 'https', hostname: 'res.cloudinary.com' },
+      { protocol: 'https', hostname: 'dev-to-uploads.s3.amazonaws.com' },
+      { protocol: 'https', hostname: 'media.dev.to' },
+      { protocol: 'https', hostname: 'media2.dev.to' },
     ],
   },
   // Apply security headers to all routes
