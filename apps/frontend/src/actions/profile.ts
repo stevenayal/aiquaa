@@ -82,6 +82,12 @@ export async function uploadAvatarAction(formData: FormData) {
 
   if (updateError) return { error: updateError.message };
 
+  // Sync avatar to profiles table so ranking/community views pick it up
+  await supabase.from('profiles').upsert(
+    { id: user.id, avatar_url: avatarUrl },
+    { onConflict: 'id' }
+  );
+
   revalidatePath('/perfil');
   return { success: true, avatarUrl };
 }
