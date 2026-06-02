@@ -267,13 +267,13 @@ function XpComunidadTab({ isDarkMode, currentUserName }: { isDarkMode: boolean; 
         </button>
         {showHowTo && (
           <div className={`px-5 pb-4 space-y-2 border-t ${isDarkMode ? 'border-slate-700' : 'border-gray-100'}`}>
-            {[
+            [
               { emoji: '📋', action: 'Completar simulacro ISTQB (aprobar)', xp: '+100 XP' },
-              { emoji: '⚡', action: 'Completar examen Performance (aprobar)', xp: '+80 XP' },
-              { emoji: '🌿', action: 'Completar examen GIT (aprobar)', xp: '+60 XP' },
-              { emoji: '🔗', action: 'Generar casos All Pairs (20+ pares)', xp: '+20 XP' },
-              { emoji: '💬', action: 'Crear un post en el foro', xp: '+10 XP' },
-              { emoji: '🌅', action: 'Check-in diario', xp: '+5 XP' },
+              { emoji: '⚡', action: 'Completar examen Performance (aprobar)', xp: '+100 XP' },
+              { emoji: '🔗', action: 'Generar casos All Pairs', xp: '+40 XP' },
+              { emoji: '🔗', action: 'Generar 20+ pares (bonus)', xp: '+80 XP' },
+              { emoji: '💬', action: 'Crear un post en el foro', xp: '+15 XP' },
+              { emoji: '🌅', action: 'Check-in diario', xp: '+20 XP' },
             ].map(({ emoji, action, xp }) => (
               <div key={action} className="flex items-center justify-between text-sm pt-2">
                 <span className={isDarkMode ? 'text-slate-300' : 'text-gray-600'}>{emoji} {action}</span>

@@ -125,16 +125,26 @@ export async function getMyXpProfileAction() {
   const { data: { user }, error: userError } = await supabase.auth.getUser();
   if (userError || !user) return { data: null };
 
-  const { data } = await supabase
-    .from('user_xp')
-    .select('total_xp, level, current_streak, longest_streak, last_activity_at, achievement_count')
-    .eq('user_id', user.id)
-    .maybeSingle();
+  const [xpResult, achievementsResult, positionResult] = await Promise.all([
+    supabase
+      .from('user_xp')
+      .select('total_xp, level, current_streak, longest_streak, last_activity_at')
+      .eq('user_id', user.id)
+      .maybeSingle(),
+    supabase
+      .from('user_achievements')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id),
+    supabase
+      .from('user_xp')
+      .select('*', { count: 'exact', head: true })
+      .gt('total_xp', 0),
+  ]);
 
+  const data = xpResult.data;
   if (!data) return { data: null };
 
-  // Count users with more XP to get position
-  const { count } = await supabase
+  const { count: aboveCount } = await supabase
     .from('user_xp')
     .select('*', { count: 'exact', head: true })
     .gt('total_xp', data.total_xp);
@@ -146,8 +156,8 @@ export async function getMyXpProfileAction() {
       currentStreak: data.current_streak ?? 0,
       longestStreak: data.longest_streak ?? 0,
       lastActivityAt: data.last_activity_at ?? null,
-      achievementCount: data.achievement_count ?? 0,
-      position: (count ?? 0) + 1,
+      achievementCount: achievementsResult.count ?? 0,
+      position: (aboveCount ?? 0) + 1,
     },
   };
 }
