@@ -35,6 +35,9 @@ export interface EmpresaDashboardStats {
   totalCandidates: number;
   passedCandidates: number;
   passRate: number;
+  avgTimeSpentMinutes: number | null;
+  pendingProspects: number;
+  pendingInvitaciones: number;
   monthlyProcesses: Array<{ month: string; value: number }>;
   monthlyCandidates: Array<{ month: string; value: number }>;
 }
@@ -202,29 +205,70 @@ export async function getEmpresaDashboardStatsAction(): Promise<{
   } = await supabase.auth.getUser();
   if (userError || !user) return { error: 'No autenticado', data: null };
 
+  // Get empresa_id from membership
+  const { data: membership } = await supabase
+    .from('empresa_miembros')
+    .select('empresa_id')
+    .eq('user_id', user.id)
+    .eq('status', 'active')
+    .single();
+
+  const empresaId = membership?.empresa_id;
+
   const { data: processes, error: processError } = await supabase
     .from('hiring_processes')
-    .select('code, status, created_at')
+    .select('id, code, status, created_at')
     .order('created_at', { ascending: false });
 
   if (processError) return { error: processError.message, data: null };
 
+  const processIds = (processes ?? []).map((p) => p.id);
   const processCodes = (processes ?? []).map((p) => p.code);
+
   let results: Array<{
     process_code: string;
     passed: boolean;
     created_at: string;
+    time_spent: number;
   }> = [];
+  let pendingProspects = 0;
+  let pendingInvitaciones = 0;
 
-  if (processCodes.length > 0) {
-    const { data: examResults, error: resultsError } = await supabase
-      .from('exam_results')
-      .select('process_code, passed, created_at')
-      .in('process_code', processCodes);
+  const fetchExamResults =
+    processCodes.length > 0
+      ? supabase
+          .from('exam_results')
+          .select('process_code, passed, created_at, time_spent')
+          .in('process_code', processCodes)
+      : Promise.resolve({ data: [] as typeof results, error: null });
 
-    if (resultsError) return { error: resultsError.message, data: null };
-    results = examResults ?? [];
-  }
+  const fetchPendingProspects =
+    processIds.length > 0
+      ? supabase
+          .from('prospects')
+          .select('*', { count: 'exact', head: true })
+          .in('process_id', processIds)
+          .eq('status', 'pendiente')
+      : Promise.resolve({ count: 0, data: null, error: null });
+
+  const fetchPendingInvitaciones =
+    empresaId
+      ? supabase
+          .from('empresa_invitaciones')
+          .select('*', { count: 'exact', head: true })
+          .eq('empresa_id', empresaId)
+          .in('status', ['pendiente', 'vista'])
+      : Promise.resolve({ count: 0, data: null, error: null });
+
+  const [examResp, prospectsResp, invitacionesResp] = await Promise.all([
+    fetchExamResults,
+    fetchPendingProspects,
+    fetchPendingInvitaciones,
+  ]);
+
+  results = (examResp.data as typeof results) ?? [];
+  pendingProspects = prospectsResp.count ?? 0;
+  pendingInvitaciones = invitacionesResp.count ?? 0;
 
   const monthlyProcessesBuckets = buildMonthlyBuckets(6);
   const monthlyCandidatesBuckets = buildMonthlyBuckets(6);
@@ -247,22 +291,31 @@ export async function getEmpresaDashboardStatsAction(): Promise<{
 
   const totalCandidates = results.length;
   const passedCandidates = results.filter((r) => r.passed).length;
+  const avgTimeSpentMinutes =
+    totalCandidates > 0
+      ? Math.round(
+          results.reduce((acc, r) => acc + (r.time_spent ?? 0), 0) /
+            totalCandidates /
+            60
+        )
+      : null;
 
   return {
     data: {
       totalProcesses: processes?.length ?? 0,
       activeProcesses:
-        processes?.filter((processItem) => processItem.status === 'active')
-          .length ?? 0,
+        processes?.filter((processItem) => processItem.status === 'active').length ?? 0,
       closedProcesses:
-        processes?.filter((processItem) => processItem.status === 'closed')
-          .length ?? 0,
+        processes?.filter((processItem) => processItem.status === 'closed').length ?? 0,
       totalCandidates,
       passedCandidates,
       passRate:
         totalCandidates > 0
           ? Math.round((passedCandidates / totalCandidates) * 100)
           : 0,
+      avgTimeSpentMinutes,
+      pendingProspects,
+      pendingInvitaciones,
       monthlyProcesses: monthlyProcessesBuckets.map(({ month, value }) => ({
         month,
         value,

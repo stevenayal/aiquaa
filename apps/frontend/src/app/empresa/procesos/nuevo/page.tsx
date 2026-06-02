@@ -4,11 +4,24 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { createClient } from '@/lib/supabase/client';
+import Link from 'next/link';
 
 const EXAM_OPTIONS = [
-  { id: 'istqb',       label: 'ISTQB — Fundamentos de QA' },
-  { id: 'git',         label: 'Git — Control de versiones' },
-  { id: 'performance', label: 'Performance — Pruebas de carga' },
+  {
+    id: 'istqb',
+    label: 'ISTQB CTFL — Fundamentos de QA',
+    description: 'Conceptos de testing, ciclo de vida del defecto, técnicas de diseño y gestión de pruebas',
+  },
+  {
+    id: 'git',
+    label: 'Git — Control de versiones',
+    description: 'Comandos esenciales, branching, merge, rebase y flujos de trabajo colaborativos',
+  },
+  {
+    id: 'performance',
+    label: 'Performance Testing — Pruebas de carga',
+    description: 'Conceptos de pruebas de performance, herramientas (JMeter/k6), análisis de resultados',
+  },
 ];
 
 function generateCode(positionName: string): string {
@@ -29,11 +42,14 @@ export default function NuevoProcesoPage() {
 
   const [positionName, setPositionName] = useState('');
   const [description, setDescription] = useState('');
-  const [examTypes, setExamTypes] = useState<string[]>(['istqb', 'git', 'performance']);
+  const [examTypes, setExamTypes] = useState<string[]>([]);
   const [expiresAt, setExpiresAt] = useState('');
   const [status, setStatus] = useState<'draft' | 'active'>('active');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [createdCode, setCreatedCode] = useState<string | null>(null);
+  const [createdId, setCreatedId] = useState<string | null>(null);
+  const [codeCopied, setCodeCopied] = useState(false);
 
   const toggleExam = (id: string) => {
     setExamTypes(prev =>
@@ -80,7 +96,16 @@ export default function NuevoProcesoPage() {
       return;
     }
 
-    router.push('/empresa/procesos');
+    // Show success state with code before redirecting
+    const { data: created } = await supabase
+      .from('hiring_processes')
+      .select('id, code')
+      .eq('code', code)
+      .single();
+
+    setCreatedCode(code);
+    setCreatedId(created?.id ?? null);
+    setLoading(false);
   };
 
   const inputClass = `w-full rounded-lg border px-3 py-2 text-sm outline-none transition-colors focus:ring-2 focus:ring-indigo-500 ${
@@ -90,6 +115,63 @@ export default function NuevoProcesoPage() {
   }`;
 
   const labelClass = `block text-sm font-medium mb-1.5 ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`;
+
+  // Success screen
+  if (createdCode) {
+    return (
+      <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-dark-bg' : 'bg-gray-50'}`}>
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className={`rounded-2xl border p-8 text-center ${isDarkMode ? 'bg-dark-secondary border-slate-700' : 'bg-white border-gray-200'}`}>
+            <p className="text-5xl mb-4">✅</p>
+            <h1 className={`text-2xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+              ¡Proceso creado!
+            </h1>
+            <p className={`text-sm mb-6 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
+              Compartí este código con los candidatos para que rindan el examen
+            </p>
+            <div className={`rounded-xl border-2 border-dashed p-5 mb-6 ${isDarkMode ? 'border-indigo-600 bg-indigo-900/20' : 'border-indigo-300 bg-indigo-50'}`}>
+              <p className={`text-xs font-semibold uppercase tracking-widest mb-2 ${isDarkMode ? 'text-indigo-400' : 'text-indigo-500'}`}>
+                Código del proceso
+              </p>
+              <p className={`text-4xl font-bold font-mono tracking-widest ${isDarkMode ? 'text-indigo-300' : 'text-indigo-700'}`}>
+                {createdCode}
+              </p>
+            </div>
+            <div className="flex gap-3 justify-center flex-wrap">
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(createdCode);
+                  setCodeCopied(true);
+                  setTimeout(() => setCodeCopied(false), 2000);
+                }}
+                className={`px-5 py-2.5 rounded-lg text-sm font-semibold border transition-colors ${
+                  codeCopied
+                    ? 'border-green-400 text-green-600 bg-green-50 dark:bg-green-900/20 dark:text-green-300'
+                    : isDarkMode ? 'border-indigo-500 text-indigo-300 hover:bg-slate-700' : 'border-indigo-400 text-indigo-600 hover:bg-indigo-50'
+                }`}
+              >
+                {codeCopied ? '✅ Copiado!' : '📋 Copiar código'}
+              </button>
+              {createdId && (
+                <Link
+                  href={`/empresa/procesos/${createdId}`}
+                  className="px-5 py-2.5 rounded-lg text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition-colors"
+                >
+                  Ver proceso →
+                </Link>
+              )}
+              <Link
+                href="/empresa/procesos"
+                className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-colors ${isDarkMode ? 'text-slate-300 hover:bg-slate-700' : 'text-gray-600 hover:bg-gray-100'}`}
+              >
+                Mis procesos
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-dark-bg' : 'bg-gray-50'}`}>
@@ -144,7 +226,7 @@ export default function NuevoProcesoPage() {
               {EXAM_OPTIONS.map(opt => (
                 <label
                   key={opt.id}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg border cursor-pointer transition-colors ${
+                  className={`flex items-start gap-3 px-4 py-3 rounded-lg border cursor-pointer transition-colors ${
                     examTypes.includes(opt.id)
                       ? (isDarkMode ? 'border-indigo-500 bg-indigo-900/30' : 'border-indigo-400 bg-indigo-50')
                       : (isDarkMode ? 'border-slate-600 hover:border-slate-500' : 'border-gray-200 hover:border-gray-300')
@@ -152,13 +234,18 @@ export default function NuevoProcesoPage() {
                 >
                   <input
                     type="checkbox"
-                    className="accent-indigo-600 w-4 h-4"
+                    className="accent-indigo-600 w-4 h-4 mt-0.5 shrink-0"
                     checked={examTypes.includes(opt.id)}
                     onChange={() => toggleExam(opt.id)}
                   />
-                  <span className={`text-sm font-medium ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}>
-                    {opt.label}
-                  </span>
+                  <div>
+                    <span className={`text-sm font-medium block ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}>
+                      {opt.label}
+                    </span>
+                    <span className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
+                      {opt.description}
+                    </span>
+                  </div>
                 </label>
               ))}
             </div>
