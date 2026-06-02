@@ -8,8 +8,6 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { Alert } from '@/components/common';
 import ExamSimulator from './components/ExamSimulator';
 import { loadExamData } from './utils';
-
-const EXAM_DATA = loadExamData();
 import { SuruFloating } from '@/components/Suru';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { getExamUserDefaults } from '@/lib/exam-user-defaults';
@@ -17,6 +15,8 @@ import { saveExamResultAction } from '@/actions/exams';
 import ProcessCodeInput from '@/components/labs/ProcessCodeInput';
 import ExamAuthGate from '@/components/labs/ExamAuthGate';
 import type { ExamResult } from './types';
+
+const EXAM_DATA = loadExamData();
 
 export default function PerformanceExamPage() {
   const { isDarkMode } = useTheme();

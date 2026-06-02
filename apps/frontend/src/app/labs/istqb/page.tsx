@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Alert } from '@/components/common';
@@ -157,7 +157,7 @@ export default function ISTQBSimulatorPage() {
   // Handle legacy naming for Spanish Model A
   const finalExamId = examId === 'es-model-a' ? 'es-model-a' : examId;
 
-  const examData = loadExamData(finalExamId);
+  const examData = useMemo(() => loadExamData(finalExamId), [finalExamId]);
 
   const handleStartExam = (mode: 'exam' | 'training') => {
     if (!participantName.trim()) {

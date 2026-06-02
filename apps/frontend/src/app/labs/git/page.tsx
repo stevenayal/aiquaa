@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Alert } from '@/components/common';
@@ -61,7 +61,7 @@ export default function GitExamPage() {
     });
   };
 
-  const examData = loadExamData();
+  const examData = useMemo(() => loadExamData(), []);
 
   const handleStartExam = (mode: 'exam' | 'training') => {
     if (!participantName.trim()) {
