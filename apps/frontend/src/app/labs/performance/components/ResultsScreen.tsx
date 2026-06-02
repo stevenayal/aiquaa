@@ -38,6 +38,15 @@ export default function ResultsScreen({
   }, []);
   const { isDarkMode } = useTheme();
   const [activeTab, setActiveTab] = useState<'summary' | 'learning-objectives' | 'details'>('summary');
+  const [expandedExplanations, setExpandedExplanations] = useState<Set<number>>(new Set());
+  const toggleExplanation = (questionId: number) => {
+    setExpandedExplanations((prev) => {
+      const next = new Set(prev);
+      if (next.has(questionId)) next.delete(questionId);
+      else next.add(questionId);
+      return next;
+    });
+  };
 
   const t = {
     es: {
@@ -513,7 +522,10 @@ export default function ResultsScreen({
                         )}
                       </div>
 
-                      {!answer.isCorrect && (
+                      {(answer.isCorrect
+                        ? expandedExplanations.has(answer.questionId)
+                        : true
+                      ) && (
                         <div className="mt-4">
                           <h4 className={`font-semibold mb-3 flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                             <span className="text-xl">💡</span>
@@ -546,6 +558,15 @@ export default function ResultsScreen({
                             ))}
                           </div>
                         </div>
+                      )}
+                      {answer.isCorrect && (
+                        <button
+                          onClick={() => toggleExplanation(answer.questionId)}
+                          className={`mt-3 text-xs font-medium flex items-center gap-1 transition-colors ${isDarkMode ? 'text-slate-400 hover:text-slate-200' : 'text-gray-500 hover:text-gray-800'}`}
+                        >
+                          <span>💡</span>
+                          {expandedExplanations.has(answer.questionId) ? 'Ocultar explicación' : 'Ver explicación'}
+                        </button>
                       )}
                     </div>
                   </div>
