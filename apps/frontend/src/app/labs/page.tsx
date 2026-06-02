@@ -45,7 +45,7 @@ export default function LabsPage() {
           id: 'performance',
           name: 'Examen de Performance Testing',
           description:
-            'Prueba técnica de 30 preguntas sobre fundamentos, métricas y herramientas de pruebas de rendimiento',
+            'Prueba técnica de 27 preguntas sobre fundamentos, métricas y herramientas de pruebas de rendimiento',
           icon: '⚡',
           color: 'from-cyan-500 to-blue-600',
           href: '/labs/performance',
