@@ -343,9 +343,8 @@ export default function ProcesoDetailPage() {
   const [showModal, setShowModal] = useState(false);
   const [search, setSearch] = useState('');
   const [filterExam, setFilterExam] = useState<string>('all');
-  const [filterPassed, setFilterPassed] = useState<'all' | 'passed' | 'failed'>(
-    'all'
-  );
+  const [filterPassed, setFilterPassed] = useState<'all' | 'passed' | 'failed'>('all');
+  const [viewMode, setViewMode] = useState<'tabla' | 'ranking'>('tabla');
 
   useEffect(() => {
     const load = async () => {
@@ -358,11 +357,11 @@ export default function ProcesoDetailPage() {
         return;
       }
 
+      // Allow any active empresa member to view the process
       const { data: proc, error } = await supabase
         .from('hiring_processes')
         .select('*')
         .eq('id', id)
-        .eq('created_by', user.id)
         .single();
 
       if (error || !proc) {
@@ -549,6 +548,12 @@ export default function ProcesoDetailPage() {
             >
               {copied ? '✅ Copiado' : `📋 ${process!.code}`}
             </button>
+            <Link
+              href={`/empresa/invitaciones`}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-lg border text-sm font-medium transition-colors border-indigo-400 text-indigo-600 hover:bg-indigo-50 dark:border-indigo-600 dark:text-indigo-300 dark:hover:bg-indigo-900/30"
+            >
+              📧 Invitar candidato
+            </Link>
             {process!.status !== 'draft' && (
               <button
                 onClick={toggleStatus}
@@ -621,8 +626,8 @@ export default function ProcesoDetailPage() {
           {/* ── Tab: Postulantes ── */}
           {activeTab === 'postulantes' && (
             <>
-              <div className="p-5 border-b border-inherit">
-                <div className="flex gap-3 flex-wrap">
+              <div className="p-5 border-b border-inherit space-y-3">
+                <div className="flex gap-3 flex-wrap items-center">
                   <input
                     type="text"
                     placeholder="Buscar por nombre o email..."
@@ -653,6 +658,22 @@ export default function ProcesoDetailPage() {
                     <option value="passed">Aprobados</option>
                     <option value="failed">No aprobados</option>
                   </select>
+                  {/* View mode toggle */}
+                  <div className={`flex rounded-lg border overflow-hidden ${isDarkMode ? 'border-slate-600' : 'border-gray-300'}`}>
+                    {(['tabla', 'ranking'] as const).map((mode) => (
+                      <button
+                        key={mode}
+                        onClick={() => setViewMode(mode)}
+                        className={`px-3 py-2 text-xs font-medium transition-colors ${
+                          viewMode === mode
+                            ? 'bg-indigo-600 text-white'
+                            : isDarkMode ? 'text-slate-300 hover:bg-slate-700' : 'text-gray-600 hover:bg-gray-50'
+                        }`}
+                      >
+                        {mode === 'tabla' ? '☰ Tabla' : '📊 Ranking'}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -677,26 +698,53 @@ export default function ProcesoDetailPage() {
                 <div
                   className={`text-center py-12 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
                 >
-                  <p className="text-sm">
-                    Sin resultados para los filtros aplicados
+                  <p className="text-sm">Sin resultados para los filtros aplicados</p>
+                </div>
+              ) : viewMode === 'ranking' ? (
+                /* ── Ranking view ── */
+                <div className="p-5 space-y-3">
+                  <p className={`text-xs font-semibold uppercase tracking-wide mb-4 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
+                    Ranking por puntaje — {filteredResults.length} candidatos
                   </p>
+                  {[...filteredResults]
+                    .sort((a, b) => b.percentage - a.percentage)
+                    .map((r, i) => (
+                      <div key={r.id} className={`flex items-center gap-3 p-3 rounded-xl ${isDarkMode ? 'bg-slate-800/50' : 'bg-gray-50'}`}>
+                        <span className={`text-sm font-bold w-6 text-center shrink-0 ${i === 0 ? 'text-yellow-500' : i === 1 ? 'text-slate-400' : i === 2 ? 'text-amber-600' : isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>
+                          {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}`}
+                        </span>
+                        <div className="min-w-0 w-36 shrink-0">
+                          <p className={`text-sm font-medium truncate ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                            {r.participant_name || '—'}
+                          </p>
+                          <p className={`text-xs truncate ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
+                            {EXAM_LABELS[r.exam_type] ?? r.exam_type}
+                          </p>
+                        </div>
+                        <div className="flex-1">
+                          <div className={`h-3 rounded-full overflow-hidden ${isDarkMode ? 'bg-slate-700' : 'bg-gray-200'}`}>
+                            <div
+                              className={`h-full rounded-full transition-all duration-500 ${r.passed ? 'bg-green-500' : 'bg-red-500'}`}
+                              style={{ width: `${r.percentage}%` }}
+                            />
+                          </div>
+                        </div>
+                        <span className={`text-sm font-bold w-12 text-right shrink-0 ${r.passed ? 'text-green-500' : 'text-red-500'}`}>
+                          {r.percentage}%
+                        </span>
+                        <span className={`text-xs w-14 text-right shrink-0 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>
+                          {mins(r.time_spent)}
+                        </span>
+                      </div>
+                    ))}
                 </div>
               ) : (
+                /* ── Table view ── */
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr
-                        className={
-                          isDarkMode ? 'bg-slate-800/60' : 'bg-gray-50'
-                        }
-                      >
-                        {[
-                          'Candidato',
-                          'Examen',
-                          'Puntaje',
-                          'Tiempo',
-                          'Fecha',
-                        ].map((h) => (
+                      <tr className={isDarkMode ? 'bg-slate-800/60' : 'bg-gray-50'}>
+                        {['Candidato', 'Examen', 'Puntaje', 'Tiempo', 'Fecha'].map((h) => (
                           <th
                             key={h}
                             className={`px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
@@ -712,65 +760,43 @@ export default function ProcesoDetailPage() {
                           key={r.id}
                           className={`border-t ${isDarkMode ? 'border-slate-700' : 'border-gray-100'} ${
                             i % 2 === 0
-                              ? isDarkMode
-                                ? 'bg-dark-secondary'
-                                : 'bg-white'
-                              : isDarkMode
-                                ? 'bg-slate-800/30'
-                                : 'bg-gray-50/50'
+                              ? isDarkMode ? 'bg-dark-secondary' : 'bg-white'
+                              : isDarkMode ? 'bg-slate-800/30' : 'bg-gray-50/50'
                           }`}
                         >
                           <td className="px-5 py-3">
-                            <div
-                              className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
-                            >
+                            <div className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                               {r.participant_name || '—'}
                             </div>
                             {r.participant_email && (
-                              <div
-                                className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-                              >
+                              <div className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
                                 {r.participant_email}
                               </div>
                             )}
                           </td>
                           <td className="px-5 py-3">
-                            <span
-                              className={`font-mono text-xs px-2 py-0.5 rounded ${isDarkMode ? 'bg-slate-700 text-slate-300' : 'bg-gray-100 text-gray-600'}`}
-                            >
+                            <span className={`font-mono text-xs px-2 py-0.5 rounded ${isDarkMode ? 'bg-slate-700 text-slate-300' : 'bg-gray-100 text-gray-600'}`}>
                               {EXAM_LABELS[r.exam_type] ?? r.exam_type}
                             </span>
                           </td>
                           <td className="px-5 py-3">
                             <div className="flex items-center gap-2">
-                              <span
-                                className={`font-bold text-base ${r.passed ? 'text-green-500' : 'text-red-500'}`}
-                              >
+                              <span className={`font-bold text-base ${r.passed ? 'text-green-500' : 'text-red-500'}`}>
                                 {r.percentage}%
                               </span>
-                              <span
-                                className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
-                                  r.passed
-                                    ? isDarkMode
-                                      ? 'bg-green-900/40 text-green-300'
-                                      : 'bg-green-50 text-green-700'
-                                    : isDarkMode
-                                      ? 'bg-red-900/40 text-red-300'
-                                      : 'bg-red-50 text-red-700'
-                                }`}
-                              >
+                              <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
+                                r.passed
+                                  ? isDarkMode ? 'bg-green-900/40 text-green-300' : 'bg-green-50 text-green-700'
+                                  : isDarkMode ? 'bg-red-900/40 text-red-300' : 'bg-red-50 text-red-700'
+                              }`}>
                                 {r.passed ? '✓' : '✗'}
                               </span>
                             </div>
                           </td>
-                          <td
-                            className={`px-5 py-3 text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-                          >
+                          <td className={`px-5 py-3 text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
                             {mins(r.time_spent)}
                           </td>
-                          <td
-                            className={`px-5 py-3 text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-                          >
+                          <td className={`px-5 py-3 text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
                             {new Date(r.created_at).toLocaleDateString('es-PY')}
                           </td>
                         </tr>

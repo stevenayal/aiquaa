@@ -11,6 +11,12 @@ export interface Empresa {
   ruc: string | null;
   razon_social: string;
   nombre_comercial: string | null;
+  logo_url: string | null;
+  description: string | null;
+  website_url: string | null;
+  industry: string | null;
+  country: string | null;
+  team_size: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -285,6 +291,12 @@ export async function updateEmpresaAction(data: {
   ruc?: string;
   razon_social?: string;
   nombre_comercial?: string;
+  logo_url?: string;
+  description?: string;
+  website_url?: string;
+  industry?: string;
+  country?: string;
+  team_size?: string;
 }) {
   const supabase = await createClient();
   const {
@@ -293,7 +305,14 @@ export async function updateEmpresaAction(data: {
   } = await supabase.auth.getUser();
   if (authErr || !user) return { error: 'No autenticado' };
 
-  const { error } = await supabase.from('empresas').update(data);
+  const callerMembership = await getCallerMembership(supabase, user.id);
+  if (!callerMembership || !['owner', 'admin'].includes(callerMembership.role))
+    return { error: 'Sin permisos suficientes' };
+
+  const { error } = await supabase
+    .from('empresas')
+    .update({ ...data, updated_at: new Date().toISOString() })
+    .eq('id', callerMembership.empresa_id);
 
   if (error) return { error: error.message };
   return { success: true };
