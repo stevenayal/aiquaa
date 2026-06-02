@@ -476,7 +476,7 @@ export default function PerformanceExamPage() {
                 isDarkMode ? 'text-slate-400' : 'text-gray-600'
               }`}>
                 <li>• Timer de 60 minutos</li>
-                <li>• 26 preguntas de selección</li>
+                <li>• 27 preguntas de selección</li>
                 <li>• Sin retroalimentación durante el examen</li>
                 <li>• Informe completo al finalizar</li>
               </ul>
@@ -511,7 +511,7 @@ export default function PerformanceExamPage() {
                 isDarkMode ? 'text-slate-400' : 'text-gray-600'
               }`}>
                 <li>• Sin límite de tiempo</li>
-                <li>• 26 preguntas de selección</li>
+                <li>• 27 preguntas de selección</li>
                 <li>• Retroalimentación inmediata</li>
                 <li>• Explicaciones detalladas</li>
               </ul>

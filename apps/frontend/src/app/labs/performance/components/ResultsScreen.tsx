@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import type { ExamResult } from '../types';
 import { exportToCSV, downloadCSV, formatTime } from '../utils';
 import { exportToPDF } from '../utils';
-import { useSubmitResults } from '../hooks/useSubmitResults';
 
 interface ResultsScreenProps {
   result: ExamResult;
@@ -21,21 +20,9 @@ export default function ResultsScreen({
   onReset,
   mode,
   language,
-  startTime,
-  endTime,
+  startTime: _startTime,
+  endTime: _endTime,
 }: ResultsScreenProps) {
-  const { submitResults, isSubmitting, isSubmitted } = useSubmitResults();
-
-  // Enviar resultados al backend automáticamente cuando se monta el componente
-  useEffect(() => {
-    if (!isSubmitted && !isSubmitting) {
-      submitResults(result, mode, startTime, endTime).catch((error) => {
-        console.error('Error al enviar resultados:', error);
-        // No bloqueamos la UI si falla el envío
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
   const { isDarkMode } = useTheme();
   const [activeTab, setActiveTab] = useState<'summary' | 'learning-objectives' | 'details'>('summary');
   const [expandedExplanations, setExpandedExplanations] = useState<Set<number>>(new Set());

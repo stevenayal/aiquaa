@@ -180,7 +180,8 @@ export function generateExamResult(
   const score = calculateScore(questions, answers);
   const correctAnswers = answerDetails.filter((a) => a.isCorrect).length;
   const incorrectAnswers = answerDetails.length - correctAnswers;
-  const percentage = (score / questions.length) * 100;
+  const maxPossibleScore = questions.reduce((sum, q) => sum + q.points, 0);
+  const percentage = (score / maxPossibleScore) * 100;
   const passed = score >= passingScore;
 
   const learningObjectiveAnalysis = calculateLearningObjectiveAnalysis(

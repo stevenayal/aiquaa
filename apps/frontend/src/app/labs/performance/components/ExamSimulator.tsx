@@ -44,6 +44,7 @@ export default function ExamSimulator({
   const [startTime] = useState(Date.now());
   const questionsInitialized = useRef(false);
   const submitRef = useRef<(autoSubmit?: boolean) => void>(() => {});
+  const onExamCompleteCalledRef = useRef(false);
 
   const t = {
     es: {
@@ -217,7 +218,10 @@ export default function ExamSimulator({
       examData.examInfo.passingScore,
     );
 
-    onExamComplete?.(result);
+    if (onExamComplete && !onExamCompleteCalledRef.current) {
+      onExamCompleteCalledRef.current = true;
+      onExamComplete(result);
+    }
 
     return (
       <ResultsScreen

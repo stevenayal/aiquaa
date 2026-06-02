@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import type { ExamResult } from '../types';
 import { exportToCSV, downloadCSV, formatTime, exportToPDF } from '../utils';
-import { saveExamResultAction } from '@/actions/exams';
 
 interface ResultsScreenProps {
   result: ExamResult;
@@ -19,27 +18,6 @@ export default function ResultsScreen({
 }: ResultsScreenProps) {
   const { isDarkMode } = useTheme();
   const [activeTab, setActiveTab] = useState<'summary' | 'learning-objectives' | 'details'>('summary');
-
-  useEffect(() => {
-    saveExamResultAction({
-      exam_type: 'git',
-      exam_mode: mode,
-      participant_name: result.participantName,
-      github_profile: result.githubProfile,
-      exam_purpose: result.examPurpose,
-      company_name: result.companyName,
-      score: result.score,
-      total_questions: result.totalQuestions,
-      correct_answers: result.correctAnswers,
-      incorrect_answers: result.incorrectAnswers,
-      passing_score: 26,
-      passed: result.passed,
-      percentage: result.percentage,
-      time_spent: result.timeSpent,
-      answers: result.answers as any,
-      learning_objectives: result.learningObjectiveAnalysis as any,
-    }).catch((err) => console.error('Error guardando resultado Git:', err));
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleExportCSV = () => {
     const csv = exportToCSV(result);

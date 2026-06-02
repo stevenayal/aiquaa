@@ -5,8 +5,6 @@ import { useTheme } from '@/contexts/ThemeContext';
 import type { ExamResult } from '../types';
 import { exportToCSV, downloadCSV, formatTime } from '../utils';
 import { generateExamPDF } from '../utils/pdfExport';
-import { useSubmitResults } from '../hooks/useSubmitResults';
-
 interface ResultsScreenProps {
   result: ExamResult;
   onReset: () => void;
@@ -31,7 +29,6 @@ export default function ResultsScreen({
       return next;
     });
   };
-  useSubmitResults(result, mode);
 
   const t = {
     es: {
