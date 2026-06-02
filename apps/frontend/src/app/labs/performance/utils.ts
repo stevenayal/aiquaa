@@ -64,12 +64,14 @@ export function loadExamData(): ExamData {
     });
   });
 
+  const maxPossibleScore = allQuestions.reduce((sum, q) => sum + q.points, 0);
+
   // Crear el ExamInfo
   const examInfo: ExamInfo = {
     title: rawData.metadata.title,
     version: rawData.metadata.version,
     totalQuestions: allQuestions.length,
-    passingScore: Math.ceil(allQuestions.length * (rawData.metadata.passing_score_percentage / 100)),
+    passingScore: Math.ceil(maxPossibleScore * (rawData.metadata.passing_score_percentage / 100)),
     timeLimit: rawData.metadata.estimated_duration_minutes,
     pointsPerQuestion: 1
   };
@@ -180,7 +182,8 @@ export function generateExamResult(
   const score = calculateScore(questions, answers);
   const correctAnswers = answerDetails.filter((a) => a.isCorrect).length;
   const incorrectAnswers = answerDetails.length - correctAnswers;
-  const percentage = (score / questions.length) * 100;
+  const maxPossibleScore = questions.reduce((sum, q) => sum + q.points, 0);
+  const percentage = (score / maxPossibleScore) * 100;
   const passed = score >= passingScore;
 
   const learningObjectiveAnalysis = calculateLearningObjectiveAnalysis(
