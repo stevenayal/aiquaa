@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-const PROTECTED_ROUTES = ['/perfil', '/empresa'];
+const PROTECTED_ROUTES = ['/perfil', '/dashboard', '/empresa'];
 const AUTH_ROUTES = ['/login', '/register'];
 const PUBLIC_PATHS = ['/empresa/registro'];
 
@@ -62,6 +62,8 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/perfil/:path*',
+    '/dashboard',
+    '/dashboard/:path*',
     '/empresa',
     '/empresa/:path*',
     '/login',

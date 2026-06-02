@@ -196,10 +196,11 @@ function LevelBar({
 
 // ── XP Comunidad tab ──────────────────────────────────────────────────────────
 
-function XpComunidadTab({ isDarkMode }: { isDarkMode: boolean }) {
+function XpComunidadTab({ isDarkMode, currentUserName }: { isDarkMode: boolean; currentUserName: string | null }) {
   const [data, setData] = useState<XpRankingResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
+  const [showHowTo, setShowHowTo] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -255,6 +256,34 @@ function XpComunidadTab({ isDarkMode }: { isDarkMode: boolean }) {
 
   return (
     <div className="space-y-5">
+      {/* Cómo ganar XP */}
+      <div className={`rounded-2xl border ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200 shadow-sm'}`}>
+        <button
+          onClick={() => setShowHowTo(v => !v)}
+          className={`w-full flex items-center justify-between px-5 py-3 text-sm font-semibold ${isDarkMode ? 'text-slate-200' : 'text-gray-700'}`}
+        >
+          <span>💡 ¿Cómo ganar XP?</span>
+          <span>{showHowTo ? '▲' : '▼'}</span>
+        </button>
+        {showHowTo && (
+          <div className={`px-5 pb-4 space-y-2 border-t ${isDarkMode ? 'border-slate-700' : 'border-gray-100'}`}>
+            {[
+              { emoji: '📋', action: 'Completar simulacro ISTQB (aprobar)', xp: '+100 XP' },
+              { emoji: '⚡', action: 'Completar examen Performance (aprobar)', xp: '+80 XP' },
+              { emoji: '🌿', action: 'Completar examen GIT (aprobar)', xp: '+60 XP' },
+              { emoji: '🔗', action: 'Generar casos All Pairs (20+ pares)', xp: '+20 XP' },
+              { emoji: '💬', action: 'Crear un post en el foro', xp: '+10 XP' },
+              { emoji: '🌅', action: 'Check-in diario', xp: '+5 XP' },
+            ].map(({ emoji, action, xp }) => (
+              <div key={action} className="flex items-center justify-between text-sm pt-2">
+                <span className={isDarkMode ? 'text-slate-300' : 'text-gray-600'}>{emoji} {action}</span>
+                <span className="font-bold text-purple-500">{xp}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Stats strip */}
       <div className="grid grid-cols-3 gap-3">
         {[
@@ -372,7 +401,9 @@ function XpComunidadTab({ isDarkMode }: { isDarkMode: boolean }) {
         </div>
 
         {/* Filas */}
-        {(isFirstPage ? rest : data.data).map((entry, i, arr) => (
+        {(isFirstPage ? rest : data.data).map((entry, i, arr) => {
+          const isCurrentUser = currentUserName !== null && entry.displayName === currentUserName;
+          return (
           <div
             key={entry.position}
             className={`flex items-center gap-3 px-5 py-4 ${
@@ -381,7 +412,7 @@ function XpComunidadTab({ isDarkMode }: { isDarkMode: boolean }) {
                   ? 'border-b border-slate-700'
                   : 'border-b border-gray-100'
                 : ''
-            } ${isDarkMode ? 'hover:bg-slate-700/40' : 'hover:bg-gray-50'} transition-colors`}
+            } ${isCurrentUser ? 'border-l-4 border-purple-500' : ''} ${isDarkMode ? 'hover:bg-slate-700/40' : 'hover:bg-gray-50'} transition-colors`}
           >
             {/* Posición */}
             <span
@@ -406,9 +437,13 @@ function XpComunidadTab({ isDarkMode }: { isDarkMode: boolean }) {
             {/* Info */}
             <div className="flex-1 min-w-0 space-y-1">
               <p
-                className={`text-sm font-semibold truncate ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}
+                className={`text-sm font-semibold truncate flex items-center gap-1.5 ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}
               >
+                {isCurrentUser && <span>🫵</span>}
                 {entry.displayName}
+                {isCurrentUser && (
+                  <span className="ml-1 px-1.5 py-0.5 rounded-full text-xs font-bold bg-purple-500 text-white shrink-0">Tú</span>
+                )}
               </p>
               <LevelBar
                 level={entry.level}
@@ -443,7 +478,8 @@ function XpComunidadTab({ isDarkMode }: { isDarkMode: boolean }) {
               )}
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Paginación */}
@@ -816,7 +852,7 @@ export default function RankingPage() {
         {isReportes ? (
           <ReportadoresTab isDarkMode={isDarkMode} />
         ) : isXp ? (
-          <XpComunidadTab isDarkMode={isDarkMode} />
+          <XpComunidadTab isDarkMode={isDarkMode} currentUserName={user?.user_metadata?.full_name || user?.user_metadata?.display_name || null} />
         ) : isLoading ? (
           <div className="flex justify-center py-16">
             <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-indigo-500" />

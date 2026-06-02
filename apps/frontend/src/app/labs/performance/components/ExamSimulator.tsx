@@ -48,7 +48,7 @@ export default function ExamSimulator({
   const t = {
     es: {
       loading: 'Cargando preguntas...',
-      title: 'AIQUAA | Simulacro CTFL v4.0',
+      title: 'AIQUAA | Examen Performance Testing',
       participant: 'Participante',
       timeRemaining: 'Tiempo Restante',
       question: 'Pregunta',
@@ -73,7 +73,7 @@ export default function ExamSimulator({
     },
     en: {
       loading: 'Loading questions...',
-      title: 'AIQUAA | CTFL v4.0 Simulator',
+      title: 'AIQUAA | Performance Testing Exam',
       participant: 'Participant',
       timeRemaining: 'Time Remaining',
       question: 'Question',

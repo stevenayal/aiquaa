@@ -197,7 +197,7 @@ export default function PerformanceExamPage() {
               <div className={`text-2xl font-bold ${
                 isDarkMode ? 'text-white' : 'text-brand-text'
               }`}>
-                30 preguntas
+                27 preguntas
               </div>
             </div>
 
