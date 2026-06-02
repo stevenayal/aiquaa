@@ -9,7 +9,7 @@ import {
   uploadAvatarAction,
   changePasswordAction,
 } from '@/actions/profile';
-import { getExamResultsAction } from '@/actions/exams';
+import { getExamResultsAction, getMyXpProfileAction } from '@/actions/exams';
 import Avatar from '@/components/ui/Avatar';
 
 interface ExamResultRow {
@@ -73,8 +73,10 @@ export default function PerfilPage() {
     username: '',
     bio: '',
     role: '',
+    country: '',
   });
   const [initialized, setInitialized] = useState(false);
+  const [xpProfile, setXpProfile] = useState<{totalXp:number;level:number;currentStreak:number;longestStreak:number;achievementCount:number;position:number}|null>(null);
 
   // Initialize form from user metadata once loaded
   React.useEffect(() => {
@@ -84,6 +86,7 @@ export default function PerfilPage() {
         username: user.user_metadata?.username || '',
         bio: user.user_metadata?.bio || '',
         role: user.user_metadata?.role || '',
+        country: user.user_metadata?.country || '',
       });
       setInitialized(true);
     }
@@ -98,6 +101,11 @@ export default function PerfilPage() {
       setExamResults((data as ExamResultRow[]) || []);
       setExamResultsLoading(false);
     });
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+    getMyXpProfileAction().then(({ data }) => { if (data) setXpProfile(data); });
   }, [user]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -156,6 +164,7 @@ export default function PerfilPage() {
     fd.set('username', formData.username);
     fd.set('bio', formData.bio);
     fd.set('role', formData.role);
+    fd.set('country', formData.country);
     startTransition(async () => {
       const result = await updateProfileAction(fd);
       if (result.error) {
@@ -377,6 +386,23 @@ export default function PerfilPage() {
             </p>
           </div>
 
+          {/* Country */}
+          <div>
+            <label className={labelClass}>País</label>
+            <select
+              value={formData.country}
+              onChange={(e) =>
+                setFormData((p) => ({ ...p, country: e.target.value }))
+              }
+              className={inputClass}
+            >
+              <option value="">Seleccioná tu país</option>
+              {['Argentina', 'Bolivia', 'Brasil', 'Chile', 'Colombia', 'Costa Rica', 'Cuba', 'Ecuador', 'El Salvador', 'Guatemala', 'Honduras', 'México', 'Nicaragua', 'Panamá', 'Paraguay', 'Perú', 'República Dominicana', 'Uruguay', 'Venezuela', 'Otro'].map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          </div>
+
           {/* Role — candidatos only */}
           {!isEmpresa && (
             <div>
@@ -528,6 +554,68 @@ export default function PerfilPage() {
             {isPwPending ? 'Actualizando...' : '🔑 Actualizar contraseña'}
           </button>
         </form>
+
+        {/* XP / Streak Widget */}
+        <div className={`${card} rounded-xl p-6`}>
+          <h2
+            className={`text-base font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+          >
+            ⚡ Mi progreso en AIQUAA
+          </h2>
+          {xpProfile ? (
+            <>
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className={`rounded-lg p-3 text-center ${isDarkMode ? 'bg-slate-700/50' : 'bg-gray-50'}`}>
+                  <p className={`text-xs mb-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>🏅 Nivel</p>
+                  <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{xpProfile.level}</p>
+                </div>
+                <div className={`rounded-lg p-3 text-center ${isDarkMode ? 'bg-slate-700/50' : 'bg-gray-50'}`}>
+                  <p className={`text-xs mb-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>💎 XP Total</p>
+                  <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{xpProfile.totalXp.toLocaleString()}</p>
+                </div>
+                <div className={`rounded-lg p-3 text-center ${isDarkMode ? 'bg-slate-700/50' : 'bg-gray-50'}`}>
+                  <p className={`text-xs mb-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>🔥 Racha actual</p>
+                  <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{xpProfile.currentStreak} días</p>
+                </div>
+                <div className={`rounded-lg p-3 text-center ${isDarkMode ? 'bg-slate-700/50' : 'bg-gray-50'}`}>
+                  <p className={`text-xs mb-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>#️⃣ Posición</p>
+                  <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>#{xpProfile.position}</p>
+                </div>
+              </div>
+              {(() => {
+                const { level, totalXp } = xpProfile;
+                const current = 50 * level * (level - 1);
+                const next = 50 * (level + 1) * level;
+                const pct = Math.min(100, Math.round(((totalXp - current) / (next - current)) * 100));
+                return (
+                  <>
+                    <div className={`w-full h-2 rounded-full overflow-hidden ${isDarkMode ? 'bg-slate-700' : 'bg-gray-200'}`}>
+                      <div
+                        className="h-2 rounded-full bg-gradient-to-r from-green-400 to-emerald-500"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                    <p className={`text-xs mt-1 text-center ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
+                      {totalXp.toLocaleString()} / {next.toLocaleString()} XP hacia Nivel {level + 1}
+                    </p>
+                  </>
+                );
+              })()}
+            </>
+          ) : (
+            <div className={`text-center py-6 rounded-lg ${isDarkMode ? 'bg-slate-700/40' : 'bg-gray-50'}`}>
+              <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
+                Completá un simulacro o generá casos All Pairs para ganar tu primer XP 🚀
+              </p>
+              <a
+                href="/labs"
+                className="inline-block mt-3 text-xs text-indigo-400 hover:underline"
+              >
+                Ir a Labs →
+              </a>
+            </div>
+          )}
+        </div>
 
         {/* Exam History */}
         <div className={`${card} rounded-xl p-6`}>

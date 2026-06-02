@@ -119,3 +119,35 @@ export async function getExamResultsAction() {
   if (error) return { error: error.message, data: null };
   return { data };
 }
+
+export async function getMyXpProfileAction() {
+  const supabase = createClient();
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) return { data: null };
+
+  const { data } = await supabase
+    .from('user_xp')
+    .select('total_xp, level, current_streak, longest_streak, last_activity_at, achievement_count')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  if (!data) return { data: null };
+
+  // Count users with more XP to get position
+  const { count } = await supabase
+    .from('user_xp')
+    .select('*', { count: 'exact', head: true })
+    .gt('total_xp', data.total_xp);
+
+  return {
+    data: {
+      totalXp: data.total_xp ?? 0,
+      level: data.level ?? 1,
+      currentStreak: data.current_streak ?? 0,
+      longestStreak: data.longest_streak ?? 0,
+      lastActivityAt: data.last_activity_at ?? null,
+      achievementCount: data.achievement_count ?? 0,
+      position: (count ?? 0) + 1,
+    },
+  };
+}
