@@ -234,36 +234,41 @@ export async function getEmpresaDashboardStatsAction(): Promise<{
   let pendingProspects = 0;
   let pendingInvitaciones = 0;
 
-  const parallelQueries: Promise<unknown>[] = [];
+  const fetchExamResults =
+    processCodes.length > 0
+      ? supabase
+          .from('exam_results')
+          .select('process_code, passed, created_at, time_spent')
+          .in('process_code', processCodes)
+      : Promise.resolve({ data: [] as typeof results, error: null });
 
-  if (processCodes.length > 0) {
-    parallelQueries.push(
-      supabase
-        .from('exam_results')
-        .select('process_code, passed, created_at, time_spent')
-        .in('process_code', processCodes)
-        .then((r) => { results = r.data ?? []; }),
-      supabase
-        .from('prospects')
-        .select('*', { count: 'exact', head: true })
-        .in('process_id', processIds)
-        .eq('status', 'pendiente')
-        .then((r) => { pendingProspects = r.count ?? 0; }),
-    );
-  }
+  const fetchPendingProspects =
+    processIds.length > 0
+      ? supabase
+          .from('prospects')
+          .select('*', { count: 'exact', head: true })
+          .in('process_id', processIds)
+          .eq('status', 'pendiente')
+      : Promise.resolve({ count: 0, data: null, error: null });
 
-  if (empresaId) {
-    parallelQueries.push(
-      supabase
-        .from('empresa_invitaciones')
-        .select('*', { count: 'exact', head: true })
-        .eq('empresa_id', empresaId)
-        .in('status', ['pendiente', 'vista'])
-        .then((r) => { pendingInvitaciones = r.count ?? 0; }),
-    );
-  }
+  const fetchPendingInvitaciones =
+    empresaId
+      ? supabase
+          .from('empresa_invitaciones')
+          .select('*', { count: 'exact', head: true })
+          .eq('empresa_id', empresaId)
+          .in('status', ['pendiente', 'vista'])
+      : Promise.resolve({ count: 0, data: null, error: null });
 
-  await Promise.all(parallelQueries);
+  const [examResp, prospectsResp, invitacionesResp] = await Promise.all([
+    fetchExamResults,
+    fetchPendingProspects,
+    fetchPendingInvitaciones,
+  ]);
+
+  results = (examResp.data as typeof results) ?? [];
+  pendingProspects = prospectsResp.count ?? 0;
+  pendingInvitaciones = invitacionesResp.count ?? 0;
 
   const monthlyProcessesBuckets = buildMonthlyBuckets(6);
   const monthlyCandidatesBuckets = buildMonthlyBuckets(6);

@@ -32,7 +32,7 @@ function InvitarModal({
   isDarkMode: boolean;
   processes: HiringProcess[];
   onClose: () => void;
-  onCreated: (inv: EmpresaInvitacion) => void;
+  onCreated: (_inv: EmpresaInvitacion) => void;
 }) {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');

@@ -110,7 +110,7 @@ function AddProspectModal({
   processId: string;
   isDarkMode: boolean;
   onClose: () => void;
-  onAdded: (p: Prospect) => void;
+  onAdded: (_p: Prospect) => void;
 }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');

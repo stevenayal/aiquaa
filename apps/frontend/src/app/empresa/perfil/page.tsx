@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState, useTransition } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useTheme } from '@/contexts/ThemeContext';
-import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { getMyEmpresaAction, updateEmpresaAction, type Empresa } from '@/actions/empresa-admin';
 import { createClient } from '@/lib/supabase/client';
 
@@ -58,7 +58,6 @@ function completionScore(empresa: Empresa): number {
 
 export default function EmpresaPerfilPage() {
   const { isDarkMode } = useTheme();
-  const { user } = useSupabaseAuth();
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [empresa, setEmpresa] = useState<Empresa | null>(null);
@@ -235,11 +234,11 @@ export default function EmpresaPerfilPage() {
             Logo de la empresa
           </h2>
           <div className="flex items-center gap-5">
-            <div className={`w-20 h-20 rounded-xl border-2 flex items-center justify-center overflow-hidden shrink-0 ${
+            <div className={`w-20 h-20 rounded-xl border-2 flex items-center justify-center overflow-hidden shrink-0 relative ${
               isDarkMode ? 'border-slate-600 bg-slate-700' : 'border-gray-200 bg-gray-50'
             }`}>
               {empresa?.logo_url ? (
-                <img src={empresa.logo_url} alt="Logo empresa" className="w-full h-full object-contain" />
+                <Image src={empresa.logo_url} alt="Logo empresa" fill className="object-contain" unoptimized />
               ) : (
                 <span className="text-3xl">🏢</span>
               )}

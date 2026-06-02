@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 
 const INDUSTRY_LABELS: Record<string, string> = {
@@ -72,11 +73,15 @@ export default async function PublicEmpresaPage({ params }: Props) {
           <div className="px-6 pb-6">
             <div className="-mt-10 mb-4">
               {empresa.logo_url ? (
-                <img
-                  src={empresa.logo_url}
-                  alt={`Logo ${displayName}`}
-                  className="w-20 h-20 rounded-xl border-4 border-white dark:border-slate-800 bg-white object-contain shadow"
-                />
+                <div className="relative w-20 h-20 rounded-xl border-4 border-white dark:border-slate-800 bg-white shadow overflow-hidden">
+                  <Image
+                    src={empresa.logo_url}
+                    alt={`Logo ${displayName}`}
+                    fill
+                    className="object-contain"
+                    unoptimized
+                  />
+                </div>
               ) : (
                 <div className="w-20 h-20 rounded-xl border-4 border-white dark:border-slate-800 bg-indigo-100 flex items-center justify-center shadow">
                   <span className="text-3xl">🏢</span>
