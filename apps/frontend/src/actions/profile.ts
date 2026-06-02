@@ -9,12 +9,13 @@ export async function updateProfileAction(formData: FormData) {
   const bio = (formData.get('bio') as string)?.trim();
   const username = (formData.get('username') as string)?.trim();
   const role = (formData.get('role') as string)?.trim();
+  const country = (formData.get('country') as string)?.trim();
 
   const { data: { user }, error: userError } = await supabase.auth.getUser();
   if (userError || !user) return { error: 'No autenticado' };
 
   const { error } = await supabase.auth.updateUser({
-    data: { full_name: fullName, bio, username, role },
+    data: { full_name: fullName, bio, username, role, country },
   });
 
   if (error) return { error: error.message };
@@ -25,6 +26,7 @@ export async function updateProfileAction(formData: FormData) {
     display_name: fullName || username || null,
     email: user.email,
     role: role || null,
+    country: country || null,
   }, { onConflict: 'id' });
 
   revalidatePath('/perfil');
