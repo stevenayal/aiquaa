@@ -41,7 +41,7 @@ export default function ResultsScreen({
 
   const t = {
     es: {
-      title: 'AIQUAA | Simulacro CTFL v4.0',
+      title: 'AIQUAA | Examen Performance Testing',
       subtitle: 'Resultados del Examen',
       modeExam: 'Examen',
       modeTraining: 'Entrenamiento',
@@ -80,7 +80,7 @@ export default function ResultsScreen({
       incorrectOption: '✗ (Incorrecta)',
     },
     en: {
-      title: 'AIQUAA | CTFL v4.0 Simulator',
+      title: 'AIQUAA | Performance Testing Exam',
       subtitle: 'Exam Results',
       modeExam: 'Exam',
       modeTraining: 'Training',
