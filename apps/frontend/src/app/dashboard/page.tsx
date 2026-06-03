@@ -12,6 +12,7 @@ interface ExamResult {
   exam_mode: string;
   score: number;
   total_questions: number;
+  max_possible_score: number | null;
   passed: boolean;
   percentage: number;
   time_spent: number | null;
@@ -272,7 +273,7 @@ export default function DashboardPage() {
                     </div>
                     <div className="text-right shrink-0">
                       <p className={`text-sm font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                        {result.score}/{result.total_questions}
+                        {result.score}/{result.max_possible_score ?? result.total_questions}
                       </p>
                       <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
                         {Number(result.percentage).toFixed(0)}%

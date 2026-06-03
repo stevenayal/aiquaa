@@ -38,10 +38,13 @@ export async function GET(request: NextRequest) {
       type: type as 'signup' | 'recovery' | 'invite' | 'magiclink' | 'email',
     });
     if (!error) {
-      const { data: { user } } = await supabase.auth.getUser();
-      const audience = user?.user_metadata?.audience;
-      const destination = next ?? getDefaultRedirect(audience);
-      return NextResponse.redirect(`${origin}${destination}`);
+      if (next) {
+        return NextResponse.redirect(`${origin}${next}`);
+      }
+      // Show an explicit success page for email verification flows
+      const successUrl = new URL(`${origin}/auth/confirm-result`);
+      successUrl.searchParams.set('success', '1');
+      return NextResponse.redirect(successUrl.toString());
     }
   }
 
