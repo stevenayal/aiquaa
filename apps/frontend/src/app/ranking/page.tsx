@@ -14,6 +14,7 @@ interface LeaderboardEntry {
   avatar_url: string | null;
   best_score: number;
   total_questions: number;
+  max_possible_score: number | null;
   best_percentage: number;
   passed: boolean;
   attempts: number;
@@ -914,7 +915,7 @@ export default function RankingPage() {
                         <p
                           className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
                         >
-                          {entry.best_score}/{entry.total_questions}
+                          {entry.best_score}/{entry.max_possible_score ?? entry.total_questions}
                         </p>
                         <div
                           className={`w-full rounded-t-lg flex items-center justify-center text-2xl ${heights[podiumRank]} ${
@@ -981,7 +982,7 @@ export default function RankingPage() {
                       <p
                         className={`text-sm font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
                       >
-                        {entry.best_score}/{entry.total_questions}
+                        {entry.best_score}/{entry.max_possible_score ?? entry.total_questions}
                       </p>
                       <p
                         className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
