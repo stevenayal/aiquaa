@@ -76,7 +76,23 @@ export default function NuevoProcesoPage() {
       return;
     }
 
-    const code = generateCode(positionName);
+    // Generate unique code — retry up to 5 times on collision
+    let code = '';
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const candidate = generateCode(positionName);
+      const { data: existing } = await supabase
+        .from('hiring_processes')
+        .select('code')
+        .eq('code', candidate)
+        .maybeSingle();
+      if (!existing) { code = candidate; break; }
+    }
+    if (!code) {
+      setError('No se pudo generar un código único. Intentá de nuevo.');
+      setLoading(false);
+      return;
+    }
+
     const { error: insertError } = await supabase
       .from('hiring_processes')
       .insert({

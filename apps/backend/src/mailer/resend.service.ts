@@ -299,6 +299,85 @@ export class ResendService {
     `;
   }
 
+  async sendCandidatoInvitacion(data: {
+    candidateEmail: string;
+    candidateName?: string;
+    companyName: string;
+    positionName?: string;
+    message?: string;
+    invitacionUrl: string;
+  }): Promise<void> {
+    const fromEmail = this.configService.get<string>(
+      'SES_FROM_EMAIL',
+      'noreply@aiquaa.com'
+    );
+    const name = data.candidateName || data.candidateEmail.split('@')[0];
+    try {
+      await this.sendMail({
+        from: fromEmail,
+        to: data.candidateEmail,
+        subject: `${data.companyName} te invita a rendir una evaluación técnica QA`,
+        html: this.getCandidatoInvitacionTemplate({ ...data, name }),
+      });
+      this.logger.log(`Invitación enviada a ${data.candidateEmail}`);
+    } catch (error) {
+      this.logger.error(`Error enviando invitación a ${data.candidateEmail}`, error);
+      throw error;
+    }
+  }
+
+  private getCandidatoInvitacionTemplate(data: {
+    name: string;
+    companyName: string;
+    positionName?: string;
+    message?: string;
+    invitacionUrl: string;
+  }): string {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Invitación a evaluación QA — AIQUAA</title>
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background: #f9fafb; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #4F46E5, #7C3AED); color: white; padding: 32px; text-align: center; border-radius: 12px 12px 0 0; }
+          .content { background: #ffffff; padding: 40px; border-radius: 0 0 12px 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.07); }
+          .button { display: inline-block; background: #4F46E5; color: white !important; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px; }
+          .message-box { background: #F0F4FF; border-left: 4px solid #4F46E5; padding: 16px 20px; border-radius: 4px; margin: 20px 0; font-style: italic; color: #374151; }
+          .footer { text-align: center; margin-top: 32px; color: #9CA3AF; font-size: 13px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1 style="margin:0;font-size:26px;">🎯 AIQUAA</h1>
+            <p style="margin:8px 0 0;font-size:15px;opacity:0.9;">Evaluación técnica QA</p>
+          </div>
+          <div class="content">
+            <h2 style="color:#1F2937;margin-top:0;">¡Hola ${data.name}!</h2>
+            <p><strong>${data.companyName}</strong> te invita a rendir${data.positionName ? ` la evaluación técnica para el puesto de <strong>${data.positionName}</strong>` : ' una evaluación técnica QA'} en la plataforma AIQUAA.</p>
+            ${data.message ? `<div class="message-box">"${data.message}"</div>` : ''}
+            <p>AIQUAA es una plataforma de entrenamiento QA en español para la comunidad de LATAM. La evaluación te tomará entre 30 y 60 minutos.</p>
+            <div style="text-align:center;margin:32px 0;">
+              <a href="${data.invitacionUrl}" class="button">Ver invitación y rendir →</a>
+            </div>
+            <p style="font-size:13px;color:#6B7280;">Si el botón no funciona, copiá este enlace en tu navegador:<br>
+              <a href="${data.invitacionUrl}" style="color:#4F46E5;word-break:break-all;">${data.invitacionUrl}</a>
+            </p>
+            <p style="font-size:13px;color:#6B7280;">Si no esperabas esta invitación, podés ignorar este email.</p>
+          </div>
+          <div class="footer">
+            <p>© AIQUAA · Plataforma QA para LATAM</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
   async sendTwoFactorCode(email: string, code: string): Promise<void> {
     const fromEmail =
       process.env.SES_FROM_EMAIL || 'AIQUAA <noreply@aiquaa.com>';

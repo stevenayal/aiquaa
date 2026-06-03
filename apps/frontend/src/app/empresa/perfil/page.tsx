@@ -142,6 +142,11 @@ export default function EmpresaPerfilPage() {
       setAlert({ type: 'error', msg: 'El sitio web debe comenzar con http:// o https://' });
       return;
     }
+    // Validate RUC format for Paraguay: digits-digit (e.g. 80012345-6)
+    if (form.ruc && form.country === 'PY' && !/^\d{6,8}-\d$/.test(form.ruc.trim())) {
+      setAlert({ type: 'error', msg: 'El RUC debe tener el formato 80012345-6 (dígitos guión dígito verificador)' });
+      return;
+    }
     startSaving(async () => {
       const { error } = await updateEmpresaAction(form);
       if (error) {
@@ -291,7 +296,14 @@ export default function EmpresaPerfilPage() {
               />
             </div>
             <div>
-              <label className={labelClass}>RUC</label>
+              <label className={labelClass}>
+                RUC{' '}
+                {form.country === 'PY' && (
+                  <span className={`font-normal ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>
+                    (formato: 80012345-6)
+                  </span>
+                )}
+              </label>
               <input
                 type="text"
                 value={form.ruc}
