@@ -19,6 +19,15 @@ class NuevaEmpresaDto {
   ruc?: string;
 }
 
+class CandidatoInvitacionDto {
+  candidateEmail!: string;
+  candidateName?: string;
+  companyName!: string;
+  positionName?: string;
+  message?: string;
+  invitacionUrl!: string;
+}
+
 @ApiExcludeController()
 @Controller('mailer/interna')
 export class MailerController {
@@ -56,6 +65,32 @@ export class MailerController {
 
     this.logger.log(
       `Alerta nueva empresa disparada: ${body.companyName} <${body.ownerEmail}>`
+    );
+    return { ok: true };
+  }
+
+  @Post('candidato-invitacion')
+  @HttpCode(HttpStatus.OK)
+  async candidatoInvitacion(
+    @Headers('x-internal-secret') secret: string,
+    @Body() body: CandidatoInvitacionDto
+  ) {
+    const expected = this.configService.get<string>('INTERNAL_NOTIFY_SECRET');
+    if (!expected || secret !== expected) {
+      throw new UnauthorizedException();
+    }
+
+    await this.mailerService.sendCandidatoInvitacion({
+      candidateEmail: body.candidateEmail,
+      candidateName: body.candidateName,
+      companyName: body.companyName,
+      positionName: body.positionName,
+      message: body.message,
+      invitacionUrl: body.invitacionUrl,
+    });
+
+    this.logger.log(
+      `Invitación enviada a <${body.candidateEmail}> de parte de ${body.companyName}`
     );
     return { ok: true };
   }

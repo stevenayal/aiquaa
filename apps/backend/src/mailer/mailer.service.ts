@@ -38,4 +38,15 @@ export class MailerService {
   }): Promise<void> {
     return this.resendService.sendNewEmpresaAlert(data);
   }
+
+  async sendCandidatoInvitacion(data: {
+    candidateEmail: string;
+    candidateName?: string;
+    companyName: string;
+    positionName?: string;
+    message?: string;
+    invitacionUrl: string;
+  }): Promise<void> {
+    return this.resendService.sendCandidatoInvitacion(data);
+  }
 }
