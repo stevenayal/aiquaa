@@ -243,7 +243,7 @@ export default function EmpresaPerfilPage() {
               isDarkMode ? 'border-slate-600 bg-slate-700' : 'border-gray-200 bg-gray-50'
             }`}>
               {empresa?.logo_url ? (
-                <Image src={empresa.logo_url} alt="Logo empresa" fill className="object-contain" unoptimized />
+                <Image key={empresa.logo_url} src={empresa.logo_url} alt="Logo empresa" fill className="object-contain" unoptimized />
               ) : (
                 <span className="text-3xl">🏢</span>
               )}

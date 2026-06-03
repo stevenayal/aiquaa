@@ -144,9 +144,10 @@ export async function validateProcessCodeAction(code: string) {
   const supabase = createClient();
   const { data, error } = await supabase
     .from('hiring_processes')
-    .select('code, company_name, position_name, status')
+    .select('code, company_name, position_name, status, expires_at')
     .eq('code', code.trim().toUpperCase())
     .eq('status', 'active')
+    .or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`)
     .single();
 
   if (error || !data) return { valid: false, process: null };
