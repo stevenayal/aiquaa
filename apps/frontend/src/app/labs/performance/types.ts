@@ -58,6 +58,7 @@ export interface ExamResult {
   companyName?: string;
   score: number;
   totalQuestions: number;
+  maxPossibleScore: number;
   correctAnswers: number;
   incorrectAnswers: number;
   passed: boolean;

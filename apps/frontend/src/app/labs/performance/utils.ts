@@ -197,6 +197,7 @@ export function generateExamResult(
     companyName,
     score,
     totalQuestions: questions.length,
+    maxPossibleScore,
     correctAnswers,
     incorrectAnswers,
     passed,
