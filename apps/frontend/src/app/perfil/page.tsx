@@ -74,6 +74,8 @@ export default function PerfilPage() {
     bio: '',
     role: '',
     country: '',
+    github_profile: '',
+    istqb_level: '',
   });
   const [initialized, setInitialized] = useState(false);
   const [xpProfile, setXpProfile] = useState<{totalXp:number;level:number;currentStreak:number;longestStreak:number;achievementCount:number;position:number}|null>(null);
@@ -87,6 +89,8 @@ export default function PerfilPage() {
         bio: user.user_metadata?.bio || '',
         role: user.user_metadata?.role || '',
         country: user.user_metadata?.country || '',
+        github_profile: user.user_metadata?.github_profile || '',
+        istqb_level: user.user_metadata?.istqb_level || '',
       });
       setInitialized(true);
     }
@@ -165,6 +169,8 @@ export default function PerfilPage() {
     fd.set('bio', formData.bio);
     fd.set('role', formData.role);
     fd.set('country', formData.country);
+    fd.set('github_profile', formData.github_profile);
+    fd.set('istqb_level', formData.istqb_level);
     startTransition(async () => {
       const result = await updateProfileAction(fd);
       if (result.error) {
@@ -332,6 +338,9 @@ export default function PerfilPage() {
               className={inputClass}
               maxLength={60}
             />
+            <p className={`text-xs mt-1 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>
+              👁️ Visible en el ranking público
+            </p>
           </div>
 
           {/* Username */}
@@ -402,6 +411,48 @@ export default function PerfilPage() {
               ))}
             </select>
           </div>
+
+          {/* GitHub Profile */}
+          {!isEmpresa && (
+            <div>
+              <label className={labelClass}>Perfil de GitHub</label>
+              <input
+                type="text"
+                value={formData.github_profile}
+                onChange={(e) =>
+                  setFormData((p) => ({ ...p, github_profile: e.target.value }))
+                }
+                placeholder="https://github.com/tu-usuario"
+                className={inputClass}
+                maxLength={100}
+              />
+              <p className={`text-xs mt-1 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>
+                Se usa para pre-completar tus datos en los exámenes
+              </p>
+            </div>
+          )}
+
+          {/* Nivel ISTQB */}
+          {!isEmpresa && (
+            <div>
+              <label className={labelClass}>Certificación ISTQB</label>
+              <select
+                value={formData.istqb_level}
+                onChange={(e) =>
+                  setFormData((p) => ({ ...p, istqb_level: e.target.value }))
+                }
+                className={inputClass}
+              >
+                <option value="">Sin certificación aún</option>
+                <option value="ctfl">Foundation Level (CTFL)</option>
+                <option value="ctal_ta">Advanced Level — Test Analyst</option>
+                <option value="ctal_tm">Advanced Level — Test Manager</option>
+                <option value="ctal_tta">Advanced Level — Technical Test Analyst</option>
+                <option value="expert">Expert Level</option>
+                <option value="en_proceso">En proceso de certificación</option>
+              </select>
+            </div>
+          )}
 
           {/* Role — candidatos only */}
           {!isEmpresa && (

@@ -36,6 +36,7 @@ export default function QuestionCard({
   };
 
   const handleMultipleAnswer = (label: string, checked: boolean) => {
+    if (checked && selectedAnswers.length >= question.correctAnswer.length) return;
     const newAnswers = checked
       ? [...selectedAnswers, label]
       : selectedAnswers.filter((a) => a !== label);
@@ -107,7 +108,11 @@ export default function QuestionCard({
                 <span className="text-blue-600 dark:text-blue-400">ℹ️</span>
                 <p className={`font-semibold ${isDarkMode ? 'text-blue-300' : 'text-blue-900'}`}>
                   {isMultiple
-                    ? 'Seleccionar DOS opciones'
+                    ? (() => {
+                        const words = ['', 'UNA', 'DOS', 'TRES', 'CUATRO', 'CINCO'];
+                        const n = question.correctAnswer.length;
+                        return `Seleccionar ${words[n] || n} opciones`;
+                      })()
                     : 'Seleccionar UNA opción'}
                 </p>
               </div>

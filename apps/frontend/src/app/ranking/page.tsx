@@ -1007,6 +1007,28 @@ export default function RankingPage() {
               </div>
             )}
 
+            <div className={`rounded-2xl p-4 flex items-center justify-between gap-4 ${isDarkMode ? 'bg-amber-900/20 border border-amber-700/50' : 'bg-amber-50 border border-amber-200'}`}>
+              <div>
+                <p className={`text-sm font-semibold ${isDarkMode ? 'text-amber-200' : 'text-amber-900'}`}>
+                  ¿Querés mejorar tu posición?
+                </p>
+                <p className={`text-xs mt-0.5 ${isDarkMode ? 'text-amber-400/80' : 'text-amber-700'}`}>
+                  Practicá con Modo Entrenamiento antes de rendir el examen oficial.
+                </p>
+              </div>
+              <a
+                href={
+                  activeTab === 'git'
+                    ? '/labs/git'
+                    : activeTab === 'istqb'
+                      ? '/labs/istqb'
+                      : '/labs/performance'
+                }
+                className="shrink-0 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold rounded-lg transition-colors"
+              >
+                Practicar →
+              </a>
+            </div>
             <p
               className={`text-center text-xs ${isDarkMode ? 'text-slate-600' : 'text-gray-400'}`}
             >
