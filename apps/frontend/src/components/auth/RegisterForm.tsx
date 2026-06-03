@@ -4,6 +4,7 @@ import React, { useRef, useState, useTransition } from 'react';
 import { registerAction, resendConfirmationAction } from '@/actions/auth';
 import AuthForm from './AuthForm';
 import { Audience } from './AudienceToggle';
+import { validateRegisterForm } from '@/lib/auth/validateRegisterForm';
 
 interface RegisterFormProps {
   lockedAudience?: Audience;
@@ -31,64 +32,16 @@ export default function RegisterForm({ lockedAudience }: RegisterFormProps) {
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
 
   const validateForm = (): boolean => {
-    const newErrors: { [key: string]: string } = {};
-    const isEmpresa = formData.audience === 'empresa';
-
-    const trimmedName = formData.name.trim();
-    if (!trimmedName) {
-      newErrors.name = isEmpresa
-        ? 'Nombre de contacto obligatorio'
-        : 'Nombre obligatorio';
-    } else if (trimmedName.length < 2 || trimmedName.length > 50) {
-      newErrors.name = 'El nombre debe tener entre 2 y 50 caracteres';
-    } else if (!/^[a-zA-ZÀ-ÿñÑ\s'\-]+$/.test(trimmedName)) {
-      newErrors.name = 'El nombre solo puede contener letras';
-    }
-
-    if (isEmpresa) {
-      const company = formData.companyName.trim();
-      if (!company) newErrors.companyName = 'Nombre de la empresa obligatorio';
-      else if (company.length < 2)
-        newErrors.companyName = 'Nombre demasiado corto';
-
-      const ruc = formData.ruc.trim();
-      if (!ruc) {
-        newErrors.ruc = 'RUC obligatorio';
-      } else if (!/^\d{6,8}-\d$/.test(ruc)) {
-        newErrors.ruc = 'Formato inválido. Ej: 80000001-1';
-      }
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = 'Correo obligatorio';
-    } else if (
-      !/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(formData.email)
-    ) {
-      newErrors.email = 'Correo inválido';
-    } else if (
-      /\.(con|cmo|gmal|gamil|yaho|homail|outlok)$/i.test(formData.email)
-    ) {
-      newErrors.email = 'Parece un error tipográfico en el email';
-    }
-
-    const password = passwordRef.current?.value ?? '';
-    const confirmPassword = confirmPasswordRef.current?.value ?? '';
-
-    if (!password) newErrors.password = 'Contraseña obligatoria';
-    else if (password.length < 8)
-      newErrors.password = 'La contraseña debe tener al menos 8 caracteres';
-    else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password))
-      newErrors.password = 'Debe contener mayúscula, minúscula y número';
-
-    if (!confirmPassword)
-      newErrors.confirmPassword = 'Confirmar contraseña obligatorio';
-    else if (password !== confirmPassword)
-      newErrors.confirmPassword = 'Las contraseñas no coinciden';
-
-    if (!isEmpresa && !formData.role) {
-      newErrors.role = 'Seleccioná tu rol para continuar';
-    }
-
+    const newErrors = validateRegisterForm({
+      name: formData.name,
+      email: formData.email,
+      audience: formData.audience,
+      companyName: formData.companyName,
+      ruc: formData.ruc,
+      role: formData.role,
+      password: passwordRef.current?.value ?? '',
+      confirmPassword: confirmPasswordRef.current?.value ?? '',
+    });
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
