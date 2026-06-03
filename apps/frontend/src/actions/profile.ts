@@ -10,12 +10,14 @@ export async function updateProfileAction(formData: FormData) {
   const username = (formData.get('username') as string)?.trim();
   const role = (formData.get('role') as string)?.trim();
   const country = (formData.get('country') as string)?.trim();
+  const githubProfile = (formData.get('github_profile') as string)?.trim();
+  const istqbLevel = (formData.get('istqb_level') as string)?.trim();
 
   const { data: { user }, error: userError } = await supabase.auth.getUser();
   if (userError || !user) return { error: 'No autenticado' };
 
   const { error } = await supabase.auth.updateUser({
-    data: { full_name: fullName, bio, username, role, country },
+    data: { full_name: fullName, bio, username, role, country, github_profile: githubProfile, istqb_level: istqbLevel },
   });
 
   if (error) return { error: error.message };

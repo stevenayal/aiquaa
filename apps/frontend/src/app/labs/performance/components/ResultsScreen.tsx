@@ -70,9 +70,9 @@ export default function ResultsScreen({
       tabDetails: '✓ Detalles',
       resultLabel: 'Resultado:',
       passMessage: (score: number, total: number, percentage: string) =>
-        `¡Felicitaciones! Has aprobado el simulacro con un puntaje de <strong>${score}</strong> sobre ${total}, logrando un <strong>${percentage}%</strong> de aciertos. El puntaje mínimo requerido es 26 puntos (65%).`,
+        `¡Felicitaciones! Has aprobado el simulacro con <strong>${score}</strong> puntos sobre ${total} posibles, logrando un <strong>${percentage}%</strong> de aciertos. Revisá las áreas de mejora para seguir optimizando tu resultado.`,
       failMessage: (score: number, total: number, percentage: string) =>
-        `No has alcanzado el puntaje mínimo de aprobación. Obtuviste <strong>${score}</strong> puntos sobre ${total}, equivalente a un <strong>${percentage}%</strong>. Se requieren al menos 26 puntos (65%) para aprobar. Te recomendamos revisar las áreas de mejora identificadas y volver a intentarlo.`,
+        `No has alcanzado el puntaje mínimo de aprobación (70%). Obtuviste <strong>${score}</strong> puntos sobre ${total} posibles, equivalente a un <strong>${percentage}%</strong>. Revisá las áreas identificadas abajo y practicá con el Modo Entrenamiento.`,
       strengths: 'Fortalezas Identificadas:',
       noStrengths: 'Ninguna área con desempeño sobresaliente identificada.',
       improvements: 'Áreas de Mejora:',
@@ -109,9 +109,9 @@ export default function ResultsScreen({
       tabDetails: '✓ Details',
       resultLabel: 'Result:',
       passMessage: (score: number, total: number, percentage: string) =>
-        `Congratulations! You passed the mock exam with a score of <strong>${score}</strong> out of ${total}, achieving <strong>${percentage}%</strong> accuracy. The minimum passing score is 26 points (65%).`,
+        `Congratulations! You passed the mock exam with <strong>${score}</strong> points out of ${total} possible, achieving <strong>${percentage}%</strong> accuracy. Review the improvement areas below to keep optimizing your result.`,
       failMessage: (score: number, total: number, percentage: string) =>
-        `You did not reach the minimum passing score. You obtained <strong>${score}</strong> points out of ${total}, equivalent to <strong>${percentage}%</strong>. At least 26 points (65%) are required to pass. We recommend reviewing the identified areas for improvement and trying again.`,
+        `You did not reach the minimum passing score (70%). You obtained <strong>${score}</strong> points out of ${total} possible, equivalent to <strong>${percentage}%</strong>. Review the areas identified below and practice with Training Mode.`,
       strengths: 'Identified Strengths:',
       noStrengths: 'No outstanding performance areas identified.',
       improvements: 'Areas for Improvement:',
@@ -387,6 +387,41 @@ export default function ResultsScreen({
                         </li>
                       )}
                     </ul>
+                  </div>
+                </div>
+
+                {/* Recomendaciones de estudio */}
+                <div className={`p-5 rounded-xl border-2 shadow-sm ${isDarkMode ? 'border-indigo-700 bg-indigo-900/20' : 'border-indigo-200 bg-indigo-50/50'}`}>
+                  <h4 className={`font-semibold mb-3 flex items-center gap-2 ${isDarkMode ? 'text-indigo-300' : 'text-indigo-900'}`}>
+                    <span className="text-xl">📖</span>
+                    {language === 'es' ? 'Material de estudio recomendado' : 'Recommended study material'}
+                  </h4>
+                  <div className="space-y-2 text-sm">
+                    <a
+                      href="/resources/performance/PtU_Certified_Performance_Tester_with_JMeter_Syllabus_SPN_Ver.1.1.pdf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`flex items-center gap-2 p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-indigo-900/40 text-indigo-300' : 'hover:bg-indigo-100 text-indigo-700'}`}
+                    >
+                      <span>📘</span>
+                      <span>PtU CPTJM Syllabus (Español)</span>
+                    </a>
+                    <a
+                      href="/resources/performance/PtU_Certified_Performance_Tester_with_JMeter_Syllabus_ENG_Ver.1.1.pdf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`flex items-center gap-2 p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-indigo-900/40 text-indigo-300' : 'hover:bg-indigo-100 text-indigo-700'}`}
+                    >
+                      <span>📗</span>
+                      <span>PtU CPTJM Syllabus (English)</span>
+                    </a>
+                    <a
+                      href="/labs/performance"
+                      className={`flex items-center gap-2 p-2 rounded-lg transition-colors font-medium ${isDarkMode ? 'hover:bg-indigo-900/40 text-cyan-300' : 'hover:bg-indigo-100 text-cyan-700'}`}
+                    >
+                      <span>🎓</span>
+                      <span>{language === 'es' ? 'Practicar con Modo Entrenamiento →' : 'Practice with Training Mode →'}</span>
+                    </a>
                   </div>
                 </div>
               </div>
