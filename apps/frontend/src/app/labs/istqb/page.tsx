@@ -92,6 +92,8 @@ export default function ISTQBSimulatorPage() {
         '• Informe completo al finalizar',
       ],
       startExam: 'Iniciar Modo Examen',
+      comingSoon: 'Próximamente',
+      incompleteModelWarning: `Este modelo solo tiene ${availableQuestions} pregunta(s) disponible(s) de ${examData.examInfo.totalQuestions}. Selecciona Modelo A en Español para el banco completo.`,
       trainingModeTitle: 'Modo Entrenamiento',
       trainingModeSubtitle: 'Practica con feedback inmediato en cada pregunta',
       trainingModeFeatures: [
@@ -139,6 +141,8 @@ export default function ISTQBSimulatorPage() {
         '• Full report upon completion',
       ],
       startExam: 'Start Exam Mode',
+      comingSoon: 'Coming Soon',
+      incompleteModelWarning: `This model only has ${availableQuestions} question(s) available out of ${examData.examInfo.totalQuestions}. Select Model A in Spanish for the full question bank.`,
       trainingModeTitle: 'Training Mode',
       trainingModeSubtitle: 'Practice with immediate feedback on each question',
       trainingModeFeatures: [
@@ -158,6 +162,8 @@ export default function ISTQBSimulatorPage() {
   const finalExamId = examId === 'es-model-a' ? 'es-model-a' : examId;
 
   const examData = useMemo(() => loadExamData(finalExamId), [finalExamId]);
+  const availableQuestions = examData.questions.length;
+  const isModelIncomplete = availableQuestions < examData.examInfo.totalQuestions;
 
   const handleStartExam = (mode: 'exam' | 'training') => {
     if (!participantName.trim()) {
@@ -250,22 +256,34 @@ export default function ISTQBSimulatorPage() {
                   {text.modelLabel}
                 </label>
                 <div className="flex rounded-lg shadow-sm">
-                  {['A', 'B', 'C'].map((m) => (
-                    <button
-                      key={m}
-                      onClick={() => setModel(m as 'A' | 'B' | 'C')}
-                      className={`flex-1 px-4 py-2 text-sm font-medium border-t border-b ${m === 'A' ? 'rounded-l-lg border-l' : ''
-                        } ${m === 'C' ? 'rounded-r-lg border-r' : ''} ${m !== 'A' && m !== 'C' ? 'border-r' : ''
-                        } ${model === m
-                          ? 'bg-amber-600 text-white border-amber-600'
-                          : isDarkMode
-                            ? 'bg-slate-700 text-slate-300 border-slate-600 hover:bg-slate-600'
-                            : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                        }`}
-                    >
-                      {text.model} {m}
-                    </button>
-                  ))}
+                  {(['A', 'B', 'C'] as const).map((m) => {
+                    const isDisabled = m === 'B' || m === 'C';
+                    return (
+                      <button
+                        key={m}
+                        onClick={() => !isDisabled && setModel(m)}
+                        disabled={isDisabled}
+                        title={isDisabled ? (text as any).comingSoon : undefined}
+                        className={`flex-1 px-4 py-2 text-sm font-medium border-t border-b ${m === 'A' ? 'rounded-l-lg border-l' : ''
+                          } ${m === 'C' ? 'rounded-r-lg border-r' : ''} ${m !== 'A' && m !== 'C' ? 'border-r' : ''
+                          } ${isDisabled
+                            ? isDarkMode
+                              ? 'bg-slate-800 text-slate-600 border-slate-700 cursor-not-allowed'
+                              : 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                            : model === m
+                              ? 'bg-amber-600 text-white border-amber-600'
+                              : isDarkMode
+                                ? 'bg-slate-700 text-slate-300 border-slate-600 hover:bg-slate-600'
+                                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                          }`}
+                      >
+                        <span className="block">{text.model} {m}</span>
+                        {isDisabled && (
+                          <span className="block text-xs mt-0.5 opacity-60">{(text as any).comingSoon}</span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -304,6 +322,12 @@ export default function ISTQBSimulatorPage() {
                 </div>
               </div>
             </div>
+
+            {isModelIncomplete && (
+              <div className={`mt-4 p-4 rounded-lg border-l-4 border-amber-500 ${isDarkMode ? 'bg-amber-900/20 text-amber-300' : 'bg-amber-50 text-amber-800'}`}>
+                <p className="text-sm font-medium">{(text as any).incompleteModelWarning}</p>
+              </div>
+            )}
 
             <div className="mt-6 space-y-3">
               <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{text.rulesTitle}</h3>
@@ -380,7 +404,8 @@ export default function ISTQBSimulatorPage() {
                     </ul>
                     <button
                       onClick={() => handleStartExam('exam')}
-                      className="w-full px-4 py-3 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-lg transition-colors"
+                      disabled={isModelIncomplete}
+                      className={`w-full px-4 py-3 font-semibold rounded-lg transition-colors ${isModelIncomplete ? 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-slate-600 dark:text-slate-400' : 'bg-amber-600 hover:bg-amber-700 text-white'}`}
                     >
                       {text.startExam}
                     </button>
@@ -405,10 +430,8 @@ export default function ISTQBSimulatorPage() {
                     </ul>
                     <button
                       onClick={() => handleStartExam('training')}
-                      className={`w-full px-4 py-3 font-semibold rounded-lg transition-colors ${isDarkMode
-                        ? 'bg-slate-600 hover:bg-slate-500 text-white border-2 border-slate-500'
-                        : 'bg-white hover:bg-gray-50 text-gray-900 border-2 border-gray-300'
-                        }`}
+                      disabled={isModelIncomplete}
+                      className={`w-full px-4 py-3 font-semibold rounded-lg transition-colors ${isModelIncomplete ? 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-slate-600 dark:text-slate-400 border-2 border-transparent' : isDarkMode ? 'bg-slate-600 hover:bg-slate-500 text-white border-2 border-slate-500' : 'bg-white hover:bg-gray-50 text-gray-900 border-2 border-gray-300'}`}
                     >
                       {text.startTraining}
                     </button>
