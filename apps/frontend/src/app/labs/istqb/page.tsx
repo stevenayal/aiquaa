@@ -54,6 +54,12 @@ export default function ISTQBSimulatorPage() {
     });
   };
 
+  const examId = `${language}-model-${model.toLowerCase()}`;
+  const finalExamId = examId === 'es-model-a' ? 'es-model-a' : examId;
+  const examData = useMemo(() => loadExamData(finalExamId), [finalExamId]);
+  const availableQuestions = examData.questions.length;
+  const isModelIncomplete = availableQuestions < examData.examInfo.totalQuestions;
+
   const t = {
     es: {
       title: 'AIQUAA | Simulacro CTFL v4.0',
@@ -156,14 +162,6 @@ export default function ISTQBSimulatorPage() {
   };
 
   const text = t[language as keyof typeof t];
-
-  const examId = `${language}-model-${model.toLowerCase()}`;
-  // Handle legacy naming for Spanish Model A
-  const finalExamId = examId === 'es-model-a' ? 'es-model-a' : examId;
-
-  const examData = useMemo(() => loadExamData(finalExamId), [finalExamId]);
-  const availableQuestions = examData.questions.length;
-  const isModelIncomplete = availableQuestions < examData.examInfo.totalQuestions;
 
   const handleStartExam = (mode: 'exam' | 'training') => {
     if (!participantName.trim()) {
