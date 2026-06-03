@@ -209,7 +209,7 @@ export default function ResultsScreen({
                   </span>
                 </div>
                 <span className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                  {result.score} / {result.totalQuestions}
+                  {result.score} / {result.maxPossibleScore}
                 </span>
               </div>
             </div>

@@ -10,6 +10,7 @@ interface SaveExamResultPayload {
   candidate_id?: string;
   score: number;
   total_questions: number;
+  max_possible_score?: number;
   correct_answers: number;
   incorrect_answers: number;
   passing_score?: number;
