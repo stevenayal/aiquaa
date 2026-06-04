@@ -5,11 +5,11 @@ import { useRouter } from 'next/navigation';
 import { resendConfirmationAction } from '@/actions/auth';
 import { createClient } from '@/lib/supabase/client';
 import AuthForm from './AuthForm';
+import EmailVerificationModal from './EmailVerificationModal';
 
 export default function LoginForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [isResending, setIsResending] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
@@ -18,7 +18,7 @@ export default function LoginForm() {
   const [formData, setFormData] = useState({
     email: '',
   });
-  const [showResend, setShowResend] = useState(false);
+  const [showVerifyModal, setShowVerifyModal] = useState(false);
 
   const passwordRef = useRef<HTMLInputElement>(null);
 
@@ -41,7 +41,6 @@ export default function LoginForm() {
     e.preventDefault();
     setErrors({});
     setShowAlert(false);
-    setShowResend(false);
 
     if (!validateForm()) return;
 
@@ -58,9 +57,8 @@ export default function LoginForm() {
       if (error.message.includes('Invalid login')) {
         msg = 'Credenciales inválidas. Verificá tu email y contraseña.';
       } else if (error.message.includes('Email not confirmed')) {
-        msg =
-          'Tu email aún no fue confirmado. Revisá tu bandeja de entrada o reenviá el correo.';
-        setShowResend(true);
+        setShowVerifyModal(true);
+        return;
       } else if (
         error.message.toLowerCase().includes('fetch') ||
         error.message.toLowerCase().includes('network') ||
@@ -79,26 +77,8 @@ export default function LoginForm() {
   };
 
   const handleResend = async () => {
-    if (!formData.email) {
-      setAlertMessage('Ingresá tu email primero.');
-      setAlertType('error');
-      setShowAlert(true);
-      return;
-    }
-    setIsResending(true);
     const result = await resendConfirmationAction(formData.email);
-    setIsResending(false);
-    if (result.error) {
-      setAlertMessage('Error al reenviar: ' + result.error);
-      setAlertType('error');
-    } else {
-      setAlertMessage(
-        'Correo de confirmación reenviado. Revisá tu bandeja de entrada.'
-      );
-      setAlertType('success');
-      setShowResend(false);
-    }
-    setShowAlert(true);
+    if (result.error) throw new Error(result.error);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -127,6 +107,15 @@ export default function LoginForm() {
   };
 
   return (
+    <>
+    {showVerifyModal && (
+      <EmailVerificationModal
+        email={formData.email}
+        context="login-blocked"
+        onClose={() => setShowVerifyModal(false)}
+        onResend={handleResend}
+      />
+    )}
     <AuthForm
       mode="login"
       onSubmit={handleSubmit}
@@ -138,17 +127,15 @@ export default function LoginForm() {
       onClearErrors={() => {
         setErrors({});
         setShowAlert(false);
-        setShowResend(false);
       }}
       socialLoginError={socialLoginError}
       onSocialError={() => {}}
       showAlert={showAlert}
       alertMessage={alertMessage}
       alertType={alertType}
-      showResend={showResend}
-      onResend={handleResend}
-      isResending={isResending}
+      showResend={false}
       passwordRef={passwordRef}
     />
+    </>
   );
 }

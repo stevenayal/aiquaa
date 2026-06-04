@@ -3,6 +3,7 @@
 import React, { useRef, useState, useTransition } from 'react';
 import { registerAction, resendConfirmationAction } from '@/actions/auth';
 import AuthForm from './AuthForm';
+import EmailVerificationModal from './EmailVerificationModal';
 import { Audience } from './AudienceToggle';
 import { validateRegisterForm } from '@/lib/auth/validateRegisterForm';
 
@@ -12,13 +13,12 @@ interface RegisterFormProps {
 
 export default function RegisterForm({ lockedAudience }: RegisterFormProps) {
   const [isPending, startTransition] = useTransition();
-  const [isResending, setIsResending] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState<'success' | 'error'>('error');
   const [socialLoginError] = useState<string | null>(null);
-  const [showResend, setShowResend] = useState(false);
+  const [showVerifyModal, setShowVerifyModal] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -76,28 +76,14 @@ export default function RegisterForm({ lockedAudience }: RegisterFormProps) {
         setAlertType('error');
         setShowAlert(true);
       } else if (result?.success) {
-        setAlertMessage(
-          '¡Registro exitoso! Revisá tu email para confirmar tu cuenta.'
-        );
-        setAlertType('success');
-        setShowAlert(true);
-        setShowResend(true);
+        setShowVerifyModal(true);
       }
     });
   };
 
   const handleResend = async () => {
-    setIsResending(true);
     const result = await resendConfirmationAction(formData.email);
-    setIsResending(false);
-    if (result.error) {
-      setAlertMessage('Error al reenviar: ' + result.error);
-      setAlertType('error');
-    } else {
-      setAlertMessage('Correo reenviado. Revisá tu bandeja de entrada.');
-      setAlertType('success');
-    }
-    setShowAlert(true);
+    if (result.error) throw new Error(result.error);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -143,6 +129,15 @@ export default function RegisterForm({ lockedAudience }: RegisterFormProps) {
   };
 
   return (
+    <>
+    {showVerifyModal && (
+      <EmailVerificationModal
+        email={formData.email}
+        context="post-register"
+        onClose={() => setShowVerifyModal(false)}
+        onResend={handleResend}
+      />
+    )}
     <AuthForm
       mode="register"
       onSubmit={handleSubmit}
@@ -162,11 +157,10 @@ export default function RegisterForm({ lockedAudience }: RegisterFormProps) {
       showAlert={showAlert}
       alertMessage={alertMessage}
       alertType={alertType}
-      showResend={showResend}
-      onResend={handleResend}
-      isResending={isResending}
+      showResend={false}
       passwordRef={passwordRef}
       confirmPasswordRef={confirmPasswordRef}
     />
+    </>
   );
 }
