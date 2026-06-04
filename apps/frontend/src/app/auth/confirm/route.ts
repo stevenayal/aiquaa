@@ -30,6 +30,7 @@ export async function GET(request: NextRequest) {
       const destination = next ?? getDefaultRedirect(audience);
       return NextResponse.redirect(`${origin}${destination}`);
     }
+    console.error('[auth/confirm] exchangeCodeForSession failed:', error?.message);
   }
 
   if (token_hash && type) {
@@ -43,6 +44,11 @@ export async function GET(request: NextRequest) {
       const destination = next ?? getDefaultRedirect(audience);
       return NextResponse.redirect(`${origin}${destination}`);
     }
+    console.error('[auth/confirm] verifyOtp failed:', error?.message);
+  }
+
+  if (!code && !token_hash) {
+    console.error('[auth/confirm] no code or token_hash in request. params:', Object.fromEntries(searchParams));
   }
 
   const fallbackUrl = new URL(`${origin}/auth/confirm-result`);

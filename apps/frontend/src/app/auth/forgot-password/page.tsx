@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { forgotPasswordAction } from '@/actions/auth';
+import { createClient } from '@/lib/supabase/client';
 import { useTheme } from '@/contexts/ThemeContext';
 
 export default function ForgotPasswordPage() {
@@ -20,10 +20,14 @@ export default function ForgotPasswordPage() {
       return;
     }
     setIsLoading(true);
-    const result = await forgotPasswordAction(email);
+    const supabase = createClient();
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+    const { error: sbError } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${siteUrl}/auth/confirm?next=/auth/reset-password`,
+    });
     setIsLoading(false);
-    if (result.error) {
-      setError(result.error);
+    if (sbError) {
+      setError(sbError.message);
     } else {
       setSent(true);
     }
