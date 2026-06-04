@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(resultUrl.toString());
   }
 
-  const supabase = createClient();
+  const supabase = await createClient();
 
   if (code) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
