@@ -114,7 +114,7 @@ export default function HomePage() {
                     </span>
                   </Link>
                   <Link
-                    href="/comunidad"
+                    href="/register"
                     className={`inline-flex items-center justify-center px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300 focus:outline-none focus:ring-4 border-2 ${
                       isDarkMode
                         ? 'text-slate-300 border-slate-600 hover:bg-slate-800/50 hover:border-slate-500 focus:ring-slate-500/50'
@@ -587,15 +587,15 @@ export default function HomePage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/comunidad"
+              href="/register"
               className={`inline-flex items-center gap-2 px-8 py-3 rounded-lg font-bold text-lg transition-all ${
                 isDarkMode
                   ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
                   : 'bg-indigo-500 hover:bg-indigo-600 text-white'
               }`}
             >
-              <span>💬</span>
-              Unirse a la Comunidad
+              <span>🚀</span>
+              Registrarse Gratis
             </Link>
             <Link
               href="/about"

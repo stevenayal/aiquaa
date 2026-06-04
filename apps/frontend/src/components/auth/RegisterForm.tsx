@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useState, useTransition } from 'react';
-import { registerAction, resendConfirmationAction } from '@/actions/auth';
+import { registerAction, resendConfirmationAction, checkEmailTakenAction } from '@/actions/auth';
 import AuthForm from './AuthForm';
 import EmailVerificationModal from './EmailVerificationModal';
 import { Audience } from './AudienceToggle';
@@ -19,6 +19,7 @@ export default function RegisterForm({ lockedAudience }: RegisterFormProps) {
   const [alertType, setAlertType] = useState<'success' | 'error'>('error');
   const [socialLoginError] = useState<string | null>(null);
   const [showVerifyModal, setShowVerifyModal] = useState(false);
+  const [emailChecking, setEmailChecking] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -68,17 +69,34 @@ export default function RegisterForm({ lockedAudience }: RegisterFormProps) {
     startTransition(async () => {
       const result = await registerAction(data);
       if (result?.error) {
-        let msg = result.error;
         if (result.error.includes('already registered')) {
-          msg = 'Este email ya está registrado. Intentá iniciar sesión.';
+          setErrors((prev) => ({
+            ...prev,
+            email: 'Este email ya está registrado. Iniciá sesión.',
+          }));
+        } else {
+          setAlertMessage(result.error);
+          setAlertType('error');
+          setShowAlert(true);
         }
-        setAlertMessage(msg);
-        setAlertType('error');
-        setShowAlert(true);
       } else if (result?.success) {
         setShowVerifyModal(true);
       }
     });
+  };
+
+  const handleEmailBlur = async () => {
+    const email = formData.email.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
+    setEmailChecking(true);
+    const { taken } = await checkEmailTakenAction(email);
+    setEmailChecking(false);
+    if (taken) {
+      setErrors((prev) => ({
+        ...prev,
+        email: 'Este email ya está registrado. Iniciá sesión.',
+      }));
+    }
   };
 
   const handleResend = async () => {
@@ -158,6 +176,8 @@ export default function RegisterForm({ lockedAudience }: RegisterFormProps) {
       alertMessage={alertMessage}
       alertType={alertType}
       showResend={false}
+      onEmailBlur={handleEmailBlur}
+      emailChecking={emailChecking}
       passwordRef={passwordRef}
       confirmPasswordRef={confirmPasswordRef}
     />

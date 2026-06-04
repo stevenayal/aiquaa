@@ -40,6 +40,8 @@ interface AuthFormProps {
   showResend?: boolean;
   onResend?: () => void;
   isResending?: boolean;
+  onEmailBlur?: () => void;
+  emailChecking?: boolean;
   passwordRef?: React.RefObject<HTMLInputElement>;
   confirmPasswordRef?: React.RefObject<HTMLInputElement>;
 }
@@ -63,6 +65,8 @@ export default function AuthForm({
   showResend = false,
   onResend,
   isResending = false,
+  onEmailBlur,
+  emailChecking = false,
   passwordRef,
   confirmPasswordRef,
 }: AuthFormProps) {
@@ -327,16 +331,27 @@ export default function AuthForm({
               >
                 {isEmpresa ? 'Email corporativo' : t('auth.field.email')}
               </label>
-              <input
-                id="email"
-                name="email"
-                type="text"
-                autoComplete="email"
-                className={fieldClass(!!errors.email)}
-                placeholder={isEmpresa ? 'tu@empresa.com' : 'tu@email.com'}
-                value={formData.email || ''}
-                onChange={onFieldChange}
-              />
+              <div className="relative">
+                <input
+                  id="email"
+                  name="email"
+                  type="text"
+                  autoComplete="email"
+                  className={fieldClass(!!errors.email)}
+                  placeholder={isEmpresa ? 'tu@empresa.com' : 'tu@email.com'}
+                  value={formData.email || ''}
+                  onChange={onFieldChange}
+                  onBlur={onEmailBlur}
+                />
+                {emailChecking && (
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <svg className="animate-spin h-4 w-4 text-indigo-400" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                  </span>
+                )}
+              </div>
               {errors.email && (
                 <p className="mt-1 text-xs text-red-500 dark:text-red-400 leading-relaxed">
                   {errors.email}

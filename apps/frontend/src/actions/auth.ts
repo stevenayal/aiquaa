@@ -80,6 +80,29 @@ export async function resendConfirmationAction(email: string) {
   return { success: true };
 }
 
+export async function checkEmailTakenAction(email: string): Promise<{ taken: boolean }> {
+  try {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!url || !serviceKey) return { taken: false };
+
+    const res = await fetch(
+      `${url}/auth/v1/admin/users?email=${encodeURIComponent(email)}`,
+      {
+        headers: {
+          apikey: serviceKey,
+          Authorization: `Bearer ${serviceKey}`,
+        },
+      }
+    );
+    if (!res.ok) return { taken: false };
+    const data = await res.json();
+    return { taken: (data.users?.length ?? 0) > 0 };
+  } catch {
+    return { taken: false };
+  }
+}
+
 export async function forgotPasswordAction(email: string) {
   const supabase = await createClient();
   const siteUrl =
