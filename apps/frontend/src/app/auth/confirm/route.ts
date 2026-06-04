@@ -27,6 +27,9 @@ export async function GET(request: NextRequest) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
       const audience = data.user?.user_metadata?.audience;
+      if (!next && !type) {
+        return NextResponse.redirect(`${origin}/auth/confirm-result?success=1&next=${encodeURIComponent(getDefaultRedirect(audience))}`);
+      }
       const destination = next ?? getDefaultRedirect(audience);
       return NextResponse.redirect(`${origin}${destination}`);
     }
@@ -42,6 +45,9 @@ export async function GET(request: NextRequest) {
       const { data: { user } } = await supabase.auth.getUser();
       const audience = user?.user_metadata?.audience;
       const destination = next ?? getDefaultRedirect(audience);
+      if (type === 'signup') {
+        return NextResponse.redirect(`${origin}/auth/confirm-result?success=1&next=${encodeURIComponent(destination)}`);
+      }
       return NextResponse.redirect(`${origin}${destination}`);
     }
     console.error('[auth/confirm] verifyOtp failed:', error?.message);
