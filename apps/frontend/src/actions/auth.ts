@@ -2,6 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 export async function loginAction(formData: FormData) {
   const email = formData.get('email') as string;
@@ -78,6 +79,16 @@ export async function resendConfirmationAction(email: string) {
   });
   if (error) return { error: error.message };
   return { success: true };
+}
+
+export async function checkEmailTakenAction(email: string): Promise<{ taken: boolean }> {
+  try {
+    const admin = createAdminClient();
+    const { data } = await admin.auth.admin.getUserByEmail(email);
+    return { taken: !!data.user };
+  } catch {
+    return { taken: false };
+  }
 }
 
 export async function forgotPasswordAction(email: string) {
