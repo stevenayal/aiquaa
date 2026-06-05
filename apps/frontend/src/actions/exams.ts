@@ -111,7 +111,7 @@ export async function getExamResultsAction() {
   const { data, error } = await supabase
     .from('exam_results')
     .select(
-      'id, exam_type, exam_mode, score, total_questions, passing_score, passed, percentage, time_spent, model, language, created_at'
+      'id, exam_type, exam_mode, score, total_questions, max_possible_score, passing_score, passed, percentage, time_spent, model, language, created_at'
     )
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })

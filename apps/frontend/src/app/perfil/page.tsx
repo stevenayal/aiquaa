@@ -18,6 +18,7 @@ interface ExamResultRow {
   exam_mode: 'exam' | 'training';
   score: number;
   total_questions: number;
+  max_possible_score: number | null;
   passing_score: number;
   passed: boolean;
   percentage: number;
@@ -770,7 +771,7 @@ export default function PerfilPage() {
                       <p
                         className={`text-sm font-bold ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}
                       >
-                        {r.score}/{r.total_questions}
+                        {r.score}/{r.max_possible_score ?? r.total_questions}
                       </p>
                       <p
                         className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
