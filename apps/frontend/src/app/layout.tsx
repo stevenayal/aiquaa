@@ -36,12 +36,13 @@ export const metadata: Metadata = {
   creator: 'AIQUAA',
   icons: {
     icon: [
+      { url: '/favicon.ico', sizes: 'any' },
       { url: '/favicon.svg', type: 'image/svg+xml' },
       { url: '/favicon-64.png', sizes: '64x64', type: 'image/png' },
       { url: '/favicon-512.png', sizes: '512x512', type: 'image/png' },
     ],
     apple: '/favicon-512.png',
-    shortcut: '/favicon.svg',
+    shortcut: '/favicon-64.png',
   },
   openGraph: {
     type: 'website',
