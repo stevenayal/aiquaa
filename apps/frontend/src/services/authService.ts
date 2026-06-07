@@ -1,5 +1,4 @@
 import { jwtDecode } from 'jwt-decode';
-import { getGoogleAuthUrl, getGitHubAuthUrl } from '../config/oauth';
 
 function getApiBaseUrl(): string {
   const urlFromEnv = process.env.NEXT_PUBLIC_API_URL;
@@ -83,14 +82,17 @@ class AuthService {
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
     const url = `${API_BASE_URL}${endpoint}`;
-    
+
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
     };
 
     // Agregar headers adicionales si existen
     if (options.headers) {
-      if (typeof options.headers === 'object' && !Array.isArray(options.headers)) {
+      if (
+        typeof options.headers === 'object' &&
+        !Array.isArray(options.headers)
+      ) {
         Object.entries(options.headers).forEach(([key, value]) => {
           if (typeof value === 'string') {
             headers[key] = value;
@@ -130,14 +132,15 @@ class AuthService {
       }
 
       const data = await response.json();
-      
+
       if (!response.ok) {
         // Manejar diferentes códigos de error HTTP
         let errorMessage = data.message || `Error ${response.status}`;
-        
+
         switch (response.status) {
           case 400:
-            errorMessage = 'Datos de entrada inválidos. Verifica la información proporcionada.';
+            errorMessage =
+              'Datos de entrada inválidos. Verifica la información proporcionada.';
             break;
           case 401:
             errorMessage = 'Credenciales inválidas o sesión expirada.';
@@ -152,47 +155,53 @@ class AuthService {
             errorMessage = 'Los datos proporcionados no son válidos.';
             break;
           case 429:
-            errorMessage = 'Demasiadas solicitudes. Intenta nuevamente en unos minutos.';
+            errorMessage =
+              'Demasiadas solicitudes. Intenta nuevamente en unos minutos.';
             break;
           case 500:
-            errorMessage = 'Error interno del servidor. Contacta al administrador.';
+            errorMessage =
+              'Error interno del servidor. Contacta al administrador.';
             break;
           case 502:
-            errorMessage = 'El servidor no está disponible temporalmente. Intenta más tarde.';
+            errorMessage =
+              'El servidor no está disponible temporalmente. Intenta más tarde.';
             break;
           case 503:
-            errorMessage = 'El servicio no está disponible temporalmente. Intenta más tarde.';
+            errorMessage =
+              'El servicio no está disponible temporalmente. Intenta más tarde.';
             break;
           default:
             if (response.status >= 500) {
               errorMessage = 'Error del servidor. Contacta al administrador.';
             } else if (response.status >= 400) {
-              errorMessage = 'Error en la solicitud. Verifica los datos proporcionados.';
+              errorMessage =
+                'Error en la solicitud. Verifica los datos proporcionados.';
             }
         }
-        
+
         throw new Error(errorMessage);
       }
 
       return data;
     } catch (error) {
       console.error('Error en petición:', error);
-      
+
       // Manejar diferentes tipos de errores
       let errorMessage = 'Error desconocido';
-      
+
       if (error instanceof TypeError) {
         if (error.message.includes('fetch')) {
           errorMessage = 'Error de conexión. Verifica tu conexión a internet.';
         } else if (error.message.includes('Failed to fetch')) {
-          errorMessage = 'No se pudo conectar con el servidor. Verifica tu conexión o contacta al administrador.';
+          errorMessage =
+            'No se pudo conectar con el servidor. Verifica tu conexión o contacta al administrador.';
         } else {
           errorMessage = `Error de red: ${error.message}`;
         }
       } else if (error instanceof Error) {
         errorMessage = error.message;
       }
-      
+
       return {
         success: false,
         error: errorMessage,
@@ -200,7 +209,9 @@ class AuthService {
     }
   }
 
-  async login(credentials: LoginCredentials): Promise<ApiResponse<AuthResponse>> {
+  async login(
+    credentials: LoginCredentials
+  ): Promise<ApiResponse<AuthResponse>> {
     try {
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
@@ -217,7 +228,7 @@ class AuthService {
       // Manejo específico de errores por status code
       if (!response.ok) {
         let errorMessage: string;
-        
+
         switch (response.status) {
           case 401:
             errorMessage = 'Credenciales inválidas';
@@ -232,10 +243,12 @@ class AuthService {
             errorMessage = data.message || 'Datos de entrada inválidos';
             break;
           case 429:
-            errorMessage = 'Demasiadas solicitudes. Intenta nuevamente en unos minutos.';
+            errorMessage =
+              'Demasiadas solicitudes. Intenta nuevamente en unos minutos.';
             break;
           case 500:
-            errorMessage = 'Error interno del servidor. Contacta al administrador.';
+            errorMessage =
+              'Error interno del servidor. Contacta al administrador.';
             break;
           default:
             errorMessage = 'Error de conexión';
@@ -254,15 +267,15 @@ class AuthService {
       return data;
     } catch (error) {
       console.error('Error en login:', error);
-      
+
       let errorMessage = 'Error de conexión';
-      
+
       if (error instanceof TypeError && error.message.includes('fetch')) {
         errorMessage = 'Error de conexión. Verifica tu conexión a internet.';
       } else if (error instanceof Error) {
         errorMessage = error.message;
       }
-      
+
       return {
         success: false,
         error: errorMessage,
@@ -293,56 +306,28 @@ class AuthService {
       return response;
     } catch (error) {
       console.error('Error en registro:', error);
-      
+
       let errorMessage = 'Error inesperado en el registro';
-      
+
       if (error instanceof TypeError && error.message.includes('fetch')) {
-        errorMessage = 'Error de conexión. Verifica tu conexión a internet o contacta al administrador.';
+        errorMessage =
+          'Error de conexión. Verifica tu conexión a internet o contacta al administrador.';
       } else if (error instanceof Error) {
         // Mapear errores específicos de red
         if (error.message.includes('Failed to fetch')) {
-          errorMessage = 'No se pudo conectar con el servidor. Verifica tu conexión o contacta al administrador.';
+          errorMessage =
+            'No se pudo conectar con el servidor. Verifica tu conexión o contacta al administrador.';
         } else if (error.message.includes('NetworkError')) {
           errorMessage = 'Error de red. Verifica tu conexión a internet.';
         } else {
           errorMessage = error.message;
         }
       }
-      
+
       return {
         success: false,
         error: errorMessage,
       };
-    }
-  }
-
-  // Método para login con GitHub
-  loginWithGitHub(): void {
-    try {
-      const githubAuthUrl = getGitHubAuthUrl();
-      console.log('🔗 Redirigiendo a GitHub OAuth:', githubAuthUrl);
-      
-      if (typeof window !== 'undefined') {
-        window.location.href = githubAuthUrl;
-      }
-    } catch (error) {
-      console.error('Error al generar URL de GitHub OAuth:', error);
-      throw error;
-    }
-  }
-
-  // Método para login con Google
-  loginWithGoogle(): void {
-    try {
-      const googleAuthUrl = getGoogleAuthUrl();
-      console.log('🔗 Redirigiendo a Google OAuth:', googleAuthUrl);
-      
-      if (typeof window !== 'undefined') {
-        window.location.href = googleAuthUrl;
-      }
-    } catch (error) {
-      console.error('Error al generar URL de Google OAuth:', error);
-      throw error;
     }
   }
 
@@ -366,10 +351,13 @@ class AuthService {
       return { success: false, error: 'No hay refresh token' };
     }
 
-    const response = await this.makeRequest<{ accessToken: string }>('/auth/refresh', {
-      method: 'POST',
-      body: JSON.stringify({ refreshToken: this.refreshToken }),
-    });
+    const response = await this.makeRequest<{ accessToken: string }>(
+      '/auth/refresh',
+      {
+        method: 'POST',
+        body: JSON.stringify({ refreshToken: this.refreshToken }),
+      }
+    );
 
     if (response.success && response.data) {
       this.accessToken = response.data.accessToken;
@@ -383,14 +371,19 @@ class AuthService {
     return this.makeRequest<User>('/auth/me');
   }
 
-  async requestPasswordReset(email: string): Promise<ApiResponse<{ message: string }>> {
+  async requestPasswordReset(
+    email: string
+  ): Promise<ApiResponse<{ message: string }>> {
     return this.makeRequest<{ message: string }>('/auth/request-reset', {
       method: 'POST',
       body: JSON.stringify({ email }),
     });
   }
 
-  async resetPassword(token: string, newPassword: string): Promise<ApiResponse<{ message: string }>> {
+  async resetPassword(
+    token: string,
+    newPassword: string
+  ): Promise<ApiResponse<{ message: string }>> {
     return this.makeRequest<{ message: string }>('/auth/reset-password', {
       method: 'POST',
       body: JSON.stringify({ token, newPassword }),
@@ -407,7 +400,7 @@ class AuthService {
   private setTokens(accessToken: string, refreshToken: string): void {
     this.accessToken = accessToken;
     this.refreshToken = refreshToken;
-    
+
     if (typeof window !== 'undefined') {
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
@@ -417,7 +410,7 @@ class AuthService {
   private clearTokens(): void {
     this.accessToken = null;
     this.refreshToken = null;
-    
+
     if (typeof window !== 'undefined') {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
@@ -426,15 +419,15 @@ class AuthService {
 
   isAuthenticated(): boolean {
     if (!this.accessToken) return false;
-    
+
     try {
       const decoded = jwtDecode(this.accessToken);
       const currentTime = Date.now() / 1000;
-      
+
       if (decoded && typeof decoded === 'object' && 'exp' in decoded) {
         return (decoded.exp as number) > currentTime;
       }
-      
+
       return false;
     } catch {
       return false;
@@ -447,7 +440,7 @@ class AuthService {
 
   getUserFromToken(): User | null {
     if (!this.accessToken) return null;
-    
+
     try {
       const decoded = jwtDecode(this.accessToken);
       if (decoded && typeof decoded === 'object' && 'user' in decoded) {
@@ -460,24 +453,37 @@ class AuthService {
   }
 
   // Método para verificar la conectividad con la API
-  async checkApiConnectivity(): Promise<{ isConnected: boolean; message: string }> {
+  async checkApiConnectivity(): Promise<{
+    isConnected: boolean;
+    message: string;
+  }> {
     try {
       const response = await fetch(`${API_BASE_URL}/health`, {
         method: 'GET',
         mode: 'cors',
         credentials: 'include',
       });
-      
+
       if (response.ok) {
         return { isConnected: true, message: 'API conectada correctamente' };
       } else {
-        return { isConnected: false, message: `API respondió con estado ${response.status}` };
+        return {
+          isConnected: false,
+          message: `API respondió con estado ${response.status}`,
+        };
       }
     } catch (error) {
       if (error instanceof TypeError && error.message.includes('fetch')) {
-        return { isConnected: false, message: 'No se pudo conectar con la API. Verifica tu conexión a internet.' };
+        return {
+          isConnected: false,
+          message:
+            'No se pudo conectar con la API. Verifica tu conexión a internet.',
+        };
       }
-      return { isConnected: false, message: `Error de conexión: ${error instanceof Error ? error.message : 'Error desconocido'}` };
+      return {
+        isConnected: false,
+        message: `Error de conexión: ${error instanceof Error ? error.message : 'Error desconocido'}`,
+      };
     }
   }
 }
