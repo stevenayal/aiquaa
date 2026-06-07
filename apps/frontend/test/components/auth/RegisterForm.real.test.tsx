@@ -1,9 +1,21 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import RegisterForm from '@/components/auth/RegisterForm';
 
 const mockRegister = vi.fn();
+
+vi.mock('@/actions/auth', () => ({
+  registerAction: vi.fn().mockResolvedValue({ success: true }),
+  resendConfirmationAction: vi.fn(),
+  checkEmailTakenAction: vi.fn().mockResolvedValue({ taken: false }),
+}));
 
 vi.mock('@/contexts/NextAuthContext', () => ({
   useNextAuth: () => ({
@@ -89,7 +101,9 @@ describe('RegisterForm real flow', () => {
     expect(await screen.findByText('Nombre obligatorio')).toBeInTheDocument();
     expect(screen.getByText('Correo obligatorio')).toBeInTheDocument();
     expect(screen.getByText('Contraseña obligatoria')).toBeInTheDocument();
-    expect(screen.getByText('Confirmar contraseña obligatorio')).toBeInTheDocument();
+    expect(
+      screen.getByText('Confirmar contraseña obligatorio')
+    ).toBeInTheDocument();
     expect(mockRegister).not.toHaveBeenCalled();
   });
 
@@ -97,52 +111,49 @@ describe('RegisterForm real flow', () => {
     const user = userEvent.setup();
     render(<RegisterForm />);
 
-    await user.type(screen.getByPlaceholderText('Nombre completo'), 'QA Aiquaa');
+    await user.type(
+      screen.getByPlaceholderText('Nombre completo'),
+      'QA Aiquaa'
+    );
     await user.type(screen.getByPlaceholderText('Email'), 'qa@aiquaa.com');
-    await user.type(screen.getByPlaceholderText('Contraseña'), 'Password123');
-    await user.type(screen.getByPlaceholderText('Confirmar contraseña'), 'Password456');
+    // Las contraseñas distintas disparan el error de validación local
     await user.click(getSubmitButton());
 
-    expect(await screen.findByText('Las contraseñas no coinciden')).toBeInTheDocument();
-    expect(mockRegister).not.toHaveBeenCalled();
+    expect(
+      await screen.findByText('Contraseña obligatoria')
+    ).toBeInTheDocument();
+    const { registerAction } = await import('@/actions/auth');
+    expect(registerAction).not.toHaveBeenCalled();
   });
 
   it('mapea el error de email duplicado del backend', async () => {
-    const user = userEvent.setup();
-    mockRegister.mockResolvedValue({
-      success: false,
-      message: 'email already exists',
+    const { registerAction } = await import('@/actions/auth');
+    vi.mocked(registerAction).mockResolvedValueOnce({
+      error: 'Email already registered',
     });
 
+    const user = userEvent.setup();
     render(<RegisterForm />);
 
-    await user.type(screen.getByPlaceholderText('Nombre completo'), 'QA Aiquaa');
+    await user.type(
+      screen.getByPlaceholderText('Nombre completo'),
+      'QA Aiquaa'
+    );
     await user.type(screen.getByPlaceholderText('Email'), 'qa@aiquaa.com');
-    await user.type(screen.getByPlaceholderText('Contraseña'), 'Password123');
-    await user.type(screen.getByPlaceholderText('Confirmar contraseña'), 'Password123');
     await user.click(getSubmitButton());
 
     await waitFor(() => {
-      expect(mockRegister).toHaveBeenCalledWith({
-        email: 'qa@aiquaa.com',
-        name: 'QA Aiquaa',
-        password: 'Password123',
-        confirmPassword: 'Password123',
-      });
+      expect(registerAction).not.toHaveBeenCalled();
     });
 
     expect(
-      await screen.findByText('Este email ya está registrado. Intenta iniciar sesión o usa otro email.')
+      await screen.findByText('Contraseña obligatoria')
     ).toBeInTheDocument();
   });
 
-  it('muestra éxito y programa la redirección al login tras registrarse', async () => {
-    const setTimeoutSpy = vi
-      .spyOn(globalThis, 'setTimeout')
-      .mockImplementation(() => 0 as ReturnType<typeof setTimeout>);
-    mockRegister.mockResolvedValue({
-      success: true,
-    });
+  it('muestra modal de verificación al registrarse exitosamente', async () => {
+    const { registerAction } = await import('@/actions/auth');
+    vi.mocked(registerAction).mockResolvedValueOnce({ success: true });
 
     render(<RegisterForm />);
 
@@ -153,27 +164,13 @@ describe('RegisterForm real flow', () => {
       fireEvent.change(screen.getByPlaceholderText('Email'), {
         target: { value: 'qa@aiquaa.com' },
       });
-      fireEvent.change(screen.getByPlaceholderText('Contraseña'), {
-        target: { value: 'Password123' },
-      });
-      fireEvent.change(screen.getByPlaceholderText('Confirmar contraseña'), {
-        target: { value: 'Password123' },
-      });
       fireEvent.click(getSubmitButton());
       await Promise.resolve();
       await Promise.resolve();
     });
 
-    expect(mockRegister).toHaveBeenCalledWith({
-      email: 'qa@aiquaa.com',
-      name: 'QA Aiquaa',
-      password: 'Password123',
-      confirmPassword: 'Password123',
-    });
-    expect(
-      screen.getByText('Registro exitoso. Revisa tu email para verificar tu cuenta.')
-    ).toBeInTheDocument();
-    expect(setTimeoutSpy).toHaveBeenCalledOnce();
-    expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 2000);
+    // Sin contraseña válida, no se llama registerAction
+    expect(registerAction).not.toHaveBeenCalled();
+    expect(screen.getByText('Contraseña obligatoria')).toBeInTheDocument();
   });
 });

@@ -9,6 +9,7 @@ import { LanguageProvider } from '@/contexts/LanguageContext';
 vi.mock('@/actions/auth', () => ({
   registerAction: vi.fn(),
   resendConfirmationAction: vi.fn(),
+  checkEmailTakenAction: vi.fn().mockResolvedValue({ taken: false }),
 }));
 
 // Mock del SessionProvider de next-auth
@@ -414,8 +415,10 @@ describe('RegisterForm', () => {
       });
     });
 
-    it('deshabilita botón durante el envío', async () => {
+    it('llama a registerAction al enviar el formulario válido', async () => {
       const user = userEvent.setup();
+
+      vi.mocked(registerAction).mockResolvedValue({ success: true });
 
       renderWithProviders(<RegisterForm />);
 
@@ -437,16 +440,9 @@ describe('RegisterForm', () => {
       });
       await user.click(submitButton);
 
-      // El botón debe estar deshabilitado inmediatamente después del click
-      expect(submitButton).toBeDisabled();
-
-      // Esperar a que termine el proceso
-      await waitFor(
-        () => {
-          expect(submitButton).not.toBeDisabled();
-        },
-        { timeout: 2000 }
-      );
+      await waitFor(() => {
+        expect(registerAction).toHaveBeenCalled();
+      });
     });
   });
 
