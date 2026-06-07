@@ -28,7 +28,15 @@ export async function GET(request: NextRequest) {
     if (!error) {
       const audience = data.user?.user_metadata?.audience;
       const destination = next ?? getDefaultRedirect(audience);
-      return NextResponse.redirect(`${origin}${destination}`);
+
+      if (next?.includes('reset-password')) {
+        return NextResponse.redirect(`${origin}${destination}`);
+      }
+
+      const successUrl = new URL(`${origin}/auth/confirm-result`);
+      successUrl.searchParams.set('success', 'true');
+      successUrl.searchParams.set('next', destination);
+      return NextResponse.redirect(successUrl.toString());
     }
     console.error('[auth/confirm] exchangeCodeForSession failed:', error?.message);
   }
@@ -42,7 +50,15 @@ export async function GET(request: NextRequest) {
       const { data: { user } } = await supabase.auth.getUser();
       const audience = user?.user_metadata?.audience;
       const destination = next ?? getDefaultRedirect(audience);
-      return NextResponse.redirect(`${origin}${destination}`);
+
+      if (type === 'recovery') {
+        return NextResponse.redirect(`${origin}${destination}`);
+      }
+
+      const successUrl = new URL(`${origin}/auth/confirm-result`);
+      successUrl.searchParams.set('success', 'true');
+      successUrl.searchParams.set('next', destination);
+      return NextResponse.redirect(successUrl.toString());
     }
     console.error('[auth/confirm] verifyOtp failed:', error?.message);
   }

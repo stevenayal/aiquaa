@@ -4,9 +4,39 @@ import LogoMark from '@/components/LogoMark';
 export default async function ConfirmResultPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; next?: string }>;
+  searchParams: Promise<{ error?: string; next?: string; success?: string }>;
 }) {
-  const { error, next } = await searchParams;
+  const { error, next, success } = await searchParams;
+
+  if (success === 'true') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
+        <div className="max-w-md w-full text-center space-y-6">
+          <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-slate-900 mb-4">
+            <LogoMark size={32} color="#ffffff" wordmark={false} />
+          </div>
+
+          <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+            <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+
+          <h2 className="text-2xl font-bold text-gray-900">¡Email confirmado!</h2>
+          <p className="text-gray-600">
+            Tu cuenta fue verificada exitosamente. Ya podés usar AIQUAA.
+          </p>
+
+          <Link
+            href={next ?? '/ranking'}
+            className="inline-block w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-medium"
+          >
+            Ingresar a la app →
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const isExpired = error === 'link_expired' || error === 'access_denied';
   const isPasswordReset = next?.includes('reset-password');
