@@ -16,6 +16,7 @@ export function useSubmitResults(result: ExamResult, mode: 'exam' | 'training') 
           participant_name: result.participantName,
           score: result.score,
           total_questions: result.totalQuestions,
+          max_possible_score: result.totalQuestions,
           correct_answers: result.correctAnswers,
           incorrect_answers: result.incorrectAnswers,
           passing_score: 26,
