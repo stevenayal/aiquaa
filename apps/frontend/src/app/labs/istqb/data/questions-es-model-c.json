@@ -1,59 +1,852 @@
 {
-    "examInfo": {
-        "title": "CTFL - V4.0 - ES - EJEMPLO DE EXAMEN - MODELO C",
-        "version": "V001.00",
-        "totalQuestions": 40,
-        "passingScore": 26,
-        "timeLimit": 60,
-        "pointsPerQuestion": 1
+  "examInfo": {
+    "title": "CTFL - V4.0 - ES - EJEMPLO DE EXAMEN - MODELO C",
+    "version": "V001.00",
+    "totalQuestions": 40,
+    "passingScore": 26,
+    "timeLimit": 60,
+    "pointsPerQuestion": 1
+  },
+  "questions": [
+    {
+      "id": 1,
+      "questionText": "¿Cuál de los siguientes enunciados describe MEJOR la contribución de las pruebas al éxito de un proyecto?",
+      "options": [
+        { "label": "a", "text": "Las pruebas aseguran que no habrá defectos en el producto final entregado." },
+        { "label": "b", "text": "Las pruebas proporcionan información para tomar decisiones informadas sobre la calidad del software." },
+        { "label": "c", "text": "Las pruebas son únicamente responsabilidad del equipo de control de calidad (QA)." },
+        { "label": "d", "text": "Las pruebas solo agregan valor cuando el software está completamente desarrollado." }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-1.1.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Las pruebas no pueden garantizar la ausencia total de defectos; este es el primer principio de prueba del ISTQB." },
+        "b": { "correct": true, "explanation": "Las pruebas contribuyen al éxito al proporcionar información objetiva sobre la calidad, que permite tomar decisiones fundamentadas sobre si el software está listo para ser entregado." },
+        "c": { "correct": false, "explanation": "Las pruebas son responsabilidad de todo el equipo; el enfoque de equipo completo promueve la calidad compartida." },
+        "d": { "correct": false, "explanation": "Las pruebas agregan más valor cuando se realizan temprano, incluyendo revisiones de requisitos y diseño." }
+      }
     },
-    "questions": [
-        {
-            "id": 1,
-            "questionText": "¿Cuál de las siguientes es una buena práctica de prueba que se aplica a todos los ciclos de vida de desarrollo de software?",
-            "options": [
-                {
-                    "label": "a",
-                    "text": "La ejecución de pruebas debe comenzar solo después de que se complete el desarrollo."
-                },
-                {
-                    "label": "b",
-                    "text": "Para cada actividad de desarrollo, hay una actividad de prueba correspondiente."
-                },
-                {
-                    "label": "c",
-                    "text": "Los probadores deben participar solo durante la fase de prueba."
-                },
-                {
-                    "label": "d",
-                    "text": "La planificación de pruebas debe hacerse al final del proyecto."
-                }
-            ],
-            "correctAnswer": [
-                "b"
-            ],
-            "learningObjective": "FL-2.1.1",
-            "kLevel": "K2",
-            "points": 1,
-            "type": "single",
-            "explanations": {
-                "a": {
-                    "correct": false,
-                    "explanation": "Las pruebas tempranas son mejores."
-                },
-                "b": {
-                    "correct": true,
-                    "explanation": "Este es un principio fundamental."
-                },
-                "c": {
-                    "correct": false,
-                    "explanation": "La participación temprana es clave."
-                },
-                "d": {
-                    "correct": false,
-                    "explanation": "La planificación debe comenzar temprano."
-                }
-            }
-        }
-    ]
+    {
+      "id": 2,
+      "questionText": "¿Cuál de los siguientes principios de prueba establece que 'probar todo es imposible'?",
+      "options": [
+        { "label": "a", "text": "Agrupación de defectos." },
+        { "label": "b", "text": "Las pruebas muestran la presencia de defectos." },
+        { "label": "c", "text": "Las pruebas exhaustivas son imposibles." },
+        { "label": "d", "text": "Las pruebas dependen del contexto." }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "FL-1.2.1",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "La agrupación de defectos se refiere a que los defectos tienden a concentrarse en pocos módulos." },
+        "b": { "correct": false, "explanation": "Este principio indica que las pruebas pueden demostrar la presencia pero no la ausencia de defectos." },
+        "c": { "correct": true, "explanation": "El principio 'Las pruebas exhaustivas son imposibles' establece que no es posible probar todas las combinaciones de entradas, condiciones y caminos de un sistema no trivial." },
+        "d": { "correct": false, "explanation": "Este principio indica que la técnica y el nivel de prueba dependen del contexto del proyecto." }
+      }
+    },
+    {
+      "id": 3,
+      "questionText": "¿Cuál de los siguientes describe MEJOR la actividad de 'análisis de pruebas' dentro del proceso de prueba?",
+      "options": [
+        { "label": "a", "text": "Determinar los recursos y el cronograma necesarios para ejecutar las pruebas." },
+        { "label": "b", "text": "Determinar 'qué probar' analizando la base de prueba para identificar las condiciones de prueba." },
+        { "label": "c", "text": "Ejecutar los casos de prueba y registrar los resultados obtenidos." },
+        { "label": "d", "text": "Preparar los datos de prueba y configurar el entorno de prueba." }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-1.4.2",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Determinar recursos y cronograma es parte de la planificación de pruebas, no del análisis." },
+        "b": { "correct": true, "explanation": "El análisis de pruebas consiste en analizar la base de prueba (requisitos, diseño, etc.) para identificar qué debe probarse, generando las condiciones de prueba." },
+        "c": { "correct": false, "explanation": "Ejecutar casos de prueba y registrar resultados es la actividad de ejecución de pruebas." },
+        "d": { "correct": false, "explanation": "Preparar datos y configurar el entorno corresponde a la actividad de implementación de pruebas." }
+      }
+    },
+    {
+      "id": 4,
+      "questionText": "¿Cuál de los siguientes es un ejemplo de TESTWARE producido durante la actividad de diseño de pruebas?",
+      "options": [
+        { "label": "a", "text": "El plan de prueba." },
+        { "label": "b", "text": "Los casos de prueba y los datos de prueba." },
+        { "label": "c", "text": "Los scripts de prueba automatizados." },
+        { "label": "d", "text": "El informe de resumen de pruebas." }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-1.4.1",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "El plan de prueba se produce durante la planificación, no el diseño." },
+        "b": { "correct": true, "explanation": "Los casos de prueba (con sus condiciones, pasos y resultados esperados) y los datos de prueba son el testware principal de la actividad de diseño de pruebas." },
+        "c": { "correct": false, "explanation": "Los scripts de prueba automatizados se producen en la implementación, aunque pueden basarse en casos de prueba del diseño." },
+        "d": { "correct": false, "explanation": "El informe de resumen se produce durante la finalización de pruebas." }
+      }
+    },
+    {
+      "id": 5,
+      "questionText": "El principio de prueba 'la ausencia de errores es una falacia' significa que:",
+      "options": [
+        { "label": "a", "text": "Un software con muchos defectos corregidos es siempre útil para el usuario." },
+        { "label": "b", "text": "Un software sin defectos detectados puede seguir sin satisfacer las necesidades del usuario." },
+        { "label": "c", "text": "Los errores solo ocurren en entornos de producción, no en desarrollo." },
+        { "label": "d", "text": "Los probadores no pueden confirmar la ausencia de errores aunque realicen todas las pruebas." }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-1.2.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Corregir defectos no garantiza que el software sea útil si no cumple las expectativas del usuario." },
+        "b": { "correct": true, "explanation": "La 'ausencia de errores es una falacia' significa que aunque el software no tenga defectos técnicos detectables, puede seguir siendo inútil si no cumple con las necesidades reales del negocio o el usuario." },
+        "c": { "correct": false, "explanation": "Los errores pueden ocurrir en cualquier entorno; esto no es lo que describe el principio." },
+        "d": { "correct": false, "explanation": "Si bien esta afirmación es cierta (primer principio), describe otro principio diferente al de 'ausencia de errores'." }
+      }
+    },
+    {
+      "id": 6,
+      "questionText": "¿Cuál de los siguientes describe MEJOR la actividad de 'finalización de pruebas' en el proceso de prueba?",
+      "options": [
+        { "label": "a", "text": "Ejecutar los casos de prueba y registrar los resultados." },
+        { "label": "b", "text": "Recopilar datos de las actividades completadas, crear el informe de resumen y archivar el testware." },
+        { "label": "c", "text": "Identificar qué hay que probar a partir de la base de prueba." },
+        { "label": "d", "text": "Definir el alcance y los objetivos de las pruebas." }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-1.4.3",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Ejecutar casos de prueba y registrar resultados es la actividad de ejecución." },
+        "b": { "correct": true, "explanation": "La finalización de pruebas incluye recopilar datos y lecciones aprendidas, crear el informe de resumen, archivar el testware para reutilización futura y cerrar formalmente el proceso de prueba." },
+        "c": { "correct": false, "explanation": "Identificar qué probar es la actividad de análisis de pruebas." },
+        "d": { "correct": false, "explanation": "Definir alcance y objetivos corresponde a la planificación de pruebas." }
+      }
+    },
+    {
+      "id": 7,
+      "questionText": "¿Cuál de las siguientes opciones describe MEJOR el rol de un 'probador' (tester) según el CTFL v4.0?",
+      "options": [
+        { "label": "a", "text": "Únicamente ejecutar casos de prueba manuales siguiendo scripts predefinidos." },
+        { "label": "b", "text": "Crear la arquitectura del software para facilitar la testeabilidad." },
+        { "label": "c", "text": "Analizar, diseñar, implementar y ejecutar pruebas, así como reportar defectos." },
+        { "label": "d", "text": "Definir los requisitos del sistema junto con el cliente." }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "FL-1.5.1",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "El rol del probador es mucho más amplio; incluye análisis, diseño, implementación y reporte, no solo ejecución." },
+        "b": { "correct": false, "explanation": "La arquitectura del software es responsabilidad del arquitecto o desarrollador; el probador puede influir en la testeabilidad pero no crea la arquitectura." },
+        "c": { "correct": true, "explanation": "El probador realiza múltiples actividades: analiza la base de prueba, diseña casos de prueba, implementa el testware, ejecuta pruebas y reporta defectos y resultados." },
+        "d": { "correct": false, "explanation": "Definir requisitos es principalmente responsabilidad del analista de negocio o product owner, aunque el probador puede participar en su revisión." }
+      }
+    },
+    {
+      "id": 8,
+      "questionText": "¿Cuál de los siguientes describe MEJOR el principio 'las pruebas dependen del contexto'?",
+      "options": [
+        { "label": "a", "text": "Las mismas técnicas y niveles de prueba se aplican igualmente a todos los proyectos." },
+        { "label": "b", "text": "El enfoque de prueba adecuado varía según el tipo de software, los riesgos y los requisitos del proyecto." },
+        { "label": "c", "text": "Las pruebas siempre son más rigurosas en proyectos ágiles que en proyectos de cascada." },
+        { "label": "d", "text": "El contexto del proyecto no afecta la forma en que se deben realizar las pruebas." }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-1.2.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Las mismas técnicas no aplican igualmente a todos los proyectos; eso va en contra del principio de contexto." },
+        "b": { "correct": true, "explanation": "El principio indica que las pruebas de un sistema de control de tráfico aéreo difieren fundamentalmente de las de una aplicación de entretenimiento; el contexto (riesgo, dominio, metodología) determina el enfoque." },
+        "c": { "correct": false, "explanation": "El rigor no depende de la metodología sino del contexto, incluyendo los riesgos y requisitos de calidad." },
+        "d": { "correct": false, "explanation": "El contexto es precisamente el factor que determina cómo se deben realizar las pruebas." }
+      }
+    },
+    {
+      "id": 9,
+      "questionText": "¿Cuál de los siguientes ejemplos ilustra MEJOR una habilidad de pensamiento crítico aplicada a las pruebas?",
+      "options": [
+        { "label": "a", "text": "Seguir exactamente los pasos documentados en un script de prueba sin cuestionarlos." },
+        { "label": "b", "text": "Cuestionar los supuestos implícitos en los requisitos para identificar posibles ambigüedades o inconsistencias." },
+        { "label": "c", "text": "Automatizar todos los casos de prueba independientemente del retorno de inversión." },
+        { "label": "d", "text": "Registrar defectos únicamente cuando el sistema se cae completamente." }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-1.5.2",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Seguir scripts sin cuestionarlos no demuestra pensamiento crítico; es ejecución mecánica." },
+        "b": { "correct": true, "explanation": "El pensamiento crítico aplicado a las pruebas incluye cuestionar supuestos, buscar inconsistencias y ambigüedades en los requisitos, lo cual permite identificar defectos antes de que el código sea escrito." },
+        "c": { "correct": false, "explanation": "Automatizar sin considerar el ROI no es pensamiento crítico sino una decisión técnica potencialmente errónea." },
+        "d": { "correct": false, "explanation": "Registrar solo fallos críticos reduce la efectividad de las pruebas; los defectos menores también son relevantes." }
+      }
+    },
+    {
+      "id": 10,
+      "questionText": "En el modelo de ciclo de vida secuencial (cascada), ¿cuándo se inician GENERALMENTE las actividades de prueba dinámica?",
+      "options": [
+        { "label": "a", "text": "Durante la fase de análisis de requisitos." },
+        { "label": "b", "text": "Inmediatamente después de la fase de diseño del sistema." },
+        { "label": "c", "text": "Después de que el desarrollo del software esté completado o casi completado." },
+        { "label": "d", "text": "En paralelo con el desarrollo, desde el primer día del proyecto." }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "FL-2.1.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "En el modelo en cascada las pruebas dinámicas no pueden iniciarse en la fase de requisitos porque no hay código que ejecutar." },
+        "b": { "correct": false, "explanation": "Después del diseño aún falta la fase de implementación; las pruebas dinámicas requieren código ejecutable." },
+        "c": { "correct": true, "explanation": "En el modelo cascada tradicional, las pruebas dinámicas (que requieren ejecutar el software) comienzan después de que el desarrollo esté completado o casi completado, lo cual es una de sus principales desventajas." },
+        "d": { "correct": false, "explanation": "El desarrollo en paralelo con pruebas es más propio de modelos iterativos/ágiles como Scrum." }
+      }
+    },
+    {
+      "id": 11,
+      "questionText": "¿Cuál de los siguientes es un nivel de prueba según el CTFL v4.0?",
+      "options": [
+        { "label": "a", "text": "Prueba de caja negra." },
+        { "label": "b", "text": "Prueba de sistema." },
+        { "label": "c", "text": "Prueba exploratoria." },
+        { "label": "d", "text": "Prueba de regresión." }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-2.2.1",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "La prueba de caja negra es una técnica de diseño de prueba, no un nivel de prueba." },
+        "b": { "correct": true, "explanation": "La prueba de sistema es uno de los cuatro niveles de prueba: componente, integración, sistema y aceptación." },
+        "c": { "correct": false, "explanation": "La prueba exploratoria es una técnica basada en experiencia, no un nivel de prueba." },
+        "d": { "correct": false, "explanation": "La prueba de regresión es un tipo de prueba (por objetivo), no un nivel." }
+      }
+    },
+    {
+      "id": 12,
+      "questionText": "En un modelo iterativo como Scrum, ¿cómo se integran MEJOR las pruebas?",
+      "options": [
+        { "label": "a", "text": "Las pruebas se realizan exclusivamente al final de todos los sprints." },
+        { "label": "b", "text": "Las pruebas se integran dentro de cada iteración/sprint, junto con el desarrollo." },
+        { "label": "c", "text": "Las pruebas son realizadas únicamente por un equipo de QA externo al equipo Scrum." },
+        { "label": "d", "text": "En Scrum no se realizan pruebas formales; solo revisiones de código." }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-2.1.3",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Realizar pruebas solo al final de todos los sprints contradice el principio ágil de retroalimentación continua." },
+        "b": { "correct": true, "explanation": "En Scrum y otros modelos iterativos, las pruebas se integran dentro de cada sprint, permitiendo detectar y corregir defectos de manera continua durante el desarrollo." },
+        "c": { "correct": false, "explanation": "En Scrum, la calidad es responsabilidad del equipo completo; no se delega exclusivamente a un equipo externo." },
+        "d": { "correct": false, "explanation": "Scrum promueve pruebas integrales dentro de cada sprint; las revisiones de código no son suficientes." }
+      }
+    },
+    {
+      "id": 13,
+      "questionText": "¿Cuál es el OBJETIVO PRINCIPAL de las pruebas de componente (pruebas unitarias)?",
+      "options": [
+        { "label": "a", "text": "Verificar las interacciones entre módulos o componentes integrados." },
+        { "label": "b", "text": "Verificar el funcionamiento de componentes individuales de software de forma aislada." },
+        { "label": "c", "text": "Validar el sistema completo contra los requisitos del negocio." },
+        { "label": "d", "text": "Confirmar que el sistema cumple los criterios de aceptación del usuario." }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-2.2.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Verificar interacciones entre módulos es el objetivo de las pruebas de integración." },
+        "b": { "correct": true, "explanation": "Las pruebas de componente (unitarias) verifican el funcionamiento de componentes individuales de software de forma aislada, usando stubs o mocks para simular dependencias." },
+        "c": { "correct": false, "explanation": "Validar el sistema completo contra requisitos de negocio es el objetivo de las pruebas de sistema." },
+        "d": { "correct": false, "explanation": "Confirmar los criterios de aceptación del usuario es el objetivo de las pruebas de aceptación." }
+      }
+    },
+    {
+      "id": 14,
+      "questionText": "¿Cuál de las siguientes opciones describe MEJOR qué son las 'pruebas de confirmación' (re-testing)?",
+      "options": [
+        { "label": "a", "text": "Pruebas que se ejecutan para verificar que los cambios no han roto funcionalidades existentes." },
+        { "label": "b", "text": "Pruebas que verifican que un defecto previamente reportado ha sido corregido exitosamente." },
+        { "label": "c", "text": "Pruebas que validan el sistema completo antes de la entrega al cliente." },
+        { "label": "d", "text": "Pruebas que se realizan en un entorno de producción para confirmar el despliegue." }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-2.2.3",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Verificar que los cambios no rompan funcionalidades existentes es el objetivo de las pruebas de regresión." },
+        "b": { "correct": true, "explanation": "Las pruebas de confirmación (re-testing) se ejecutan para verificar que un defecto específico que fue reportado y corregido ya no existe en el sistema." },
+        "c": { "correct": false, "explanation": "Validar el sistema completo antes de la entrega corresponde a las pruebas de aceptación o sistema." },
+        "d": { "correct": false, "explanation": "Las pruebas en producción para confirmar despliegue son smoke tests o pruebas de sanidad." }
+      }
+    },
+    {
+      "id": 15,
+      "questionText": "¿Cuál de los siguientes tipos de revisión se caracteriza por ser la más FORMAL y estructurada?",
+      "options": [
+        { "label": "a", "text": "Revisión informal." },
+        { "label": "b", "text": "Walkthrough." },
+        { "label": "c", "text": "Revisión técnica." },
+        { "label": "d", "text": "Inspección." }
+      ],
+      "correctAnswer": ["d"],
+      "learningObjective": "FL-3.2.1",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "La revisión informal es el tipo menos formal; no tiene un proceso definido ni roles obligatorios." },
+        "b": { "correct": false, "explanation": "El walkthrough es guiado por el autor y tiene una formalidad media; es menos estructurado que la inspección." },
+        "c": { "correct": false, "explanation": "La revisión técnica es formal pero generalmente menos rigurosa que la inspección en cuanto a proceso y métricas." },
+        "d": { "correct": true, "explanation": "La inspección es el tipo de revisión más formal: tiene roles definidos (moderador, autor, revisores, escriba), proceso estructurado, criterios de entrada/salida y recopilación de métricas." }
+      }
+    },
+    {
+      "id": 16,
+      "questionText": "¿Cuál de las siguientes afirmaciones sobre el proceso de revisión es CORRECTA?",
+      "options": [
+        { "label": "a", "text": "En el proceso de revisión, el autor del documento no debe participar." },
+        { "label": "b", "text": "La reunión de revisión debe iniciarse sin criterios de entrada definidos." },
+        { "label": "c", "text": "La fase de revisión individual permite a los revisores prepararse antes de la reunión." },
+        { "label": "d", "text": "El proceso de revisión termina cuando se identifica el primer defecto." }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "FL-3.2.3",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "El autor participa en la revisión para responder preguntas y entender los defectos identificados." },
+        "b": { "correct": false, "explanation": "Las revisiones formales tienen criterios de entrada definidos que deben cumplirse antes de iniciar el proceso." },
+        "c": { "correct": true, "explanation": "La revisión individual es la fase donde cada revisor examina el producto de trabajo de forma independiente antes de la reunión, preparando sus comentarios y defectos encontrados." },
+        "d": { "correct": false, "explanation": "El proceso continúa hasta cubrir todo el material de revisión y se cierra formalmente después de la corrección." }
+      }
+    },
+    {
+      "id": 17,
+      "questionText": "¿Cuál es una VENTAJA del análisis estático realizado mediante herramientas automatizadas?",
+      "options": [
+        { "label": "a", "text": "Puede ejecutar el software para encontrar defectos en tiempo de ejecución." },
+        { "label": "b", "text": "Puede detectar defectos como código no alcanzable de forma consistente y sin fatiga." },
+        { "label": "c", "text": "Solo funciona en lenguajes de programación de bajo nivel como ensamblador." },
+        { "label": "d", "text": "Reemplaza por completo la necesidad de pruebas dinámicas." }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-3.1.3",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "El análisis estático no ejecuta el software; esa es la diferencia fundamental con las pruebas dinámicas." },
+        "b": { "correct": true, "explanation": "Las herramientas de análisis estático detectan defectos como código muerto, variables no inicializadas o violaciones de estándares de codificación de manera consistente, automática y sin la fatiga humana." },
+        "c": { "correct": false, "explanation": "Las herramientas de análisis estático están disponibles para prácticamente todos los lenguajes modernos." },
+        "d": { "correct": false, "explanation": "El análisis estático es complementario a las pruebas dinámicas; no las reemplaza porque no puede detectar todos los tipos de defectos." }
+      }
+    },
+    {
+      "id": 18,
+      "questionText": "¿Cuál de los siguientes productos de trabajo puede ser objeto de una revisión estática?",
+      "options": [
+        { "label": "a", "text": "Solo el código fuente del sistema." },
+        { "label": "b", "text": "Únicamente los documentos de requisitos funcionales." },
+        { "label": "c", "text": "Cualquier producto de trabajo legible, como requisitos, diseño, código o casos de prueba." },
+        { "label": "d", "text": "Solo los documentos creados por el equipo de pruebas." }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "FL-3.1.1",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Las revisiones estáticas no se limitan al código; aplican a cualquier producto de trabajo." },
+        "b": { "correct": false, "explanation": "No se limitan a requisitos funcionales; pueden aplicarse a cualquier documento del proyecto." },
+        "c": { "correct": true, "explanation": "Las revisiones estáticas pueden aplicarse a cualquier producto de trabajo legible: especificaciones de requisitos, documentos de diseño, código fuente, casos de prueba, planes de prueba, etc." },
+        "d": { "correct": false, "explanation": "Los documentos del equipo de desarrollo, negocio y cualquier otro área también pueden ser objeto de revisión." }
+      }
+    },
+    {
+      "id": 19,
+      "questionText": "Una aplicación de préstamos bancarios procesa solicitudes con los siguientes montos: hasta $1,000 (microcrédito), $1,001–$10,000 (crédito personal), $10,001–$100,000 (crédito hipotecario). Hay también una clase inválida: montos negativos o cero. Aplicando partición de equivalencia, ¿cuántas clases de equivalencia existen en total?",
+      "options": [
+        { "label": "a", "text": "2 clases (1 válida, 1 inválida)." },
+        { "label": "b", "text": "3 clases (todas válidas)." },
+        { "label": "c", "text": "4 clases (3 válidas, 1 inválida)." },
+        { "label": "d", "text": "6 clases (3 válidas, 3 inválidas)." }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "FL-4.2.1",
+      "kLevel": "K3",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Hay más de una clase válida (hay tres rangos definidos)." },
+        "b": { "correct": false, "explanation": "Hay también al menos una clase inválida (montos negativos o cero)." },
+        "c": { "correct": true, "explanation": "Existen 4 clases: 3 válidas ([≤$1,000], [$1,001–$10,000], [$10,001–$100,000]) y 1 inválida (montos negativos o cero). No se menciona un rango superior inválido explícito, por lo que con los datos dados hay 4 clases." },
+        "d": { "correct": false, "explanation": "No se definen tres clases inválidas; el enunciado menciona solo montos negativos o cero como inválidos." }
+      }
+    },
+    {
+      "id": 20,
+      "questionText": "Para un campo de contraseña que acepta entre 8 y 16 caracteres inclusive, usando análisis de valores límite de 3 puntos, ¿cuáles son los valores de prueba CORRECTOS para el límite inferior?",
+      "options": [
+        { "label": "a", "text": "Solo 8 caracteres." },
+        { "label": "b", "text": "7 y 8 caracteres." },
+        { "label": "c", "text": "7, 8 y 9 caracteres." },
+        { "label": "d", "text": "8, 9 y 10 caracteres." }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "FL-4.2.2",
+      "kLevel": "K3",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Con un solo valor no se cubre el límite de forma completa para el análisis de 3 puntos." },
+        "b": { "correct": false, "explanation": "Con 2 valores se cubre solo el análisis de 2 puntos, no el de 3 puntos." },
+        "c": { "correct": true, "explanation": "El análisis de valores límite de 3 puntos para el límite inferior de 8 incluye: el valor por debajo del límite (7), el límite exacto (8), y el valor justo por encima del límite (9)." },
+        "d": { "correct": false, "explanation": "Estos valores no incluyen el límite inferior real ni el valor fuera del límite (7)." }
+      }
+    },
+    {
+      "id": 21,
+      "questionText": "Una tabla de decisión tiene 3 condiciones. Si todas las condiciones son booleanas (V/F), ¿cuántas columnas (reglas) completas pueden existir como máximo?",
+      "options": [
+        { "label": "a", "text": "3 columnas." },
+        { "label": "b", "text": "6 columnas." },
+        { "label": "c", "text": "8 columnas." },
+        { "label": "d", "text": "12 columnas." }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "FL-4.2.3",
+      "kLevel": "K3",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "3 columnas no cubre todas las combinaciones posibles de 3 condiciones booleanas." },
+        "b": { "correct": false, "explanation": "6 no es la potencia de 2 correspondiente a 3 condiciones booleanas." },
+        "c": { "correct": true, "explanation": "Con 3 condiciones booleanas (V/F), el número máximo de combinaciones es 2³ = 8 columnas. La tabla de decisión completa tendría 8 reglas." },
+        "d": { "correct": false, "explanation": "12 excede el máximo posible para 3 condiciones booleanas (2³ = 8)." }
+      }
+    },
+    {
+      "id": 22,
+      "questionText": "Un sistema de cajero automático tiene los estados: Inactivo, Esperando_Tarjeta, Verificando_PIN, Dispensando_Efectivo y Error. Aplicando pruebas de transición de estados para cobertura de todos los estados, ¿cuál es el criterio mínimo a cumplir?",
+      "options": [
+        { "label": "a", "text": "Que cada transición inválida sea probada al menos una vez." },
+        { "label": "b", "text": "Que cada estado sea visitado al menos una vez por los casos de prueba." },
+        { "label": "c", "text": "Que todas las combinaciones posibles de transiciones sean probadas." },
+        { "label": "d", "text": "Que solo el estado inicial y el estado final sean alcanzados." }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-4.2.4",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Probar transiciones inválidas es un objetivo adicional, no el criterio mínimo de cobertura de estados." },
+        "b": { "correct": true, "explanation": "La cobertura de todos los estados (100% state coverage) requiere que cada estado del diagrama sea visitado al menos una vez durante la ejecución de los casos de prueba." },
+        "c": { "correct": false, "explanation": "Probar todas las combinaciones de transiciones es un criterio de cobertura más exigente (switch coverage), no el mínimo." },
+        "d": { "correct": false, "explanation": "Solo probar inicio y fin no garantiza cobertura de todos los estados intermedios." }
+      }
+    },
+    {
+      "id": 23,
+      "questionText": "¿Cuál de los siguientes es un ejemplo de técnica de prueba basada en experiencia?",
+      "options": [
+        { "label": "a", "text": "Partición de equivalencia." },
+        { "label": "b", "text": "Prueba de cobertura de ramas." },
+        { "label": "c", "text": "Prueba basada en listas de comprobación (checklist-based testing)." },
+        { "label": "d", "text": "Análisis de valores límite." }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "FL-4.4.3",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "La partición de equivalencia es una técnica de caja negra basada en especificación, no en experiencia." },
+        "b": { "correct": false, "explanation": "La cobertura de ramas es una técnica de caja blanca basada en la estructura del código." },
+        "c": { "correct": true, "explanation": "La prueba basada en listas de comprobación (checklists) es una técnica basada en experiencia donde se usa el conocimiento previo del probador para crear listas de condiciones a verificar." },
+        "d": { "correct": false, "explanation": "El análisis de valores límite es una técnica de caja negra basada en especificación." }
+      }
+    },
+    {
+      "id": 24,
+      "questionText": "¿Qué porcentaje de cobertura de ramas (branch coverage) se obtiene si, de 10 ramas en el código, 8 han sido ejecutadas por los casos de prueba?",
+      "options": [
+        { "label": "a", "text": "80%." },
+        { "label": "b", "text": "70%." },
+        { "label": "c", "text": "90%." },
+        { "label": "d", "text": "60%." }
+      ],
+      "correctAnswer": ["a"],
+      "learningObjective": "FL-4.3.2",
+      "kLevel": "K3",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": true, "explanation": "Cobertura de ramas = (Ramas ejecutadas / Total de ramas) × 100 = (8/10) × 100 = 80%." },
+        "b": { "correct": false, "explanation": "70% equivaldría a 7 ramas ejecutadas de 10, no 8." },
+        "c": { "correct": false, "explanation": "90% equivaldría a 9 ramas ejecutadas de 10, no 8." },
+        "d": { "correct": false, "explanation": "60% equivaldría a 6 ramas ejecutadas de 10, no 8." }
+      }
+    },
+    {
+      "id": 25,
+      "questionText": "¿Cuál de los siguientes describe MEJOR el enfoque ATDD (Acceptance Test-Driven Development)?",
+      "options": [
+        { "label": "a", "text": "Escribir código de producción antes de escribir las pruebas de aceptación." },
+        { "label": "b", "text": "Definir pruebas de aceptación antes de desarrollar el código, usando criterios acordados con el negocio." },
+        { "label": "c", "text": "Realizar únicamente pruebas de aceptación de usuario en el entorno de producción." },
+        { "label": "d", "text": "Automatizar todas las pruebas de sistema sin involucrar al equipo de negocio." }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-4.5.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "ATDD es lo contrario: las pruebas de aceptación se definen ANTES de escribir el código." },
+        "b": { "correct": true, "explanation": "ATDD (Acceptance Test-Driven Development) es un enfoque colaborativo donde las pruebas de aceptación se definen con el negocio antes del desarrollo, sirviendo como especificación ejecutable del comportamiento esperado." },
+        "c": { "correct": false, "explanation": "ATDD no se limita a entornos de producción; las pruebas se definen y ejecutan durante el desarrollo." },
+        "d": { "correct": false, "explanation": "ATDD requiere colaboración activa con el equipo de negocio; no es solo automatización técnica." }
+      }
+    },
+    {
+      "id": 26,
+      "questionText": "¿Cuál de los siguientes factores influye en el nivel de esfuerzo de prueba que debe reflejarse en el plan de prueba?",
+      "options": [
+        { "label": "a", "text": "El color del logotipo de la empresa." },
+        { "label": "b", "text": "El número de reuniones de equipo realizadas." },
+        { "label": "c", "text": "El nivel de riesgo del producto y la complejidad del sistema." },
+        { "label": "d", "text": "El nombre del gestor del proyecto." }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "FL-5.1.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "El branding corporativo no influye en el esfuerzo de prueba." },
+        "b": { "correct": false, "explanation": "Las reuniones de equipo no determinan el nivel de esfuerzo de prueba necesario." },
+        "c": { "correct": true, "explanation": "El nivel de riesgo del producto, la complejidad del sistema, los requisitos de calidad y las características del equipo son factores que influyen directamente en el esfuerzo de prueba necesario." },
+        "d": { "correct": false, "explanation": "El nombre del gestor es irrelevante para determinar el esfuerzo de prueba." }
+      }
+    },
+    {
+      "id": 27,
+      "questionText": "¿Cuál de los siguientes describe MEJOR la estimación de prueba basada en MÉTRICAS?",
+      "options": [
+        { "label": "a", "text": "Estimar el esfuerzo de prueba basándose en la experiencia personal del líder de prueba." },
+        { "label": "b", "text": "Estimar el esfuerzo de prueba usando datos históricos de proyectos similares anteriores." },
+        { "label": "c", "text": "Calcular el esfuerzo multiplicando el número de requisitos por 10 horas fijas." },
+        { "label": "d", "text": "Usar el juicio de varios expertos y promediar sus estimaciones." }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-5.2.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "La experiencia personal de un individuo corresponde a estimación por juicio experto, no por métricas." },
+        "b": { "correct": true, "explanation": "La estimación basada en métricas utiliza datos históricos de proyectos similares (como horas por caso de prueba, defectos por punto de función) para proyectar el esfuerzo del proyecto actual." },
+        "c": { "correct": false, "explanation": "Un factor fijo arbitrario no es estimación basada en métricas; las métricas usan datos reales históricos." },
+        "d": { "correct": false, "explanation": "Promediar juicios de expertos es el método Delphi, que es estimación por juicio experto." }
+      }
+    },
+    {
+      "id": 28,
+      "questionText": "¿Cuál de las siguientes estrategias de mitigación de riesgos es más APROPIADA para un riesgo de producto de alta probabilidad y alto impacto?",
+      "options": [
+        { "label": "a", "text": "Ignorar el riesgo y proceder con las pruebas estándar." },
+        { "label": "b", "text": "Aceptar el riesgo sin tomar ninguna acción preventiva." },
+        { "label": "c", "text": "Aumentar la cobertura de prueba en las áreas de mayor riesgo para reducir su probabilidad o impacto." },
+        { "label": "d", "text": "Transferir el riesgo al equipo de desarrollo sin notificar a los interesados." }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "FL-5.3.3",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Ignorar riesgos de alta probabilidad y alto impacto es inapropiado y puede llevar a fallos graves." },
+        "b": { "correct": false, "explanation": "Aceptar sin acción es válido para riesgos bajos, no para riesgos críticos de alta probabilidad e impacto." },
+        "c": { "correct": true, "explanation": "Para riesgos de producto de alta probabilidad e impacto, la mitigación apropiada es aumentar la cobertura y profundidad de prueba en esas áreas, reduciendo la probabilidad de que los defectos lleguen a producción." },
+        "d": { "correct": false, "explanation": "Transferir sin comunicación no es una estrategia válida de mitigación de riesgos de producto; además los interesados deben ser informados." }
+      }
+    },
+    {
+      "id": 29,
+      "questionText": "¿Cuál de las siguientes es una métrica de COBERTURA utilizada en el monitoreo de pruebas?",
+      "options": [
+        { "label": "a", "text": "Número de personas en el equipo de desarrollo." },
+        { "label": "b", "text": "Porcentaje de requisitos cubiertos por casos de prueba ejecutados." },
+        { "label": "c", "text": "Número de reuniones de planificación de sprint realizadas." },
+        { "label": "d", "text": "Costo total del proyecto de desarrollo." }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-5.4.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "El tamaño del equipo de desarrollo es un dato de recursos, no una métrica de cobertura de pruebas." },
+        "b": { "correct": true, "explanation": "El porcentaje de requisitos cubiertos por casos de prueba ejecutados es una métrica de cobertura que muestra qué proporción de los requisitos ha sido verificada." },
+        "c": { "correct": false, "explanation": "Las reuniones de sprint son eventos del proceso ágil, no métricas de cobertura de pruebas." },
+        "d": { "correct": false, "explanation": "El costo del proyecto es una métrica financiera, no de cobertura de pruebas." }
+      }
+    },
+    {
+      "id": 30,
+      "questionText": "¿Cuál de los siguientes enunciados describe MEJOR la diferencia entre un informe de progreso de prueba y un informe de resumen de pruebas?",
+      "options": [
+        { "label": "a", "text": "El informe de progreso se produce al finalizar el proyecto; el resumen se produce durante la ejecución." },
+        { "label": "b", "text": "El informe de progreso se produce durante la ejecución para comunicar el estado actual; el resumen se produce al finalizar una fase o proyecto." },
+        { "label": "c", "text": "Ambos informes son idénticos y se usan indistintamente." },
+        { "label": "d", "text": "El informe de progreso describe los casos de prueba diseñados; el resumen describe los ejecutados." }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-5.4.2",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Es al contrario: el informe de progreso es durante la ejecución y el resumen al finalizar." },
+        "b": { "correct": true, "explanation": "El informe de progreso se genera periódicamente durante la ejecución (p.ej., diario o semanal) para comunicar el estado actual; el informe de resumen se produce al finalizar una fase o hito para consolidar los resultados." },
+        "c": { "correct": false, "explanation": "Son documentos con propósitos y momentos de producción diferentes." },
+        "d": { "correct": false, "explanation": "Ambos informes pueden incluir información de casos diseñados y ejecutados; la diferencia principal es temporal." }
+      }
+    },
+    {
+      "id": 31,
+      "questionText": "¿Cuál de los siguientes es un elemento TÍPICO del flujo de gestión de defectos?",
+      "options": [
+        { "label": "a", "text": "Nuevo → Asignado → En corrección → Verificado → Cerrado." },
+        { "label": "b", "text": "Diseñado → Implementado → Ejecutado → Cerrado." },
+        { "label": "c", "text": "Planeado → En revisión → Entregado → Aprobado." },
+        { "label": "d", "text": "Abierto → Implementado → Desplegado → Producción." }
+      ],
+      "correctAnswer": ["a"],
+      "learningObjective": "FL-5.5.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": true, "explanation": "El flujo típico de gestión de defectos incluye los estados: Nuevo (recién reportado), Asignado (al desarrollador), En corrección, Verificado (por el probador) y Cerrado (confirmada la corrección)." },
+        "b": { "correct": false, "explanation": "Este flujo describe el ciclo de vida de un caso de prueba, no de un defecto." },
+        "c": { "correct": false, "explanation": "Este flujo describe un proceso de revisión o aprobación, no la gestión de defectos." },
+        "d": { "correct": false, "explanation": "Este flujo mezcla conceptos de defectos con despliegue; no representa el flujo estándar de defectos." }
+      }
+    },
+    {
+      "id": 32,
+      "questionText": "¿Cuál de las siguientes afirmaciones sobre los CRITERIOS DE SALIDA de prueba es CORRECTA?",
+      "options": [
+        { "label": "a", "text": "Los criterios de salida definen las condiciones previas que deben cumplirse para comenzar las pruebas." },
+        { "label": "b", "text": "Los criterios de salida definen las condiciones que deben cumplirse para concluir una actividad de prueba." },
+        { "label": "c", "text": "Los criterios de salida son irrelevantes en proyectos ágiles." },
+        { "label": "d", "text": "Los criterios de salida solo aplican a las pruebas de aceptación." }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-5.1.3",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Las condiciones que deben cumplirse ANTES de comenzar son los criterios de ENTRADA, no de salida." },
+        "b": { "correct": true, "explanation": "Los criterios de salida (o definición de terminado) definen las condiciones que deben cumplirse para poder considerar una actividad de prueba como completada (p.ej., cobertura mínima alcanzada, número de defectos abiertos aceptable)." },
+        "c": { "correct": false, "explanation": "En proyectos ágiles, los criterios de salida equivalen a la 'definición de terminado' (Definition of Done), que es fundamental." },
+        "d": { "correct": false, "explanation": "Los criterios de salida aplican a todos los niveles y fases de prueba." }
+      }
+    },
+    {
+      "id": 33,
+      "questionText": "¿Cuál de los siguientes es un RIESGO DE PROYECTO (a diferencia de un riesgo de producto) en el contexto de pruebas?",
+      "options": [
+        { "label": "a", "text": "Una funcionalidad crítica del sistema podría fallar en condiciones de alta carga." },
+        { "label": "b", "text": "El módulo de pagos podría tener defectos en el cálculo de impuestos." },
+        { "label": "c", "text": "La falta de disponibilidad de los entornos de prueba podría retrasar el proyecto." },
+        { "label": "d", "text": "La interfaz de usuario podría no cumplir con los estándares de accesibilidad." }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "FL-5.3.2",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Una funcionalidad que falla bajo carga es un riesgo de producto (relacionado con la calidad del software)." },
+        "b": { "correct": false, "explanation": "Defectos en el cálculo de impuestos son riesgos de producto (calidad del software)." },
+        "c": { "correct": true, "explanation": "La falta de disponibilidad de entornos de prueba es un riesgo de proyecto porque afecta la capacidad del equipo para realizar su trabajo, no a la calidad del producto en sí." },
+        "d": { "correct": false, "explanation": "El incumplimiento de estándares de accesibilidad es un riesgo de producto (calidad no funcional)." }
+      }
+    },
+    {
+      "id": 34,
+      "questionText": "¿Cuál de los siguientes describe MEJOR cuándo ES APROPIADO introducir la automatización de pruebas?",
+      "options": [
+        { "label": "a", "text": "Siempre que el equipo tenga tiempo disponible, independientemente del tipo de prueba." },
+        { "label": "b", "text": "Para pruebas que se ejecutan frecuentemente, son repetitivas y propensas a error humano." },
+        { "label": "c", "text": "Solo cuando el sistema ha sido entregado a producción." },
+        { "label": "d", "text": "Únicamente para pruebas de interfaz de usuario (UI) basadas en exploratorias." }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-6.1.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "No toda prueba merece automatizarse; se debe evaluar el ROI y la estabilidad del área a automatizar." },
+        "b": { "correct": true, "explanation": "La automatización es más apropiada para pruebas que se ejecutan con alta frecuencia (como regresión), son repetitivas, difíciles de hacer manualmente de forma consistente, o propensas a error humano." },
+        "c": { "correct": false, "explanation": "La automatización puede y debe implementarse durante el desarrollo, no solo post-entrega." },
+        "d": { "correct": false, "explanation": "La automatización de UI es solo una de las capas; las pruebas de API y unitarias también son candidatas excelentes." }
+      }
+    },
+    {
+      "id": 35,
+      "questionText": "¿Cuál de los siguientes es un FACTOR DE ÉXITO para la implementación de automatización de pruebas?",
+      "options": [
+        { "label": "a", "text": "Automatizar todas las pruebas, incluyendo las exploratorias." },
+        { "label": "b", "text": "Seleccionar una herramienta de automatización adecuada y contar con habilidades técnicas en el equipo." },
+        { "label": "c", "text": "No documentar los scripts de automatización para ahorrar tiempo." },
+        { "label": "d", "text": "Implementar la automatización sin involucrar al equipo de desarrollo." }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-6.2.2",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "No todas las pruebas son candidatas a automatización; las exploratorias son difíciles de automatizar por su naturaleza adaptativa." },
+        "b": { "correct": true, "explanation": "Seleccionar la herramienta adecuada para el contexto y contar con el equipo técnico capaz de desarrollar y mantener los scripts son factores críticos de éxito para la automatización." },
+        "c": { "correct": false, "explanation": "La documentación es esencial para el mantenimiento a largo plazo de los scripts de automatización." },
+        "d": { "correct": false, "explanation": "Involucrar al equipo de desarrollo facilita la testeabilidad del código y la integración de pruebas automatizadas en el proceso de CI/CD." }
+      }
+    },
+    {
+      "id": 36,
+      "questionText": "¿Cuál de los siguientes describe MEJOR las herramientas de prueba de rendimiento?",
+      "options": [
+        { "label": "a", "text": "Herramientas que gestionan el ciclo de vida de los casos de prueba y defectos." },
+        { "label": "b", "text": "Herramientas que generan carga simulada en el sistema para medir su comportamiento bajo diferentes condiciones." },
+        { "label": "c", "text": "Herramientas que analizan el código fuente sin ejecutarlo para detectar errores." },
+        { "label": "d", "text": "Herramientas que automatizan las revisiones de documentos de requisitos." }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-6.1.3",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Las herramientas que gestionan casos de prueba y defectos son las herramientas de gestión de pruebas (TMS)." },
+        "b": { "correct": true, "explanation": "Las herramientas de prueba de rendimiento (como k6, JMeter, Gatling) generan carga simulada para medir tiempos de respuesta, throughput y estabilidad del sistema bajo diferentes condiciones." },
+        "c": { "correct": false, "explanation": "Analizar código sin ejecutarlo es la función de las herramientas de análisis estático." },
+        "d": { "correct": false, "explanation": "La revisión de documentos se hace con herramientas de gestión de documentos o revisión, no de rendimiento." }
+      }
+    },
+    {
+      "id": 37,
+      "questionText": "¿Cuál de las siguientes actividades forma parte del PROCESO de revisión formal (inspección)?",
+      "options": [
+        { "label": "a", "text": "El autor ejecuta el software para demostrar su funcionamiento a los revisores." },
+        { "label": "b", "text": "El moderador verifica que se cumplan los criterios de entrada antes de iniciar la revisión." },
+        { "label": "c", "text": "Los revisores solo deben participar si tienen experiencia en automatización." },
+        { "label": "d", "text": "La reunión de revisión debe finalizar sin producir ningún documento de salida." }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-3.2.3",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "En una revisión formal el producto es evaluado estáticamente; no se ejecuta el software." },
+        "b": { "correct": true, "explanation": "En el proceso de revisión formal, el moderador verifica que el producto de trabajo y los participantes estén listos (criterios de entrada) antes de iniciar el proceso de revisión." },
+        "c": { "correct": false, "explanation": "Los revisores deben tener conocimiento relevante del dominio o técnica del producto, no necesariamente de automatización." },
+        "d": { "correct": false, "explanation": "Las revisiones formales producen documentos de salida: lista de defectos, acta de reunión y acciones de seguimiento." }
+      }
+    },
+    {
+      "id": 38,
+      "questionText": "¿Cuál de las siguientes técnicas de diseño de pruebas se utilizaría PRINCIPALMENTE para verificar que un sistema de gestión de pedidos maneja correctamente las transiciones entre los estados 'Pendiente', 'En_proceso', 'Enviado' y 'Entregado'?",
+      "options": [
+        { "label": "a", "text": "Partición de equivalencia." },
+        { "label": "b", "text": "Análisis de valores límite." },
+        { "label": "c", "text": "Prueba de transición de estados." },
+        { "label": "d", "text": "Prueba de cobertura de sentencias." }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "FL-4.2.4",
+      "kLevel": "K3",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "La partición de equivalencia es útil para rangos de valores de entrada, no para modelar flujos de estados." },
+        "b": { "correct": false, "explanation": "El análisis de valores límite se aplica a rangos numéricos o similares, no a transiciones de estados." },
+        "c": { "correct": true, "explanation": "La prueba de transición de estados es la técnica más apropiada cuando el comportamiento del sistema depende del estado actual y las transiciones entre estados, como en un sistema de gestión de pedidos." },
+        "d": { "correct": false, "explanation": "La cobertura de sentencias es una técnica de caja blanca que mide qué sentencias de código se ejecutan, no verifica flujos de estados." }
+      }
+    },
+    {
+      "id": 39,
+      "questionText": "Un probador experimento está revisando un formulario de registro y prueba intencionalmente campos con valores como cadena vacía, espacios en blanco, caracteres especiales y valores nulos, basándose en su experiencia de defectos pasados. ¿Qué técnica está aplicando?",
+      "options": [
+        { "label": "a", "text": "Análisis de valores límite." },
+        { "label": "b", "text": "Prueba basada en tabla de decisión." },
+        { "label": "c", "text": "Suposición de errores (error guessing)." },
+        { "label": "d", "text": "Prueba de cobertura de ramas." }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "FL-4.4.1",
+      "kLevel": "K3",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "El análisis de valores límite se aplica a rangos definidos en la especificación, no a valores especiales basados en experiencia." },
+        "b": { "correct": false, "explanation": "Las tablas de decisión se usan para combinaciones de condiciones lógicas, no para prueba de valores especiales basados en experiencia." },
+        "c": { "correct": true, "explanation": "La suposición de errores consiste exactamente en usar la experiencia previa para anticipar qué tipos de valores o condiciones probablemente causarán defectos, como cadenas vacías, nulos y caracteres especiales." },
+        "d": { "correct": false, "explanation": "La cobertura de ramas es una técnica de caja blanca que requiere conocimiento del código." }
+      }
+    },
+    {
+      "id": 40,
+      "questionText": "¿Cuál de los siguientes describe MEJOR la TRAZABILIDAD entre los casos de prueba y los requisitos?",
+      "options": [
+        { "label": "a", "text": "La capacidad de saber qué casos de prueba verifican qué requisitos, y qué requisitos tienen cobertura de prueba." },
+        { "label": "b", "text": "El proceso de ejecutar casos de prueba siguiendo una secuencia predefinida." },
+        { "label": "c", "text": "La gestión de versiones del código fuente del sistema bajo prueba." },
+        { "label": "d", "text": "El seguimiento del tiempo dedicado por cada probador a cada caso de prueba." }
+      ],
+      "correctAnswer": ["a"],
+      "learningObjective": "FL-1.4.4",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": true, "explanation": "La trazabilidad permite vincular cada caso de prueba con los requisitos que verifica y viceversa, permitiendo saber qué requisitos están cubiertos, analizar el impacto de cambios y demostrar cobertura a los interesados." },
+        "b": { "correct": false, "explanation": "La secuencia de ejecución de casos de prueba es el procedimiento de prueba, no la trazabilidad." },
+        "c": { "correct": false, "explanation": "La gestión de versiones del código es parte de la gestión de configuración, no de trazabilidad de pruebas-requisitos." },
+        "d": { "correct": false, "explanation": "El seguimiento del tiempo por probador es una métrica de gestión de recursos, no trazabilidad de cobertura." }
+      }
+    }
+  ]
 }

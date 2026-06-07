@@ -1,59 +1,852 @@
 {
-    "examInfo": {
-        "title": "CTFL - V4.0 - EN - SAMPLE EXAM - MODEL B",
-        "version": "V001.00",
-        "totalQuestions": 40,
-        "passingScore": 26,
-        "timeLimit": 60,
-        "pointsPerQuestion": 1
+  "examInfo": {
+    "title": "CTFL - V4.0 - EN - SAMPLE EXAM - MODEL B",
+    "version": "V001.00",
+    "totalQuestions": 40,
+    "passingScore": 26,
+    "timeLimit": 60,
+    "pointsPerQuestion": 1
+  },
+  "questions": [
+    {
+      "id": 1,
+      "questionText": "Which of the following is NOT a valid objective of testing?",
+      "options": [
+        { "label": "a", "text": "To provide information for decision-making" },
+        { "label": "b", "text": "To build confidence in the quality of the software" },
+        { "label": "c", "text": "To guarantee that the software contains no defects" },
+        { "label": "d", "text": "To detect failures and identify defects" }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "FL-1.1.1",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Providing information for decision-making is a valid testing objective." },
+        "b": { "correct": false, "explanation": "Building confidence in the quality of the software is a valid testing objective." },
+        "c": { "correct": true, "explanation": "Testing cannot guarantee that software contains no defects. Testing can reduce the risk of defects remaining, but cannot prove their absence." },
+        "d": { "correct": false, "explanation": "Detecting failures and identifying defects is a core testing objective." }
+      }
     },
-    "questions": [
-        {
-            "id": 1,
-            "questionText": "Which of the following is an advantage of the whole-team approach?",
-            "options": [
-                {
-                    "label": "a",
-                    "text": "It allows testers to work in isolation from developers."
-                },
-                {
-                    "label": "b",
-                    "text": "It promotes collaboration and shared responsibility for quality."
-                },
-                {
-                    "label": "c",
-                    "text": "It reduces the need for documentation."
-                },
-                {
-                    "label": "d",
-                    "text": "It ensures that only developers are responsible for testing."
-                }
-            ],
-            "correctAnswer": [
-                "b"
-            ],
-            "learningObjective": "FL-1.x.x",
-            "kLevel": "K2",
-            "points": 1,
-            "type": "single",
-            "explanations": {
-                "a": {
-                    "correct": false,
-                    "explanation": "Whole-team approach discourages isolation."
-                },
-                "b": {
-                    "correct": true,
-                    "explanation": "Collaboration is a key benefit."
-                },
-                "c": {
-                    "correct": false,
-                    "explanation": "Documentation is still needed."
-                },
-                "d": {
-                    "correct": false,
-                    "explanation": "Everyone is responsible for quality."
-                }
-            }
-        }
-    ]
+    {
+      "id": 2,
+      "questionText": "According to the 'defect clustering' principle, where are most software defects typically found?",
+      "options": [
+        { "label": "a", "text": "Equally distributed across all modules" },
+        { "label": "b", "text": "Only in recently added features" },
+        { "label": "c", "text": "Concentrated in a small number of modules" },
+        { "label": "d", "text": "Exclusively in integration points between components" }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "FL-1.2.1",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Defects are not equally distributed; this is the opposite of what the defect clustering principle states." },
+        "b": { "correct": false, "explanation": "While new features may have more defects, defect clustering is about concentration in specific modules, not just new code." },
+        "c": { "correct": true, "explanation": "The defect clustering principle (also known as the Pareto principle in testing) states that a small number of modules contain the majority of defects." },
+        "d": { "correct": false, "explanation": "Defects can cluster anywhere; the principle does not restrict clustering to integration points." }
+      }
+    },
+    {
+      "id": 3,
+      "questionText": "Which of the seven testing principles states that testing all possible input combinations and preconditions is not feasible?",
+      "options": [
+        { "label": "a", "text": "Testing shows presence of defects" },
+        { "label": "b", "text": "Exhaustive testing is impossible" },
+        { "label": "c", "text": "Defect clustering" },
+        { "label": "d", "text": "Testing is context-dependent" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-1.2.1",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "This principle addresses what testing can prove, not feasibility of input coverage." },
+        "b": { "correct": true, "explanation": "Exhaustive testing is impossible states that testing all combinations of inputs and preconditions is not feasible except in trivial cases; risk and priority are used to focus testing." },
+        "c": { "correct": false, "explanation": "Defect clustering describes where defects tend to accumulate, not the infeasibility of exhaustive testing." },
+        "d": { "correct": false, "explanation": "Testing is context-dependent means different contexts require different testing approaches." }
+      }
+    },
+    {
+      "id": 4,
+      "questionText": "Which of the following activities belongs to the TEST ANALYSIS activity in the test process?",
+      "options": [
+        { "label": "a", "text": "Scheduling test execution and assigning testers" },
+        { "label": "b", "text": "Identifying test conditions from the test basis" },
+        { "label": "c", "text": "Comparing actual vs expected results" },
+        { "label": "d", "text": "Archiving test results for future reference" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-1.4.1",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Scheduling and assigning testers is part of test planning." },
+        "b": { "correct": true, "explanation": "Test analysis involves examining the test basis (requirements, designs, etc.) to identify what should be tested and derive test conditions." },
+        "c": { "correct": false, "explanation": "Comparing actual vs expected results is part of test execution." },
+        "d": { "correct": false, "explanation": "Archiving is part of test completion." }
+      }
+    },
+    {
+      "id": 5,
+      "questionText": "Which of the following is produced during the TEST DESIGN activity?",
+      "options": [
+        { "label": "a", "text": "Test completion report" },
+        { "label": "b", "text": "Defect reports" },
+        { "label": "c", "text": "High-level test cases with expected results" },
+        { "label": "d", "text": "Test environment setup records" }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "FL-1.4.1",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "The test completion report is produced during test completion." },
+        "b": { "correct": false, "explanation": "Defect reports are produced during test execution when failures are detected." },
+        "c": { "correct": true, "explanation": "Test design produces high-level test cases, test data requirements, and test environment requirements derived from test conditions." },
+        "d": { "correct": false, "explanation": "Test environment setup records are produced during test implementation." }
+      }
+    },
+    {
+      "id": 6,
+      "questionText": "A software component works correctly in isolation but fails when combined with another component. What type of defect is this?",
+      "options": [
+        { "label": "a", "text": "A unit-level defect" },
+        { "label": "b", "text": "An integration defect" },
+        { "label": "c", "text": "A requirements defect" },
+        { "label": "d", "text": "A performance defect" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-1.2.2",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "A unit-level defect would be found when testing the component in isolation, not in combination." },
+        "b": { "correct": true, "explanation": "When components work individually but fail when combined, the defect is in the interface or interaction between them — an integration defect." },
+        "c": { "correct": false, "explanation": "A requirements defect involves incorrect or missing requirements, not component interaction issues." },
+        "d": { "correct": false, "explanation": "A performance defect relates to speed, resource usage, or scalability, not functional interaction issues." }
+      }
+    },
+    {
+      "id": 7,
+      "questionText": "Which of the following is an essential skill for testers according to ISTQB CTFL v4.0?",
+      "options": [
+        { "label": "a", "text": "The ability to write source code in all programming languages" },
+        { "label": "b", "text": "Analytical thinking and effective communication" },
+        { "label": "c", "text": "Advanced mathematical knowledge" },
+        { "label": "d", "text": "Prior work experience as a software developer" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-1.5.2",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Testers do not need to write code in all languages; technical knowledge is helpful but not defined this way." },
+        "b": { "correct": true, "explanation": "ISTQB lists analytical thinking, effective communication, curiosity, attention to detail, and domain knowledge as essential tester skills." },
+        "c": { "correct": false, "explanation": "Advanced mathematics is not an essential skill for most testing roles." },
+        "d": { "correct": false, "explanation": "Prior development experience is helpful but not identified as an essential skill for testers." }
+      }
+    },
+    {
+      "id": 8,
+      "questionText": "Which of the following BEST describes 'testing is context-dependent'?",
+      "options": [
+        { "label": "a", "text": "The same test approach should be applied to all software projects" },
+        { "label": "b", "text": "Testing for safety-critical systems requires different approaches than testing e-commerce websites" },
+        { "label": "c", "text": "Testing must always follow the same sequence of activities" },
+        { "label": "d", "text": "Context only matters during requirements analysis, not during testing" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-1.2.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Using the same approach for all projects contradicts the context-dependent principle." },
+        "b": { "correct": true, "explanation": "Testing is context-dependent means that different contexts require different approaches. Testing a safety-critical medical device requires very different rigor compared to testing an e-commerce website." },
+        "c": { "correct": false, "explanation": "Test activities can vary in sequence and emphasis based on context." },
+        "d": { "correct": false, "explanation": "Context matters throughout all testing activities, not just requirements analysis." }
+      }
+    },
+    {
+      "id": 9,
+      "questionText": "Which of the following represents 'whole team' approach to quality in Agile testing?",
+      "options": [
+        { "label": "a", "text": "Only designated QA engineers are responsible for quality" },
+        { "label": "b", "text": "All team members, including developers and business representatives, share responsibility for quality" },
+        { "label": "c", "text": "Quality assurance is the responsibility of the project manager" },
+        { "label": "d", "text": "Quality is verified only at the end of each release" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-1.5.3",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "The whole team approach explicitly rejects the idea that quality is only the QA team's responsibility." },
+        "b": { "correct": true, "explanation": "The whole team approach in Agile means everyone on the team — developers, testers, business analysts, and others — shares responsibility for quality." },
+        "c": { "correct": false, "explanation": "The project manager oversees the project but quality is a shared team responsibility." },
+        "d": { "correct": false, "explanation": "Agile promotes continuous quality, not just end-of-release verification." }
+      }
+    },
+    {
+      "id": 10,
+      "questionText": "In Agile development, which ceremony is used to plan and commit to work for the upcoming iteration?",
+      "options": [
+        { "label": "a", "text": "Sprint retrospective" },
+        { "label": "b", "text": "Daily standup" },
+        { "label": "c", "text": "Sprint planning" },
+        { "label": "d", "text": "Sprint review" }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "FL-2.1.2",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "The sprint retrospective is a meeting to reflect on the process and identify improvements." },
+        "b": { "correct": false, "explanation": "The daily standup is a short daily meeting for synchronization, not planning." },
+        "c": { "correct": true, "explanation": "Sprint planning is the ceremony where the team reviews the product backlog, selects items for the sprint, and commits to the work to be completed." },
+        "d": { "correct": false, "explanation": "The sprint review demonstrates completed work to stakeholders, not plans for upcoming work." }
+      }
+    },
+    {
+      "id": 11,
+      "questionText": "Which test level is PRIMARILY concerned with validating the system against user needs and business requirements?",
+      "options": [
+        { "label": "a", "text": "Component testing" },
+        { "label": "b", "text": "Component integration testing" },
+        { "label": "c", "text": "System testing" },
+        { "label": "d", "text": "Acceptance testing" }
+      ],
+      "correctAnswer": ["d"],
+      "learningObjective": "FL-2.2.1",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Component testing validates individual units against their technical specifications, not user needs." },
+        "b": { "correct": false, "explanation": "Component integration testing checks interfaces between components." },
+        "c": { "correct": false, "explanation": "System testing validates the complete system behavior but does not specifically focus on user acceptance." },
+        "d": { "correct": true, "explanation": "Acceptance testing validates whether the system satisfies user needs and business requirements, and determines if the system is ready for deployment." }
+      }
+    },
+    {
+      "id": 12,
+      "questionText": "What is the purpose of confirmation testing (re-testing)?",
+      "options": [
+        { "label": "a", "text": "To check that the software performs well under load" },
+        { "label": "b", "text": "To verify that a previously detected defect has been successfully fixed" },
+        { "label": "c", "text": "To test newly added features in each release" },
+        { "label": "d", "text": "To ensure no new defects were introduced by a change" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-2.2.3",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Testing under load is performance testing." },
+        "b": { "correct": true, "explanation": "Confirmation testing (also called re-testing) specifically verifies that the test case(s) that failed due to a defect now pass after the defect has been fixed." },
+        "c": { "correct": false, "explanation": "Testing new features is part of the standard test cycle, not confirmation testing." },
+        "d": { "correct": false, "explanation": "Ensuring no new defects were introduced is the purpose of regression testing." }
+      }
+    },
+    {
+      "id": 13,
+      "questionText": "What is the PRIMARY objective of impact analysis in maintenance testing?",
+      "options": [
+        { "label": "a", "text": "To create new test cases from scratch for the maintained system" },
+        { "label": "b", "text": "To determine which parts of the system are affected by a change and what should be retested" },
+        { "label": "c", "text": "To analyze the performance impact of adding new users to the system" },
+        { "label": "d", "text": "To assess the financial cost of performing maintenance" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-2.3.2",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "While new tests may be written, the primary objective of impact analysis is to determine scope, not create tests." },
+        "b": { "correct": true, "explanation": "Impact analysis in maintenance testing determines what areas of the system are affected by a change, which informs what needs to be regression tested." },
+        "c": { "correct": false, "explanation": "User load analysis is a capacity planning concern, not impact analysis for maintenance testing." },
+        "d": { "correct": false, "explanation": "Financial cost assessment is a project management activity, not the purpose of impact analysis." }
+      }
+    },
+    {
+      "id": 14,
+      "questionText": "In Agile, which practice involves writing tests before writing the corresponding code?",
+      "options": [
+        { "label": "a", "text": "Exploratory testing" },
+        { "label": "b", "text": "Test-driven development (TDD)" },
+        { "label": "c", "text": "Pair programming" },
+        { "label": "d", "text": "Code review" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-2.1.5",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Exploratory testing involves simultaneous test design and execution, not writing tests before code." },
+        "b": { "correct": true, "explanation": "Test-driven development (TDD) requires writing an automated test before writing the production code that makes the test pass, then refactoring." },
+        "c": { "correct": false, "explanation": "Pair programming involves two developers coding together, not writing tests first." },
+        "d": { "correct": false, "explanation": "Code review examines existing code for quality, not a test-first practice." }
+      }
+    },
+    {
+      "id": 15,
+      "questionText": "Which of the following work products CAN be examined using static testing?",
+      "options": [
+        { "label": "a", "text": "Only source code files" },
+        { "label": "b", "text": "Source code, requirements specifications, and design documents" },
+        { "label": "c", "text": "Only compiled executable binaries" },
+        { "label": "d", "text": "Only test execution logs" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-3.1.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Static testing is not limited to source code; it applies to any work product." },
+        "b": { "correct": true, "explanation": "Static testing can examine any work product including source code, requirements, designs, user stories, test cases, and other documentation." },
+        "c": { "correct": false, "explanation": "Compiled binaries are examined through dynamic testing (execution), not typically through static analysis of the artifact itself." },
+        "d": { "correct": false, "explanation": "Test execution logs result from dynamic testing; they are not the primary subject of static testing." }
+      }
+    },
+    {
+      "id": 16,
+      "questionText": "Which type of review is led by the author of the work product?",
+      "options": [
+        { "label": "a", "text": "Inspection" },
+        { "label": "b", "text": "Technical review" },
+        { "label": "c", "text": "Walkthrough" },
+        { "label": "d", "text": "Informal review" }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "FL-3.2.2",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Inspections are led by a trained moderator, not the author." },
+        "b": { "correct": false, "explanation": "Technical reviews are peer-led by a trained moderator or technical lead, not the author." },
+        "c": { "correct": true, "explanation": "Walkthroughs are led by the author, who guides the reviewers through the work product. The main purpose is learning and gaining feedback." },
+        "d": { "correct": false, "explanation": "Informal reviews have no defined leader; they can be done by anyone." }
+      }
+    },
+    {
+      "id": 17,
+      "questionText": "Which of the following is a defect that is typically found by STATIC analysis tools but not by dynamic testing?",
+      "options": [
+        { "label": "a", "text": "A performance bottleneck that occurs under high load" },
+        { "label": "b", "text": "An unreachable code section" },
+        { "label": "c", "text": "A user interface element that is misaligned" },
+        { "label": "d", "text": "A timeout error in a network request" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-3.1.3",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Performance bottlenecks are found by dynamic performance testing, not static analysis." },
+        "b": { "correct": true, "explanation": "Static analysis tools can identify unreachable code (dead code) by examining code structure without execution. Dynamic testing cannot reach it by definition." },
+        "c": { "correct": false, "explanation": "UI misalignment issues are found by visual/dynamic testing or UI review, not static code analysis." },
+        "d": { "correct": false, "explanation": "Network timeout errors occur at runtime and are found through dynamic testing." }
+      }
+    },
+    {
+      "id": 18,
+      "questionText": "What is the role of the moderator in a formal review?",
+      "options": [
+        { "label": "a", "text": "To write the work product being reviewed" },
+        { "label": "b", "text": "To facilitate the review process and ensure it runs effectively" },
+        { "label": "c", "text": "To implement the changes identified during the review" },
+        { "label": "d", "text": "To approve the final version of the work product" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-3.2.4",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "The author writes the work product; the moderator facilitates its review." },
+        "b": { "correct": true, "explanation": "The moderator (facilitator) plans and leads the review meeting, ensures the process is followed, mediates discussion, and tracks actions." },
+        "c": { "correct": false, "explanation": "The author is responsible for fixing defects found in the review." },
+        "d": { "correct": false, "explanation": "Approval decisions may rest with management or the author, but not the moderator's primary role." }
+      }
+    },
+    {
+      "id": 19,
+      "questionText": "A system displays different messages depending on a customer's age: under 18, 18-64, and 65+. Using equivalence partitioning, how many valid partitions exist?",
+      "options": [
+        { "label": "a", "text": "1" },
+        { "label": "b", "text": "2" },
+        { "label": "c", "text": "3" },
+        { "label": "d", "text": "4" }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "FL-4.2.1",
+      "kLevel": "K3",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "There are multiple valid partitions corresponding to the age groups with different behavior." },
+        "b": { "correct": false, "explanation": "There are 3 distinct valid ranges, not 2." },
+        "c": { "correct": true, "explanation": "The three age groups (under 18, 18-64, 65+) each receive different outputs, making them 3 distinct valid equivalence partitions." },
+        "d": { "correct": false, "explanation": "There are 3 valid partitions. Invalid partitions (e.g., negative ages) would be separate." }
+      }
+    },
+    {
+      "id": 20,
+      "questionText": "Which of the following sets of values represents a 3-value BVA test set for an integer field that accepts values from 1 to 10?",
+      "options": [
+        { "label": "a", "text": "0, 1, 10, 11" },
+        { "label": "b", "text": "0, 1, 2, 9, 10, 11" },
+        { "label": "c", "text": "1, 5, 10" },
+        { "label": "d", "text": "1, 10" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-4.2.2",
+      "kLevel": "K3",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "These 4 values represent 2-value BVA (boundaries plus just outside). 3-value BVA also includes values just inside the boundaries." },
+        "b": { "correct": true, "explanation": "3-value BVA tests the boundary, the value just inside, and the value just outside. For range 1-10: 0 (below), 1 (boundary), 2 (inside), 9 (inside), 10 (boundary), 11 (above)." },
+        "c": { "correct": false, "explanation": "This includes only the boundaries and a midpoint, not the systematic coverage required by 3-value BVA." },
+        "d": { "correct": false, "explanation": "Only 2 values (boundaries only) is insufficient for either 2-value or 3-value BVA." }
+      }
+    },
+    {
+      "id": 21,
+      "questionText": "When is decision table testing MOST appropriate?",
+      "options": [
+        { "label": "a", "text": "When testing the system's behavior under different load conditions" },
+        { "label": "b", "text": "When the system behavior depends on complex combinations of conditions" },
+        { "label": "c", "text": "When testing a single numeric input range" },
+        { "label": "d", "text": "When the tester wants to explore the system without predefined test cases" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-4.2.3",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Load condition testing is performance testing, not a use case for decision tables." },
+        "b": { "correct": true, "explanation": "Decision table testing is most effective when the system behavior varies based on combinations of multiple conditions, helping ensure all condition combinations are covered." },
+        "c": { "correct": false, "explanation": "A single numeric range is best handled by equivalence partitioning and BVA." },
+        "d": { "correct": false, "explanation": "Exploring without predefined test cases describes exploratory testing." }
+      }
+    },
+    {
+      "id": 22,
+      "questionText": "A state transition diagram has 4 states and 6 transitions. What is the minimum number of test cases needed to cover all transitions?",
+      "options": [
+        { "label": "a", "text": "4" },
+        { "label": "b", "text": "5" },
+        { "label": "c", "text": "6" },
+        { "label": "d", "text": "10" }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "FL-4.2.4",
+      "kLevel": "K3",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "4 test cases would cover all states but not necessarily all transitions." },
+        "b": { "correct": false, "explanation": "5 test cases may not cover all 6 transitions." },
+        "c": { "correct": true, "explanation": "To achieve 100% transition coverage, every transition must be executed at least once. With 6 transitions, 6 test cases are needed (one per transition, assuming optimal design)." },
+        "d": { "correct": false, "explanation": "10 test cases would over-cover; only 6 are needed for all-transitions coverage." }
+      }
+    },
+    {
+      "id": 23,
+      "questionText": "Which of the following BEST describes branch coverage?",
+      "options": [
+        { "label": "a", "text": "Ensuring every line of code has been executed" },
+        { "label": "b", "text": "Ensuring both the true and false outcomes of every decision point have been executed" },
+        { "label": "c", "text": "Ensuring every possible path through the program has been tested" },
+        { "label": "d", "text": "Ensuring every method in the class hierarchy has been called" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-4.3.2",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Ensuring every line is executed is statement coverage, not branch coverage." },
+        "b": { "correct": true, "explanation": "Branch coverage (decision coverage) requires that both the true and false outcomes of every decision point in the code have been exercised." },
+        "c": { "correct": false, "explanation": "Ensuring every possible path is path coverage, which is generally infeasible." },
+        "d": { "correct": false, "explanation": "Calling every method is a type of method coverage, not branch coverage." }
+      }
+    },
+    {
+      "id": 24,
+      "questionText": "Which of the following BEST describes error guessing as a test technique?",
+      "options": [
+        { "label": "a", "text": "Using automated tools to predict defect locations based on code metrics" },
+        { "label": "b", "text": "Using the tester's knowledge and experience to anticipate likely defects and design tests for them" },
+        { "label": "c", "text": "Randomly generating test inputs to discover unexpected failures" },
+        { "label": "d", "text": "Reviewing test requirements to identify missing coverage areas" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-4.4.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Error guessing is based on human experience and intuition, not automated code metrics." },
+        "b": { "correct": true, "explanation": "Error guessing is an experience-based technique where testers use their knowledge of past defects, typical developer mistakes, and system complexity to anticipate where defects are likely to be found." },
+        "c": { "correct": false, "explanation": "Randomly generating inputs describes random testing or fuzzing, not error guessing." },
+        "d": { "correct": false, "explanation": "Reviewing requirements for coverage gaps is part of test analysis, not error guessing." }
+      }
+    },
+    {
+      "id": 25,
+      "questionText": "What is the purpose of a test charter in exploratory testing?",
+      "options": [
+        { "label": "a", "text": "To provide detailed step-by-step test procedures" },
+        { "label": "b", "text": "To guide the scope and direction of an exploratory testing session" },
+        { "label": "c", "text": "To record defects found during exploratory testing" },
+        { "label": "d", "text": "To specify the test automation framework to be used" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-4.4.2",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Detailed step-by-step procedures are scripted test cases, not exploratory test charters." },
+        "b": { "correct": true, "explanation": "A test charter defines the mission of an exploratory testing session, including what to explore, the target, and the time box, while leaving latitude for the tester's judgment." },
+        "c": { "correct": false, "explanation": "Defects are recorded in defect reports; the charter defines the session scope." },
+        "d": { "correct": false, "explanation": "Automation framework selection is a technical infrastructure decision, not the purpose of a charter." }
+      }
+    },
+    {
+      "id": 26,
+      "questionText": "Which collaborative test approach requires both the developer and tester to co-create tests from user stories before implementation?",
+      "options": [
+        { "label": "a", "text": "Boundary value analysis" },
+        { "label": "b", "text": "Acceptance test-driven development (ATDD)" },
+        { "label": "c", "text": "White-box testing" },
+        { "label": "d", "text": "Regression testing" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-4.5.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "BVA is a black-box test design technique, not a collaborative development practice." },
+        "b": { "correct": true, "explanation": "ATDD involves the whole team (developers, testers, business stakeholders) in defining acceptance tests before implementation to clarify requirements and drive development." },
+        "c": { "correct": false, "explanation": "White-box testing is a technique based on code structure, not a collaborative pre-implementation practice." },
+        "d": { "correct": false, "explanation": "Regression testing validates that changes did not break existing functionality." }
+      }
+    },
+    {
+      "id": 27,
+      "questionText": "Which of the following is typically included in a test plan according to ISTQB CTFL v4.0?",
+      "options": [
+        { "label": "a", "text": "Individual test case steps and expected results" },
+        { "label": "b", "text": "Risk register and testing approach" },
+        { "label": "c", "text": "Detailed defect descriptions and resolution status" },
+        { "label": "d", "text": "Source code listings for the modules under test" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-5.1.2",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Individual test case steps belong in test specifications, not the test plan." },
+        "b": { "correct": true, "explanation": "A test plan typically includes context, communication plan, risk register, testing approach, activities, estimates, schedule, and resources." },
+        "c": { "correct": false, "explanation": "Defect descriptions and resolution belong in defect management records." },
+        "d": { "correct": false, "explanation": "Source code is not part of a test plan." }
+      }
+    },
+    {
+      "id": 28,
+      "questionText": "What is a project risk in the context of testing?",
+      "options": [
+        { "label": "a", "text": "The risk that the software will fail to work correctly when deployed" },
+        { "label": "b", "text": "The risk that a feature does not meet user expectations" },
+        { "label": "c", "text": "The risk related to management, resources, or organizational factors that could affect the test project" },
+        { "label": "d", "text": "The risk that security vulnerabilities will be found in production" }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "FL-5.2.1",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Software failing when deployed is a product risk, not a project risk." },
+        "b": { "correct": false, "explanation": "Features not meeting expectations is a product risk." },
+        "c": { "correct": true, "explanation": "Project risks are risks related to the management of the test project, such as insufficient resources, unrealistic schedules, poor communication, or supplier issues." },
+        "d": { "correct": false, "explanation": "Security vulnerabilities in production are product risks." }
+      }
+    },
+    {
+      "id": 29,
+      "questionText": "A test manager estimates testing effort using data from similar past projects adjusted for project size. Which estimation technique is this?",
+      "options": [
+        { "label": "a", "text": "Expert-based estimation" },
+        { "label": "b", "text": "Ratio-based estimation (metric-based)" },
+        { "label": "c", "text": "Planning poker" },
+        { "label": "d", "text": "Wideband Delphi" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-5.1.3",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Expert-based estimation is based on personal judgment, not data from past projects." },
+        "b": { "correct": true, "explanation": "Metric-based (ratio-based) estimation uses historical data from previous similar projects and adjusts for the size and complexity of the current project." },
+        "c": { "correct": false, "explanation": "Planning poker is a consensus-based expert estimation technique." },
+        "d": { "correct": false, "explanation": "Wideband Delphi is an expert-based consensus technique, not metric-based." }
+      }
+    },
+    {
+      "id": 30,
+      "questionText": "Which of the following test metrics reflects how well the testing has covered the specified requirements?",
+      "options": [
+        { "label": "a", "text": "Defect density per module" },
+        { "label": "b", "text": "Percentage of requirements covered by test cases" },
+        { "label": "c", "text": "Number of testers on the team" },
+        { "label": "d", "text": "Test execution time per test case" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-5.3.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Defect density measures defects found, not requirements coverage." },
+        "b": { "correct": true, "explanation": "Percentage of requirements covered by test cases is a coverage metric that shows how well the test suite addresses the specified requirements." },
+        "c": { "correct": false, "explanation": "Team size is a resource metric, not a coverage metric." },
+        "d": { "correct": false, "explanation": "Test execution time is an efficiency metric, not a coverage metric." }
+      }
+    },
+    {
+      "id": 31,
+      "questionText": "Which of the following is a purpose of test monitoring?",
+      "options": [
+        { "label": "a", "text": "To create detailed test cases for each requirement" },
+        { "label": "b", "text": "To collect information and compare actual progress against the test plan" },
+        { "label": "c", "text": "To decide whether the system is ready for release" },
+        { "label": "d", "text": "To identify test conditions from the test basis" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-5.3.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Creating test cases is part of test design and implementation, not monitoring." },
+        "b": { "correct": true, "explanation": "Test monitoring collects information about testing activities and compares actual progress against the plan to detect deviations and enable corrective actions." },
+        "c": { "correct": false, "explanation": "Release decisions are typically made during test completion after evaluating exit criteria." },
+        "d": { "correct": false, "explanation": "Identifying test conditions is part of test analysis." }
+      }
+    },
+    {
+      "id": 32,
+      "questionText": "In the context of defect management, what does the term 'defect lifecycle' refer to?",
+      "options": [
+        { "label": "a", "text": "The time it takes to fix a defect from discovery to closure" },
+        { "label": "b", "text": "The sequence of states a defect goes through from detection to closure" },
+        { "label": "c", "text": "The number of defects found per test cycle" },
+        { "label": "d", "text": "The impact of a defect on the system's overall quality" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-5.5.2",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "The time to fix is a metric (resolution time), not the lifecycle itself." },
+        "b": { "correct": true, "explanation": "The defect lifecycle describes the states a defect transitions through: from detection (New/Open), through assignment, analysis, fixing (Fixed/Resolved), verification (Re-test), to closure (Closed)." },
+        "c": { "correct": false, "explanation": "Number of defects per test cycle is a defect density metric, not the lifecycle." },
+        "d": { "correct": false, "explanation": "Defect impact relates to severity, not the lifecycle definition." }
+      }
+    },
+    {
+      "id": 33,
+      "questionText": "Which of the following statements about a test progress report is CORRECT?",
+      "options": [
+        { "label": "a", "text": "It is produced only at the very end of the testing project" },
+        { "label": "b", "text": "It provides regular updates to stakeholders on testing status and progress" },
+        { "label": "c", "text": "It contains the complete list of all test cases to be executed" },
+        { "label": "d", "text": "It replaces the test plan once testing begins" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-5.3.2",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "The test completion report is produced at the end; progress reports are produced regularly during testing." },
+        "b": { "correct": true, "explanation": "Test progress reports are produced regularly (daily, weekly, per sprint) to communicate current testing status, metrics, and any deviations to stakeholders." },
+        "c": { "correct": false, "explanation": "The complete list of test cases is in the test specification, not the progress report." },
+        "d": { "correct": false, "explanation": "Progress reports supplement the test plan; they do not replace it." }
+      }
+    },
+    {
+      "id": 34,
+      "questionText": "Why is it important to distinguish between the severity and priority of a defect?",
+      "options": [
+        { "label": "a", "text": "Because a technically severe defect may have low business priority, or a minor defect may need urgent fixing" },
+        { "label": "b", "text": "Because only high severity defects should be reported" },
+        { "label": "c", "text": "Because severity is always more important than priority" },
+        { "label": "d", "text": "Because defect priority determines which module the defect belongs to" }
+      ],
+      "correctAnswer": ["a"],
+      "learningObjective": "FL-5.5.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": true, "explanation": "A critical defect in a rarely-used feature may have low priority, while a cosmetic defect on the home page may have high priority due to business visibility. The distinction helps teams make correct repair decisions." },
+        "b": { "correct": false, "explanation": "All defects should be reported regardless of severity; the team then decides priority." },
+        "c": { "correct": false, "explanation": "Neither is inherently more important; they serve different decision-making purposes." },
+        "d": { "correct": false, "explanation": "Priority does not indicate module location; that is tracked separately." }
+      }
+    },
+    {
+      "id": 35,
+      "questionText": "What is the purpose of 'test control' in the test management process?",
+      "options": [
+        { "label": "a", "text": "To write automated test scripts" },
+        { "label": "b", "text": "To take corrective actions when monitoring shows deviations from the test plan" },
+        { "label": "c", "text": "To define the initial test objectives and scope" },
+        { "label": "d", "text": "To prepare test data for test execution" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-5.3.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Writing automated test scripts is part of test implementation, not test control." },
+        "b": { "correct": true, "explanation": "Test control involves taking corrective actions based on information collected through monitoring, such as adjusting priorities, reallocating resources, or revising test plans." },
+        "c": { "correct": false, "explanation": "Defining objectives and scope is part of test planning." },
+        "d": { "correct": false, "explanation": "Preparing test data is part of test implementation." }
+      }
+    },
+    {
+      "id": 36,
+      "questionText": "Which of the following is an example of a test management tool?",
+      "options": [
+        { "label": "a", "text": "A tool that automatically injects faults into code to test defect detection" },
+        { "label": "b", "text": "A tool that tracks test cases, test runs, and defects in a centralized repository" },
+        { "label": "c", "text": "A tool that measures CPU and memory usage during test execution" },
+        { "label": "d", "text": "A tool that generates random input values for fuzz testing" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-6.1.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "A fault injection tool is used for robustness testing, not test management." },
+        "b": { "correct": true, "explanation": "Test management tools maintain and track test cases, test plans, test execution status, and defects in a central repository accessible to the team." },
+        "c": { "correct": false, "explanation": "CPU and memory measurement tools are performance monitoring tools." },
+        "d": { "correct": false, "explanation": "Random input generators are test data tools or fuzzing tools, not test management tools." }
+      }
+    },
+    {
+      "id": 37,
+      "questionText": "What is the MAIN reason that automated test maintenance effort is often underestimated?",
+      "options": [
+        { "label": "a", "text": "Automated tests run faster than expected" },
+        { "label": "b", "text": "The application and its tests must be updated whenever the software changes" },
+        { "label": "c", "text": "Automated tests always find more defects than anticipated" },
+        { "label": "d", "text": "Test managers do not understand automation tools" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-6.2.2",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Test execution speed does not cause maintenance effort to be underestimated." },
+        "b": { "correct": true, "explanation": "Automated tests require ongoing maintenance whenever the application changes. This ongoing cost is often underestimated, making automation appear cheaper than it is." },
+        "c": { "correct": false, "explanation": "Finding more defects is a positive outcome, not a maintenance effort driver." },
+        "d": { "correct": false, "explanation": "Manager understanding may vary, but the core reason for underestimation is the ongoing maintenance cost of keeping tests synchronized with the application." }
+      }
+    },
+    {
+      "id": 38,
+      "questionText": "Which of the following is a characteristic of a good static analysis tool?",
+      "options": [
+        { "label": "a", "text": "It executes the code to find runtime errors" },
+        { "label": "b", "text": "It analyzes code without executing it to find potential defects and code quality issues" },
+        { "label": "c", "text": "It generates test cases automatically based on the requirements" },
+        { "label": "d", "text": "It simulates user interactions with the application" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-6.1.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Executing code to find runtime errors is dynamic testing, not static analysis." },
+        "b": { "correct": true, "explanation": "Static analysis tools examine code without executing it, identifying issues such as coding standard violations, unreachable code, undeclared variables, and security vulnerabilities." },
+        "c": { "correct": false, "explanation": "Automatic test case generation from requirements is a different category of test tool." },
+        "d": { "correct": false, "explanation": "Simulating user interactions is done by test execution tools, not static analysis tools." }
+      }
+    },
+    {
+      "id": 39,
+      "questionText": "A tester achieves 100% branch coverage on a function. What can be said about statement coverage?",
+      "options": [
+        { "label": "a", "text": "Statement coverage will be less than 100%" },
+        { "label": "b", "text": "Statement coverage will also be 100%" },
+        { "label": "c", "text": "Statement coverage and branch coverage are unrelated" },
+        { "label": "d", "text": "Nothing can be said about statement coverage from branch coverage data" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-4.3.2",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "100% branch coverage subsumes 100% statement coverage; statement coverage cannot be lower." },
+        "b": { "correct": true, "explanation": "If 100% branch coverage is achieved, all branches (true and false) of every decision are executed, which means every statement is executed at least once, guaranteeing 100% statement coverage." },
+        "c": { "correct": false, "explanation": "They are related: branch coverage subsumes (implies) statement coverage." },
+        "d": { "correct": false, "explanation": "A clear relationship exists: 100% branch coverage implies 100% statement coverage." }
+      }
+    },
+    {
+      "id": 40,
+      "questionText": "In testing, what is a 'test basis'?",
+      "options": [
+        { "label": "a", "text": "The minimum number of test cases required to cover all requirements" },
+        { "label": "b", "text": "The body of knowledge used as the basis for test analysis and design" },
+        { "label": "c", "text": "The set of all automated test scripts in the test suite" },
+        { "label": "d", "text": "The test environment configuration used for test execution" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-1.4.1",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "The minimum number of test cases is a coverage goal, not the test basis definition." },
+        "b": { "correct": true, "explanation": "The test basis is any document or other work product (requirements, design specs, user stories, source code) used as a reference for test analysis and design." },
+        "c": { "correct": false, "explanation": "Automated test scripts are testware, part of the test suite, not the test basis." },
+        "d": { "correct": false, "explanation": "Test environment configuration is infrastructure, not the test basis." }
+      }
+    }
+  ]
 }

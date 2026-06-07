@@ -1,59 +1,852 @@
 {
-    "examInfo": {
-        "title": "CTFL - V4.0 - EN - SAMPLE EXAM - MODEL C",
-        "version": "V001.00",
-        "totalQuestions": 40,
-        "passingScore": 26,
-        "timeLimit": 60,
-        "pointsPerQuestion": 1
+  "examInfo": {
+    "title": "CTFL - V4.0 - EN - SAMPLE EXAM - MODEL C",
+    "version": "V001.00",
+    "totalQuestions": 40,
+    "passingScore": 26,
+    "timeLimit": 60,
+    "pointsPerQuestion": 1
+  },
+  "questions": [
+    {
+      "id": 1,
+      "questionText": "Which of the following BEST explains why testing is necessary in software development?",
+      "options": [
+        { "label": "a", "text": "Because developers always write incorrect code" },
+        { "label": "b", "text": "Because software systems may have defects that can cause harm to people, organizations, or the environment" },
+        { "label": "c", "text": "Because regulatory agencies require testing for all types of software" },
+        { "label": "d", "text": "Because automated tools can replace the development process" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-1.1.2",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Developers do not always write incorrect code; human error is natural but not universal." },
+        "b": { "correct": true, "explanation": "Software systems can contain defects that, if not detected, may cause significant harm to people, organizations, and the environment — this is the fundamental reason testing is necessary." },
+        "c": { "correct": false, "explanation": "Regulatory requirements apply only to certain domains; testing is necessary more broadly than just for regulatory compliance." },
+        "d": { "correct": false, "explanation": "Testing tools support but do not replace the development process." }
+      }
     },
-    "questions": [
-        {
-            "id": 1,
-            "questionText": "Which of the following is a good testing practice that applies to all software development lifecycles?",
-            "options": [
-                {
-                    "label": "a",
-                    "text": "Test execution should begin only after development is complete."
-                },
-                {
-                    "label": "b",
-                    "text": "For every development activity, there is a corresponding test activity."
-                },
-                {
-                    "label": "c",
-                    "text": "Testers should be involved only during the testing phase."
-                },
-                {
-                    "label": "d",
-                    "text": "Test planning should be done at the end of the project."
-                }
-            ],
-            "correctAnswer": [
-                "b"
-            ],
-            "learningObjective": "FL-2.1.1",
-            "kLevel": "K2",
-            "points": 1,
-            "type": "single",
-            "explanations": {
-                "a": {
-                    "correct": false,
-                    "explanation": "Early testing is better."
-                },
-                "b": {
-                    "correct": true,
-                    "explanation": "This is a fundamental principle."
-                },
-                "c": {
-                    "correct": false,
-                    "explanation": "Early involvement is key."
-                },
-                "d": {
-                    "correct": false,
-                    "explanation": "Planning should start early."
-                }
-            }
-        }
-    ]
+    {
+      "id": 2,
+      "questionText": "The principle 'early testing saves time and money' means:",
+      "options": [
+        { "label": "a", "text": "Testing should only be performed in the early stages of a project" },
+        { "label": "b", "text": "Defects found and fixed early in the SDLC cost significantly less than defects found and fixed later" },
+        { "label": "c", "text": "Automated tests should be written before manual tests" },
+        { "label": "d", "text": "Test planning should be completed before the project starts" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-1.2.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "The principle recommends starting testing early, but does not mean it should only occur early." },
+        "b": { "correct": true, "explanation": "The cost to fix a defect increases exponentially the later it is found in the SDLC. Fixing a requirements defect before code is written is far cheaper than fixing it in production." },
+        "c": { "correct": false, "explanation": "The order of automated vs manual tests is unrelated to this principle." },
+        "d": { "correct": false, "explanation": "While early test planning is good practice, the principle specifically refers to the cost of defect discovery and correction." }
+      }
+    },
+    {
+      "id": 3,
+      "questionText": "Which of the following scenarios illustrates the testing principle 'testing is context-dependent'?",
+      "options": [
+        { "label": "a", "text": "A tester applies the same regression test suite to every project" },
+        { "label": "b", "text": "A safety-critical medical device system undergoes much more rigorous testing than a mobile game app" },
+        { "label": "c", "text": "Testing always follows the same phases regardless of the project type" },
+        { "label": "d", "text": "All defects are treated with the same priority regardless of severity" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-1.2.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Applying the same regression suite to every project violates context-dependence." },
+        "b": { "correct": true, "explanation": "Testing rigor, approach, and techniques differ based on context. A medical device with patient safety implications requires far more rigorous testing than a casual game." },
+        "c": { "correct": false, "explanation": "Test phases and emphasis vary by context; not all projects follow the same test phases." },
+        "d": { "correct": false, "explanation": "Treating all defects equally regardless of severity is inappropriate and unrelated to this principle." }
+      }
+    },
+    {
+      "id": 4,
+      "questionText": "Which of the following BEST describes the test EXECUTION activity?",
+      "options": [
+        { "label": "a", "text": "Defining test conditions and high-level test cases" },
+        { "label": "b", "text": "Running the tests, comparing actual results to expected results, and logging outcomes" },
+        { "label": "c", "text": "Preparing test environment and test data" },
+        { "label": "d", "text": "Reviewing the test basis for testability" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-1.4.1",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Defining test conditions is part of test analysis." },
+        "b": { "correct": true, "explanation": "Test execution involves running the prepared tests, comparing actual outcomes to expected results, and logging the outcomes as pass, fail, or blocked." },
+        "c": { "correct": false, "explanation": "Preparing test environment and data is part of test implementation." },
+        "d": { "correct": false, "explanation": "Reviewing the test basis for testability is part of test analysis." }
+      }
+    },
+    {
+      "id": 5,
+      "questionText": "Which of the following statements about test completion is CORRECT?",
+      "options": [
+        { "label": "a", "text": "Test completion happens only once at the very end of a project" },
+        { "label": "b", "text": "Test completion involves archiving testware and producing a test completion report" },
+        { "label": "c", "text": "Test completion starts at the same time as test planning" },
+        { "label": "d", "text": "Test completion eliminates the need for future testing of the same product" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-1.4.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Test completion happens at the end of each test level or major milestone, not just at the very end of a project." },
+        "b": { "correct": true, "explanation": "Test completion activities include archiving testware for future use, producing a test completion report, and ensuring lessons learned are documented." },
+        "c": { "correct": false, "explanation": "Test completion occurs after test execution, not at the same time as planning." },
+        "d": { "correct": false, "explanation": "Completing a test cycle does not eliminate future testing needs; the product will require maintenance testing." }
+      }
+    },
+    {
+      "id": 6,
+      "questionText": "Which of the following is an example of a false positive in testing?",
+      "options": [
+        { "label": "a", "text": "A defect that exists in the code but is not detected by any test" },
+        { "label": "b", "text": "A test that passes even though the feature is broken" },
+        { "label": "c", "text": "A test that fails even though the feature works correctly" },
+        { "label": "d", "text": "A test that is never executed during the test cycle" }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "FL-1.2.3",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "A defect that escapes detection is a false negative (the test did not catch the defect)." },
+        "b": { "correct": false, "explanation": "A passing test when the feature is broken is a false negative." },
+        "c": { "correct": true, "explanation": "A false positive occurs when a test reports a failure, but the feature actually works correctly. This wastes time investigating non-existent defects." },
+        "d": { "correct": false, "explanation": "An unexecuted test is simply a missed test, not a false positive." }
+      }
+    },
+    {
+      "id": 7,
+      "questionText": "Which of the following is a task typically performed by a TESTER (not the test manager)?",
+      "options": [
+        { "label": "a", "text": "Deciding the overall testing strategy" },
+        { "label": "b", "text": "Allocating the testing budget" },
+        { "label": "c", "text": "Designing and executing test cases" },
+        { "label": "d", "text": "Negotiating testing scope with project stakeholders" }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "FL-1.5.1",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "The overall testing strategy is defined by the test manager, not individual testers." },
+        "b": { "correct": false, "explanation": "Budget allocation is a management responsibility." },
+        "c": { "correct": true, "explanation": "Individual testers are primarily responsible for designing and executing test cases, reporting defects, and documenting test results." },
+        "d": { "correct": false, "explanation": "Negotiating scope with stakeholders is typically done by the test manager." }
+      }
+    },
+    {
+      "id": 8,
+      "questionText": "What is the relationship between quality assurance (QA) and testing?",
+      "options": [
+        { "label": "a", "text": "QA and testing are identical activities" },
+        { "label": "b", "text": "QA focuses on process; testing is one part of QA focused on product quality" },
+        { "label": "c", "text": "Testing replaces QA in modern Agile development" },
+        { "label": "d", "text": "QA is performed only by dedicated QA teams, while testing is done by developers" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-1.1.3",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "QA and testing are related but distinct. QA is broader than testing." },
+        "b": { "correct": true, "explanation": "Quality assurance is a process-focused activity ensuring quality is built in throughout the SDLC. Testing is a product-focused activity and one part of the overall QA approach." },
+        "c": { "correct": false, "explanation": "Agile still includes both QA processes and testing activities." },
+        "d": { "correct": false, "explanation": "Both QA and testing can be performed by various team members; it is not restricted to specific roles." }
+      }
+    },
+    {
+      "id": 9,
+      "questionText": "Which of the following BEST describes how Agile teams typically manage test documentation?",
+      "options": [
+        { "label": "a", "text": "Agile teams produce extensive formal test documentation for every sprint" },
+        { "label": "b", "text": "Agile teams use lightweight documentation such as user stories with acceptance criteria instead of formal test plans" },
+        { "label": "c", "text": "Agile teams do not produce any test documentation" },
+        { "label": "d", "text": "Agile teams produce the same documentation as waterfall projects" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-2.1.3",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Agile values working software over comprehensive documentation and prefers lightweight artifacts." },
+        "b": { "correct": true, "explanation": "Agile teams favor lightweight documentation such as user stories with acceptance criteria, test charters, and automated test results rather than traditional formal test plans and specifications." },
+        "c": { "correct": false, "explanation": "Agile teams do produce documentation; it is simply lighter than in traditional projects." },
+        "d": { "correct": false, "explanation": "Agile documentation practices are significantly lighter than in waterfall projects." }
+      }
+    },
+    {
+      "id": 10,
+      "questionText": "Which of the following BEST describes the purpose of system integration testing?",
+      "options": [
+        { "label": "a", "text": "Testing individual functions within a single software component" },
+        { "label": "b", "text": "Testing the interfaces between the system and external systems or services" },
+        { "label": "c", "text": "Confirming that defects from previous test cycles have been fixed" },
+        { "label": "d", "text": "Testing whether the system meets contractual or regulatory requirements" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-2.2.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Testing individual functions within a component is component (unit) testing." },
+        "b": { "correct": true, "explanation": "System integration testing focuses on the interactions between the system under test and external systems, third-party software, or hardware interfaces." },
+        "c": { "correct": false, "explanation": "Confirming fixed defects is confirmation testing." },
+        "d": { "correct": false, "explanation": "Testing against contractual or regulatory requirements is a form of acceptance testing." }
+      }
+    },
+    {
+      "id": 11,
+      "questionText": "Which of the following is a type of NON-FUNCTIONAL testing?",
+      "options": [
+        { "label": "a", "text": "Testing that a login form accepts valid credentials" },
+        { "label": "b", "text": "Testing how the system behaves under peak load" },
+        { "label": "c", "text": "Testing that a newly reported defect has been fixed" },
+        { "label": "d", "text": "Testing that an e-commerce cart correctly calculates totals" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-2.2.2",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Testing valid credentials is functional testing — it tests what the system does." },
+        "b": { "correct": true, "explanation": "Load testing under peak conditions is non-functional testing. It tests how well the system performs (quality characteristics), not what it does." },
+        "c": { "correct": false, "explanation": "Testing a fixed defect is confirmation testing, a type of change-related testing." },
+        "d": { "correct": false, "explanation": "Cart total calculation is functional testing." }
+      }
+    },
+    {
+      "id": 12,
+      "questionText": "What is the MAIN reason regression testing is often automated?",
+      "options": [
+        { "label": "a", "text": "Automated regression tests are easier to write than manual tests" },
+        { "label": "b", "text": "Regression testing involves repeating the same tests frequently, which is well suited to automation" },
+        { "label": "c", "text": "Regulatory requirements mandate automated regression testing" },
+        { "label": "d", "text": "Automated regression tests always find more defects than manual regression tests" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-2.2.3",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Automated tests are not necessarily easier to write; they require significant initial effort." },
+        "b": { "correct": true, "explanation": "Regression tests are executed repeatedly after every change. This repetitive nature makes them ideal candidates for automation to save time and ensure consistency." },
+        "c": { "correct": false, "explanation": "Regulatory requirements do not universally mandate regression test automation." },
+        "d": { "correct": false, "explanation": "The advantage is consistency and speed, not necessarily finding more defects." }
+      }
+    },
+    {
+      "id": 13,
+      "questionText": "Which of the following is TRUE about maintenance testing scope compared to initial development testing?",
+      "options": [
+        { "label": "a", "text": "Maintenance testing always covers the same scope as the original system test" },
+        { "label": "b", "text": "Maintenance testing scope is typically smaller and is based on impact analysis of the change" },
+        { "label": "c", "text": "Maintenance testing is not needed if the original tests passed" },
+        { "label": "d", "text": "Maintenance testing must always include all previously executed test cases" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-2.3.2",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Re-testing the entire scope would be impractical and unnecessary for most changes." },
+        "b": { "correct": true, "explanation": "Maintenance testing scope is determined by impact analysis of the specific change. Only affected areas and potential regression risks need to be tested." },
+        "c": { "correct": false, "explanation": "Maintenance testing is always needed to verify changes and check for regressions, even if the original tests passed." },
+        "d": { "correct": false, "explanation": "Running all previously executed tests may be impractical and is not required; a targeted subset based on risk is more appropriate." }
+      }
+    },
+    {
+      "id": 14,
+      "questionText": "Which of the following BEST describes DevOps from a testing perspective?",
+      "options": [
+        { "label": "a", "text": "DevOps separates development and operations teams to improve specialization" },
+        { "label": "b", "text": "DevOps promotes continuous testing integrated into the delivery pipeline to enable fast, frequent releases" },
+        { "label": "c", "text": "DevOps replaces testing with peer code reviews" },
+        { "label": "d", "text": "DevOps requires a dedicated testing phase between development and deployment" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-2.1.5",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "DevOps promotes collaboration and integration between development and operations teams, not separation." },
+        "b": { "correct": true, "explanation": "DevOps integrates testing throughout the delivery pipeline (CI/CD), enabling fast and frequent releases with quality built in through continuous testing." },
+        "c": { "correct": false, "explanation": "DevOps does not replace testing; it integrates it more deeply into the pipeline." },
+        "d": { "correct": false, "explanation": "DevOps avoids discrete testing phases; testing is continuous and integrated throughout." }
+      }
+    },
+    {
+      "id": 15,
+      "questionText": "Which of the following is a defect type that static testing can detect but dynamic testing typically CANNOT?",
+      "options": [
+        { "label": "a", "text": "A button that does not respond to mouse clicks" },
+        { "label": "b", "text": "Inconsistencies or contradictions within a requirements document" },
+        { "label": "c", "text": "A memory leak that occurs after hours of system operation" },
+        { "label": "d", "text": "An error in a mathematical calculation in a report" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-3.1.3",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "A non-responsive button is detected through dynamic (UI) testing." },
+        "b": { "correct": true, "explanation": "Reviews (static testing) of requirements documents can detect ambiguities, contradictions, and omissions that dynamic testing cannot address because the code may not yet exist." },
+        "c": { "correct": false, "explanation": "Memory leaks are detected through dynamic performance or stress testing." },
+        "d": { "correct": false, "explanation": "Calculation errors in reports are found by executing the report and comparing results — dynamic testing." }
+      }
+    },
+    {
+      "id": 16,
+      "questionText": "Which of the following review types is primarily intended for knowledge transfer and training?",
+      "options": [
+        { "label": "a", "text": "Inspection" },
+        { "label": "b", "text": "Technical review" },
+        { "label": "c", "text": "Walkthrough" },
+        { "label": "d", "text": "Checklist-based review" }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "FL-3.2.2",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Inspection is primarily for defect detection using a highly formal process." },
+        "b": { "correct": false, "explanation": "Technical reviews focus on technical accuracy and consensus, not primarily on training." },
+        "c": { "correct": true, "explanation": "Walkthroughs, led by the author, serve multiple purposes including knowledge sharing, training new team members, and gaining consensus, as well as finding defects." },
+        "d": { "correct": false, "explanation": "Checklist-based review is a technique that can be applied within different review types, not a separate review type with a training focus." }
+      }
+    },
+    {
+      "id": 17,
+      "questionText": "What is a key difference between a walkthrough and a technical review?",
+      "options": [
+        { "label": "a", "text": "Only technical reviews find defects; walkthroughs do not" },
+        { "label": "b", "text": "Walkthroughs are led by the author; technical reviews are led by a trained moderator or technical lead" },
+        { "label": "c", "text": "Technical reviews are informal; walkthroughs are highly formal" },
+        { "label": "d", "text": "Walkthroughs require a scribe; technical reviews do not" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-3.2.2",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Both walkthroughs and technical reviews can find defects." },
+        "b": { "correct": true, "explanation": "Walkthroughs are led by the author who presents the work product. Technical reviews are led by a trained moderator or senior technical person, making them more structured and objective." },
+        "c": { "correct": false, "explanation": "Technical reviews are more formal than walkthroughs, not the other way around." },
+        "d": { "correct": false, "explanation": "Scribes may be used in both types; this is not the key distinguishing factor." }
+      }
+    },
+    {
+      "id": 18,
+      "questionText": "Which factor contributes to the SUCCESS of reviews?",
+      "options": [
+        { "label": "a", "text": "Making review feedback personal and directed at the author rather than the work product" },
+        { "label": "b", "text": "Having clear entry criteria for what work products can enter the review process" },
+        { "label": "c", "text": "Allowing unlimited review scope to catch as many defects as possible" },
+        { "label": "d", "text": "Limiting reviews to code only, excluding requirements and design documents" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-3.2.5",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Making feedback personal undermines reviews; feedback should focus on the work product, not the author." },
+        "b": { "correct": true, "explanation": "Clear entry criteria ensure that the work product is ready for review and that the review session is productive, contributing to review success." },
+        "c": { "correct": false, "explanation": "Unlimited scope leads to unfocused, inefficient reviews; manageable scope is a success factor." },
+        "d": { "correct": false, "explanation": "Reviews are beneficial for all types of work products, not just code." }
+      }
+    },
+    {
+      "id": 19,
+      "questionText": "A function calculates a discount: 0% for purchases under $50, 5% for $50-$99, and 10% for $100 or more. Using equivalence partitioning, how many partitions exist in total (valid + invalid)?",
+      "options": [
+        { "label": "a", "text": "2" },
+        { "label": "b", "text": "3" },
+        { "label": "c", "text": "4" },
+        { "label": "d", "text": "5" }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "FL-4.2.1",
+      "kLevel": "K3",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "There are 3 valid partitions alone, so the total cannot be 2." },
+        "b": { "correct": false, "explanation": "3 accounts only for the valid partitions; invalid partitions (negative amounts) should also be considered." },
+        "c": { "correct": true, "explanation": "There are 3 valid partitions (under $50, $50-$99, $100+) and 1 invalid partition (negative values, e.g., -$1), giving 4 total partitions." },
+        "d": { "correct": false, "explanation": "5 partitions would require additional distinct behavior ranges not described in this scenario." }
+      }
+    },
+    {
+      "id": 20,
+      "questionText": "Using boundary value analysis for a field that accepts ages from 0 to 120, which values should be tested using 2-value BVA?",
+      "options": [
+        { "label": "a", "text": "0, 60, 120" },
+        { "label": "b", "text": "-1, 0, 120, 121" },
+        { "label": "c", "text": "0, 1, 119, 120" },
+        { "label": "d", "text": "-1, 1, 119, 121" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-4.2.2",
+      "kLevel": "K3",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "This covers boundaries and midpoint but omits the values just outside the boundaries required by 2-value BVA." },
+        "b": { "correct": true, "explanation": "2-value BVA tests each boundary and its immediate neighbor outside the range. For 0-120: -1 (just below), 0 (lower boundary), 120 (upper boundary), 121 (just above)." },
+        "c": { "correct": false, "explanation": "Values 1 and 119 are inside the range; 2-value BVA requires values just outside the boundaries (-1 and 121), not just inside." },
+        "d": { "correct": false, "explanation": "This tests values just outside AND just inside but misses the actual boundaries (0 and 120) which are essential in 2-value BVA." }
+      }
+    },
+    {
+      "id": 21,
+      "questionText": "A system applies a late payment fee based on two conditions: whether the account is overdue (Yes/No) and whether the customer is a premium member (Yes/No). How many unique rules does a full decision table for this system have?",
+      "options": [
+        { "label": "a", "text": "2" },
+        { "label": "b", "text": "4" },
+        { "label": "c", "text": "6" },
+        { "label": "d", "text": "8" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-4.2.3",
+      "kLevel": "K3",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "2 would only cover one condition with two outcomes." },
+        "b": { "correct": true, "explanation": "With 2 binary conditions, the full decision table has 2^2 = 4 rules: (Yes/Yes), (Yes/No), (No/Yes), (No/No)." },
+        "c": { "correct": false, "explanation": "6 rules would require 3 binary conditions (2^3 would be 8, not 6)." },
+        "d": { "correct": false, "explanation": "8 rules require 3 binary conditions; with only 2 conditions the answer is 4." }
+      }
+    },
+    {
+      "id": 22,
+      "questionText": "In state transition testing, which coverage criterion requires that every valid transition is covered by at least one test case?",
+      "options": [
+        { "label": "a", "text": "All-states coverage" },
+        { "label": "b", "text": "All-transitions coverage" },
+        { "label": "c", "text": "All-paths coverage" },
+        { "label": "d", "text": "All-conditions coverage" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-4.2.4",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "All-states coverage only requires that every state is visited at least once, not every transition." },
+        "b": { "correct": true, "explanation": "All-transitions coverage (transition coverage) requires that every valid transition in the state diagram is exercised by at least one test case." },
+        "c": { "correct": false, "explanation": "All-paths coverage requires covering every unique path of transitions, which is more comprehensive and often impractical." },
+        "d": { "correct": false, "explanation": "All-conditions coverage is a decision table or logic testing concept, not a standard state transition coverage criterion." }
+      }
+    },
+    {
+      "id": 23,
+      "questionText": "A tester has written tests that achieve 80% statement coverage. What does this mean?",
+      "options": [
+        { "label": "a", "text": "80% of the requirements have been tested" },
+        { "label": "b", "text": "80% of the executable statements have been executed at least once" },
+        { "label": "c", "text": "80% of the test cases have passed" },
+        { "label": "d", "text": "80% of the defects have been found" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-4.3.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Requirements coverage is a different metric from statement coverage." },
+        "b": { "correct": true, "explanation": "Statement coverage percentage is the ratio of executed statements to total executable statements, so 80% means 80% of all executable statements have been run." },
+        "c": { "correct": false, "explanation": "The pass rate of test cases is a different metric from code coverage." },
+        "d": { "correct": false, "explanation": "Defect detection rate cannot be directly inferred from statement coverage." }
+      }
+    },
+    {
+      "id": 24,
+      "questionText": "Which of the following is a characteristic of checklist-based testing?",
+      "options": [
+        { "label": "a", "text": "It uses the tester's intuition without any predefined guidance" },
+        { "label": "b", "text": "It uses a prepared list of items derived from experience or standards to guide testing" },
+        { "label": "c", "text": "It generates test cases algorithmically from formal specifications" },
+        { "label": "d", "text": "It requires executing code with different input values to measure coverage" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-4.4.3",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Checklist-based testing does use predefined guidance (the checklist) rather than pure intuition." },
+        "b": { "correct": true, "explanation": "Checklist-based testing uses a prepared list of items (derived from experience, standards, or best practices) to ensure consistent coverage of important areas during testing." },
+        "c": { "correct": false, "explanation": "Algorithmic test case generation from formal specifications describes model-based testing." },
+        "d": { "correct": false, "explanation": "Measuring coverage through execution describes white-box testing." }
+      }
+    },
+    {
+      "id": 25,
+      "questionText": "In Agile, what is the THREE AMIGOS technique used for?",
+      "options": [
+        { "label": "a", "text": "A bug fixing process involving three developers" },
+        { "label": "b", "text": "A collaborative session where a business analyst, developer, and tester discuss a user story to define acceptance criteria" },
+        { "label": "c", "text": "A three-phase testing process: unit, integration, and system testing" },
+        { "label": "d", "text": "A review process conducted by three independent testers" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-4.5.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Three Amigos is not a bug-fixing process." },
+        "b": { "correct": true, "explanation": "The Three Amigos technique involves a business analyst (or product owner), a developer, and a tester meeting to discuss a user story and define acceptance criteria collaboratively before implementation." },
+        "c": { "correct": false, "explanation": "Test levels (unit, integration, system) are not the Three Amigos technique." },
+        "d": { "correct": false, "explanation": "Three independent testers reviewing is a specific type of review activity, not the Three Amigos technique." }
+      }
+    },
+    {
+      "id": 26,
+      "questionText": "Which test technique is BEST suited for testing the behavior of an online shopping system when a user adds an item to a cart, checks out, and then returns an item?",
+      "options": [
+        { "label": "a", "text": "Equivalence partitioning" },
+        { "label": "b", "text": "Boundary value analysis" },
+        { "label": "c", "text": "State transition testing" },
+        { "label": "d", "text": "Decision table testing" }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "FL-4.2.4",
+      "kLevel": "K3",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Equivalence partitioning is for input domain partitioning, not modeling multi-step workflows." },
+        "b": { "correct": false, "explanation": "Boundary value analysis tests values at boundaries of ranges, not sequential state-based flows." },
+        "c": { "correct": true, "explanation": "State transition testing is ideal for systems with distinct states (empty cart, cart with items, checked out, return initiated) and transitions between them triggered by events." },
+        "d": { "correct": false, "explanation": "Decision table testing is for condition/action combinations, not sequential state-based navigation flows." }
+      }
+    },
+    {
+      "id": 27,
+      "questionText": "Which of the following is an ENTRY CRITERION that should typically be satisfied before starting test execution?",
+      "options": [
+        { "label": "a", "text": "All planned test cases have been executed" },
+        { "label": "b", "text": "The test environment has been set up and verified" },
+        { "label": "c", "text": "All defects have been fixed and closed" },
+        { "label": "d", "text": "The test completion report has been approved" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-5.1.4",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Executing all test cases is an exit criterion, not an entry criterion." },
+        "b": { "correct": true, "explanation": "Having the test environment set up and verified is an entry criterion — a condition that should be met before test execution can begin productively." },
+        "c": { "correct": false, "explanation": "Requiring all defects to be fixed before execution would be impractical and is an exit criterion, not entry criterion." },
+        "d": { "correct": false, "explanation": "The test completion report is produced after execution; it cannot be an entry criterion." }
+      }
+    },
+    {
+      "id": 28,
+      "questionText": "How does risk-based testing affect the order in which tests are prioritized and executed?",
+      "options": [
+        { "label": "a", "text": "Tests are executed alphabetically by test case name" },
+        { "label": "b", "text": "Tests covering higher-risk areas are executed first to detect critical issues early" },
+        { "label": "c", "text": "Tests with the lowest effort are always executed before higher-effort tests" },
+        { "label": "d", "text": "Test execution order is determined by the development team, not the test team" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-5.2.2",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Alphabetical ordering ignores risk and business value." },
+        "b": { "correct": true, "explanation": "Risk-based testing prioritizes tests covering the highest-risk features first so that critical issues are found early, while lower-risk areas may be tested last or with less depth if time is short." },
+        "c": { "correct": false, "explanation": "Effort alone does not determine execution order in risk-based testing." },
+        "d": { "correct": false, "explanation": "Test execution order is decided by the test team based on risk analysis." }
+      }
+    },
+    {
+      "id": 29,
+      "questionText": "Which estimation approach relies on gathering estimates from multiple experts independently and then reaching consensus?",
+      "options": [
+        { "label": "a", "text": "Metric-based estimation" },
+        { "label": "b", "text": "Expert-based estimation using Wideband Delphi" },
+        { "label": "c", "text": "Bottom-up estimation" },
+        { "label": "d", "text": "Parametric estimation" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-5.1.3",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Metric-based estimation uses historical data, not individual expert estimates and consensus." },
+        "b": { "correct": true, "explanation": "Wideband Delphi is a consensus-based expert estimation technique where experts provide estimates independently (to avoid anchoring bias), then discuss and converge on a final estimate." },
+        "c": { "correct": false, "explanation": "Bottom-up estimation decomposes work into smaller items and sums estimates, but is not specifically a consensus technique." },
+        "d": { "correct": false, "explanation": "Parametric estimation uses mathematical models, not expert consensus." }
+      }
+    },
+    {
+      "id": 30,
+      "questionText": "Which of the following is an EXIT CRITERION for test execution?",
+      "options": [
+        { "label": "a", "text": "Test cases have been designed and reviewed" },
+        { "label": "b", "text": "The test environment is available and configured" },
+        { "label": "c", "text": "A specified percentage of test cases have been executed with acceptable results" },
+        { "label": "d", "text": "The test plan has been approved by management" }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "FL-5.1.4",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Test cases being designed and reviewed is an entry criterion for test execution, not an exit criterion." },
+        "b": { "correct": false, "explanation": "Test environment availability is an entry criterion." },
+        "c": { "correct": true, "explanation": "Exit criteria for test execution typically include conditions such as a specified percentage of test cases executed and passed, and defect rate below a threshold." },
+        "d": { "correct": false, "explanation": "Test plan approval is an entry criterion for the testing project, not an exit criterion for test execution." }
+      }
+    },
+    {
+      "id": 31,
+      "questionText": "Which of the following is included in a TEST COMPLETION report but NOT typically in a test progress report?",
+      "options": [
+        { "label": "a", "text": "Current count of open defects" },
+        { "label": "b", "text": "Number of test cases executed so far" },
+        { "label": "c", "text": "Lessons learned and recommendations for future projects" },
+        { "label": "d", "text": "Current test schedule status" }
+      ],
+      "correctAnswer": ["c"],
+      "learningObjective": "FL-5.3.2",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Open defect counts appear in both progress and completion reports." },
+        "b": { "correct": false, "explanation": "Test execution counts are in progress reports during testing." },
+        "c": { "correct": true, "explanation": "Lessons learned and future recommendations are a key component of the test completion report, produced at the end. Progress reports provide current status, not retrospective insights." },
+        "d": { "correct": false, "explanation": "Schedule status is reported in progress reports." }
+      }
+    },
+    {
+      "id": 32,
+      "questionText": "In the context of ISTQB CTFL v4.0, what is a 'baseline' in configuration management?",
+      "options": [
+        { "label": "a", "text": "The minimum acceptable quality level for a release" },
+        { "label": "b", "text": "A formally approved version of one or more work products that serves as the basis for further work" },
+        { "label": "c", "text": "The initial set of requirements before any changes are made" },
+        { "label": "d", "text": "The performance benchmark against which the system is compared" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-5.4.1",
+      "kLevel": "K1",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Minimum quality level is a quality threshold, not a configuration management baseline." },
+        "b": { "correct": true, "explanation": "A baseline is a formally approved snapshot of one or more work products at a specific point in time, which is then placed under change control and serves as the starting point for subsequent work." },
+        "c": { "correct": false, "explanation": "While original requirements may form a baseline, the term 'baseline' applies to any formally approved version of work products, not just requirements." },
+        "d": { "correct": false, "explanation": "Performance benchmarks are performance testing artifacts, not configuration management baselines." }
+      }
+    },
+    {
+      "id": 33,
+      "questionText": "A tester discovers a defect that crashes the entire application, but it only occurs in a scenario used by less than 0.1% of users. How should severity and priority likely be set?",
+      "options": [
+        { "label": "a", "text": "High severity, high priority" },
+        { "label": "b", "text": "High severity, low priority" },
+        { "label": "c", "text": "Low severity, high priority" },
+        { "label": "d", "text": "Low severity, low priority" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-5.5.1",
+      "kLevel": "K3",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "While severity is high (crash), priority would typically be low due to extremely rare occurrence." },
+        "b": { "correct": true, "explanation": "The defect causes an application crash (high severity), but since it affects only 0.1% of users, the business priority for fixing it may be relatively low compared to other issues." },
+        "c": { "correct": false, "explanation": "An application crash is always high severity; low severity would apply to minor cosmetic issues." },
+        "d": { "correct": false, "explanation": "A crash is high severity by definition; this combination is incorrect." }
+      }
+    },
+    {
+      "id": 34,
+      "questionText": "What is the purpose of 'defect clustering' information in risk-based testing?",
+      "options": [
+        { "label": "a", "text": "To determine the total number of defects in the system" },
+        { "label": "b", "text": "To focus testing effort on modules that have historically contained the most defects" },
+        { "label": "c", "text": "To decide when to stop testing" },
+        { "label": "d", "text": "To prioritize defect fixes over new feature development" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-5.2.2",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Defect clustering informs testing focus, not the total defect count." },
+        "b": { "correct": true, "explanation": "Knowledge of defect clustering helps testers focus effort on high-defect-density modules, which are more likely to have additional defects due to their complexity or historical error rates." },
+        "c": { "correct": false, "explanation": "Stopping decisions are based on exit criteria, not defect clustering alone." },
+        "d": { "correct": false, "explanation": "Prioritizing fixes vs. new features is a management decision, not what defect clustering is used for in testing." }
+      }
+    },
+    {
+      "id": 35,
+      "questionText": "Which of the following BEST describes how testing contributes to quality in the SDLC?",
+      "options": [
+        { "label": "a", "text": "Testing adds quality to the software by fixing the defects it finds" },
+        { "label": "b", "text": "Testing provides information about the quality of the software to help stakeholders make informed decisions" },
+        { "label": "c", "text": "Testing removes all defects from the software before release" },
+        { "label": "d", "text": "Testing produces the software requirements that guide development" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-1.1.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Testers find and report defects; developers fix them. Testing itself does not fix defects." },
+        "b": { "correct": true, "explanation": "Testing provides information about the quality status of the software, which enables stakeholders to make informed decisions about releases, further development, and risk management." },
+        "c": { "correct": false, "explanation": "Testing cannot remove all defects; it reduces the risk of defects remaining undetected." },
+        "d": { "correct": false, "explanation": "Requirements are produced by business analysts and product owners, not by testing." }
+      }
+    },
+    {
+      "id": 36,
+      "questionText": "Which of the following is a KEY factor to consider when deciding whether to automate a test?",
+      "options": [
+        { "label": "a", "text": "Whether the test was written by a developer or a tester" },
+        { "label": "b", "text": "Whether the test is repeatable and stable enough to justify the automation investment" },
+        { "label": "c", "text": "Whether the test is for functional or non-functional requirements" },
+        { "label": "d", "text": "Whether the test is listed in the test plan" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-6.2.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Authorship does not determine automation suitability." },
+        "b": { "correct": true, "explanation": "Tests that are executed frequently (repeatable) and involve stable features provide the best return on automation investment, justifying the initial cost of automation." },
+        "c": { "correct": false, "explanation": "Both functional and non-functional tests can be automated; the type alone does not determine suitability." },
+        "d": { "correct": false, "explanation": "Being listed in the test plan does not determine automation suitability." }
+      }
+    },
+    {
+      "id": 37,
+      "questionText": "What is meant by 'false confidence' as a risk of test automation?",
+      "options": [
+        { "label": "a", "text": "Believing automated tests are slower than manual tests" },
+        { "label": "b", "text": "Assuming that passing automated tests means the software has no defects" },
+        { "label": "c", "text": "Trusting that automation tools will never produce incorrect results" },
+        { "label": "d", "text": "Believing that test automation costs nothing to maintain" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-6.2.2",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Speed comparison is not what false confidence means in this context." },
+        "b": { "correct": true, "explanation": "False confidence occurs when teams assume that all-green automated test results mean the software is defect-free, ignoring areas not covered by automation or issues automation cannot detect." },
+        "c": { "correct": false, "explanation": "Tool accuracy is a separate concern from false confidence in test outcomes." },
+        "d": { "correct": false, "explanation": "Underestimating maintenance cost is a different automation risk, not false confidence." }
+      }
+    },
+    {
+      "id": 38,
+      "questionText": "Which tool category would BEST support a team that needs to track which test cases cover which requirements?",
+      "options": [
+        { "label": "a", "text": "Performance testing tool" },
+        { "label": "b", "text": "Test management tool with traceability features" },
+        { "label": "c", "text": "Static analysis tool" },
+        { "label": "d", "text": "Defect simulation tool" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-6.1.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "Performance tools measure system performance under load, not requirements traceability." },
+        "b": { "correct": true, "explanation": "Test management tools with traceability features maintain bidirectional links between requirements and test cases, showing coverage and gaps." },
+        "c": { "correct": false, "explanation": "Static analysis tools examine code quality; they do not manage test-to-requirement traceability." },
+        "d": { "correct": false, "explanation": "Defect simulation tools are not a standard category and do not support requirements traceability." }
+      }
+    },
+    {
+      "id": 39,
+      "questionText": "A module has the following code structure: one IF statement with a true branch containing 3 statements and a false branch containing 2 statements. What is the minimum number of test cases needed to achieve 100% branch coverage?",
+      "options": [
+        { "label": "a", "text": "1" },
+        { "label": "b", "text": "2" },
+        { "label": "c", "text": "5" },
+        { "label": "d", "text": "6" }
+      ],
+      "correctAnswer": ["b"],
+      "learningObjective": "FL-4.3.2",
+      "kLevel": "K3",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": false, "explanation": "One test case can only take either the true or false branch, not both." },
+        "b": { "correct": true, "explanation": "Branch coverage requires both the true and false outcomes of the IF statement to be tested. Minimum 2 test cases: one that makes the condition true, one that makes it false." },
+        "c": { "correct": false, "explanation": "5 matches the total number of statements, which relates to statement coverage counting, not the minimum test cases for branch coverage." },
+        "d": { "correct": false, "explanation": "6 would over-cover; only 2 test cases are needed for branch coverage of a single decision." }
+      }
+    },
+    {
+      "id": 40,
+      "questionText": "Which of the following BEST distinguishes a test condition from a test case?",
+      "options": [
+        { "label": "a", "text": "A test condition is a testable aspect of the system; a test case is a set of inputs, execution conditions, and expected results to verify a test condition" },
+        { "label": "b", "text": "A test case is more abstract than a test condition" },
+        { "label": "c", "text": "Test conditions are produced during test execution; test cases are produced during test planning" },
+        { "label": "d", "text": "A test condition specifies the exact steps to run a test; a test case specifies the area to be tested" }
+      ],
+      "correctAnswer": ["a"],
+      "learningObjective": "FL-1.4.1",
+      "kLevel": "K2",
+      "points": 1,
+      "type": "single",
+      "explanations": {
+        "a": { "correct": true, "explanation": "A test condition is a testable aspect, item, or characteristic of the system. A test case is a concrete specification with inputs, execution preconditions, and expected results designed to verify that condition." },
+        "b": { "correct": false, "explanation": "It is the other way around: test conditions are more abstract; test cases are more specific and concrete." },
+        "c": { "correct": false, "explanation": "Test conditions are derived during test analysis; test cases are designed during test design — both before execution." },
+        "d": { "correct": false, "explanation": "This reverses the definitions; test cases specify exact steps while test conditions identify what needs to be tested." }
+      }
+    }
+  ]
 }
