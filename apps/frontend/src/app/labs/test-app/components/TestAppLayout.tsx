@@ -3,10 +3,16 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { getCurrentUser, setCurrentUser } from '../lib/storage';
+import {
+  getCurrentUser,
+  setCurrentUser,
+  findUserByEmail,
+  addUser,
+} from '../lib/storage';
 import { initializeApp, needsInitialization } from '../lib/seedData';
 import { logLogout } from '../lib/auditLog';
-import type { User } from '../lib/types';
+import type { User as LabUser } from '../lib/types';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 
 interface TestAppLayoutProps {
   children: React.ReactNode;
@@ -17,41 +23,71 @@ export default function TestAppLayout({
   children,
   requireAuth = false,
 }: TestAppLayoutProps) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [labUser, setLabUser] = useState<LabUser | null>(null);
   const pathname = usePathname();
   const router = useRouter();
+  const { user, isAuthenticated, isLoading } = useSupabaseAuth();
 
   useEffect(() => {
-    // Initialize app if needed
     if (needsInitialization()) {
       initializeApp();
     }
 
-    // Load current user
-    const currentUser = getCurrentUser();
-    setUser(currentUser);
-    setLoading(false);
-
-    // Redirect if auth required
-    if (requireAuth && !currentUser) {
-      router.push('/labs/test-app/login');
+    if (isLoading) {
+      return;
     }
-  }, [requireAuth, router]);
 
-  const handleLogout = () => {
+    if (requireAuth && !isAuthenticated) {
+      router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
+      return;
+    }
+
+    if (!user) {
+      setLabUser(null);
+      return;
+    }
+
+    const email = user.email || 'labs-user@aiquaa.com';
+    const existingUser = findUserByEmail(email);
+    const resolvedUser: LabUser = existingUser || {
+      id: `lab-user-${user.id}`,
+      email,
+      password: 'managed-by-platform-auth',
+      name:
+        (user.user_metadata?.full_name as string | undefined) ||
+        (user.user_metadata?.name as string | undefined) ||
+        email.split('@')[0] ||
+        'Usuario Labs',
+      phone: '',
+      timezone: 'America/Asuncion',
+      createdAt: new Date().toISOString(),
+    };
+
+    if (!existingUser) {
+      addUser(resolvedUser);
+    }
+
+    const currentUser = getCurrentUser();
+    if (!currentUser || currentUser.email !== resolvedUser.email) {
+      setCurrentUser(resolvedUser);
+    }
+
+    setLabUser(resolvedUser);
+  }, [requireAuth, pathname, router, user, isAuthenticated, isLoading]);
+
+  const handleLeaveLab = () => {
     logLogout();
     setCurrentUser(null);
-    setUser(null);
-    router.push('/labs/test-app/login');
+    setLabUser(null);
+    router.push('/labs');
   };
 
-  if (loading) {
+  if (isLoading || (requireAuth && isAuthenticated && !labUser)) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Cargando...</p>
+          <p className="mt-4 text-gray-600">Cargando laboratorio...</p>
         </div>
       </div>
     );
@@ -61,7 +97,6 @@ export default function TestAppLayout({
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
@@ -72,11 +107,13 @@ export default function TestAppLayout({
               >
                 AIQUAA Test App
               </Link>
-              <p className="text-xs text-gray-500 mt-1">Solo para evaluación</p>
+              <p className="text-xs text-gray-500 mt-1">
+                Laboratorio controlado
+              </p>
             </div>
 
             <nav className="flex items-center space-x-6">
-              {user ? (
+              {labUser ? (
                 <>
                   <Link
                     href="/labs/test-app/catalog"
@@ -87,7 +124,7 @@ export default function TestAppLayout({
                         : 'text-gray-700 hover:text-amber-600'
                     }`}
                   >
-                    Catálogo
+                    Catalogo
                   </Link>
                   <Link
                     href="/labs/test-app/cart"
@@ -134,28 +171,28 @@ export default function TestAppLayout({
                     Perfil
                   </Link>
                   <button
-                    onClick={handleLogout}
+                    onClick={handleLeaveLab}
                     data-testid="nav-logout"
                     className="text-sm font-medium text-gray-700 hover:text-red-600"
                   >
-                    Cerrar Sesión
+                    Salir del laboratorio
                   </button>
                 </>
               ) : (
                 <>
                   <Link
-                    href="/labs/test-app/login"
+                    href={`/login?redirect=${encodeURIComponent('/labs/test-app/catalog')}`}
                     data-testid="nav-login"
                     className="text-sm font-medium text-gray-700 hover:text-amber-600"
                   >
-                    Iniciar Sesión
+                    Iniciar sesion
                   </Link>
                   <Link
-                    href="/labs/test-app/register"
+                    href={`/register?redirect=${encodeURIComponent('/labs/test-app/catalog')}`}
                     data-testid="nav-register"
                     className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 text-sm font-medium"
                   >
-                    Registrarse
+                    Crear cuenta
                   </Link>
                 </>
               )}
@@ -164,16 +201,14 @@ export default function TestAppLayout({
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {children}
       </main>
 
-      {/* Footer */}
       <footer className="bg-white border-t border-gray-200 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center text-sm text-gray-600">
-            <p>AIQUAA Test App — Solo para evaluación</p>
+            <p>AIQUAA Test App - Laboratorio aislado del producto</p>
             <div className="flex space-x-4">
               <Link href="/labs/auth" className="hover:text-amber-600">
                 Acceso

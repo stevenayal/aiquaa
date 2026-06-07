@@ -8,8 +8,6 @@ import type {
   PaymentInfo,
 } from './types';
 import {
-  findUserByEmail,
-  addUser,
   getCurrentUser,
   setCurrentUser,
   getProducts,
@@ -44,60 +42,6 @@ interface ApiResponse<T> {
   error?: string;
 }
 
-// ========== AUTH API ==========
-
-export async function apiLogin(
-  email: string,
-  password: string
-): Promise<ApiResponse<User>> {
-  await delay(400);
-
-  const user = findUserByEmail(email);
-  if (!user) {
-    return { success: false, error: 'Usuario no encontrado' };
-  }
-
-  if (user.password !== password) {
-    return { success: false, error: 'Contraseña incorrecta' };
-  }
-
-  setCurrentUser(user);
-  return { success: true, data: user };
-}
-
-export async function apiRegister(
-  email: string,
-  password: string,
-  name: string
-): Promise<ApiResponse<User>> {
-  await delay(500);
-
-  // Check if user exists
-  const existing = findUserByEmail(email);
-  if (existing) {
-    return { success: false, error: 'El email ya está registrado' };
-  }
-
-  // Validate password
-  if (password.length < 8) {
-    return { success: false, error: 'La contraseña debe tener al menos 8 caracteres' };
-  }
-
-  const newUser: User = {
-    id: `user-${Date.now()}`,
-    email,
-    password,
-    name,
-    phone: '',
-    timezone: 'America/Asuncion',
-    createdAt: new Date().toISOString(),
-  };
-
-  addUser(newUser);
-  setCurrentUser(newUser);
-  return { success: true, data: newUser };
-}
-
 export async function apiLogout(): Promise<ApiResponse<void>> {
   await delay(200);
   setCurrentUser(null);
@@ -130,7 +74,6 @@ export async function apiGetProducts(
   const candidateId = getCandidateId() || 'default';
   let products = getProducts();
 
-  // Search filter
   if (filters.search && filters.search.trim() !== '') {
     const searchLower = filters.search.toLowerCase().trim();
     products = products.filter(
@@ -140,16 +83,13 @@ export async function apiGetProducts(
     );
   }
 
-  // Category filter
   if (filters.category) {
     products = products.filter((p) => p.category === filters.category);
   }
 
-  // BUG: Filter inconsistent - count vs rendered items
   const filterBugActive = isBugActive(BUG_IDS.FILTER_INCONSISTENT, candidateId);
   const totalBeforeBug = products.length;
 
-  // Sorting
   const sortBy = filters.sortBy || 'name';
   if (sortBy === 'price-asc') {
     products.sort((a, b) => a.price - b.price);
@@ -159,23 +99,23 @@ export async function apiGetProducts(
     products.sort((a, b) => a.name.localeCompare(b.name));
   }
 
-  // BUG: Unstable sort - items with same price jump between pages
-  if (isBugActive(BUG_IDS.SORT_UNSTABLE, candidateId) && sortBy.startsWith('price')) {
-    // Intentionally don't use stable sort secondary key
-    // Items with same price will appear in different order on pagination
+  if (
+    isBugActive(BUG_IDS.SORT_UNSTABLE, candidateId) &&
+    sortBy.startsWith('price')
+  ) {
+    // Intentionally avoid a stable secondary key to preserve the lab bug.
   }
 
-  // Pagination
   const page = filters.page || 1;
   const pageSize = filters.pageSize || 12;
   const start = (page - 1) * pageSize;
   const end = start + pageSize;
   const paginatedProducts = products.slice(start, end);
 
-  // BUG: Return wrong total when filtering (off by 1-2)
-  const reportedTotal = filterBugActive && filters.search && filters.category
-    ? totalBeforeBug + 2  // Report wrong count
-    : products.length;
+  const reportedTotal =
+    filterBugActive && filters.search && filters.category
+      ? totalBeforeBug + 2
+      : products.length;
 
   return {
     success: true,
@@ -189,7 +129,9 @@ export async function apiGetProducts(
   };
 }
 
-export async function apiGetProduct(productId: string): Promise<ApiResponse<Product>> {
+export async function apiGetProduct(
+  productId: string
+): Promise<ApiResponse<Product>> {
   await delay(250);
 
   const product = findProductById(productId);
@@ -220,7 +162,7 @@ export async function apiAddToCart(
   }
 
   if (quantity <= 0) {
-    return { success: false, error: 'Cantidad inválida' };
+    return { success: false, error: 'Cantidad invalida' };
   }
 
   if (quantity > product.stock) {
@@ -236,12 +178,10 @@ export async function apiUpdateCartQty(
   productId: string,
   quantity: number
 ): Promise<ApiResponse<CartItem[]>> {
-  // BUG: Quantity validation broken - allows 0 or > stock if typed fast
   const candidateId = getCandidateId() || 'default';
   const qtyBugActive = isBugActive(BUG_IDS.QUANTITY_VALIDATION, candidateId);
 
   if (qtyBugActive) {
-    // Validation delay - allows invalid values to slip through
     await delay(100);
   } else {
     await delay(300);
@@ -252,10 +192,9 @@ export async function apiUpdateCartQty(
     return { success: false, error: 'Producto no encontrado' };
   }
 
-  // Delayed validation (bug allows bypass)
   if (!qtyBugActive) {
     if (quantity < 0) {
-      return { success: false, error: 'Cantidad inválida' };
+      return { success: false, error: 'Cantidad invalida' };
     }
 
     if (quantity > product.stock) {
@@ -268,7 +207,9 @@ export async function apiUpdateCartQty(
   return { success: true, data: cart };
 }
 
-export async function apiRemoveFromCart(productId: string): Promise<ApiResponse<CartItem[]>> {
+export async function apiRemoveFromCart(
+  productId: string
+): Promise<ApiResponse<CartItem[]>> {
   await delay(200);
   storageRemoveFromCart(productId);
   const cart = getCart();
@@ -286,21 +227,23 @@ export async function apiCheckout(
   const candidateId = getCandidateId() || 'default';
   const checkoutBugActive = isBugActive(BUG_IDS.CHECKOUT_500, candidateId);
 
-  // BUG: Apartment/Suite > 50 chars causes generic error
   if (checkoutBugActive && shippingAddress.apartmentSuite.length > 50) {
     return {
       success: false,
-      error: 'Error 500: Error interno del servidor. Por favor intente nuevamente.',
+      error:
+        'Error 500: Error interno del servidor. Por favor intente nuevamente.',
     };
   }
 
-  // Normal validation
-  if (!shippingAddress.fullName || shippingAddress.fullName.trim().length === 0) {
+  if (
+    !shippingAddress.fullName ||
+    shippingAddress.fullName.trim().length === 0
+  ) {
     return { success: false, error: 'Nombre completo es requerido' };
   }
 
   if (!shippingAddress.street || shippingAddress.street.trim().length === 0) {
-    return { success: false, error: 'Dirección es requerida' };
+    return { success: false, error: 'Direccion es requerida' };
   }
 
   const user = getCurrentUser();
@@ -310,10 +253,13 @@ export async function apiCheckout(
 
   const cart = getCart();
   if (cart.length === 0) {
-    return { success: false, error: 'El carrito está vacío' };
+    return { success: false, error: 'El carrito esta vacio' };
   }
 
-  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const subtotal = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
   const tax = Math.round(subtotal * 0.1 * 100) / 100;
   const total = subtotal + tax;
 
@@ -371,12 +317,11 @@ export async function apiGetOrders(): Promise<ApiResponse<Order[]>> {
 
   const orders = getUserOrders(user.id);
 
-  // BUG: Timezone - orders show in UTC instead of user's timezone
   const candidateId = getCandidateId() || 'default';
   const timezoneBugActive = isBugActive(BUG_IDS.TIMEZONE_BUG, candidateId);
 
   if (!timezoneBugActive && user.timezone) {
-    // Normally would convert to user timezone (but bug skips this)
+    // Normally the UI would convert to the user's timezone.
   }
 
   return { success: true, data: orders };
@@ -392,11 +337,10 @@ export async function apiCreateTicket(
   const candidateId = getCandidateId() || 'default';
   const priorityBugActive = isBugActive(BUG_IDS.TICKET_PRIORITY, candidateId);
 
-  // BUG: Priority gets changed if submitted too fast
   let actualPriority = priority;
   if (priorityBugActive && priority === 'high') {
-    await delay(150); // Fast response
-    actualPriority = 'medium'; // Wrong priority assigned
+    await delay(150);
+    actualPriority = 'medium';
   } else {
     await delay(400);
   }

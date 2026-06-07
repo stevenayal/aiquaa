@@ -79,7 +79,7 @@ export default function AdminPage() {
     clearAuditLog();
     showToast('Sesión reseteada', 'success');
     setTimeout(() => {
-      router.push('/labs/test-app/login');
+      router.push('/labs/test-app/catalog');
     }, 500);
   };
 

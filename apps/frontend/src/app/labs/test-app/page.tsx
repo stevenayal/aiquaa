@@ -2,20 +2,25 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getCurrentUser } from './lib/storage';
 import TestAppLayout from './components/TestAppLayout';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 
 export default function TestAppHomePage() {
   const router = useRouter();
+  const { isAuthenticated, isLoading } = useSupabaseAuth();
 
   useEffect(() => {
-    const user = getCurrentUser();
-    if (user) {
-      router.push('/labs/test-app/catalog');
-    } else {
-      router.push('/labs/test-app/login');
+    if (isLoading) {
+      return;
     }
-  }, [router]);
+
+    if (isAuthenticated) {
+      router.push('/labs/test-app/catalog');
+      return;
+    }
+
+    router.push('/login?redirect=/labs/test-app/catalog');
+  }, [router, isAuthenticated, isLoading]);
 
   return (
     <TestAppLayout>
