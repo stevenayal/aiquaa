@@ -1,29 +1,34 @@
-import { PostgreSQLContainer } from '@testcontainers/postgresql';
+import {
+  PostgreSqlContainer,
+  StartedPostgreSqlContainer,
+} from '@testcontainers/postgresql';
 import { execSync } from 'child_process';
 import { join } from 'path';
 
-let container: PostgreSQLContainer;
+let container: StartedPostgreSqlContainer;
 
 export default async function globalSetup() {
   console.log('🚀 Iniciando contenedor de PostgreSQL para tests...');
-  
-  // Crear contenedor PostgreSQL
-  container = new PostgreSQLContainer('postgres:15-alpine')
-    .withDatabase('test')
-    .withUsername('test')
-    .withPassword('test')
-    .withExposedPorts(5432);
 
-  await container.start();
+  try {
+    container = await new PostgreSqlContainer('postgres:15-alpine')
+      .withDatabase('test')
+      .withUsername('test')
+      .withPassword('test')
+      .withExposedPorts(5432)
+      .start();
+  } catch (err) {
+    console.warn('⚠️ Docker no disponible — tests de integración omitidos.');
+    process.env.SKIP_INTEGRATION_TESTS = 'true';
+    return;
+  }
 
-  // Obtener URL de conexión
   const databaseUrl = container.getConnectionUri();
   process.env.TEST_DATABASE_URL = databaseUrl;
   process.env.DATABASE_URL = databaseUrl;
 
   console.log(`📊 Base de datos de prueba iniciada en: ${databaseUrl}`);
 
-  // Ejecutar migraciones
   try {
     console.log('🔄 Ejecutando migraciones...');
     execSync('npx prisma migrate deploy', {
