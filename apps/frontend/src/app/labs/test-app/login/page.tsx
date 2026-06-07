@@ -52,13 +52,17 @@ export default function LoginPage() {
       {ToastComponent}
       <div className="max-w-md mx-auto mt-12">
         <div className="bg-white rounded-lg shadow-md p-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Iniciar Sesión</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Iniciar Sesión
+          </h1>
           <p className="text-sm text-gray-600 mb-6">
             <strong>Objetivo:</strong> Autenticar usuarios en la plataforma
           </p>
 
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-            <p className="text-sm text-blue-900 font-medium mb-2">Credenciales demo:</p>
+            <p className="text-sm text-blue-900 font-medium mb-2">
+              Credenciales demo:
+            </p>
             <p className="text-xs text-blue-800">Email: tester@aiquaa.com</p>
             <p className="text-xs text-blue-800">Contraseña: Test1234!</p>
           </div>
@@ -75,7 +79,10 @@ export default function LoginPage() {
             {showBugHint && (
               <div className="mt-3 space-y-1.5">
                 {Object.entries(bugsByFeature).map(([feature, count]) => (
-                  <div key={feature} className="flex items-center justify-between text-xs">
+                  <div
+                    key={feature}
+                    className="flex items-center justify-between text-xs"
+                  >
                     <span className="text-amber-800">{feature}</span>
                     <span className="font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">
                       {count} bug{count !== 1 ? 's' : ''}
@@ -83,7 +90,8 @@ export default function LoginPage() {
                   </div>
                 ))}
                 <p className="text-xs text-amber-700 mt-2 pt-2 border-t border-amber-200">
-                  Cada sesión activa entre 6 y 8 bugs de forma aleatoria. Encontrá y reportalos.
+                  Cada sesión activa entre 6 y 8 bugs de forma aleatoria.
+                  Encontrá y reportalos.
                 </p>
               </div>
             )}
@@ -91,12 +99,16 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Email
               </label>
               <input
                 id="email"
                 type="email"
+                data-testid="lab-login-email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -106,12 +118,16 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Contraseña
               </label>
               <input
                 id="password"
                 type="password"
+                data-testid="lab-login-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -123,6 +139,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
+              data-testid="lab-login-submit"
               className="w-full bg-amber-600 text-white py-2 px-4 rounded-lg hover:bg-amber-700 disabled:bg-gray-400 disabled:cursor-not-allowed font-medium"
             >
               {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
@@ -131,7 +148,10 @@ export default function LoginPage() {
 
           <p className="text-sm text-center text-gray-600 mt-6">
             ¿No tienes cuenta?{' '}
-            <Link href="/labs/test-app/register" className="text-amber-600 hover:text-amber-700 font-medium">
+            <Link
+              href="/labs/test-app/register"
+              className="text-amber-600 hover:text-amber-700 font-medium"
+            >
               Regístrate aquí
             </Link>
           </p>

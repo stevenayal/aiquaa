@@ -58,19 +58,26 @@ export default function RegisterPage() {
       {ToastComponent}
       <div className="max-w-md mx-auto mt-12">
         <div className="bg-white rounded-lg shadow-md p-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Crear Cuenta</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Crear Cuenta
+          </h1>
           <p className="text-sm text-gray-600 mb-6">
-            <strong>Objetivo:</strong> Registrar nuevos usuarios en la plataforma
+            <strong>Objetivo:</strong> Registrar nuevos usuarios en la
+            plataforma
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Nombre Completo
               </label>
               <input
                 id="name"
                 type="text"
+                data-testid="lab-register-name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
@@ -80,12 +87,16 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Email
               </label>
               <input
                 id="email"
                 type="email"
+                data-testid="lab-register-email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -95,12 +106,16 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Contraseña
               </label>
               <input
                 id="password"
                 type="password"
+                data-testid="lab-register-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -111,12 +126,16 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Confirmar Contraseña
               </label>
               <input
                 id="confirmPassword"
                 type="password"
+                data-testid="lab-register-confirm-password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
@@ -128,6 +147,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
+              data-testid="lab-register-submit"
               className="w-full bg-amber-600 text-white py-2 px-4 rounded-lg hover:bg-amber-700 disabled:bg-gray-400 disabled:cursor-not-allowed font-medium"
             >
               {loading ? 'Registrando...' : 'Crear Cuenta'}
@@ -136,7 +156,10 @@ export default function RegisterPage() {
 
           <p className="text-sm text-center text-gray-600 mt-6">
             ¿Ya tienes cuenta?{' '}
-            <Link href="/labs/test-app/login" className="text-amber-600 hover:text-amber-700 font-medium">
+            <Link
+              href="/labs/test-app/login"
+              className="text-amber-600 hover:text-amber-700 font-medium"
+            >
               Inicia sesión aquí
             </Link>
           </p>

@@ -13,7 +13,10 @@ interface TestAppLayoutProps {
   requireAuth?: boolean;
 }
 
-export default function TestAppLayout({ children, requireAuth = false }: TestAppLayoutProps) {
+export default function TestAppLayout({
+  children,
+  requireAuth = false,
+}: TestAppLayoutProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const pathname = usePathname();
@@ -63,7 +66,10 @@ export default function TestAppLayout({ children, requireAuth = false }: TestApp
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <div>
-              <Link href="/labs/test-app" className="text-2xl font-bold text-amber-600">
+              <Link
+                href="/labs/test-app"
+                className="text-2xl font-bold text-amber-600"
+              >
                 AIQUAA Test App
               </Link>
               <p className="text-xs text-gray-500 mt-1">Solo para evaluación</p>
@@ -74,6 +80,7 @@ export default function TestAppLayout({ children, requireAuth = false }: TestApp
                 <>
                   <Link
                     href="/labs/test-app/catalog"
+                    data-testid="nav-catalog"
                     className={`text-sm font-medium ${
                       isActive('/labs/test-app/catalog')
                         ? 'text-amber-600'
@@ -84,6 +91,7 @@ export default function TestAppLayout({ children, requireAuth = false }: TestApp
                   </Link>
                   <Link
                     href="/labs/test-app/cart"
+                    data-testid="nav-cart"
                     className={`text-sm font-medium ${
                       isActive('/labs/test-app/cart')
                         ? 'text-amber-600'
@@ -94,6 +102,7 @@ export default function TestAppLayout({ children, requireAuth = false }: TestApp
                   </Link>
                   <Link
                     href="/labs/test-app/history"
+                    data-testid="nav-history"
                     className={`text-sm font-medium ${
                       isActive('/labs/test-app/history')
                         ? 'text-amber-600'
@@ -104,6 +113,7 @@ export default function TestAppLayout({ children, requireAuth = false }: TestApp
                   </Link>
                   <Link
                     href="/labs/test-app/support"
+                    data-testid="nav-support"
                     className={`text-sm font-medium ${
                       isActive('/labs/test-app/support')
                         ? 'text-amber-600'
@@ -114,6 +124,7 @@ export default function TestAppLayout({ children, requireAuth = false }: TestApp
                   </Link>
                   <Link
                     href="/labs/test-app/profile"
+                    data-testid="nav-profile"
                     className={`text-sm font-medium ${
                       isActive('/labs/test-app/profile')
                         ? 'text-amber-600'
@@ -124,6 +135,7 @@ export default function TestAppLayout({ children, requireAuth = false }: TestApp
                   </Link>
                   <button
                     onClick={handleLogout}
+                    data-testid="nav-logout"
                     className="text-sm font-medium text-gray-700 hover:text-red-600"
                   >
                     Cerrar Sesión
@@ -133,12 +145,14 @@ export default function TestAppLayout({ children, requireAuth = false }: TestApp
                 <>
                   <Link
                     href="/labs/test-app/login"
+                    data-testid="nav-login"
                     className="text-sm font-medium text-gray-700 hover:text-amber-600"
                   >
                     Iniciar Sesión
                   </Link>
                   <Link
                     href="/labs/test-app/register"
+                    data-testid="nav-register"
                     className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 text-sm font-medium"
                   >
                     Registrarse
@@ -161,7 +175,16 @@ export default function TestAppLayout({ children, requireAuth = false }: TestApp
           <div className="flex justify-between items-center text-sm text-gray-600">
             <p>AIQUAA Test App — Solo para evaluación</p>
             <div className="flex space-x-4">
-              <Link href="/labs/test-app/evidence" className="hover:text-amber-600">
+              <Link href="/labs/auth" className="hover:text-amber-600">
+                Acceso
+              </Link>
+              <Link href="/labs/onboarding" className="hover:text-amber-600">
+                Onboarding
+              </Link>
+              <Link
+                href="/labs/test-app/evidence"
+                className="hover:text-amber-600"
+              >
                 Evidencias
               </Link>
             </div>
