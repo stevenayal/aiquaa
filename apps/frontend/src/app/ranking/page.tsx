@@ -332,7 +332,7 @@ function XpComunidadTab({ isDarkMode, currentUserName }: { isDarkMode: boolean; 
             {[top3[1], top3[0], top3[2]].map((entry, i) => {
               if (!entry) return <div key={i} className="w-24" />;
               const podiumRank = i === 1 ? 0 : i === 0 ? 1 : 2;
-              const heights = ['h-24', 'h-32', 'h-20'];
+              const heights = ['h-32', 'h-24', 'h-20'];
               return (
                 <div
                   key={entry.position}
@@ -350,7 +350,7 @@ function XpComunidadTab({ isDarkMode, currentUserName }: { isDarkMode: boolean; 
                     )}
                   </div>
                   <p
-                    className={`text-xs font-semibold text-center truncate w-full max-w-[80px] ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}
+                    className={`text-xs font-semibold text-center break-words w-full max-w-[96px] line-clamp-2 leading-tight ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}
                   >
                     {entry.displayName}
                   </p>
@@ -364,9 +364,9 @@ function XpComunidadTab({ isDarkMode, currentUserName }: { isDarkMode: boolean; 
                   </p>
                   <div
                     className={`w-full rounded-t-lg flex items-center justify-center text-2xl ${heights[podiumRank]} ${
-                      podiumRank === 1
+                      podiumRank === 0
                         ? 'bg-gradient-to-t from-yellow-600 to-yellow-400'
-                        : podiumRank === 0
+                        : podiumRank === 1
                           ? 'bg-gradient-to-t from-slate-500 to-slate-400'
                           : 'bg-gradient-to-t from-amber-800 to-amber-600'
                     }`}
@@ -897,7 +897,7 @@ export default function RankingPage() {
                   {[top3[1], top3[0], top3[2]].map((entry, i) => {
                     if (!entry) return <div key={i} className="w-24" />;
                     const podiumRank = i === 1 ? 0 : i === 0 ? 1 : 2;
-                    const heights = ['h-24', 'h-32', 'h-20'];
+                    const heights = ['h-32', 'h-24', 'h-20'];
                     return (
                       <div
                         key={entry.rank}
@@ -908,7 +908,7 @@ export default function RankingPage() {
                           avatarUrl={entry.avatar_url}
                         />
                         <p
-                          className={`text-xs font-semibold text-center truncate w-full max-w-[80px] ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}
+                          className={`text-xs font-semibold text-center break-words w-full max-w-[96px] line-clamp-2 leading-tight ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}
                         >
                           {entry.display_name}
                         </p>
@@ -919,9 +919,9 @@ export default function RankingPage() {
                         </p>
                         <div
                           className={`w-full rounded-t-lg flex items-center justify-center text-2xl ${heights[podiumRank]} ${
-                            podiumRank === 1
+                            podiumRank === 0
                               ? 'bg-gradient-to-t from-yellow-600 to-yellow-400'
-                              : podiumRank === 0
+                              : podiumRank === 1
                                 ? 'bg-gradient-to-t from-slate-500 to-slate-400'
                                 : 'bg-gradient-to-t from-amber-800 to-amber-600'
                           }`}
