@@ -80,7 +80,9 @@ export async function resendConfirmationAction(email: string) {
   return { success: true };
 }
 
-export async function checkEmailTakenAction(email: string): Promise<{ taken: boolean }> {
+export async function checkEmailTakenAction(
+  email: string
+): Promise<{ taken: boolean }> {
   try {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -106,7 +108,9 @@ export async function checkEmailTakenAction(email: string): Promise<{ taken: boo
 export async function forgotPasswordAction(email: string) {
   const supabase = await createClient();
   const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || 'https://aiquaa.com';
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.NEXTAUTH_URL ||
+    'https://aiquaa.com';
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${siteUrl}/auth/confirm?next=/auth/reset-password`,
   });
@@ -118,4 +122,17 @@ export async function logoutAction() {
   const supabase = await createClient();
   await supabase.auth.signOut();
   redirect('/login');
+}
+
+export async function signInWithOAuthAction(provider: 'google' | 'github') {
+  const supabase = await createClient();
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL;
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider,
+    options: {
+      redirectTo: `${siteUrl}/auth/confirm`,
+    },
+  });
+  if (error) return { error: error.message };
+  if (data.url) redirect(data.url);
 }
