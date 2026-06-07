@@ -424,12 +424,12 @@ export default function LabsPage() {
                   <Link
                     key={tool.id}
                     href={tool.href}
-                    className={`group block rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${
+                    className={`group flex flex-col rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${
                       isDarkMode ? 'bg-slate-800' : 'bg-white'
                     }`}
                   >
                     <div
-                      className={`bg-gradient-to-r ${tool.color} p-6 text-white relative`}
+                      className={`bg-gradient-to-r ${tool.color} p-6 text-white relative flex-1`}
                     >
                       {/* Badges Container */}
                       <div className="flex items-start justify-between gap-2 mb-3">
@@ -458,7 +458,7 @@ export default function LabsPage() {
                         {tool.description}
                       </p>
                     </div>
-                    <div className="p-6">
+                    <div className="p-6 shrink-0">
                       <div className="flex items-center justify-between">
                         <span
                           className={`text-sm ${
@@ -476,6 +476,7 @@ export default function LabsPage() {
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
+                          aria-hidden="true"
                         >
                           <path
                             strokeLinecap="round"

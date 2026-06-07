@@ -69,6 +69,7 @@ export default function PerformanceExamPage() {
       participant_name: participantName,
       score: result.score,
       total_questions: result.totalQuestions,
+      max_possible_score: result.maxPossibleScore,
       correct_answers: result.correctAnswers,
       incorrect_answers: result.incorrectAnswers,
       passing_score: EXAM_DATA.examInfo.passingScore,

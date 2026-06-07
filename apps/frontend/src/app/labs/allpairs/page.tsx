@@ -8,6 +8,7 @@ import JsonYamlTab from './components/JsonYamlTab';
 import ExamplesTab from './components/ExamplesTab';
 import HelpTab from './components/HelpTab';
 import ResultsTable from './components/ResultsTable';
+import { useToast } from '@/app/labs/test-app/components/Toast';
 
 type Tab = 'editor' | 'json-yaml' | 'examples' | 'help';
 
@@ -26,6 +27,7 @@ export default function AllPairsPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { logUsage, logError } = useToolUsage('allpairs');
+  const { showToast, ToastComponent } = useToast();
 
   // Load last input from localStorage on mount
   useEffect(() => {
@@ -96,14 +98,15 @@ export default function AllPairsPage() {
     try {
       const csv = toCsv(result, { includeCounter });
       await navigator.clipboard.writeText(csv);
-      alert('¡Copiado al portapapeles!');
+      showToast('¡Copiado al portapapeles!', 'success');
     } catch (err) {
-      alert('Error al copiar al portapapeles');
+      showToast('Error al copiar al portapapeles', 'error');
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
+      {ToastComponent}
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
