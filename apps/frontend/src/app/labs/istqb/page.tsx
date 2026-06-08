@@ -26,7 +26,9 @@ export default function ISTQBSimulatorPage() {
   const [error, setError] = useState('');
   const [language, setLanguage] = useState<'es' | 'en'>('es');
   const [model, setModel] = useState<'A' | 'B' | 'C'>('A');
-  const [processCode, setProcessCode] = useState(searchParams.get('process')?.toUpperCase() ?? '');
+  const [processCode, setProcessCode] = useState(
+    searchParams.get('process') ?? ''
+  );
 
   useEffect(() => {
     const defaults = getExamUserDefaults(user);
@@ -58,7 +60,8 @@ export default function ISTQBSimulatorPage() {
   const finalExamId = examId === 'es-model-a' ? 'es-model-a' : examId;
   const examData = useMemo(() => loadExamData(finalExamId), [finalExamId]);
   const availableQuestions = examData.questions.length;
-  const isModelIncomplete = availableQuestions < examData.examInfo.totalQuestions;
+  const isModelIncomplete =
+    availableQuestions < examData.examInfo.totalQuestions;
 
   const t = {
     es: {
@@ -84,7 +87,8 @@ export default function ISTQBSimulatorPage() {
         'Puede navegar entre preguntas y marcar para revisar',
       ],
       participantDataTitle: 'Datos del Participante',
-      participantDataSubtitle: 'Complete la información antes de iniciar el simulacro',
+      participantDataSubtitle:
+        'Complete la información antes de iniciar el simulacro',
       nameLabel: 'Nombre Completo *',
       namePlaceholder: 'Ej: Juan Pérez González',
       enterNameError: 'Por favor, ingrese su nombre completo',
@@ -133,7 +137,8 @@ export default function ISTQBSimulatorPage() {
         'You can navigate between questions and mark for review',
       ],
       participantDataTitle: 'Participant Details',
-      participantDataSubtitle: 'Complete the information before starting the simulation',
+      participantDataSubtitle:
+        'Complete the information before starting the simulation',
       nameLabel: 'Full Name *',
       namePlaceholder: 'Ex: John Doe',
       enterNameError: 'Please enter your full name',
@@ -197,253 +202,350 @@ export default function ISTQBSimulatorPage() {
 
   return (
     <ExamAuthGate examName="Simulacro ISTQB CTFL v4.0" examEmoji="📋">
-    <div className={`min-h-screen py-8 transition-colors ${isDarkMode ? 'bg-slate-900' : 'bg-gray-50'}`}>
-      <div className="container mx-auto px-4 max-w-4xl">
-        <div className="mb-8 text-center">
-          <h1 className={`text-4xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-            {text.title}
-          </h1>
-          <p className={`${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
-            {text.subtitle}
-          </p>
-        </div>
-
-        <div className={`rounded-lg shadow-lg mb-6 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
-          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-            <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-              {text.configTitle}
-            </h2>
-            <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
-              {examData.examInfo.title} - {examData.examInfo.version}
+      <div
+        className={`min-h-screen py-8 transition-colors ${isDarkMode ? 'bg-slate-900' : 'bg-gray-50'}`}
+      >
+        <div className="container mx-auto px-4 max-w-4xl">
+          <div className="mb-8 text-center">
+            <h1
+              className={`text-4xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+            >
+              {text.title}
+            </h1>
+            <p className={`${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
+              {text.subtitle}
             </p>
           </div>
-          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className={`block text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                  {text.languageLabel}
-                </label>
-                <div className="flex rounded-lg shadow-sm">
-                  <button
-                    onClick={() => setLanguage('es')}
-                    className={`flex-1 px-4 py-2 text-sm font-medium rounded-l-lg border ${language === 'es'
-                      ? 'bg-amber-600 text-white border-amber-600'
-                      : isDarkMode
-                        ? 'bg-slate-700 text-slate-300 border-slate-600 hover:bg-slate-600'
-                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                      }`}
-                  >
-                    Español
-                  </button>
-                  <button
-                    onClick={() => setLanguage('en')}
-                    className={`flex-1 px-4 py-2 text-sm font-medium rounded-r-lg border-t border-r border-b ${language === 'en'
-                      ? 'bg-amber-600 text-white border-amber-600'
-                      : isDarkMode
-                        ? 'bg-slate-700 text-slate-300 border-slate-600 hover:bg-slate-600'
-                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                      }`}
-                  >
-                    English
-                  </button>
-                </div>
-              </div>
 
-              <div className="space-y-2">
-                <label className={`block text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                  {text.modelLabel}
-                </label>
-                <div className="flex rounded-lg shadow-sm">
-                  {(['A', 'B', 'C'] as const).map((m) => {
-                    const isDisabled = m === 'B' || m === 'C';
-                    return (
-                      <button
-                        key={m}
-                        onClick={() => !isDisabled && setModel(m)}
-                        disabled={isDisabled}
-                        title={isDisabled ? (text as any).comingSoon : undefined}
-                        className={`flex-1 px-4 py-2 text-sm font-medium border-t border-b ${m === 'A' ? 'rounded-l-lg border-l' : ''
-                          } ${m === 'C' ? 'rounded-r-lg border-r' : ''} ${m !== 'A' && m !== 'C' ? 'border-r' : ''
-                          } ${isDisabled
-                            ? isDarkMode
-                              ? 'bg-slate-800 text-slate-600 border-slate-700 cursor-not-allowed'
-                              : 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
-                            : model === m
-                              ? 'bg-amber-600 text-white border-amber-600'
-                              : isDarkMode
-                                ? 'bg-slate-700 text-slate-300 border-slate-600 hover:bg-slate-600'
-                                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+          <div
+            className={`rounded-lg shadow-lg mb-6 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}
+          >
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+              <h2
+                className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+              >
+                {text.configTitle}
+              </h2>
+              <p
+                className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}
+              >
+                {examData.examInfo.title} - {examData.examInfo.version}
+              </p>
+            </div>
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label
+                    className={`block text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                  >
+                    {text.languageLabel}
+                  </label>
+                  <div className="flex rounded-lg shadow-sm">
+                    <button
+                      onClick={() => setLanguage('es')}
+                      className={`flex-1 px-4 py-2 text-sm font-medium rounded-l-lg border ${
+                        language === 'es'
+                          ? 'bg-amber-600 text-white border-amber-600'
+                          : isDarkMode
+                            ? 'bg-slate-700 text-slate-300 border-slate-600 hover:bg-slate-600'
+                            : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                      }`}
+                    >
+                      Español
+                    </button>
+                    <button
+                      onClick={() => setLanguage('en')}
+                      className={`flex-1 px-4 py-2 text-sm font-medium rounded-r-lg border-t border-r border-b ${
+                        language === 'en'
+                          ? 'bg-amber-600 text-white border-amber-600'
+                          : isDarkMode
+                            ? 'bg-slate-700 text-slate-300 border-slate-600 hover:bg-slate-600'
+                            : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                      }`}
+                    >
+                      English
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label
+                    className={`block text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                  >
+                    {text.modelLabel}
+                  </label>
+                  <div className="flex rounded-lg shadow-sm">
+                    {(['A', 'B', 'C'] as const).map((m) => {
+                      const isDisabled = m === 'B' || m === 'C';
+                      return (
+                        <button
+                          key={m}
+                          onClick={() => !isDisabled && setModel(m)}
+                          disabled={isDisabled}
+                          title={
+                            isDisabled ? (text as any).comingSoon : undefined
+                          }
+                          className={`flex-1 px-4 py-2 text-sm font-medium border-t border-b ${
+                            m === 'A' ? 'rounded-l-lg border-l' : ''
+                          } ${m === 'C' ? 'rounded-r-lg border-r' : ''} ${
+                            m !== 'A' && m !== 'C' ? 'border-r' : ''
+                          } ${
+                            isDisabled
+                              ? isDarkMode
+                                ? 'bg-slate-800 text-slate-600 border-slate-700 cursor-not-allowed'
+                                : 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                              : model === m
+                                ? 'bg-amber-600 text-white border-amber-600'
+                                : isDarkMode
+                                  ? 'bg-slate-700 text-slate-300 border-slate-600 hover:bg-slate-600'
+                                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
                           }`}
-                      >
-                        <span className="block">{text.model} {m}</span>
-                        {isDisabled && (
-                          <span className="block text-xs mt-0.5 opacity-60">{(text as any).comingSoon}</span>
-                        )}
-                      </button>
-                    );
-                  })}
+                        >
+                          <span className="block">
+                            {text.model} {m}
+                          </span>
+                          {isDisabled && (
+                            <span className="block text-xs mt-0.5 opacity-60">
+                              {(text as any).comingSoon}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center gap-3">
-                <span className="text-3xl">📚</span>
-                <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{text.totalQuestions}</p>
-                  <p className="text-2xl font-bold">{examData.examInfo.totalQuestions}</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <span className="text-3xl">⏱️</span>
-                <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{text.timeLimit}</p>
-                  <p className="text-2xl font-bold">{examData.examInfo.timeLimit} {text.minutes}</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <span className="text-3xl">🎯</span>
-                <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{text.pointsPerQuestion}</p>
-                  <p className="text-2xl font-bold">{examData.examInfo.pointsPerQuestion}</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <span className="text-3xl">🏆</span>
-                <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{text.passingScore}</p>
-                  <p className="text-2xl font-bold">{examData.examInfo.passingScore}/{examData.examInfo.totalQuestions}</p>
-                </div>
-              </div>
-            </div>
-
-            {isModelIncomplete && (
-              <div className={`mt-4 p-4 rounded-lg border-l-4 border-amber-500 ${isDarkMode ? 'bg-amber-900/20 text-amber-300' : 'bg-amber-50 text-amber-800'}`}>
-                <p className="text-sm font-medium">{(text as any).incompleteModelWarning}</p>
-              </div>
-            )}
-
-            <div className="mt-6 space-y-3">
-              <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{text.rulesTitle}</h3>
-              <ul className={`list-disc list-inside space-y-2 text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
-                {text.rules.map((rule: string, index: number) => (
-                  <li key={index}>{rule}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div className={`rounded-lg shadow-lg ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
-          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-            <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-              {text.participantDataTitle}
-            </h2>
-            <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
-              {text.participantDataSubtitle}
-            </p>
-          </div>
-          <div className="p-6 space-y-6">
-            <div className="space-y-2">
-              <label htmlFor="participantName" className={`block text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                {text.nameLabel}
-              </label>
-              <input
-                id="participantName"
-                type="text"
-                placeholder={text.namePlaceholder}
-                value={participantName}
-                onChange={(e) => setParticipantName(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && participantName.trim()) {
-                    handleStartExam('exam');
-                  }
-                }}
-                className={`w-full px-4 py-2 rounded-lg border ${isDarkMode
-                  ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
-                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                  } focus:outline-none focus:ring-2 focus:ring-amber-500`}
-              />
-            </div>
-
-            <ProcessCodeInput
-              value={processCode}
-              onChange={setProcessCode}
-              autoValidate={!!searchParams.get('process')}
-            />
-
-            {error && (
-              <Alert type="error" message={error} onClose={() => setError('')} />
-            )}
-
-            <div className="space-y-3">
-              <h3 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{text.selectModeTitle}</h3>
-
+            <div className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className={`rounded-lg border-2 transition-all hover:border-amber-500 ${isDarkMode ? 'bg-slate-700 border-slate-600' : 'bg-white border-gray-200'
-                  }`}>
-                  <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                    <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                      {text.examModeTitle}
-                    </h3>
-                    <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
-                      {text.examModeSubtitle}
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl">📚</span>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                      {text.totalQuestions}
                     </p>
-                  </div>
-                  <div className="p-4 space-y-4">
-                    <ul className={`text-sm space-y-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
-                      {text.examModeFeatures.map((feature: string, index: number) => (
-                        <li key={index}>{feature}</li>
-                      ))}
-                    </ul>
-                    <button
-                      onClick={() => handleStartExam('exam')}
-                      disabled={isModelIncomplete}
-                      className={`w-full px-4 py-3 font-semibold rounded-lg transition-colors ${isModelIncomplete ? 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-slate-600 dark:text-slate-400' : 'bg-amber-600 hover:bg-amber-700 text-white'}`}
-                    >
-                      {text.startExam}
-                    </button>
+                    <p className="text-2xl font-bold">
+                      {examData.examInfo.totalQuestions}
+                    </p>
                   </div>
                 </div>
 
-                <div className={`rounded-lg border-2 transition-all hover:border-amber-500 ${isDarkMode ? 'bg-slate-700 border-slate-600' : 'bg-white border-gray-200'
-                  }`}>
-                  <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                    <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                      {text.trainingModeTitle}
-                    </h3>
-                    <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
-                      {text.trainingModeSubtitle}
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl">⏱️</span>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                      {text.timeLimit}
+                    </p>
+                    <p className="text-2xl font-bold">
+                      {examData.examInfo.timeLimit} {text.minutes}
                     </p>
                   </div>
-                  <div className="p-4 space-y-4">
-                    <ul className={`text-sm space-y-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}>
-                      {text.trainingModeFeatures.map((feature: string, index: number) => (
-                        <li key={index}>{feature}</li>
-                      ))}
-                    </ul>
-                    <button
-                      onClick={() => handleStartExam('training')}
-                      disabled={isModelIncomplete}
-                      className={`w-full px-4 py-3 font-semibold rounded-lg transition-colors ${isModelIncomplete ? 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-slate-600 dark:text-slate-400 border-2 border-transparent' : isDarkMode ? 'bg-slate-600 hover:bg-slate-500 text-white border-2 border-slate-500' : 'bg-white hover:bg-gray-50 text-gray-900 border-2 border-gray-300'}`}
-                    >
-                      {text.startTraining}
-                    </button>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl">🎯</span>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                      {text.pointsPerQuestion}
+                    </p>
+                    <p className="text-2xl font-bold">
+                      {examData.examInfo.pointsPerQuestion}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl">🏆</span>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                      {text.passingScore}
+                    </p>
+                    <p className="text-2xl font-bold">
+                      {examData.examInfo.passingScore}/
+                      {examData.examInfo.totalQuestions}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {isModelIncomplete && (
+                <div
+                  className={`mt-4 p-4 rounded-lg border-l-4 border-amber-500 ${isDarkMode ? 'bg-amber-900/20 text-amber-300' : 'bg-amber-50 text-amber-800'}`}
+                >
+                  <p className="text-sm font-medium">
+                    {(text as any).incompleteModelWarning}
+                  </p>
+                </div>
+              )}
+
+              <div className="mt-6 space-y-3">
+                <h3
+                  className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                >
+                  {text.rulesTitle}
+                </h3>
+                <ul
+                  className={`list-disc list-inside space-y-2 text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}
+                >
+                  {text.rules.map((rule: string, index: number) => (
+                    <li key={index}>{rule}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div
+            className={`rounded-lg shadow-lg ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}
+          >
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+              <h2
+                className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+              >
+                {text.participantDataTitle}
+              </h2>
+              <p
+                className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}
+              >
+                {text.participantDataSubtitle}
+              </p>
+            </div>
+            <div className="p-6 space-y-6">
+              <div className="space-y-2">
+                <label
+                  htmlFor="participantName"
+                  className={`block text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                >
+                  {text.nameLabel}
+                </label>
+                <input
+                  id="participantName"
+                  type="text"
+                  placeholder={text.namePlaceholder}
+                  value={participantName}
+                  onChange={(e) => setParticipantName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && participantName.trim()) {
+                      handleStartExam('exam');
+                    }
+                  }}
+                  className={`w-full px-4 py-2 rounded-lg border ${
+                    isDarkMode
+                      ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
+                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                  } focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                />
+              </div>
+
+              <ProcessCodeInput
+                value={processCode}
+                onChange={setProcessCode}
+                onNormalizedCode={setProcessCode}
+                autoValidate={!!searchParams.get('process')}
+              />
+
+              {error && (
+                <Alert
+                  type="error"
+                  message={error}
+                  onClose={() => setError('')}
+                />
+              )}
+
+              <div className="space-y-3">
+                <h3
+                  className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                >
+                  {text.selectModeTitle}
+                </h3>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div
+                    className={`rounded-lg border-2 transition-all hover:border-amber-500 ${
+                      isDarkMode
+                        ? 'bg-slate-700 border-slate-600'
+                        : 'bg-white border-gray-200'
+                    }`}
+                  >
+                    <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                      <h3
+                        className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                      >
+                        {text.examModeTitle}
+                      </h3>
+                      <p
+                        className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}
+                      >
+                        {text.examModeSubtitle}
+                      </p>
+                    </div>
+                    <div className="p-4 space-y-4">
+                      <ul
+                        className={`text-sm space-y-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}
+                      >
+                        {text.examModeFeatures.map(
+                          (feature: string, index: number) => (
+                            <li key={index}>{feature}</li>
+                          )
+                        )}
+                      </ul>
+                      <button
+                        onClick={() => handleStartExam('exam')}
+                        disabled={isModelIncomplete}
+                        className={`w-full px-4 py-3 font-semibold rounded-lg transition-colors ${isModelIncomplete ? 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-slate-600 dark:text-slate-400' : 'bg-amber-600 hover:bg-amber-700 text-white'}`}
+                      >
+                        {text.startExam}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div
+                    className={`rounded-lg border-2 transition-all hover:border-amber-500 ${
+                      isDarkMode
+                        ? 'bg-slate-700 border-slate-600'
+                        : 'bg-white border-gray-200'
+                    }`}
+                  >
+                    <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                      <h3
+                        className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                      >
+                        {text.trainingModeTitle}
+                      </h3>
+                      <p
+                        className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}
+                      >
+                        {text.trainingModeSubtitle}
+                      </p>
+                    </div>
+                    <div className="p-4 space-y-4">
+                      <ul
+                        className={`text-sm space-y-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}
+                      >
+                        {text.trainingModeFeatures.map(
+                          (feature: string, index: number) => (
+                            <li key={index}>{feature}</li>
+                          )
+                        )}
+                      </ul>
+                      <button
+                        onClick={() => handleStartExam('training')}
+                        disabled={isModelIncomplete}
+                        className={`w-full px-4 py-3 font-semibold rounded-lg transition-colors ${isModelIncomplete ? 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-slate-600 dark:text-slate-400 border-2 border-transparent' : isDarkMode ? 'bg-slate-600 hover:bg-slate-500 text-white border-2 border-slate-500' : 'bg-white hover:bg-gray-50 text-gray-900 border-2 border-gray-300'}`}
+                      >
+                        {text.startTraining}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Suru mascot teaching ISTQB */}
-      <SuruFloating pose="teacher" position="bottom-right" />
-    </div>
+        {/* Suru mascot teaching ISTQB */}
+        <SuruFloating pose="teacher" position="bottom-right" />
+      </div>
     </ExamAuthGate>
   );
 }
