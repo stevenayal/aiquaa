@@ -145,7 +145,7 @@ export async function validateProcessCodeAction(code: string) {
   const { data, error } = await supabase
     .from('hiring_processes')
     .select('code, company_name, position_name, status')
-    .eq('code', code.trim().toUpperCase())
+    .ilike('code', code.trim())
     .eq('status', 'active')
     .single();
 
@@ -251,14 +251,13 @@ export async function getEmpresaDashboardStatsAction(): Promise<{
           .eq('status', 'pendiente')
       : Promise.resolve({ count: 0, data: null, error: null });
 
-  const fetchPendingInvitaciones =
-    empresaId
-      ? supabase
-          .from('empresa_invitaciones')
-          .select('*', { count: 'exact', head: true })
-          .eq('empresa_id', empresaId)
-          .in('status', ['pendiente', 'vista'])
-      : Promise.resolve({ count: 0, data: null, error: null });
+  const fetchPendingInvitaciones = empresaId
+    ? supabase
+        .from('empresa_invitaciones')
+        .select('*', { count: 'exact', head: true })
+        .eq('empresa_id', empresaId)
+        .in('status', ['pendiente', 'vista'])
+    : Promise.resolve({ count: 0, data: null, error: null });
 
   const [examResp, prospectsResp, invitacionesResp] = await Promise.all([
     fetchExamResults,
@@ -304,9 +303,11 @@ export async function getEmpresaDashboardStatsAction(): Promise<{
     data: {
       totalProcesses: processes?.length ?? 0,
       activeProcesses:
-        processes?.filter((processItem) => processItem.status === 'active').length ?? 0,
+        processes?.filter((processItem) => processItem.status === 'active')
+          .length ?? 0,
       closedProcesses:
-        processes?.filter((processItem) => processItem.status === 'closed').length ?? 0,
+        processes?.filter((processItem) => processItem.status === 'closed')
+          .length ?? 0,
       totalCandidates,
       passedCandidates,
       passRate:
