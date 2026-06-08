@@ -12,6 +12,7 @@ export function useSubmitResults() {
     mode: 'exam' | 'training',
     _startTime: Date,
     _endTime: Date,
+    processCode?: string
   ) => {
     setIsSubmitting(true);
     setError(null);
@@ -34,6 +35,7 @@ export function useSubmitResults() {
         time_spent: result.timeSpent,
         answers: result.answers as any,
         learning_objectives: result.learningObjectiveAnalysis as any,
+        process_code: processCode?.trim() || undefined,
       });
 
       if (res.error) {
@@ -42,7 +44,10 @@ export function useSubmitResults() {
 
       setIsSubmitted(true);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Error desconocido al guardar resultados';
+      const msg =
+        err instanceof Error
+          ? err.message
+          : 'Error desconocido al guardar resultados';
       setError(msg);
       console.error('Error al guardar resultado Performance:', err);
       throw err;

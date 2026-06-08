@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react';
 import { saveExamResultAction } from '@/actions/exams';
 import type { ExamResult } from '../types';
 
-export function useSubmitResults(result: ExamResult, mode: 'exam' | 'training') {
+export function useSubmitResults(
+  result: ExamResult,
+  mode: 'exam' | 'training',
+  processCode?: string
+) {
   const [isSaved, setIsSaved] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -25,6 +29,7 @@ export function useSubmitResults(result: ExamResult, mode: 'exam' | 'training') 
           time_spent: result.timeSpent,
           answers: result.answers as any,
           learning_objectives: result.learningObjectiveAnalysis as any,
+          process_code: processCode?.trim() || undefined,
         });
 
         if (res.error) {
