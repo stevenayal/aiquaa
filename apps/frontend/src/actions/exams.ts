@@ -41,9 +41,19 @@ export async function saveExamResultAction(payload: SaveExamResultPayload) {
   } = await supabase.auth.getUser();
   if (userError || !user) return { error: 'No autenticado' };
 
+  const resolvedName =
+    payload.participant_name?.trim() ||
+    user.user_metadata?.full_name?.trim() ||
+    null;
+
+  const resolvedEmail =
+    payload.participant_email?.trim() || user.email || null;
+
   const { error } = await supabase.from('exam_results').insert({
     user_id: user.id,
     ...payload,
+    participant_name: resolvedName,
+    participant_email: resolvedEmail,
   });
 
   if (error) return { error: error.message };

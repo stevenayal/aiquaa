@@ -377,9 +377,13 @@ export default function CandidatosPage() {
                           <div
                             className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
                           >
-                            {r.participant_name || '—'}
+                            {r.participant_name || r.participant_email || (
+                              <span className={`italic ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>
+                                Sin nombre
+                              </span>
+                            )}
                           </div>
-                          {r.participant_email && (
+                          {r.participant_name && r.participant_email && (
                             <div
                               className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
                             >
