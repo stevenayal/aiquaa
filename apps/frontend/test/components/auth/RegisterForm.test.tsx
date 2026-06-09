@@ -9,6 +9,7 @@ import { LanguageProvider } from '@/contexts/LanguageContext';
 vi.mock('@/actions/auth', () => ({
   registerAction: vi.fn(),
   resendConfirmationAction: vi.fn(),
+  checkEmailTakenAction: vi.fn().mockResolvedValue({ taken: false }),
 }));
 
 // Mock del SessionProvider de next-auth
