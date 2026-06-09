@@ -1,14 +1,14 @@
-import { PostgreSQLContainer } from '@testcontainers/postgresql';
+import { PostgreSqlContainer } from '@testcontainers/postgresql';
 import { execSync } from 'child_process';
 import { join } from 'path';
 
-let container: PostgreSQLContainer;
+let container: InstanceType<typeof PostgreSqlContainer>;
 
 export default async function globalSetup() {
   console.log('🚀 Iniciando contenedor de PostgreSQL para tests...');
-  
+
   // Crear contenedor PostgreSQL
-  container = new PostgreSQLContainer('postgres:15-alpine')
+  container = new PostgreSqlContainer('postgres:15-alpine')
     .withDatabase('test')
     .withUsername('test')
     .withPassword('test')
