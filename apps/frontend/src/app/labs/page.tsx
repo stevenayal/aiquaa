@@ -12,6 +12,23 @@ export default function LabsPage() {
   const { t } = useLanguage();
   const { user } = useSupabaseAuth();
 
+  const getToolPresentation = <
+    T extends { id: string; icon: string; description: string },
+  >(
+    tool: T
+  ) => {
+    if (tool.id === 'api-testing-fundamentals') {
+      return {
+        ...tool,
+        icon: 'API',
+        description:
+          'Assessment progresivo para validar conceptos de API, diseno de casos, analisis de respuestas y bug reporting',
+      };
+    }
+
+    return tool;
+  };
+
   const toolCategories = [
     {
       id: 'formacion',
@@ -362,50 +379,54 @@ export default function LabsPage() {
               .flatMap((cat) => cat.tools)
               .filter((tool) => tool.featured)
               .slice(0, 3)
-              .map((tool, index) => (
-                <Link
-                  key={tool.id}
-                  href={tool.href}
-                  className={`group p-4 rounded-lg transition-all duration-300 hover:scale-105 ${
-                    isDarkMode
-                      ? 'bg-slate-800/80 hover:bg-slate-700/80'
-                      : 'bg-white hover:bg-gray-50'
-                  }`}
-                >
-                  <div className="flex items-start gap-3">
-                    <div
-                      className={`text-2xl font-bold ${
-                        index === 0
-                          ? 'text-yellow-500'
-                          : index === 1
-                            ? 'text-gray-400'
-                            : 'text-orange-600'
-                      }`}
-                    >
-                      #{index + 1}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xl">{tool.icon}</span>
-                        <h3
-                          className={`font-bold ${
-                            isDarkMode ? 'text-white' : 'text-brand-text'
-                          }`}
-                        >
-                          {tool.name}
-                        </h3>
-                      </div>
-                      <p
-                        className={`text-xs ${
-                          isDarkMode ? 'text-slate-400' : 'text-brand-muted'
+              .map((tool, index) => {
+                const presentation = getToolPresentation(tool);
+
+                return (
+                  <Link
+                    key={tool.id}
+                    href={tool.href}
+                    className={`group p-4 rounded-lg transition-all duration-300 hover:scale-105 ${
+                      isDarkMode
+                        ? 'bg-slate-800/80 hover:bg-slate-700/80'
+                        : 'bg-white hover:bg-gray-50'
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div
+                        className={`text-2xl font-bold ${
+                          index === 0
+                            ? 'text-yellow-500'
+                            : index === 1
+                              ? 'text-gray-400'
+                              : 'text-orange-600'
                         }`}
                       >
-                        {tool.description}
-                      </p>
+                        #{index + 1}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-xl">{presentation.icon}</span>
+                          <h3
+                            className={`font-bold ${
+                              isDarkMode ? 'text-white' : 'text-brand-text'
+                            }`}
+                          >
+                            {presentation.name}
+                          </h3>
+                        </div>
+                        <p
+                          className={`text-xs ${
+                            isDarkMode ? 'text-slate-400' : 'text-brand-muted'
+                          }`}
+                        >
+                          {presentation.description}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                );
+              })}
           </div>
         </div>
 
@@ -433,75 +454,81 @@ export default function LabsPage() {
 
               {/* Tools Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {category.tools.map((tool) => (
-                  <Link
-                    key={tool.id}
-                    href={tool.href}
-                    className={`group flex flex-col rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${
-                      isDarkMode ? 'bg-slate-800' : 'bg-white'
-                    }`}
-                  >
-                    <div
-                      className={`bg-gradient-to-r ${tool.color} p-6 text-white relative flex-1`}
+                {category.tools.map((tool) => {
+                  const presentation = getToolPresentation(tool);
+
+                  return (
+                    <Link
+                      key={tool.id}
+                      href={tool.href}
+                      className={`group flex flex-col rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${
+                        isDarkMode ? 'bg-slate-800' : 'bg-white'
+                      }`}
                     >
-                      {/* Badges Container */}
-                      <div className="flex items-start justify-between gap-2 mb-3">
-                        <div className="text-3xl">{tool.icon}</div>
-                        <div className="flex flex-col items-end gap-2">
-                          {tool.featured && (
-                            <span
-                              className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                                isDarkMode
-                                  ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/50'
-                                  : 'bg-yellow-100 text-yellow-800 border border-yellow-300'
-                              }`}
-                            >
-                              ⭐ Destacada
-                            </span>
-                          )}
-                          {tool.implementedDate && (
-                            <span className="px-2 py-1 bg-white/20 backdrop-blur-sm rounded text-xs font-medium">
-                              📅 {tool.implementedDate}
-                            </span>
-                          )}
+                      <div
+                        className={`bg-gradient-to-r ${tool.color} p-6 text-white relative flex-1`}
+                      >
+                        {/* Badges Container */}
+                        <div className="flex items-start justify-between gap-2 mb-3">
+                          <div className="text-3xl">{presentation.icon}</div>
+                          <div className="flex flex-col items-end gap-2">
+                            {tool.featured && (
+                              <span
+                                className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                                  isDarkMode
+                                    ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/50'
+                                    : 'bg-yellow-100 text-yellow-800 border border-yellow-300'
+                                }`}
+                              >
+                                ⭐ Destacada
+                              </span>
+                            )}
+                            {tool.implementedDate && (
+                              <span className="px-2 py-1 bg-white/20 backdrop-blur-sm rounded text-xs font-medium">
+                                📅 {tool.implementedDate}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <h3 className="text-xl font-bold mb-2">
+                          {presentation.name}
+                        </h3>
+                        <p className="text-white/90 text-sm">
+                          {presentation.description}
+                        </p>
+                      </div>
+                      <div className="p-6 shrink-0">
+                        <div className="flex items-center justify-between">
+                          <span
+                            className={`text-sm ${
+                              isDarkMode ? 'text-slate-400' : 'text-brand-muted'
+                            }`}
+                          >
+                            {t('labs.action')}
+                          </span>
+                          <svg
+                            className={`w-5 h-5 transition-colors ${
+                              isDarkMode
+                                ? 'text-slate-400 group-hover:text-blue-400'
+                                : 'text-brand-muted group-hover:text-brand-accent'
+                            }`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 5l7 7-7 7"
+                            />
+                          </svg>
                         </div>
                       </div>
-                      <h3 className="text-xl font-bold mb-2">{tool.name}</h3>
-                      <p className="text-white/90 text-sm">
-                        {tool.description}
-                      </p>
-                    </div>
-                    <div className="p-6 shrink-0">
-                      <div className="flex items-center justify-between">
-                        <span
-                          className={`text-sm ${
-                            isDarkMode ? 'text-slate-400' : 'text-brand-muted'
-                          }`}
-                        >
-                          {t('labs.action')}
-                        </span>
-                        <svg
-                          className={`w-5 h-5 transition-colors ${
-                            isDarkMode
-                              ? 'text-slate-400 group-hover:text-blue-400'
-                              : 'text-brand-muted group-hover:text-brand-accent'
-                          }`}
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          aria-hidden="true"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 5l7 7-7 7"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           ))}
