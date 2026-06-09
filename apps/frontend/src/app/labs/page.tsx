@@ -82,6 +82,17 @@ export default function LabsPage() {
           featured: true,
           implementedDate: 'Nov 2025',
         },
+        {
+          id: 'api-banking-challenge',
+          name: 'QA API Challenge — Banking',
+          description:
+            'Encontrá 12 bugs intencionales en una API bancaria simulada. Diseñá casos de prueba, reportá bugs y recibí un score automático de 100 pts.',
+          icon: '🏦',
+          color: 'from-emerald-500 to-teal-600',
+          href: '/assessments/api-banking',
+          featured: true,
+          implementedDate: 'Jun 2026',
+        },
       ],
     },
     {
@@ -255,48 +266,50 @@ export default function LabsPage() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Login/Register Banner — only for guests */}
-        {!user && <div
-          className={`mb-8 rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 ${
-            isDarkMode
-              ? 'bg-slate-800 border border-slate-700'
-              : 'bg-white border border-gray-200 shadow-sm'
-          }`}
-        >
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">📝</span>
-            <div>
-              <p
-                className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+        {!user && (
+          <div
+            className={`mb-8 rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 ${
+              isDarkMode
+                ? 'bg-slate-800 border border-slate-700'
+                : 'bg-white border border-gray-200 shadow-sm'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">📝</span>
+              <div>
+                <p
+                  className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                >
+                  ¿Quieres guardar tu progreso?
+                </p>
+                <p
+                  className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                >
+                  Regístrate gratis para acceder a simuladores, generar informes
+                  y más.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <Link
+                href="/login"
+                className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700"
               >
-                ¿Quieres guardar tu progreso?
-              </p>
-              <p
-                className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                Iniciar sesión
+              </Link>
+              <Link
+                href="/register"
+                className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${
+                  isDarkMode
+                    ? 'border-slate-600 text-slate-300 hover:bg-slate-700'
+                    : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                }`}
               >
-                Regístrate gratis para acceder a simuladores, generar informes y
-                más.
-              </p>
+                Crear cuenta
+              </Link>
             </div>
           </div>
-          <div className="flex gap-3">
-            <Link
-              href="/login"
-              className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700"
-            >
-              Iniciar sesión
-            </Link>
-            <Link
-              href="/register"
-              className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${
-                isDarkMode
-                  ? 'border-slate-600 text-slate-300 hover:bg-slate-700'
-                  : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              Crear cuenta
-            </Link>
-          </div>
-        </div>}
+        )}
 
         {/* Header */}
         <div className="text-center mb-12">
