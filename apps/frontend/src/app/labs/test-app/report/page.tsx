@@ -391,7 +391,8 @@ export default function TechnicalReportPage() {
         score: calculateScore({ candidateInfo, testSession, bugsFound: bugs, auditLog, score: {} as any }),
       };
 
-      const response = await fetch('/api/v1/labs/test-app/send-bug-report', {
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || '';
+      const response = await fetch(`${apiBase}/api/v1/labs/test-app/send-bug-report`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

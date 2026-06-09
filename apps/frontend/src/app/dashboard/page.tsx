@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { getExamResultsAction, getMyXpProfileAction } from '@/actions/exams';
+import { xpForLevel, PY_TIMEZONE } from '@/lib/xp';
 
 interface ExamResult {
   id: string;
@@ -33,10 +34,6 @@ const LAB_INFO = {
   istqb: { emoji: '📋', label: 'ISTQB CTFL v4.0', href: '/labs/istqb' },
   performance: { emoji: '⚡', label: 'Performance Testing', href: '/labs/performance' },
 } as const;
-
-function xpForLevel(n: number) {
-  return 50 * n * (n - 1);
-}
 
 export default function DashboardPage() {
   const { isDarkMode } = useTheme();
@@ -255,6 +252,7 @@ export default function DashboardPage() {
                 const date = new Date(result.created_at).toLocaleDateString('es-PY', {
                   day: '2-digit',
                   month: 'short',
+                  timeZone: PY_TIMEZONE,
                 });
                 return (
                   <div
