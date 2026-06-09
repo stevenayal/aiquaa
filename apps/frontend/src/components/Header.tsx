@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
-import { logoutAction } from '@/actions/auth';
 import LanguageSelector from './LanguageSelector';
 import LogoMark from './LogoMark';
 import Avatar from '@/components/ui/Avatar';
@@ -36,7 +36,8 @@ const Header = () => {
   const userMenuRef = useRef<HTMLDivElement>(null);
   const { isDarkMode, toggleDarkMode } = useTheme();
   const { t } = useLanguage();
-  const { user, isAuthenticated, isLoading } = useSupabaseAuth();
+  const { user, isAuthenticated, isLoading, signOut } = useSupabaseAuth();
+  const router = useRouter();
   const isEmpresa = user?.user_metadata?.audience === 'empresa';
   const activeNavLinks = isEmpresa ? empresaNavLinks : navLinks;
 
@@ -45,7 +46,8 @@ const Header = () => {
   const handleLogout = async () => {
     setIsUserMenuOpen(false);
     closeMobileMenu();
-    await logoutAction();
+    await signOut();
+    router.push('/login');
   };
 
   useEffect(() => {
