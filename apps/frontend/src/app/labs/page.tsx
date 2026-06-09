@@ -52,6 +52,17 @@ export default function LabsPage() {
           featured: true,
           implementedDate: 'Nov 2025',
         },
+        {
+          id: 'api-testing-fundamentals',
+          name: 'API Testing Fundamentals Challenge',
+          description:
+            'Assessment progresivo para validar conceptos de API, diseÃ±o de casos, anÃ¡lisis de respuestas y bug reporting',
+          icon: 'ðŸŒ',
+          color: 'from-emerald-500 to-teal-600',
+          href: '/assessments/api-testing-fundamentals',
+          featured: true,
+          implementedDate: 'Jun 2026',
+        },
       ],
     },
     {
