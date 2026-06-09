@@ -11,6 +11,7 @@ import {
 } from '@/actions/profile';
 import { getExamResultsAction, getMyXpProfileAction } from '@/actions/exams';
 import Avatar from '@/components/ui/Avatar';
+import { xpForLevel, PY_TIMEZONE } from '@/lib/xp';
 
 interface ExamResultRow {
   id: string;
@@ -130,12 +131,14 @@ export default function PerfilPage() {
     fd.set('avatar', file);
     const result = await uploadAvatarAction(fd);
     setIsUploading(false);
+    setPreviewUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
     if (result.error) {
       setAlert({ type: 'error', msg: result.error });
-      setPreviewUrl(null);
     } else {
       await refreshUser();
-      setPreviewUrl(null);
       setAlert({ type: 'success', msg: 'Foto actualizada correctamente' });
     }
   };
@@ -494,6 +497,7 @@ export default function PerfilPage() {
               year: 'numeric',
               month: 'long',
               day: 'numeric',
+              timeZone: PY_TIMEZONE,
             })}
           </div>
 
@@ -635,8 +639,8 @@ export default function PerfilPage() {
               </div>
               {(() => {
                 const { level, totalXp } = xpProfile;
-                const current = 50 * level * (level - 1);
-                const next = 50 * (level + 1) * level;
+                const current = xpForLevel(level);
+                const next = xpForLevel(level + 1);
                 const pct = Math.min(100, Math.round(((totalXp - current) / (next - current)) * 100));
                 return (
                   <>
@@ -759,6 +763,7 @@ export default function PerfilPage() {
                           day: '2-digit',
                           month: 'short',
                           year: 'numeric',
+                          timeZone: PY_TIMEZONE,
                         })}
                         {' · '}
                         {formatTime(r.time_spent)}

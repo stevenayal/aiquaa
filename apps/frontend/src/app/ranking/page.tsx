@@ -7,6 +7,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { getLeaderboardAction, getXpRankingAction } from '@/actions/exams';
 import type { Reporter } from '@/app/api/github/reporters/route';
+import { xpForLevel } from '@/lib/xp';
 
 interface LeaderboardEntry {
   rank: number;
@@ -156,10 +157,6 @@ function formatRelative(iso: string | null) {
 }
 
 // ── XP Level bar ──────────────────────────────────────────────────────────────
-
-function xpForLevel(n: number) {
-  return 50 * n * (n - 1);
-}
 
 function LevelBar({
   level,

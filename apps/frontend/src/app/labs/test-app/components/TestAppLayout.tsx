@@ -6,6 +6,8 @@ import { usePathname, useRouter } from 'next/navigation';
 import { getCurrentUser, setCurrentUser } from '../lib/storage';
 import { initializeApp, needsInitialization } from '../lib/seedData';
 import { logLogout } from '../lib/auditLog';
+import { getCandidateId } from '../lib/prng';
+import { getActiveBugs } from '../lib/bugsManifest';
 import type { User } from '../lib/types';
 
 interface TestAppLayoutProps {
@@ -16,6 +18,7 @@ interface TestAppLayoutProps {
 export default function TestAppLayout({ children, requireAuth = false }: TestAppLayoutProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [activeBugCount, setActiveBugCount] = useState(0);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -28,6 +31,11 @@ export default function TestAppLayout({ children, requireAuth = false }: TestApp
     // Load current user
     const currentUser = getCurrentUser();
     setUser(currentUser);
+
+    // Compute active bug count for this session
+    const candidateId = getCandidateId() || 'default';
+    setActiveBugCount(getActiveBugs(candidateId).length);
+
     setLoading(false);
 
     // Redirect if auth required
@@ -66,7 +74,14 @@ export default function TestAppLayout({ children, requireAuth = false }: TestApp
               <Link href="/labs/test-app" className="text-2xl font-bold text-amber-600">
                 AIQUAA Test App
               </Link>
-              <p className="text-xs text-gray-500 mt-1">Solo para evaluación</p>
+              <div className="flex items-center gap-2 mt-1">
+                <p className="text-xs text-gray-500">Solo para evaluación</p>
+                {activeBugCount > 0 && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200">
+                    🎯 {activeBugCount} bugs activos
+                  </span>
+                )}
+              </div>
             </div>
 
             <nav className="flex items-center space-x-6">
