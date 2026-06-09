@@ -15,7 +15,7 @@ import { xpForLevel, PY_TIMEZONE } from '@/lib/xp';
 
 interface ExamResultRow {
   id: string;
-  exam_type: 'git' | 'istqb' | 'performance';
+  exam_type: 'git' | 'istqb' | 'performance' | 'api-testing-fundamentals';
   exam_mode: 'exam' | 'training';
   score: number;
   total_questions: number;
@@ -79,7 +79,14 @@ export default function PerfilPage() {
     istqb_level: '',
   });
   const [initialized, setInitialized] = useState(false);
-  const [xpProfile, setXpProfile] = useState<{totalXp:number;level:number;currentStreak:number;longestStreak:number;achievementCount:number;position:number}|null>(null);
+  const [xpProfile, setXpProfile] = useState<{
+    totalXp: number;
+    level: number;
+    currentStreak: number;
+    longestStreak: number;
+    achievementCount: number;
+    position: number;
+  } | null>(null);
 
   // Initialize form from user metadata once loaded
   React.useEffect(() => {
@@ -110,7 +117,9 @@ export default function PerfilPage() {
 
   useEffect(() => {
     if (!user) return;
-    getMyXpProfileAction().then(({ data }) => { if (data) setXpProfile(data); });
+    getMyXpProfileAction().then(({ data }) => {
+      if (data) setXpProfile(data);
+    });
   }, [user]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -341,7 +350,9 @@ export default function PerfilPage() {
               className={inputClass}
               maxLength={60}
             />
-            <p className={`text-xs mt-1 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>
+            <p
+              className={`text-xs mt-1 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+            >
               👁️ Visible en el ranking público
             </p>
           </div>
@@ -409,8 +420,31 @@ export default function PerfilPage() {
               className={inputClass}
             >
               <option value="">Seleccioná tu país</option>
-              {['Argentina', 'Bolivia', 'Brasil', 'Chile', 'Colombia', 'Costa Rica', 'Cuba', 'Ecuador', 'El Salvador', 'Guatemala', 'Honduras', 'México', 'Nicaragua', 'Panamá', 'Paraguay', 'Perú', 'República Dominicana', 'Uruguay', 'Venezuela', 'Otro'].map((c) => (
-                <option key={c} value={c}>{c}</option>
+              {[
+                'Argentina',
+                'Bolivia',
+                'Brasil',
+                'Chile',
+                'Colombia',
+                'Costa Rica',
+                'Cuba',
+                'Ecuador',
+                'El Salvador',
+                'Guatemala',
+                'Honduras',
+                'México',
+                'Nicaragua',
+                'Panamá',
+                'Paraguay',
+                'Perú',
+                'República Dominicana',
+                'Uruguay',
+                'Venezuela',
+                'Otro',
+              ].map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
               ))}
             </select>
           </div>
@@ -429,7 +463,9 @@ export default function PerfilPage() {
                 className={inputClass}
                 maxLength={100}
               />
-              <p className={`text-xs mt-1 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>
+              <p
+                className={`text-xs mt-1 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+              >
                 Se usa para pre-completar tus datos en los exámenes
               </p>
             </div>
@@ -450,7 +486,9 @@ export default function PerfilPage() {
                 <option value="ctfl">Foundation Level (CTFL)</option>
                 <option value="ctal_ta">Advanced Level — Test Analyst</option>
                 <option value="ctal_tm">Advanced Level — Test Manager</option>
-                <option value="ctal_tta">Advanced Level — Technical Test Analyst</option>
+                <option value="ctal_tta">
+                  Advanced Level — Technical Test Analyst
+                </option>
                 <option value="expert">Expert Level</option>
                 <option value="en_proceso">En proceso de certificación</option>
               </select>
@@ -620,47 +658,100 @@ export default function PerfilPage() {
           {xpProfile ? (
             <>
               <div className="grid grid-cols-2 gap-3 mb-4">
-                <div className={`rounded-lg p-3 text-center ${isDarkMode ? 'bg-slate-700/50' : 'bg-gray-50'}`}>
-                  <p className={`text-xs mb-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>🏅 Nivel</p>
-                  <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{xpProfile.level}</p>
+                <div
+                  className={`rounded-lg p-3 text-center ${isDarkMode ? 'bg-slate-700/50' : 'bg-gray-50'}`}
+                >
+                  <p
+                    className={`text-xs mb-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                  >
+                    🏅 Nivel
+                  </p>
+                  <p
+                    className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                  >
+                    {xpProfile.level}
+                  </p>
                 </div>
-                <div className={`rounded-lg p-3 text-center ${isDarkMode ? 'bg-slate-700/50' : 'bg-gray-50'}`}>
-                  <p className={`text-xs mb-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>💎 XP Total</p>
-                  <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{xpProfile.totalXp.toLocaleString()}</p>
+                <div
+                  className={`rounded-lg p-3 text-center ${isDarkMode ? 'bg-slate-700/50' : 'bg-gray-50'}`}
+                >
+                  <p
+                    className={`text-xs mb-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                  >
+                    💎 XP Total
+                  </p>
+                  <p
+                    className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                  >
+                    {xpProfile.totalXp.toLocaleString()}
+                  </p>
                 </div>
-                <div className={`rounded-lg p-3 text-center ${isDarkMode ? 'bg-slate-700/50' : 'bg-gray-50'}`}>
-                  <p className={`text-xs mb-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>🔥 Racha actual</p>
-                  <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{xpProfile.currentStreak} días</p>
+                <div
+                  className={`rounded-lg p-3 text-center ${isDarkMode ? 'bg-slate-700/50' : 'bg-gray-50'}`}
+                >
+                  <p
+                    className={`text-xs mb-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                  >
+                    🔥 Racha actual
+                  </p>
+                  <p
+                    className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                  >
+                    {xpProfile.currentStreak} días
+                  </p>
                 </div>
-                <div className={`rounded-lg p-3 text-center ${isDarkMode ? 'bg-slate-700/50' : 'bg-gray-50'}`}>
-                  <p className={`text-xs mb-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>#️⃣ Posición</p>
-                  <p className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>#{xpProfile.position}</p>
+                <div
+                  className={`rounded-lg p-3 text-center ${isDarkMode ? 'bg-slate-700/50' : 'bg-gray-50'}`}
+                >
+                  <p
+                    className={`text-xs mb-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                  >
+                    #️⃣ Posición
+                  </p>
+                  <p
+                    className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                  >
+                    #{xpProfile.position}
+                  </p>
                 </div>
               </div>
               {(() => {
                 const { level, totalXp } = xpProfile;
                 const current = xpForLevel(level);
                 const next = xpForLevel(level + 1);
-                const pct = Math.min(100, Math.round(((totalXp - current) / (next - current)) * 100));
+                const pct = Math.min(
+                  100,
+                  Math.round(((totalXp - current) / (next - current)) * 100)
+                );
                 return (
                   <>
-                    <div className={`w-full h-2 rounded-full overflow-hidden ${isDarkMode ? 'bg-slate-700' : 'bg-gray-200'}`}>
+                    <div
+                      className={`w-full h-2 rounded-full overflow-hidden ${isDarkMode ? 'bg-slate-700' : 'bg-gray-200'}`}
+                    >
                       <div
                         className="h-2 rounded-full bg-gradient-to-r from-green-400 to-emerald-500"
                         style={{ width: `${pct}%` }}
                       />
                     </div>
-                    <p className={`text-xs mt-1 text-center ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
-                      {totalXp.toLocaleString()} / {next.toLocaleString()} XP hacia Nivel {level + 1}
+                    <p
+                      className={`text-xs mt-1 text-center ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                    >
+                      {totalXp.toLocaleString()} / {next.toLocaleString()} XP
+                      hacia Nivel {level + 1}
                     </p>
                   </>
                 );
               })()}
             </>
           ) : (
-            <div className={`text-center py-6 rounded-lg ${isDarkMode ? 'bg-slate-700/40' : 'bg-gray-50'}`}>
-              <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
-                Completá un simulacro o generá casos All Pairs para ganar tu primer XP 🚀
+            <div
+              className={`text-center py-6 rounded-lg ${isDarkMode ? 'bg-slate-700/40' : 'bg-gray-50'}`}
+            >
+              <p
+                className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+              >
+                Completá un simulacro o generá casos All Pairs para ganar tu
+                primer XP 🚀
               </p>
               <a
                 href="/labs"

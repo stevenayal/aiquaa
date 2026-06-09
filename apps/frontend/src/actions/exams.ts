@@ -3,7 +3,12 @@
 import { createClient } from '@/lib/supabase/server';
 
 interface SaveExamResultPayload {
-  exam_type: 'git' | 'istqb' | 'performance' | 'test-app';
+  exam_type:
+    | 'git'
+    | 'istqb'
+    | 'performance'
+    | 'test-app'
+    | 'api-testing-fundamentals';
   exam_mode: 'exam' | 'training';
   participant_name?: string;
   participant_email?: string;
@@ -46,8 +51,7 @@ export async function saveExamResultAction(payload: SaveExamResultPayload) {
     user.user_metadata?.full_name?.trim() ||
     null;
 
-  const resolvedEmail =
-    payload.participant_email?.trim() || user.email || null;
+  const resolvedEmail = payload.participant_email?.trim() || user.email || null;
 
   const { error } = await supabase.from('exam_results').insert({
     user_id: user.id,
@@ -61,7 +65,7 @@ export async function saveExamResultAction(payload: SaveExamResultPayload) {
 }
 
 export async function getLeaderboardAction(
-  examType: 'git' | 'istqb' | 'performance',
+  examType: 'git' | 'istqb' | 'performance' | 'api-testing-fundamentals',
   limit = 20
 ) {
   const supabase = createClient();
@@ -133,12 +137,17 @@ export async function getExamResultsAction() {
 
 export async function getMyXpProfileAction() {
   const supabase = createClient();
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
   if (userError || !user) return { data: null };
 
   const { data } = await supabase
     .from('user_xp')
-    .select('total_xp, level, current_streak, longest_streak, last_activity_at, achievement_count')
+    .select(
+      'total_xp, level, current_streak, longest_streak, last_activity_at, achievement_count'
+    )
     .eq('user_id', user.id)
     .maybeSingle();
 

@@ -7,6 +7,7 @@ const EXAM_LABELS: Record<string, string> = {
   istqb: 'ISTQB CTFL — Fundamentos de QA',
   git: 'Git — Control de versiones',
   performance: 'Performance Testing',
+  'api-testing-fundamentals': 'API Testing Fundamentals',
 };
 
 type Props = { params: Promise<{ token: string }> };
@@ -39,7 +40,8 @@ export default async function InvitacionTokenPage({ params }: Props) {
     exam_types: string[];
   } | null;
 
-  const displayName = empresa?.nombre_comercial ?? empresa?.razon_social ?? 'Una empresa';
+  const displayName =
+    empresa?.nombre_comercial ?? empresa?.razon_social ?? 'Una empresa';
   const isExpired = inv.status === 'rechazada';
   const isCompleted = inv.status === 'completada';
 
@@ -54,17 +56,18 @@ export default async function InvitacionTokenPage({ params }: Props) {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-lg space-y-6">
-
         {/* Header */}
         <div className="text-center">
-          <Link href="/" className="text-sm text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 transition-colors">
+          <Link
+            href="/"
+            className="text-sm text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 transition-colors"
+          >
             ← AIQUAA
           </Link>
         </div>
 
         {/* Card */}
         <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 overflow-hidden shadow-sm">
-
           {/* Hero */}
           <div className="h-16 bg-gradient-to-r from-indigo-500 to-purple-600" />
 
@@ -95,7 +98,8 @@ export default async function InvitacionTokenPage({ params }: Props) {
                   ¡Evaluación completada!
                 </h1>
                 <p className="text-sm text-gray-500 dark:text-slate-400">
-                  Ya completaste la evaluación de {displayName}. Podés ver tus resultados en tu perfil.
+                  Ya completaste la evaluación de {displayName}. Podés ver tus
+                  resultados en tu perfil.
                 </p>
                 <Link
                   href="/perfil"
@@ -111,7 +115,8 @@ export default async function InvitacionTokenPage({ params }: Props) {
                   Invitación vencida
                 </h1>
                 <p className="text-sm text-gray-500 dark:text-slate-400">
-                  Esta invitación ya no está disponible. Contactá a {displayName} para más información.
+                  Esta invitación ya no está disponible. Contactá a{' '}
+                  {displayName} para más información.
                 </p>
               </div>
             ) : (
@@ -166,7 +171,8 @@ export default async function InvitacionTokenPage({ params }: Props) {
                 )}
 
                 <p className="text-sm text-gray-500 dark:text-slate-400 mb-5">
-                  Para rendir la evaluación necesitás una cuenta en AIQUAA (gratuita). Si ya tenés cuenta, ingresá directamente.
+                  Para rendir la evaluación necesitás una cuenta en AIQUAA
+                  (gratuita). Si ya tenés cuenta, ingresá directamente.
                 </p>
 
                 {/* CTAs */}

@@ -6,7 +6,11 @@ import { useEffect, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
-import { getMyProcessesAction, updateProcessStatusAction, type HiringProcess } from '@/actions/employer';
+import {
+  getMyProcessesAction,
+  updateProcessStatusAction,
+  type HiringProcess,
+} from '@/actions/employer';
 import Link from 'next/link';
 
 const STATUS_LABEL: Record<string, string> = {
@@ -16,19 +20,26 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 const STATUS_COLOR: Record<string, string> = {
-  active: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+  active:
+    'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
   closed: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400',
-  draft: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+  draft:
+    'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
 };
 
 const EXAM_LABELS: Record<string, string> = {
   istqb: 'ISTQB',
   git: 'Git',
   performance: 'Rendimiento',
+  'api-testing-fundamentals': 'API Testing Fundamentals',
 };
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('es-PY', { day: '2-digit', month: 'short', year: 'numeric' });
+  return new Date(iso).toLocaleDateString('es-PY', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
 }
 
 export default function EmployerPage() {
@@ -62,12 +73,22 @@ export default function EmployerPage() {
     const next = current === 'active' ? 'closed' : 'active';
     startTransition(async () => {
       await updateProcessStatusAction(code, next as 'active' | 'closed');
-      setProcesses(prev => prev.map(p => p.code === code ? { ...p, status: next as HiringProcess['status'] } : p));
+      setProcesses((prev) =>
+        prev.map((p) =>
+          p.code === code
+            ? { ...p, status: next as HiringProcess['status'] }
+            : p
+        )
+      );
     });
   }
 
-  const base = isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900';
-  const card = isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200';
+  const base = isDarkMode
+    ? 'bg-gray-900 text-white'
+    : 'bg-gray-50 text-gray-900';
+  const card = isDarkMode
+    ? 'bg-gray-800 border-gray-700'
+    : 'bg-white border-gray-200';
 
   if (isLoading || loading) {
     return (
@@ -83,7 +104,9 @@ export default function EmployerPage() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-2xl font-bold">Procesos de selección</h1>
-            <p className={`text-sm mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+            <p
+              className={`text-sm mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}
+            >
               Gestioná tus evaluaciones técnicas para candidatos QA
             </p>
           </div>
@@ -97,10 +120,14 @@ export default function EmployerPage() {
 
         {processes.length === 0 ? (
           <div className={`${card} border rounded-xl p-12 text-center`}>
-            <p className={`text-lg font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            <p
+              className={`text-lg font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}
+            >
               No tenés procesos creados todavía
             </p>
-            <p className={`text-sm mt-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+            <p
+              className={`text-sm mt-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}
+            >
               Creá tu primer proceso para empezar a evaluar candidatos
             </p>
             <Link
@@ -112,22 +139,30 @@ export default function EmployerPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {processes.map(p => (
+            {processes.map((p) => (
               <div key={p.id} className={`${card} border rounded-xl p-5`}>
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h2 className="font-semibold text-base">{p.position_name}</h2>
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLOR[p.status]}`}>
+                      <h2 className="font-semibold text-base">
+                        {p.position_name}
+                      </h2>
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLOR[p.status]}`}
+                      >
                         {STATUS_LABEL[p.status]}
                       </span>
                     </div>
-                    <p className={`text-sm mt-0.5 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    <p
+                      className={`text-sm mt-0.5 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}
+                    >
                       {p.company_name}
                     </p>
 
                     <div className="flex items-center gap-2 mt-3">
-                      <code className={`text-sm font-mono px-2 py-1 rounded ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                      <code
+                        className={`text-sm font-mono px-2 py-1 rounded ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}
+                      >
                         {p.code}
                       </code>
                       <button
@@ -135,7 +170,9 @@ export default function EmployerPage() {
                         className={`text-xs px-2 py-1 rounded transition-colors ${
                           copied === p.code
                             ? 'text-green-600 bg-green-50 dark:bg-green-900/20'
-                            : isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-900'
+                            : isDarkMode
+                              ? 'text-gray-400 hover:text-white'
+                              : 'text-gray-500 hover:text-gray-900'
                         }`}
                       >
                         {copied === p.code ? 'Copiado!' : 'Copiar'}
@@ -143,14 +180,19 @@ export default function EmployerPage() {
                     </div>
 
                     <div className="flex flex-wrap gap-1 mt-3">
-                      {p.exam_types.map(t => (
-                        <span key={t} className={`text-xs px-2 py-0.5 rounded-full ${isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'}`}>
+                      {p.exam_types.map((t) => (
+                        <span
+                          key={t}
+                          className={`text-xs px-2 py-0.5 rounded-full ${isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'}`}
+                        >
                           {EXAM_LABELS[t] ?? t}
                         </span>
                       ))}
                     </div>
 
-                    <p className={`text-xs mt-3 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                    <p
+                      className={`text-xs mt-3 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}
+                    >
                       Creado {formatDate(p.created_at)}
                       {p.expires_at && ` · Vence ${formatDate(p.expires_at)}`}
                     </p>
@@ -172,7 +214,9 @@ export default function EmployerPage() {
                           : 'border-green-300 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20'
                       }`}
                     >
-                      {p.status === 'active' ? 'Cerrar proceso' : 'Reabrir proceso'}
+                      {p.status === 'active'
+                        ? 'Cerrar proceso'
+                        : 'Reabrir proceso'}
                     </button>
                   </div>
                 </div>
