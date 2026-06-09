@@ -124,7 +124,7 @@ export default function ApiBankingPage() {
 
   // Landing
   return (
-    <ExamAuthGate>
+    <ExamAuthGate examName="API Banking Challenge" examEmoji="🏦">
       <div
         className={`min-h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}
       >
