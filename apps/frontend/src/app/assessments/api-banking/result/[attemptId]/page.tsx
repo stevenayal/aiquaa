@@ -31,18 +31,14 @@ export default async function ResultPage({ params }: Props) {
 
   const supabase = createAdminClient();
   const [attemptRes, scoreRes, bugsRes] = await Promise.all([
+    supabase.from('qac_attempts').select('*').eq('id', attemptId).single(),
     supabase
-      .from('assessment_attempts')
-      .select('*')
-      .eq('id', attemptId)
-      .single(),
-    supabase
-      .from('assessment_scores')
+      .from('qac_scores')
       .select('*')
       .eq('attempt_id', attemptId)
       .single(),
     supabase
-      .from('assessment_bug_reports')
+      .from('qac_bug_reports')
       .select('bug_tag')
       .eq('attempt_id', attemptId),
   ]);

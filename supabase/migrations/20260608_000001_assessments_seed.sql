@@ -15,7 +15,7 @@ VALUES
   ('acc_002', 'usr_002', '0001-001-002', 'PYG', 2500000, 2500000)
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO public.assessments (slug, title, description, level, duration_minutes, type)
+INSERT INTO public.qac_catalog (slug, title, description, level, duration_minutes, type)
 VALUES (
   'api-banking',
   'QA API Challenge - Banking Transactions',

@@ -17,23 +17,19 @@ export async function GET(
 
   const [attemptRes, testCasesRes, bugReportsRes, scoreRes] = await Promise.all(
     [
+      supabase.from('qac_attempts').select('*').eq('id', attemptId).single(),
       supabase
-        .from('assessment_attempts')
-        .select('*')
-        .eq('id', attemptId)
-        .single(),
-      supabase
-        .from('assessment_test_cases')
+        .from('qac_test_cases')
         .select('*')
         .eq('attempt_id', attemptId)
         .order('created_at'),
       supabase
-        .from('assessment_bug_reports')
+        .from('qac_bug_reports')
         .select('*')
         .eq('attempt_id', attemptId)
         .order('created_at'),
       supabase
-        .from('assessment_scores')
+        .from('qac_scores')
         .select('*')
         .eq('attempt_id', attemptId)
         .single(),

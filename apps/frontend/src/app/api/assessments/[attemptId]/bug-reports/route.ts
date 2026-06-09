@@ -12,7 +12,7 @@ export async function GET(
 ) {
   const supabase = createAdminClient();
   const { data, error } = await supabase
-    .from('assessment_bug_reports')
+    .from('qac_bug_reports')
     .select('*')
     .eq('attempt_id', Number(params.attemptId))
     .order('created_at');
@@ -83,7 +83,7 @@ export async function POST(
   }));
 
   const { data, error } = await supabase
-    .from('assessment_bug_reports')
+    .from('qac_bug_reports')
     .insert(rows)
     .select();
 
@@ -103,7 +103,7 @@ export async function DELETE(
 
   const supabase = createAdminClient();
   await supabase
-    .from('assessment_bug_reports')
+    .from('qac_bug_reports')
     .delete()
     .eq('id', Number(id))
     .eq('attempt_id', Number(params.attemptId));

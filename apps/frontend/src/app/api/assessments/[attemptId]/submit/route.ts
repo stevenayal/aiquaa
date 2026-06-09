@@ -17,7 +17,7 @@ export async function POST(
 
   // Fetch attempt
   const { data: attempt } = await supabase
-    .from('assessment_attempts')
+    .from('qac_attempts')
     .select('id, status')
     .eq('id', attemptId)
     .single();
@@ -42,14 +42,8 @@ export async function POST(
 
   // Fetch test cases and bug reports
   const [tcRes, brRes] = await Promise.all([
-    supabase
-      .from('assessment_test_cases')
-      .select('*')
-      .eq('attempt_id', attemptId),
-    supabase
-      .from('assessment_bug_reports')
-      .select('*')
-      .eq('attempt_id', attemptId),
+    supabase.from('qac_test_cases').select('*').eq('attempt_id', attemptId),
+    supabase.from('qac_bug_reports').select('*').eq('attempt_id', attemptId),
   ]);
 
   const testCases = (tcRes.data ?? []).map((r: any) => ({
@@ -83,7 +77,7 @@ export async function POST(
   const scoreResult = autoScore(testCases as any, bugReports as any, summary);
 
   // Persist score
-  await supabase.from('assessment_scores').upsert({
+  await supabase.from('qac_scores').upsert({
     attempt_id: attemptId,
     test_design_score: scoreResult.testDesignScore,
     api_validation_score: scoreResult.apiValidationScore,
@@ -98,7 +92,7 @@ export async function POST(
 
   // Update attempt status
   await supabase
-    .from('assessment_attempts')
+    .from('qac_attempts')
     .update({
       status: 'submitted',
       submitted_at: new Date().toISOString(),

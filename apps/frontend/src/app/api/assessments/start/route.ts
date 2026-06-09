@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
 
     // Find the api-banking assessment
     const { data: assessment, error: aErr } = await supabase
-      .from('assessments')
+      .from('qac_catalog')
       .select('id')
       .eq('slug', 'api-banking')
       .eq('is_active', true)
@@ -36,9 +36,9 @@ export async function POST(req: NextRequest) {
 
     // Create attempt
     const { data: attempt, error: attemptErr } = await supabase
-      .from('assessment_attempts')
+      .from('qac_attempts')
       .insert({
-        assessment_id: assessment.id,
+        catalog_id: assessment.id,
         candidate_name: candidateName.trim(),
         candidate_email: candidateEmail?.trim() ?? null,
         aiquaa_user_id: aiquaaUserId ?? null,
