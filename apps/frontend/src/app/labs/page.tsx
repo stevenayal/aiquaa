@@ -93,6 +93,17 @@ export default function LabsPage() {
           featured: true,
           implementedDate: 'Nov 2025',
         },
+        {
+          id: 'api-banking-challenge',
+          name: 'QA API Challenge — Banking',
+          description:
+            'Encontrá 12 bugs intencionales en una API bancaria simulada. Diseñá casos de prueba, reportá bugs y recibí un score automático de 100 pts.',
+          icon: '🏦',
+          color: 'from-emerald-500 to-teal-600',
+          href: '/assessments/api-banking',
+          featured: true,
+          implementedDate: 'Jun 2026',
+        },
       ],
     },
     {
