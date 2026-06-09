@@ -84,6 +84,28 @@ export default function CandidatosPage() {
     [results]
   );
 
+  // For each result, compute its attempt index and total attempts for that candidate+exam combo
+  const attemptInfo = useMemo(() => {
+    const groups = new Map<string, ExamResult[]>();
+    for (const r of results) {
+      const key = `${r.participant_email ?? r.participant_name ?? r.id}|${r.exam_type}`;
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key)!.push(r);
+    }
+    const indexMap = new Map<string, number>();   // resultId -> attempt number (1-based)
+    const totalMap = new Map<string, number>();   // resultId -> total attempts
+    for (const group of groups.values()) {
+      const sorted = [...group].sort(
+        (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      );
+      sorted.forEach((r, i) => {
+        indexMap.set(r.id, i + 1);
+        totalMap.set(r.id, sorted.length);
+      });
+    }
+    return { indexMap, totalMap };
+  }, [results]);
+
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
     return results
@@ -374,19 +396,22 @@ export default function CandidatosPage() {
                         }`}
                       >
                         <td className="px-5 py-3">
-                          <div
-                            className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
-                          >
-                            {r.participant_name || r.participant_email || (
-                              <span className={`italic ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>
-                                Sin nombre
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                              {r.participant_name || (
+                                <span className={`italic ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}>
+                                  Sin nombre
+                                </span>
+                              )}
+                            </span>
+                            {(attemptInfo.totalMap.get(r.id) ?? 1) > 1 && (
+                              <span className={`text-xs px-1.5 py-0.5 rounded font-mono ${isDarkMode ? 'bg-slate-700 text-slate-300' : 'bg-gray-100 text-gray-500'}`}>
+                                intento {attemptInfo.indexMap.get(r.id)}/{attemptInfo.totalMap.get(r.id)}
                               </span>
                             )}
                           </div>
-                          {r.participant_name && r.participant_email && (
-                            <div
-                              className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-                            >
+                          {r.participant_email && (
+                            <div className={`text-xs mt-0.5 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}>
                               {r.participant_email}
                             </div>
                           )}
