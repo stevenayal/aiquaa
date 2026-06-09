@@ -45,6 +45,18 @@ const XP_RULES = [
     description: 'Racha de 7 días consecutivos de uso de la plataforma',
     dailyLimit: 1,
   },
+  {
+    eventType: 'ASSESSMENT_COMPLETED',
+    xpAmount: 80,
+    description: 'Completar el API Banking Challenge',
+    dailyLimit: 3,
+  },
+  {
+    eventType: 'ASSESSMENT_PASSED',
+    xpAmount: 40,
+    description: 'Aprobar el API Banking Challenge (score >= 70)',
+    dailyLimit: 3,
+  },
 ];
 
 const ACHIEVEMENTS = [

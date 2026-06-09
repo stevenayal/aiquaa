@@ -83,6 +83,31 @@ async function main() {
 
   await seedGamification();
 
+  // Seed Assessments
+  await prisma.assessment.upsert({
+    where: { slug: 'api-banking' },
+    update: {
+      title: 'API Testing Challenge — Banca Digital',
+      description:
+        'Evaluación práctica de API Testing con una API bancaria simulada. Detecta vulnerabilidades, escribe casos de prueba y documenta bugs.',
+      level: 'semi-senior',
+      durationMinutes: 105,
+      type: 'api-testing',
+      isActive: true,
+    },
+    create: {
+      slug: 'api-banking',
+      title: 'API Testing Challenge — Banca Digital',
+      description:
+        'Evaluación práctica de API Testing con una API bancaria simulada. Detecta vulnerabilidades, escribe casos de prueba y documenta bugs.',
+      level: 'semi-senior',
+      durationMinutes: 105,
+      type: 'api-testing',
+      isActive: true,
+    },
+  });
+  console.log('  ✅ Assessment api-banking seeded');
+
   console.log('✅ Database seeded successfully!');
   console.log('👤 Admin user created:', adminUser.email);
   console.log('👤 Demo user created:', demoUser.email);

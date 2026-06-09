@@ -12,6 +12,7 @@ import {
   IdeaVotedHandler,
   CommentAddedHandler,
   PerformanceExamCompletedHandler,
+  AssessmentCompletedHandler,
 } from './handlers';
 
 const EVENT_HANDLERS = [
@@ -23,6 +24,7 @@ const EVENT_HANDLERS = [
   IdeaVotedHandler,
   CommentAddedHandler,
   PerformanceExamCompletedHandler,
+  AssessmentCompletedHandler,
 ];
 
 @Module({

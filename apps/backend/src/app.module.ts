@@ -11,6 +11,7 @@ import { AppCacheModule } from './cache/cache.module';
 import { ObservabilityModule } from './observability/observability.module';
 import { IstqbModule } from './istqb/istqb.module';
 import { PerformanceModule } from './performance/performance.module';
+import { AssessmentsModule } from './assessments/assessments.module';
 import { LabsModule } from './labs/labs.module';
 import { IdeasBoardModule } from './ideas-board/ideas-board.module';
 import { GamificationModule } from './gamification/gamification.module';
@@ -34,6 +35,7 @@ import { validateEnv } from './config/env.validation';
     BillingModule,
     IstqbModule,
     PerformanceModule,
+    AssessmentsModule,
     LabsModule,
     IdeasBoardModule,
     GamificationModule,

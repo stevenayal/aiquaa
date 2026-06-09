@@ -6,3 +6,4 @@ export { IdeaCreatedHandler } from './idea-created.handler';
 export { IdeaVotedHandler } from './idea-voted.handler';
 export { CommentAddedHandler } from './comment-added.handler';
 export { PerformanceExamCompletedHandler } from './performance-exam-completed.handler';
+export { AssessmentCompletedHandler } from './assessment-completed.handler';

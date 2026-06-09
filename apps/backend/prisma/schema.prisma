@@ -36,6 +36,7 @@ model User {
   ideaVotes            IdeaVote[]
   ideaComments         IdeaComment[]
   istqbResults         IstqbExamResult[]
+  assessmentAttempts   AssessmentAttempt[]
 
   // Gamification
   userXp           UserXp?
@@ -336,6 +337,121 @@ enum PerformanceExamPurpose {
 enum ExamMode {
   EXAM
   TRAINING
+}
+
+// ─── Assessments ───────────────────────────────────────────────────────────
+
+model Assessment {
+  id              Int                 @id @default(autoincrement())
+  slug            String              @unique
+  title           String
+  description     String
+  level           String
+  durationMinutes Int
+  type            String
+  isActive        Boolean             @default(true)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  attempts        AssessmentAttempt[]
+
+  @@map("assessments")
+}
+
+model AssessmentAttempt {
+  id            Int              @id @default(autoincrement())
+  assessmentId  Int
+  userId        Int?
+  candidateName String
+  status        AssessmentStatus @default(IN_PROGRESS)
+  startedAt     DateTime         @default(now())
+  submittedAt   DateTime?
+  totalScore    Decimal?         @db.Decimal(5, 2)
+  summary       String?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  assessment    Assessment       @relation(fields: [assessmentId], references: [id])
+  user          User?            @relation(fields: [userId], references: [id])
+  testCases     AssessmentTestCase[]
+  bugReports    AssessmentBugReport[]
+  score         AssessmentScore?
+
+  @@map("assessment_attempts")
+  @@index([userId])
+  @@index([assessmentId])
+  @@index([status])
+}
+
+model AssessmentTestCase {
+  id             Int               @id @default(autoincrement())
+  attemptId      Int
+  title          String
+  preconditions  String?
+  steps          String
+  expectedResult String
+  type           TestCaseType
+  priority       AssessmentPriority
+  createdAt      DateTime          @default(now())
+  attempt        AssessmentAttempt @relation(fields: [attemptId], references: [id])
+
+  @@map("assessment_test_cases")
+  @@index([attemptId])
+}
+
+model AssessmentBugReport {
+  id               Int               @id @default(autoincrement())
+  attemptId        Int
+  title            String
+  description      String?
+  stepsToReproduce String
+  actualResult     String
+  expectedResult   String
+  severity         AssessmentPriority
+  priority         AssessmentPriority
+  endpoint         String
+  evidence         String?
+  bugTag           String?
+  createdAt        DateTime          @default(now())
+  attempt          AssessmentAttempt @relation(fields: [attemptId], references: [id])
+
+  @@map("assessment_bug_reports")
+  @@index([attemptId])
+}
+
+model AssessmentScore {
+  id                    Int               @id @default(autoincrement())
+  attemptId             Int               @unique
+  testDesignScore       Decimal           @db.Decimal(5, 2) @default(0)
+  apiValidationScore    Decimal           @db.Decimal(5, 2) @default(0)
+  securityScore         Decimal           @db.Decimal(5, 2) @default(0)
+  bugReportingScore     Decimal           @db.Decimal(5, 2) @default(0)
+  executiveSummaryScore Decimal           @db.Decimal(5, 2) @default(0)
+  totalScore            Decimal           @db.Decimal(5, 2) @default(0)
+  feedback              String?
+  createdAt             DateTime          @default(now())
+  attempt               AssessmentAttempt @relation(fields: [attemptId], references: [id])
+
+  @@map("assessment_scores")
+}
+
+enum AssessmentStatus {
+  IN_PROGRESS
+  SUBMITTED
+  EVALUATED
+}
+
+enum TestCaseType {
+  positive
+  negative
+  boundary
+  security
+  contract
+}
+
+enum AssessmentPriority {
+  low
+  medium
+  high
+  critical
 }
 
 // ============================================================
