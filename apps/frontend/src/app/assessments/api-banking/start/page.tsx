@@ -8,7 +8,7 @@ import { SESSION_KEYS } from '../types';
 
 export default function StartPage() {
   const router = useRouter();
-  const { user, loading: authLoading } = useSupabaseAuth();
+  const { user, isLoading: authLoading } = useSupabaseAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
