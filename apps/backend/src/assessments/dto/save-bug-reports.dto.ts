@@ -14,7 +14,7 @@ export class BugReportDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  title: string;
+  title!: string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -24,30 +24,30 @@ export class BugReportDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  stepsToReproduce: string;
+  stepsToReproduce!: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  actualResult: string;
+  actualResult!: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  expectedResult: string;
+  expectedResult!: string;
 
   @ApiProperty({ enum: PriorityDto })
   @IsEnum(PriorityDto)
-  severity: PriorityDto;
+  severity!: PriorityDto;
 
   @ApiProperty({ enum: PriorityDto })
   @IsEnum(PriorityDto)
-  priority: PriorityDto;
+  priority!: PriorityDto;
 
   @ApiProperty({ example: 'POST /transfers' })
   @IsString()
   @IsNotEmpty()
-  endpoint: string;
+  endpoint!: string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -60,5 +60,5 @@ export class SaveBugReportsDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => BugReportDto)
-  bugReports: BugReportDto[];
+  bugReports!: BugReportDto[];
 }

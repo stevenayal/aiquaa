@@ -28,7 +28,7 @@ export class TestCaseDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  title: string;
+  title!: string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -38,20 +38,20 @@ export class TestCaseDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  steps: string;
+  steps!: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  expectedResult: string;
+  expectedResult!: string;
 
   @ApiProperty({ enum: TestCaseTypeDto })
   @IsEnum(TestCaseTypeDto)
-  type: TestCaseTypeDto;
+  type!: TestCaseTypeDto;
 
   @ApiProperty({ enum: PriorityDto })
   @IsEnum(PriorityDto)
-  priority: PriorityDto;
+  priority!: PriorityDto;
 }
 
 export class SaveTestCasesDto {
@@ -59,5 +59,5 @@ export class SaveTestCasesDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => TestCaseDto)
-  testCases: TestCaseDto[];
+  testCases!: TestCaseDto[];
 }

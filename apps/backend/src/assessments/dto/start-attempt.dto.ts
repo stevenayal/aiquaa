@@ -5,7 +5,7 @@ export class StartAttemptDto {
   @ApiProperty({ example: 'Juan Pérez' })
   @IsString()
   @IsNotEmpty()
-  candidateName: string;
+  candidateName!: string;
 
   @ApiPropertyOptional({ example: 'juan@example.com' })
   @IsOptional()

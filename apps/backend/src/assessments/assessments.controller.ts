@@ -5,7 +5,6 @@ import {
   Body,
   Param,
   ParseIntPipe,
-  Logger,
   HttpCode,
   HttpStatus,
   UseGuards,
@@ -22,8 +21,6 @@ import { OptionalJwtGuard } from '../auth/guards/optional-jwt.guard';
 @ApiTags('Assessments')
 @Controller('assessments')
 export class AssessmentsController {
-  private readonly logger = new Logger(AssessmentsController.name);
-
   constructor(private readonly assessmentsService: AssessmentsService) {}
 
   @Post('start')
