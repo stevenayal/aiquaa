@@ -12,6 +12,7 @@ const EXAM_OPTIONS = [
   { value: 'istqb', label: 'ISTQB Foundation Level' },
   { value: 'git', label: 'Git' },
   { value: 'performance', label: 'Rendimiento / Performance' },
+  { value: 'api-testing-fundamentals', label: 'API Testing Fundamentals' },
 ];
 
 export default function NuevoProcesoPage() {
@@ -25,7 +26,7 @@ export default function NuevoProcesoPage() {
     company_name: '',
     position_name: '',
     description: '',
-    exam_types: ['istqb', 'git', 'performance'],
+    exam_types: ['istqb', 'git', 'performance', 'api-testing-fundamentals'],
     expires_at: '',
   });
 
@@ -36,10 +37,10 @@ export default function NuevoProcesoPage() {
   if (isLoading || !user) return null;
 
   function toggleExam(value: string) {
-    setForm(prev => ({
+    setForm((prev) => ({
       ...prev,
       exam_types: prev.exam_types.includes(value)
-        ? prev.exam_types.filter(e => e !== value)
+        ? prev.exam_types.filter((e) => e !== value)
         : [...prev.exam_types, value],
     }));
   }
@@ -64,13 +65,20 @@ export default function NuevoProcesoPage() {
         expires_at: form.expires_at || undefined,
       });
 
-      if (err) { setError(err); return; }
+      if (err) {
+        setError(err);
+        return;
+      }
       router.push(`/employer/${data.code}`);
     });
   }
 
-  const base = isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900';
-  const card = isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200';
+  const base = isDarkMode
+    ? 'bg-gray-900 text-white'
+    : 'bg-gray-50 text-gray-900';
+  const card = isDarkMode
+    ? 'bg-gray-800 border-gray-700'
+    : 'bg-white border-gray-200';
   const input = isDarkMode
     ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-indigo-500'
     : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-indigo-500';
@@ -86,17 +94,24 @@ export default function NuevoProcesoPage() {
         </button>
 
         <h1 className="text-2xl font-bold mb-1">Nuevo proceso de selección</h1>
-        <p className={`text-sm mb-8 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+        <p
+          className={`text-sm mb-8 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}
+        >
           Se generará un código único que compartís con los candidatos
         </p>
 
-        <form onSubmit={handleSubmit} className={`${card} border rounded-xl p-6 space-y-5`}>
+        <form
+          onSubmit={handleSubmit}
+          className={`${card} border rounded-xl p-6 space-y-5`}
+        >
           <div>
             <label className="block text-sm font-medium mb-1">Empresa *</label>
             <input
               type="text"
               value={form.company_name}
-              onChange={e => setForm(prev => ({ ...prev, company_name: e.target.value }))}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, company_name: e.target.value }))
+              }
               placeholder="Ej: CLT, Banco XYZ"
               className={`w-full px-3 py-2 rounded-lg border text-sm outline-none transition-colors ${input}`}
             />
@@ -107,17 +122,23 @@ export default function NuevoProcesoPage() {
             <input
               type="text"
               value={form.position_name}
-              onChange={e => setForm(prev => ({ ...prev, position_name: e.target.value }))}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, position_name: e.target.value }))
+              }
               placeholder="Ej: QA Analyst Junior"
               className={`w-full px-3 py-2 rounded-lg border text-sm outline-none transition-colors ${input}`}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Descripción (opcional)</label>
+            <label className="block text-sm font-medium mb-1">
+              Descripción (opcional)
+            </label>
             <textarea
               value={form.description}
-              onChange={e => setForm(prev => ({ ...prev, description: e.target.value }))}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, description: e.target.value }))
+              }
               placeholder="Información adicional para los candidatos..."
               rows={3}
               className={`w-full px-3 py-2 rounded-lg border text-sm outline-none transition-colors resize-none ${input}`}
@@ -125,10 +146,15 @@ export default function NuevoProcesoPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Exámenes incluidos *</label>
+            <label className="block text-sm font-medium mb-2">
+              Exámenes incluidos *
+            </label>
             <div className="space-y-2">
-              {EXAM_OPTIONS.map(opt => (
-                <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
+              {EXAM_OPTIONS.map((opt) => (
+                <label
+                  key={opt.value}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
                   <input
                     type="checkbox"
                     checked={form.exam_types.includes(opt.value)}
@@ -142,11 +168,15 @@ export default function NuevoProcesoPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Fecha de vencimiento (opcional)</label>
+            <label className="block text-sm font-medium mb-1">
+              Fecha de vencimiento (opcional)
+            </label>
             <input
               type="date"
               value={form.expires_at}
-              onChange={e => setForm(prev => ({ ...prev, expires_at: e.target.value }))}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, expires_at: e.target.value }))
+              }
               className={`w-full px-3 py-2 rounded-lg border text-sm outline-none transition-colors ${input}`}
             />
           </div>
