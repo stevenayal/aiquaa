@@ -20,9 +20,9 @@ export default function LabsPage() {
     if (tool.id === 'api-testing-fundamentals') {
       return {
         ...tool,
-        icon: 'API',
+        icon: '🌐',
         description:
-          'Assessment progresivo para validar conceptos de API, diseno de casos, analisis de respuestas y bug reporting',
+          'Assessment progresivo para validar conceptos de API, diseño de casos, análisis de respuestas y bug reporting',
       };
     }
 
@@ -73,8 +73,8 @@ export default function LabsPage() {
           id: 'api-testing-fundamentals',
           name: 'API Testing Fundamentals Challenge',
           description:
-            'Assessment progresivo para validar conceptos de API, diseÃ±o de casos, anÃ¡lisis de respuestas y bug reporting',
-          icon: 'ðŸŒ',
+            'Assessment progresivo para validar conceptos de API, diseño de casos, análisis de respuestas y bug reporting',
+          icon: '🌐',
           color: 'from-emerald-500 to-teal-600',
           href: '/labs/api-testing-fundamentals',
           featured: true,
