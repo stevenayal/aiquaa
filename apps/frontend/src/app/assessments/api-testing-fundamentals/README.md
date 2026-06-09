@@ -97,4 +97,4 @@ Implementación principal en [scoring.ts](/Z:/Proyectos/aiquaa/apps/frontend/src
 - Banco multi-assessment con más challenges reutilizando el mismo esquema.
 - Analytics por pregunta y drop-off por sección.
 - Export de resultados y feedback en PDF.
-- Gamificación específica para achievements de API Testing.
+- Gamificacion integrada con Supabase: XP por completar, aprobar y lograr high score en el challenge.

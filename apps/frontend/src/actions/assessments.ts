@@ -1,8 +1,14 @@
 'use server';
 
 import { saveExamResultAction } from '@/actions/exams';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient } from '@/lib/supabase/server';
 import { API_TESTING_FUNDAMENTALS_SLUG } from '@/app/assessments/api-testing-fundamentals/data/assessment-definition';
+import {
+  API_TESTING_GAMIFICATION_RULES,
+  buildApiTestingGamificationEvents,
+  calculateXpLevel,
+} from '@/app/assessments/api-testing-fundamentals/lib/gamification';
 import {
   buildAssessmentFeedback,
   deriveCandidateLevel,
@@ -25,6 +31,24 @@ import type {
   AssessmentSectionScore,
 } from '@/app/assessments/api-testing-fundamentals/types';
 
+type XpRuleRow = {
+  id: string | number;
+  event_type: string;
+  xp_amount: number;
+  description: string;
+  daily_limit: number | null;
+  is_active: boolean;
+};
+
+type UserXpRow = {
+  id: string;
+  user_id: string;
+  total_xp: number;
+  level: number;
+  current_streak: number | null;
+  longest_streak: number | null;
+};
+
 async function getAuthenticatedUser() {
   const supabase = createClient();
   const {
@@ -37,6 +61,147 @@ async function getAuthenticatedUser() {
   }
 
   return { supabase, user };
+}
+
+async function ensureApiTestingGamificationRules() {
+  const admin = createAdminClient();
+
+  const payload = API_TESTING_GAMIFICATION_RULES.map((rule) => ({
+    event_type: rule.eventType,
+    xp_amount: rule.xpAmount,
+    description: rule.description,
+    daily_limit: rule.dailyLimit,
+    is_active: true,
+  }));
+
+  const { error } = await admin
+    .from('xp_rules')
+    .upsert(payload, { onConflict: 'event_type' });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+}
+
+async function grantGamificationXpEvent(input: {
+  userId: string;
+  eventType: string;
+  source: string;
+  sourceId: string;
+  metadata: Record<string, unknown>;
+}) {
+  const admin = createAdminClient();
+  const deduplicationKey = `${input.eventType}:${input.sourceId}`;
+
+  const [
+    { data: rule, error: ruleError },
+    { data: existing, error: existingError },
+  ] = await Promise.all([
+    admin
+      .from('xp_rules')
+      .select('id, event_type, xp_amount, description, daily_limit, is_active')
+      .eq('event_type', input.eventType)
+      .eq('is_active', true)
+      .maybeSingle<XpRuleRow>(),
+    admin
+      .from('xp_history')
+      .select('id')
+      .eq('user_id', input.userId)
+      .eq('deduplication_key', deduplicationKey)
+      .maybeSingle(),
+  ]);
+
+  if (ruleError) throw new Error(ruleError.message);
+  if (existingError) throw new Error(existingError.message);
+  if (!rule || existing) return;
+
+  if (rule.daily_limit !== null && rule.daily_limit !== undefined) {
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const tomorrowStart = new Date(todayStart);
+    tomorrowStart.setDate(tomorrowStart.getDate() + 1);
+
+    const { count, error: countError } = await admin
+      .from('xp_history')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', input.userId)
+      .eq('event_type', input.eventType)
+      .gte('created_at', todayStart.toISOString())
+      .lt('created_at', tomorrowStart.toISOString());
+
+    if (countError) throw new Error(countError.message);
+    if ((count ?? 0) >= rule.daily_limit) return;
+  }
+
+  const { data: currentXp, error: currentXpError } = await admin
+    .from('user_xp')
+    .select('id, user_id, total_xp, level, current_streak, longest_streak')
+    .eq('user_id', input.userId)
+    .maybeSingle<UserXpRow>();
+
+  if (currentXpError) throw new Error(currentXpError.message);
+
+  const nextTotalXp = (currentXp?.total_xp ?? 0) + rule.xp_amount;
+  const nextLevel = calculateXpLevel(nextTotalXp);
+  const now = new Date().toISOString();
+
+  const { error: historyError } = await admin.from('xp_history').insert({
+    user_id: input.userId,
+    xp_rule_id: rule.id,
+    event_type: input.eventType,
+    xp_amount: rule.xp_amount,
+    source: input.source,
+    source_id: input.sourceId,
+    deduplication_key: deduplicationKey,
+    metadata: input.metadata,
+  });
+
+  if (historyError) throw new Error(historyError.message);
+
+  const { error: userXpError } = await admin.from('user_xp').upsert(
+    {
+      user_id: input.userId,
+      total_xp: nextTotalXp,
+      level: nextLevel,
+      current_streak: currentXp?.current_streak ?? 0,
+      longest_streak: currentXp?.longest_streak ?? 0,
+      last_activity_at: now,
+      updated_at: now,
+    },
+    { onConflict: 'user_id' }
+  );
+
+  if (userXpError) throw new Error(userXpError.message);
+}
+
+async function awardApiTestingGamification(input: {
+  userId: string;
+  attemptId: string;
+  passed: boolean;
+  percentage: number;
+  score: number;
+  candidateLevel: string;
+}) {
+  await ensureApiTestingGamificationRules();
+
+  const events = buildApiTestingGamificationEvents({
+    attemptId: input.attemptId,
+    assessmentSlug: API_TESTING_FUNDAMENTALS_SLUG,
+    passed: input.passed,
+    percentage: input.percentage,
+    score: input.score,
+    candidateLevel: input.candidateLevel,
+  });
+
+  for (const event of events) {
+    await grantGamificationXpEvent({
+      userId: input.userId,
+      eventType: event.eventType,
+      source: 'API_TESTING_FUNDAMENTALS',
+      sourceId: event.sourceId,
+      metadata: event.metadata,
+    });
+  }
 }
 
 async function getAssessmentBySlug(slug: string) {
@@ -344,7 +509,7 @@ export async function submitAssessmentSectionAction(input: {
 }
 
 export async function finalizeAssessmentAttemptAction(attemptId: string) {
-  const { supabase } = await getAuthenticatedUser();
+  const { supabase, user } = await getAuthenticatedUser();
   const attempt = await getAttemptRecord(attemptId);
 
   if (attempt.status === 'graded') {
@@ -463,6 +628,22 @@ export async function finalizeAssessmentAttemptAction(attemptId: string) {
       recommendations: generatedFeedback.recommendations,
     },
   });
+
+  try {
+    await awardApiTestingGamification({
+      userId: user.id,
+      attemptId,
+      passed,
+      percentage,
+      score: totalScore,
+      candidateLevel,
+    });
+  } catch (error) {
+    console.warn(
+      '[assessments] api-testing-fundamentals gamification sync failed',
+      error
+    );
+  }
 
   const updatedAttempt = await getAttemptRecord(attemptId);
   const feedback = ((feedbackAfter ?? []) as Record<string, unknown>[]).map(
