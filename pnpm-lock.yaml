@@ -368,6 +368,9 @@ importers:
       autoprefixer:
         specifier: ^10.4.16
         version: 10.4.21(postcss@8.5.6)
+      bcryptjs:
+        specifier: ^2.4.3
+        version: 2.4.3
       chart.js:
         specifier: ^4.5.0
         version: 4.5.0
@@ -386,6 +389,9 @@ importers:
       eslint-plugin-react-hooks:
         specifier: ^4.6.0
         version: 4.6.2(eslint@8.57.1)
+      jose:
+        specifier: ^5.9.6
+        version: 5.10.0
       js-yaml:
         specifier: ^4.1.0
         version: 4.1.0
@@ -471,6 +477,9 @@ importers:
       '@tailwindcss/typography':
         specifier: ^0.5.19
         version: 0.5.19(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@20.19.10)(typescript@5.3.3)))
+      '@types/bcryptjs':
+        specifier: ^2.4.6
+        version: 2.4.6
       '@types/chai':
         specifier: ^4.3.0
         version: 4.3.20
@@ -9416,6 +9425,12 @@ packages:
     resolution:
       {
         integrity: sha512-1vUQX+IdDMVPj4k8kOxgUqlcK518yluMuGZwqlr44FS1ppZB/5GWh4rZG89erpOBOJjU/OBsnCVFfapsRz6nEA==,
+      }
+
+  jose@5.10.0:
+    resolution:
+      {
+        integrity: sha512-s+3Al/p9g32Iq+oqXxkW//7jk2Vig6FF1CFqzVXoTUXt2qz89YWbL+OwS17NFYEvxC35n0FKeGO2LGYSxeM2Gg==,
       }
 
   joycon@3.1.1:
@@ -21436,6 +21451,8 @@ snapshots:
   jiti@1.21.7: {}
 
   jose@4.15.9: {}
+
+  jose@5.10.0: {}
 
   joycon@3.1.1: {}
 
