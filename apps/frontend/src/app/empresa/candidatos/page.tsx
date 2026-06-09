@@ -654,7 +654,7 @@ export default function CandidatosPage() {
                       fontSize: 12,
                     }}
                     labelStyle={{ color: isDarkMode ? '#e2e8f0' : '#374151', fontWeight: 600 }}
-                    formatter={(v: unknown) => [v, 'Exámenes']}
+                    formatter={(v: number | string) => [v, 'Exámenes']}
                   />
                   <Bar dataKey="examenes" fill="#6366f1" fillOpacity={0.72} radius={[3, 3, 0, 0]} />
                 </BarChart>
