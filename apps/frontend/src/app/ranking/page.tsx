@@ -746,13 +746,20 @@ export default function RankingPage() {
 
   useEffect(() => {
     (['git', 'istqb', 'performance'] as const).forEach((key) => {
-      getLeaderboardAction(key, 20).then((res) => {
-        setExamData((prev) => ({
-          ...prev,
-          [key]: (res.data as LeaderboardEntry[]) || [],
-        }));
-        setExamLoading((prev) => ({ ...prev, [key]: false }));
-      });
+      getLeaderboardAction(key, 20)
+        .then((res) => {
+          setExamData((prev) => ({
+            ...prev,
+            [key]: (res.data as LeaderboardEntry[]) || [],
+          }));
+        })
+        .catch((err) => {
+          console.error(`Error cargando el ranking de ${key}:`, err);
+          setExamData((prev) => ({ ...prev, [key]: [] }));
+        })
+        .finally(() => {
+          setExamLoading((prev) => ({ ...prev, [key]: false }));
+        });
     });
   }, []);
 

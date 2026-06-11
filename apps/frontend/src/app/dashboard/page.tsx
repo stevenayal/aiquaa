@@ -50,15 +50,28 @@ export default function DashboardPage() {
   const [xp, setXp] = useState<XpProfile | null>(null);
   const [results, setResults] = useState<ExamResult[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
-    Promise.all([getMyXpProfileAction(), getExamResultsAction()]).then(
-      ([xpRes, examRes]) => {
+    let active = true;
+    setLoadError(false);
+    Promise.all([getMyXpProfileAction(), getExamResultsAction()])
+      .then(([xpRes, examRes]) => {
+        if (!active) return;
         if (xpRes.data) setXp(xpRes.data as XpProfile);
         if (examRes.data) setResults(examRes.data as ExamResult[]);
-        setLoading(false);
-      }
-    );
+      })
+      .catch((err) => {
+        if (!active) return;
+        console.error('Error cargando el dashboard:', err);
+        setLoadError(true);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
   }, []);
 
   const firstName =
@@ -97,8 +110,45 @@ export default function DashboardPage() {
     return (
       <div
         className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'bg-slate-900' : 'bg-gray-50'}`}
+        role="status"
+        aria-busy="true"
+        aria-label="Cargando tu dashboard"
       >
         <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-amber-500" />
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div
+        className={`min-h-screen flex items-center justify-center px-4 ${isDarkMode ? 'bg-slate-900' : 'bg-gray-50'}`}
+      >
+        <div
+          className={`max-w-md w-full text-center rounded-2xl p-8 ${isDarkMode ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-gray-200 shadow-sm'}`}
+        >
+          <div className="text-4xl mb-3" aria-hidden="true">
+            ⚠️
+          </div>
+          <h1
+            className={`text-lg font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+          >
+            No pudimos cargar tu dashboard
+          </h1>
+          <p
+            className={`text-sm mb-5 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+          >
+            Hubo un problema al traer tus datos. Revisá tu conexión e intentá de
+            nuevo.
+          </p>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="inline-flex items-center justify-center rounded-xl px-5 py-2.5 font-semibold text-white bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 transition-colors"
+          >
+            Reintentar
+          </button>
+        </div>
       </div>
     );
   }

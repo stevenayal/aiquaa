@@ -23,7 +23,20 @@ export interface GrantXpParams {
 export class GamificationService {
   private readonly logger = new Logger(GamificationService.name);
 
+  // AIQUAA serves a LATAM audience; daily boundaries (check-ins, streaks)
+  // must be computed in Paraguay time, not UTC, or users who study at night
+  // lose their streak when UTC rolls over to the next day.
+  private static readonly PY_TIMEZONE = 'America/Asuncion';
+
   constructor(private readonly prisma: PrismaService) {}
+
+  /** Current calendar date in Paraguay timezone as YYYY-MM-DD. */
+  private paraguayDateString(date: Date = new Date()): string {
+    // 'en-CA' locale formats as YYYY-MM-DD.
+    return date.toLocaleDateString('en-CA', {
+      timeZone: GamificationService.PY_TIMEZONE,
+    });
+  }
 
   /**
    * Level formula: level n requires 50 * n * (n-1) XP.
@@ -114,44 +127,68 @@ export class GamificationService {
       }
     }
 
-    // Persist XP grant in a transaction
-    const updatedUserXp = await this.prisma.$transaction(async (tx) => {
-      await tx.xpHistory.create({
-        data: {
-          userId,
-          xpRuleId: rule.id,
-          eventType,
-          xpAmount: rule.xpAmount,
-          source,
-          sourceId: sourceId ?? null,
-          deduplicationKey: deduplicationKey ?? null,
-          metadata: metadata ?? undefined,
-        },
-      });
-
-      const upserted = await tx.userXp.upsert({
-        where: { userId },
-        create: {
-          userId,
-          totalXp: rule.xpAmount,
-          lastActivityAt: new Date(),
-          level: this.calculateLevel(rule.xpAmount),
-        },
-        update: {
-          totalXp: { increment: rule.xpAmount },
-          lastActivityAt: new Date(),
-        },
-      });
-
-      const newLevel = this.calculateLevel(upserted.totalXp);
-      if (newLevel !== upserted.level) {
-        return tx.userXp.update({
-          where: { userId },
-          data: { level: newLevel },
+    // Persist XP grant in a transaction.
+    // The xpHistory insert is the source of truth for idempotency: a unique
+    // constraint on (userId, deduplicationKey) makes the dedup atomic, closing
+    // the race between the findFirst() check above and this write when two
+    // requests arrive simultaneously (e.g. a double-click).
+    let updatedUserXp;
+    try {
+      updatedUserXp = await this.prisma.$transaction(async (tx) => {
+        await tx.xpHistory.create({
+          data: {
+            userId,
+            xpRuleId: rule.id,
+            eventType,
+            xpAmount: rule.xpAmount,
+            source,
+            sourceId: sourceId ?? null,
+            deduplicationKey: deduplicationKey ?? null,
+            metadata: metadata ?? undefined,
+          },
         });
+
+        const upserted = await tx.userXp.upsert({
+          where: { userId },
+          create: {
+            userId,
+            totalXp: rule.xpAmount,
+            lastActivityAt: new Date(),
+            level: this.calculateLevel(rule.xpAmount),
+          },
+          update: {
+            totalXp: { increment: rule.xpAmount },
+            lastActivityAt: new Date(),
+          },
+        });
+
+        const newLevel = this.calculateLevel(upserted.totalXp);
+        if (newLevel !== upserted.level) {
+          return tx.userXp.update({
+            where: { userId },
+            data: { level: newLevel },
+          });
+        }
+        return upserted;
+      });
+    } catch (error: any) {
+      // P2002 = unique constraint violation: a concurrent request already
+      // granted this exact event. Treat it as an idempotent no-op.
+      if (error?.code === 'P2002' && deduplicationKey) {
+        const userXp = await this.getOrCreateUserXp(userId);
+        this.logger.debug(
+          `Duplicate XP grant ignored (race): user=${userId} key=${deduplicationKey}`
+        );
+        return {
+          xpGranted: 0,
+          newTotal: userXp.totalXp,
+          newLevel: userXp.level,
+          newAchievements: [],
+          alreadyProcessed: true,
+        };
       }
-      return upserted;
-    });
+      throw error;
+    }
 
     this.logger.log(
       `XP granted: user=${userId} event=${eventType} xp=${rule.xpAmount} total=${updatedUserXp.totalXp}`
@@ -180,7 +217,7 @@ export class GamificationService {
     newAchievements: any[];
     alreadyCheckedIn: boolean;
   }> {
-    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    const today = this.paraguayDateString(); // YYYY-MM-DD in Paraguay time
     const deduplicationKey = `${GamificationEvent.DAILY_LOGIN}:${today}`;
 
     const already = await this.prisma.xpHistory.findFirst({
@@ -253,21 +290,25 @@ export class GamificationService {
   ): number {
     if (!lastActivityAt) return 1;
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
+    // Compare calendar days in Paraguay time so a session at 21:00 PY (00:00
+    // UTC next day) still counts as "today" and doesn't break the streak.
+    const todayStr = this.paraguayDateString();
+    const lastStr = this.paraguayDateString(new Date(lastActivityAt));
 
-    const lastActivity = new Date(lastActivityAt);
-    lastActivity.setHours(0, 0, 0, 0);
-
-    if (lastActivity.getTime() === yesterday.getTime()) {
-      return currentStreak + 1;
-    }
-    if (lastActivity.getTime() === today.getTime()) {
+    if (lastStr === todayStr) {
       return currentStreak; // same day, keep streak
     }
-    return 1; // gap > 1 day, reset
+
+    const diffDays = Math.round(
+      (Date.parse(`${todayStr}T00:00:00Z`) -
+        Date.parse(`${lastStr}T00:00:00Z`)) /
+        86_400_000
+    );
+
+    if (diffDays === 1) {
+      return currentStreak + 1; // consecutive day
+    }
+    return 1; // gap > 1 day (or clock skew), reset
   }
 
   private async checkAndGrantAchievements(

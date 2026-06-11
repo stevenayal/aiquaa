@@ -125,8 +125,24 @@ export default function PerfilPage() {
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    // Reject SVG and any non-raster format: SVGs can embed scripts (XSS vector).
+    const ALLOWED_TYPES = [
+      'image/jpeg',
+      'image/png',
+      'image/webp',
+      'image/gif',
+    ];
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      setAlert({
+        type: 'error',
+        msg: 'Formato no permitido. Usá JPG, PNG, WebP o GIF.',
+      });
+      e.target.value = '';
+      return;
+    }
     if (file.size > 5 * 1024 * 1024) {
       setAlert({ type: 'error', msg: 'El archivo debe pesar menos de 5MB' });
+      e.target.value = '';
       return;
     }
     setPreviewUrl(URL.createObjectURL(file));
@@ -297,12 +313,12 @@ export default function PerfilPage() {
               <p
                 className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
               >
-                JPG, PNG o GIF · Máx 5MB
+                JPG, PNG, WebP o GIF · Máx 5MB
               </p>
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp,image/gif"
                 className="hidden"
                 onChange={handleFileSelect}
               />

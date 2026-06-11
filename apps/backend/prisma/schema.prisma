@@ -515,7 +515,9 @@ model XpHistory {
   @@map("xp_history")
   @@index([userId, createdAt(sort: Desc)])
   @@index([userId, eventType, createdAt])
-  @@index([userId, deduplicationKey])
+  // Atomic idempotency: NULL dedup keys never conflict (Postgres allows
+  // multiple NULLs), non-null keys can only be granted once per user.
+  @@unique([userId, deduplicationKey])
 }
 
 // Aggregate XP state per user — single source of truth for leaderboard
