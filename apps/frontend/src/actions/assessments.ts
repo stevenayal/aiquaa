@@ -205,6 +205,29 @@ function getSectionScoringMode(): AssessmentSectionScore['scoring_mode'] {
   return 'automatic';
 }
 
+async function resolveProcessCode(
+  supabase: Awaited<ReturnType<typeof getAuthenticatedUser>>['supabase'],
+  processCode?: string
+) {
+  if (!processCode?.trim()) return null;
+
+  const { data: process } = await supabase
+    .from('hiring_processes')
+    .select('code, status, expires_at')
+    .ilike('code', processCode.trim())
+    .eq('status', 'active')
+    .maybeSingle();
+
+  const expired =
+    process?.expires_at && new Date(process.expires_at) < new Date();
+
+  if (!process || expired) {
+    throw new Error('Código de proceso inválido, vencido o cerrado.');
+  }
+
+  return process.code as string;
+}
+
 export async function getAssessmentOverviewAction(
   slug = DEFAULT_ASSESSMENT_SLUG
 ): Promise<AssessmentOverview> {
@@ -223,6 +246,10 @@ export async function startAssessmentAttemptAction(input?: {
   const sections = await getAssessmentSections(assessment.id);
   const firstSectionSlug = sections[0]?.slug ?? null;
   const { supabase, user } = await getAuthenticatedUser();
+  const resolvedProcessCode = await resolveProcessCode(
+    supabase,
+    input?.processCode
+  );
 
   const { data: existingAttempt } = await supabase
     .from('assessment_attempts')
@@ -235,10 +262,36 @@ export async function startAssessmentAttemptAction(input?: {
     .maybeSingle();
 
   if (existingAttempt) {
+    let attemptToReturn = existingAttempt;
+    if (resolvedProcessCode) {
+      const metadata =
+        existingAttempt.metadata &&
+        typeof existingAttempt.metadata === 'object' &&
+        !Array.isArray(existingAttempt.metadata)
+          ? (existingAttempt.metadata as Record<string, unknown>)
+          : {};
+      const { data: updatedAttempt } = await supabase
+        .from('assessment_attempts')
+        .update({
+          metadata: {
+            ...metadata,
+            processCode: resolvedProcessCode,
+          },
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', existingAttempt.id)
+        .select('*')
+        .single();
+
+      if (updatedAttempt) {
+        attemptToReturn = updatedAttempt;
+      }
+    }
+
     const savedSlug = existingAttempt.current_section_slug;
     const slugValid = sections.some((s) => s.slug === savedSlug);
     return {
-      attempt: mapAttempt(existingAttempt),
+      attempt: mapAttempt(attemptToReturn),
       sectionSlug: slugValid
         ? savedSlug
         : firstSectionSlug || sections[0]?.slug,
@@ -254,7 +307,7 @@ export async function startAssessmentAttemptAction(input?: {
       current_section_slug: firstSectionSlug,
       max_score: assessment.total_score,
       metadata: {
-        processCode: input?.processCode?.trim().toUpperCase() || null,
+        processCode: resolvedProcessCode,
       },
     })
     .select('*')

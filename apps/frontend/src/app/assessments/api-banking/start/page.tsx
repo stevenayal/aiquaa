@@ -10,20 +10,12 @@ import { SESSION_KEYS } from '../types';
 export default function StartPage() {
   const router = useRouter();
   const { user, isLoading: authLoading } = useSupabaseAuth();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
   const [processCode, setProcessCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-
-  // Pre-fill from active AIQUAA session
-  useEffect(() => {
-    if (user) {
-      const defaults = getExamUserDefaults(user);
-      if (defaults.fullName) setName(defaults.fullName);
-      if (defaults.email) setEmail(defaults.email);
-    }
-  }, [user]);
+  const userDefaults = getExamUserDefaults(user);
+  const participantLabel =
+    userDefaults.fullName || userDefaults.email || 'tu cuenta AIQUAA';
 
   // Pre-fill process code from ?code= (links desde invitaciones/procesos)
   useEffect(() => {
@@ -33,8 +25,8 @@ export default function StartPage() {
 
   async function handleStart(ev: React.FormEvent) {
     ev.preventDefault();
-    if (!name.trim()) {
-      setError('El nombre es requerido.');
+    if (!user) {
+      setError('Iniciá sesión para rendir este challenge.');
       return;
     }
 
@@ -46,8 +38,6 @@ export default function StartPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          candidateName: name.trim(),
-          candidateEmail: email.trim() || undefined,
           processCode: processCode.trim() || undefined,
         }),
       });
@@ -58,11 +48,14 @@ export default function StartPage() {
         return;
       }
 
-      const { attemptId, challengeToken } = await res.json();
+      const { attemptId, challengeToken, candidateName } = await res.json();
 
       sessionStorage.setItem(SESSION_KEYS.attemptId, String(attemptId));
       sessionStorage.setItem(SESSION_KEYS.challengeToken, challengeToken);
-      sessionStorage.setItem(SESSION_KEYS.candidateName, name.trim());
+      sessionStorage.setItem(
+        SESSION_KEYS.candidateName,
+        candidateName || participantLabel
+      );
       sessionStorage.setItem(SESSION_KEYS.startedAt, new Date().toISOString());
 
       router.push('/assessments/api-banking/workspace');
@@ -99,34 +92,12 @@ export default function StartPage() {
         </div>
 
         <form onSubmit={handleStart} className="space-y-4">
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-              Nombre <span className="text-red-400">*</span>
-            </label>
-            <input
-              type="text"
-              className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Tu nombre completo"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              disabled={loading}
-              autoFocus
-            />
-          </div>
-
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-              Email{' '}
-              <span className="text-slate-400 font-normal">(opcional)</span>
-            </label>
-            <input
-              type="email"
-              className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="tu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={loading}
-            />
+          <div className="rounded-lg border border-slate-200 bg-white p-3 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-300">
+            Vas a rendir como{' '}
+            <span className="font-semibold text-slate-900 dark:text-white">
+              {participantLabel}
+            </span>
+            .
           </div>
 
           <ProcessCodeInput
@@ -147,7 +118,7 @@ export default function StartPage() {
 
           <button
             type="submit"
-            disabled={loading || !name.trim()}
+            disabled={loading || !user}
             className="w-full py-3 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             {loading ? 'Iniciando...' : 'Comenzar challenge →'}
