@@ -14,6 +14,8 @@ const EXAM_OPTIONS = [
   { value: 'performance', label: 'Rendimiento / Performance' },
   { value: 'api-testing-fundamentals', label: 'API Testing Fundamentals' },
   { value: 'api-banking', label: 'API Banking — Challenge práctico' },
+  { value: 'database-fundamentals', label: 'Bases de Datos — Fundamentos' },
+  { value: 'database-practice', label: 'Bases de Datos — Práctica SQL' },
 ];
 
 export default function NuevoProcesoPage() {

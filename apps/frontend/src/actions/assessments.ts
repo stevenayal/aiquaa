@@ -3,13 +3,10 @@
 import { saveExamResultAction } from '@/actions/exams';
 import { createClient } from '@/lib/supabase/server';
 import {
-  API_TESTING_FUNDAMENTALS_SLUG,
-  API_TESTING_SEED_VERSION,
-} from '@/app/assessments/api-testing-fundamentals/data/assessment-definition';
-import {
-  API_TESTING_GAMIFICATION_RULES,
-  buildApiTestingGamificationEvents,
-} from '@/app/assessments/api-testing-fundamentals/lib/gamification';
+  ASSESSMENT_REGISTRY,
+  DEFAULT_ASSESSMENT_SLUG,
+  type AssessmentRegistryEntry,
+} from '@/app/assessments/_shared/registry';
 import {
   ensureXpRules,
   grantGamificationXpEvent,
@@ -18,7 +15,7 @@ import {
   buildAssessmentFeedback,
   deriveCandidateLevel,
   scoreAssessmentQuestion,
-} from '@/app/assessments/api-testing-fundamentals/lib/scoring';
+} from '@/app/assessments/_shared/lib/scoring';
 import {
   mapAnswer,
   mapAssessment,
@@ -26,15 +23,15 @@ import {
   mapQuestion,
   mapSection,
   mapSectionScore,
-} from '@/app/assessments/api-testing-fundamentals/lib/serializers';
-import { ensureApiTestingFundamentalsSeeded } from '@/app/assessments/api-testing-fundamentals/lib/seed';
+} from '@/app/assessments/_shared/lib/serializers';
 import type {
   AssessmentFeedback,
   AssessmentOverview,
   AssessmentResultSummary,
   AssessmentSectionPayload,
   AssessmentSectionScore,
-} from '@/app/assessments/api-testing-fundamentals/types';
+  CandidateBand,
+} from '@/app/assessments/_shared/types';
 
 async function getAuthenticatedUser() {
   const supabase = createClient();
@@ -50,19 +47,22 @@ async function getAuthenticatedUser() {
   return { supabase, user };
 }
 
-async function awardApiTestingGamification(input: {
-  userId: string;
-  attemptId: string;
-  passed: boolean;
-  percentage: number;
-  score: number;
-  candidateLevel: string;
-}) {
-  await ensureXpRules(API_TESTING_GAMIFICATION_RULES);
+async function awardAssessmentGamification(
+  entry: AssessmentRegistryEntry,
+  input: {
+    userId: string;
+    attemptId: string;
+    passed: boolean;
+    percentage: number;
+    score: number;
+    candidateLevel: string;
+  }
+) {
+  await ensureXpRules(entry.gamificationRules);
 
-  const events = buildApiTestingGamificationEvents({
+  const events = entry.buildGamificationEvents({
     attemptId: input.attemptId,
-    assessmentSlug: API_TESTING_FUNDAMENTALS_SLUG,
+    assessmentSlug: entry.slug,
     passed: input.passed,
     percentage: input.percentage,
     score: input.score,
@@ -73,16 +73,16 @@ async function awardApiTestingGamification(input: {
     await grantGamificationXpEvent({
       userId: input.userId,
       eventType: event.eventType,
-      source: 'API_TESTING_FUNDAMENTALS',
+      source: entry.gamificationSource,
       sourceId: event.sourceId,
       metadata: event.metadata,
     });
   }
 }
 
-// Memo por instancia: una vez verificada la versión del seed, las requests
-// siguientes de esa lambda no vuelven a comparar metadata.
-let verifiedSeedVersion: number | null = null;
+// Memo por instancia: una vez verificada la versión del seed de un slug, las
+// requests siguientes de esa lambda no vuelven a comparar metadata.
+const verifiedSeedVersions = new Map<string, number>();
 
 async function getAssessmentBySlug(slug: string) {
   const { supabase } = await getAuthenticatedUser();
@@ -97,21 +97,23 @@ async function getAssessmentBySlug(slug: string) {
 
   let { data: assessment } = await fetchAssessment();
 
+  const registryEntry = ASSESSMENT_REGISTRY[slug];
+
   if (
-    slug === API_TESTING_FUNDAMENTALS_SLUG &&
-    verifiedSeedVersion !== API_TESTING_SEED_VERSION
+    registryEntry &&
+    verifiedSeedVersions.get(slug) !== registryEntry.seedVersion
   ) {
     const seededVersion = (
       assessment?.metadata as Record<string, unknown> | null
     )?.seedVersion;
 
-    if (!assessment || seededVersion !== API_TESTING_SEED_VERSION) {
-      await ensureApiTestingFundamentalsSeeded();
+    if (!assessment || seededVersion !== registryEntry.seedVersion) {
+      await registryEntry.ensureSeeded();
       ({ data: assessment } = await fetchAssessment());
     }
 
     if (assessment) {
-      verifiedSeedVersion = API_TESTING_SEED_VERSION;
+      verifiedSeedVersions.set(slug, registryEntry.seedVersion);
     }
   }
 
@@ -138,19 +140,24 @@ async function getAttemptRecord(attemptId: string) {
   const { supabase, user } = await getAuthenticatedUser();
   const { data, error } = await supabase
     .from('assessment_attempts')
-    .select('*')
+    .select('*, assessments!inner(slug)')
     .eq('id', attemptId)
     .eq('user_id', user.id)
     .single();
 
   if (error || !data) throw new Error('Intento no encontrado');
-  return mapAttempt(data);
+
+  const assessmentSlug = String(
+    (data.assessments as { slug?: unknown } | null)?.slug ?? ''
+  );
+
+  return { ...mapAttempt(data), assessmentSlug };
 }
 
 async function loadSectionBundle(attemptId: string, sectionSlug: string) {
   const { supabase } = await getAuthenticatedUser();
   const attempt = await getAttemptRecord(attemptId);
-  const assessment = await getAssessmentBySlug(API_TESTING_FUNDAMENTALS_SLUG);
+  const assessment = await getAssessmentBySlug(attempt.assessmentSlug);
   const sections = await getAssessmentSections(assessment.id);
   const section = sections.find((item) => item.slug === sectionSlug);
 
@@ -199,7 +206,7 @@ function getSectionScoringMode(): AssessmentSectionScore['scoring_mode'] {
 }
 
 export async function getAssessmentOverviewAction(
-  slug = API_TESTING_FUNDAMENTALS_SLUG
+  slug = DEFAULT_ASSESSMENT_SLUG
 ): Promise<AssessmentOverview> {
   const assessment = await getAssessmentBySlug(slug);
   const sections = await getAssessmentSections(assessment.id);
@@ -211,7 +218,7 @@ export async function startAssessmentAttemptAction(input?: {
   slug?: string;
   processCode?: string;
 }) {
-  const slug = input?.slug ?? API_TESTING_FUNDAMENTALS_SLUG;
+  const slug = input?.slug ?? DEFAULT_ASSESSMENT_SLUG;
   const assessment = await getAssessmentBySlug(slug);
   const sections = await getAssessmentSections(assessment.id);
   const firstSectionSlug = sections[0]?.slug ?? null;
@@ -409,7 +416,8 @@ export async function finalizeAssessmentAttemptAction(attemptId: string) {
     return getAssessmentResultAction(attemptId);
   }
 
-  const assessment = await getAssessmentBySlug(API_TESTING_FUNDAMENTALS_SLUG);
+  const assessment = await getAssessmentBySlug(attempt.assessmentSlug);
+  const registryEntry = ASSESSMENT_REGISTRY[assessment.slug];
   const sections = await getAssessmentSections(assessment.id);
   const [{ data: scoresRows }, { data: feedbackRows }] = await Promise.all([
     supabase.from('assessment_scores').select('*').eq('attempt_id', attemptId),
@@ -430,7 +438,10 @@ export async function finalizeAssessmentAttemptAction(attemptId: string) {
     0,
     Math.min(100, Math.round((totalScore / assessment.total_score) * 100))
   );
-  const candidateLevel = deriveCandidateLevel(totalScore);
+  const candidateLevel = deriveCandidateLevel(
+    totalScore,
+    assessment.metadata?.candidateBands as CandidateBand[] | undefined
+  );
   const passed = totalScore >= Number(assessment.metadata?.passingScore ?? 60);
   const generatedFeedback = buildAssessmentFeedback(
     sections,
@@ -495,54 +506,56 @@ export async function finalizeAssessmentAttemptAction(attemptId: string) {
   const correctAnswers = answers.filter((answer) => answer.is_correct).length;
   const incorrectAnswers = Math.max(0, answers.length - correctAnswers);
 
-  const examResult = await saveExamResultAction({
-    exam_type: 'api-testing-fundamentals',
-    exam_mode: 'exam',
-    score: totalScore,
-    total_questions: answers.length,
-    max_possible_score: assessment.total_score,
-    correct_answers: correctAnswers,
-    incorrect_answers: incorrectAnswers,
-    passing_score: Number(assessment.metadata?.passingScore ?? 60),
-    passed,
-    percentage,
-    time_spent: timeSpentSeconds,
-    process_code: getProcessCodeFromAttemptMetadata(attempt.metadata),
-    metadata: {
-      assessment_attempt_id: attemptId,
-      candidate_level: candidateLevel,
-      section_scores: sectionScores.map((score) => ({
-        section_id: score.section_id,
-        score: score.score,
-        max_score: score.max_score,
-      })),
-      strengths: generatedFeedback.strengths,
-      weaknesses: generatedFeedback.weaknesses,
-      recommendations: generatedFeedback.recommendations,
-    },
-  });
-
-  if (examResult?.error) {
-    console.warn(
-      '[assessments] no se pudo guardar exam_results para api-testing-fundamentals',
-      examResult.error
-    );
-  }
-
-  try {
-    await awardApiTestingGamification({
-      userId: user.id,
-      attemptId,
+  if (registryEntry) {
+    const examResult = await saveExamResultAction({
+      exam_type: registryEntry.examType,
+      exam_mode: 'exam',
+      score: totalScore,
+      total_questions: answers.length,
+      max_possible_score: assessment.total_score,
+      correct_answers: correctAnswers,
+      incorrect_answers: incorrectAnswers,
+      passing_score: Number(assessment.metadata?.passingScore ?? 60),
       passed,
       percentage,
-      score: totalScore,
-      candidateLevel,
+      time_spent: timeSpentSeconds,
+      process_code: getProcessCodeFromAttemptMetadata(attempt.metadata),
+      metadata: {
+        assessment_attempt_id: attemptId,
+        candidate_level: candidateLevel,
+        section_scores: sectionScores.map((score) => ({
+          section_id: score.section_id,
+          score: score.score,
+          max_score: score.max_score,
+        })),
+        strengths: generatedFeedback.strengths,
+        weaknesses: generatedFeedback.weaknesses,
+        recommendations: generatedFeedback.recommendations,
+      },
     });
-  } catch (error) {
-    console.warn(
-      '[assessments] api-testing-fundamentals gamification sync failed',
-      error
-    );
+
+    if (examResult?.error) {
+      console.warn(
+        `[assessments] no se pudo guardar exam_results para ${assessment.slug}`,
+        examResult.error
+      );
+    }
+
+    try {
+      await awardAssessmentGamification(registryEntry, {
+        userId: user.id,
+        attemptId,
+        passed,
+        percentage,
+        score: totalScore,
+        candidateLevel,
+      });
+    } catch (error) {
+      console.warn(
+        `[assessments] ${assessment.slug} gamification sync failed`,
+        error
+      );
+    }
   }
 
   const updatedAttempt = await getAttemptRecord(attemptId);
@@ -581,7 +594,7 @@ export async function getAssessmentResultAction(
 ): Promise<AssessmentResultSummary> {
   const { supabase } = await getAuthenticatedUser();
   const attempt = await getAttemptRecord(attemptId);
-  const assessment = await getAssessmentBySlug(API_TESTING_FUNDAMENTALS_SLUG);
+  const assessment = await getAssessmentBySlug(attempt.assessmentSlug);
   const sections = await getAssessmentSections(assessment.id);
 
   const [{ data: scoresRows }, { data: feedbackRows }] = await Promise.all([

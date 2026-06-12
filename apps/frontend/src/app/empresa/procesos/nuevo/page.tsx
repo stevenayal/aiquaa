@@ -37,6 +37,18 @@ const EXAM_OPTIONS = [
     description:
       'Testear una API bancaria simulada, diseñar casos y reportar bugs — auto-corregido, 100 pts',
   },
+  {
+    id: 'database-fundamentals',
+    label: 'Bases de Datos — Fundamentos (Examen teórico)',
+    description:
+      'Modelo relacional, claves, tipos de datos, SELECT, JOINs y constraints — auto-corregido, 3 niveles',
+  },
+  {
+    id: 'database-practice',
+    label: 'Bases de Datos — Práctica SQL (Challenge)',
+    description:
+      'Predicción de resultados, detección de bugs en queries y escritura de SQL — auto-corregido, 100 pts',
+  },
 ];
 
 function generateCode(positionName: string): string {
