@@ -3,7 +3,7 @@ import type { AssessmentSeedDefinition } from '../types';
 export const API_TESTING_FUNDAMENTALS_SLUG = 'api-testing-fundamentals';
 
 // Bumpear cuando cambie la definición (secciones/preguntas) para forzar re-seed.
-export const API_TESTING_SEED_VERSION = 1;
+export const API_TESTING_SEED_VERSION = 2;
 
 export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
   slug: API_TESTING_FUNDAMENTALS_SLUG,
@@ -270,18 +270,19 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
       max_score: 20,
       metadata: {
         apiDoc: {
+          method: 'GET',
           endpoint: 'GET /api/products/{id}',
           description: 'Obtiene el detalle de un producto.',
           headers: ['Authorization: Bearer token'],
           pathParams: [{ name: 'id', type: 'string', required: true }],
-          response200: {
+          successResponse: {
             id: 'prod_001',
             name: 'Notebook',
             price: 5000000,
             stock: 10,
             active: true,
           },
-          errors: [
+          expectedErrors: [
             { status: 401, message: 'si no envía token' },
             { status: 404, message: 'si el producto no existe' },
             { status: 500, message: 'si ocurre error interno' },
