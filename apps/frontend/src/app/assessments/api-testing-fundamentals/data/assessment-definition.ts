@@ -3,16 +3,16 @@ import type { AssessmentSeedDefinition } from '../types';
 export const API_TESTING_FUNDAMENTALS_SLUG = 'api-testing-fundamentals';
 
 // Bumpear cuando cambie la definición (secciones/preguntas) para forzar re-seed.
-export const API_TESTING_SEED_VERSION = 2;
+export const API_TESTING_SEED_VERSION = 3;
 
 export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
   slug: API_TESTING_FUNDAMENTALS_SLUG,
-  title: 'API Testing Fundamentals Challenge',
+  title: 'API Testing — Fundamentos',
   description:
-    'Evaluación progresiva para validar fundamentos conceptuales, interpretación de documentación, diseño de casos, análisis de respuestas y reporte de bugs en APIs.',
+    'Evaluación teórica para validar fundamentos conceptuales, interpretación de documentación y análisis de respuestas de APIs.',
   level: 'Junior a Semi Senior',
   type: 'QA API Testing',
-  duration_minutes: 90,
+  duration_minutes: 30,
   total_score: 100,
   is_active: true,
   metadata: {
@@ -33,7 +33,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
       description:
         'Validá tu conocimiento teórico sobre APIs, HTTP, requests, responses, headers y status codes.',
       order_index: 1,
-      max_score: 20,
+      max_score: 35,
       metadata: {
         instructions:
           'Combinación de selección múltiple, verdadero/falso y respuestas cortas.',
@@ -64,7 +64,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
           correct_answer: { value: 'a' },
           explanation:
             'Una API expone contratos para que otros clientes o sistemas consuman funcionalidades o datos.',
-          points: 2,
+          points: 3,
           order_index: 1,
         },
         {
@@ -78,7 +78,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
             type: 'automatic',
             requiredKeywords: ['cliente', 'servidor'],
           },
-          points: 2,
+          points: 3,
           order_index: 2,
         },
         {
@@ -97,7 +97,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
           correct_answer: { value: 'a' },
           explanation:
             'Un endpoint representa un punto de acceso concreto dentro de la API.',
-          points: 1,
+          points: 2,
           order_index: 3,
         },
         {
@@ -115,7 +115,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
           correct_answer: { value: 'a' },
           explanation:
             'GET se usa para lectura de datos y no debería producir efectos de escritura.',
-          points: 1,
+          points: 2,
           order_index: 4,
         },
         {
@@ -130,7 +130,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
           correct_answer: { value: 'a' },
           explanation:
             'POST suele utilizarse para crear recursos o ejecutar comandos.',
-          points: 1,
+          points: 2,
           order_index: 5,
         },
         {
@@ -140,7 +140,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
           correct_answer: { value: true },
           explanation:
             'HTTP define estructura, métodos, headers y convenciones de comunicación web.',
-          points: 1,
+          points: 2,
           order_index: 6,
         },
         {
@@ -154,7 +154,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
           ],
           correct_answer: { value: 'a' },
           explanation: '200 indica éxito en la solicitud.',
-          points: 1,
+          points: 2,
           order_index: 7,
         },
         {
@@ -172,7 +172,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
           correct_answer: { value: 'a' },
           explanation:
             '400 representa errores del lado cliente en la solicitud.',
-          points: 1,
+          points: 2,
           order_index: 8,
         },
         {
@@ -197,7 +197,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
           correct_answer: { value: 'a' },
           explanation:
             '401 apunta a autenticación ausente/inválida; 403 a autorización insuficiente.',
-          points: 2,
+          points: 3,
           order_index: 9,
         },
         {
@@ -212,7 +212,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
           correct_answer: { value: 'a' },
           explanation:
             '404 indica que el recurso solicitado no fue encontrado.',
-          points: 1,
+          points: 2,
           order_index: 10,
         },
         {
@@ -229,7 +229,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
           ],
           correct_answer: { value: 'a' },
           explanation: '500 es un error interno del servidor.',
-          points: 1,
+          points: 2,
           order_index: 11,
         },
         {
@@ -238,7 +238,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
           expected_keywords: ['json', 'clave', 'valor', 'datos', 'estructura'],
           explanation:
             'JSON es un formato de intercambio de datos ligero y legible, muy usado en APIs.',
-          points: 2,
+          points: 3,
           order_index: 12,
         },
         {
@@ -247,7 +247,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
           expected_keywords: ['header', 'metadata', 'información', 'request'],
           explanation:
             'Los headers transportan metadatos como autenticación, tipo de contenido o idioma.',
-          points: 2,
+          points: 3,
           order_index: 13,
         },
         {
@@ -256,7 +256,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
           expected_keywords: ['body', 'payload', 'datos', 'contenido'],
           explanation:
             'El body contiene los datos principales enviados o recibidos por la operación.',
-          points: 2,
+          points: 4,
           order_index: 14,
         },
       ],
@@ -267,7 +267,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
       description:
         'Leé una documentación ficticia y respondé preguntas concretas sobre método, headers, tipos y errores esperados.',
       order_index: 2,
-      max_score: 20,
+      max_score: 30,
       metadata: {
         apiDoc: {
           method: 'GET',
@@ -300,7 +300,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
             { label: 'DELETE', value: 'DELETE' },
           ],
           correct_answer: { value: 'GET' },
-          points: 2,
+          points: 3,
           order_index: 1,
         },
         {
@@ -308,7 +308,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
           prompt: '¿Qué parámetro es obligatorio?',
           correct_answer: { value: 'id' },
           expected_keywords: ['id'],
-          points: 2,
+          points: 3,
           order_index: 2,
         },
         {
@@ -316,7 +316,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
           prompt: '¿Qué header necesita la request?',
           correct_answer: { value: 'Authorization: Bearer token' },
           expected_keywords: ['authorization', 'bearer', 'token'],
-          points: 3,
+          points: 4,
           order_index: 3,
         },
         {
@@ -329,7 +329,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
             { label: '500', value: '500' },
           ],
           correct_answer: { value: '401' },
-          points: 2,
+          points: 3,
           order_index: 4,
         },
         {
@@ -342,7 +342,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
             { label: '500', value: '500' },
           ],
           correct_answer: { value: '404' },
-          points: 2,
+          points: 3,
           order_index: 5,
         },
         {
@@ -352,7 +352,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
             values: ['id', 'name', 'price', 'stock', 'active'],
           },
           expected_keywords: ['id', 'name', 'price', 'stock', 'active'],
-          points: 4,
+          points: 6,
           order_index: 6,
         },
         {
@@ -365,7 +365,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
             { label: 'array', value: 'array' },
           ],
           correct_answer: { value: 'number' },
-          points: 2,
+          points: 4,
           order_index: 7,
         },
         {
@@ -378,148 +378,18 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
             { label: 'object', value: 'object' },
           ],
           correct_answer: { value: 'boolean' },
-          points: 3,
+          points: 4,
           order_index: 8,
         },
       ],
     },
     {
-      slug: 'level-3-test-design',
-      title: 'Nivel 3: Diseño de casos de prueba',
-      description:
-        'Convertí documentación y reglas de negocio en casos de prueba funcionales, negativos, de borde, seguridad y contrato.',
-      order_index: 3,
-      max_score: 25,
-      metadata: {
-        businessRules: [
-          'name es obligatorio.',
-          'price debe ser mayor a 0.',
-          'stock no puede ser negativo.',
-          'active debe ser boolean.',
-          'no se puede crear producto duplicado con el mismo nombre.',
-          'solo usuarios autenticados pueden crear, editar o eliminar.',
-          'usuarios sin rol admin no pueden eliminar productos.',
-        ],
-        testCaseTemplate: [
-          'title',
-          'endpoint',
-          'method',
-          'preconditions',
-          'input',
-          'steps',
-          'expectedResult',
-          'caseType',
-          'priority',
-        ],
-      },
-      questions: [
-        {
-          question_type: 'test_case_matrix',
-          prompt:
-            'Diseñá casos de prueba para GET /api/products/{id}. Incluí positivos, negativos, borde, seguridad y contrato.',
-          description:
-            'Creá al menos 4 casos y usá el template completo en cada uno.',
-          metadata: {
-            endpoint: '/api/products/{id}',
-            method: 'GET',
-            minimumCases: 4,
-            recommendedTypes: [
-              'positivo',
-              'negativo',
-              'borde',
-              'seguridad',
-              'contrato',
-            ],
-          },
-          scoring_rules: {
-            type: 'heuristic',
-            checks: ['coverage', 'completeness', 'rules', 'clarity'],
-          },
-          rubric: {
-            excellent:
-              'Cubre recursos existentes/inexistentes, auth, tipos y contrato de respuesta.',
-          },
-          points: 6,
-          order_index: 1,
-        },
-        {
-          question_type: 'test_case_matrix',
-          prompt:
-            'Diseñá casos de prueba para POST /api/products. Cubrí validaciones funcionales, duplicados, seguridad y contrato.',
-          description:
-            'Creá al menos 5 casos y reflejá las reglas de name, price, stock, active y duplicados.',
-          metadata: {
-            endpoint: '/api/products',
-            method: 'POST',
-            minimumCases: 5,
-            recommendedTypes: [
-              'positivo',
-              'negativo',
-              'borde',
-              'seguridad',
-              'contrato',
-            ],
-          },
-          scoring_rules: {
-            type: 'heuristic',
-            checks: ['coverage', 'completeness', 'rules', 'security'],
-          },
-          points: 6,
-          order_index: 2,
-        },
-        {
-          question_type: 'test_case_matrix',
-          prompt:
-            'Diseñá casos de prueba para PUT /api/products/{id}. Incluí actualizaciones válidas, inválidas y checks de autenticación/contrato.',
-          description:
-            'Creá al menos 4 casos y contemplá datos inválidos y recursos inexistentes.',
-          metadata: {
-            endpoint: '/api/products/{id}',
-            method: 'PUT',
-            minimumCases: 4,
-            recommendedTypes: [
-              'positivo',
-              'negativo',
-              'borde',
-              'seguridad',
-              'contrato',
-            ],
-          },
-          scoring_rules: {
-            type: 'heuristic',
-            checks: ['coverage', 'completeness', 'rules'],
-          },
-          points: 6,
-          order_index: 3,
-        },
-        {
-          question_type: 'test_case_matrix',
-          prompt:
-            'Diseñá casos de prueba para DELETE /api/products/{id}. Prestá especial atención a autenticación, autorización admin y recursos inexistentes.',
-          description:
-            'Creá al menos 4 casos y diferenciá claramente 401, 403 y 404.',
-          metadata: {
-            endpoint: '/api/products/{id}',
-            method: 'DELETE',
-            minimumCases: 4,
-            recommendedTypes: ['positivo', 'negativo', 'seguridad', 'contrato'],
-          },
-          scoring_rules: {
-            type: 'heuristic',
-            checks: ['coverage', 'completeness', 'auth', 'clarity'],
-          },
-          points: 7,
-          order_index: 4,
-        },
-      ],
-    },
-    {
-      slug: 'level-4-response-analysis',
-      title: 'Nivel 4: Ejecución simulada de API',
+      slug: 'level-3-response-analysis',
+      title: 'Nivel 3: Ejecución simulada de API',
       description:
         'Analizá requests/responses simulados y decidí si el comportamiento es correcto o si hay un bug.',
-      order_index: 4,
-      max_score: 20,
+      order_index: 3,
+      max_score: 35,
       questions: [
         {
           question_type: 'response_analysis',
@@ -548,7 +418,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
           },
           correct_answer: { verdict: 'correct' },
           expected_keywords: ['correcto', 'válido', '200'],
-          points: 2,
+          points: 3,
           order_index: 1,
         },
         {
@@ -573,7 +443,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
           },
           correct_answer: { verdict: 'bug', expectedStatus: 404 },
           expected_keywords: ['404', 'not found'],
-          points: 3,
+          points: 5,
           order_index: 2,
         },
         {
@@ -611,7 +481,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
           },
           correct_answer: { verdict: 'bug', expectedStatus: 400 },
           expected_keywords: ['400', 'name', 'vacío', 'obligatorio'],
-          points: 2,
+          points: 4,
           order_index: 3,
         },
         {
@@ -642,7 +512,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
           },
           correct_answer: { verdict: 'bug', expectedStatus: 400 },
           expected_keywords: ['400', 'price', 'negativo'],
-          points: 3,
+          points: 5,
           order_index: 4,
         },
         {
@@ -667,7 +537,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
           },
           correct_answer: { verdict: 'bug', expectedStatus: 403 },
           expected_keywords: ['403', 'admin', 'autorización'],
-          points: 2,
+          points: 4,
           order_index: 5,
         },
         {
@@ -690,7 +560,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
           },
           correct_answer: { verdict: 'bug', expectedStatus: 401 },
           expected_keywords: ['401', 'token', 'authorization'],
-          points: 3,
+          points: 5,
           order_index: 6,
         },
         {
@@ -720,7 +590,7 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
           },
           correct_answer: { verdict: 'bug', expectedStatus: 400 },
           expected_keywords: ['400', 'stock', 'numérico'],
-          points: 2,
+          points: 4,
           order_index: 7,
         },
         {
@@ -753,85 +623,8 @@ export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
             'availableStock',
             'stock',
           ],
-          points: 3,
+          points: 5,
           order_index: 8,
-        },
-      ],
-    },
-    {
-      slug: 'level-5-bug-reporting',
-      title: 'Nivel 5: Reporte de bugs',
-      description:
-        'Documentá defectos de API de forma clara, reproducible y accionable para el equipo.',
-      order_index: 5,
-      max_score: 15,
-      metadata: {
-        instructions:
-          'Reportá al menos 3 bugs encontrados en el nivel 4 usando todos los campos obligatorios.',
-      },
-      questions: [
-        {
-          question_type: 'bug_report',
-          prompt:
-            'Reportá el bug del caso 2 (producto no encontrado devuelve 200).',
-          metadata: {
-            bugReference: 'case-2',
-            endpoint: '/api/products/prod_999',
-            method: 'GET',
-            expectedStatus: 404,
-            actualStatus: 200,
-          },
-          scoring_rules: {
-            type: 'heuristic',
-            checks: [
-              'required_fields',
-              'endpoint',
-              'status_codes',
-              'reproducibility',
-            ],
-          },
-          points: 5,
-          order_index: 1,
-        },
-        {
-          question_type: 'bug_report',
-          prompt:
-            'Reportá el bug del caso 3 (POST crea producto con name vacío).',
-          metadata: {
-            bugReference: 'case-3',
-            endpoint: '/api/products',
-            method: 'POST',
-            expectedStatus: 400,
-            actualStatus: 201,
-          },
-          scoring_rules: {
-            type: 'heuristic',
-            checks: ['required_fields', 'endpoint', 'business_rule', 'clarity'],
-          },
-          points: 5,
-          order_index: 2,
-        },
-        {
-          question_type: 'bug_report',
-          prompt: 'Reportá el bug del caso 5 (DELETE permitido sin rol admin).',
-          metadata: {
-            bugReference: 'case-5',
-            endpoint: '/api/products/prod_001',
-            method: 'DELETE',
-            expectedStatus: 403,
-            actualStatus: 204,
-          },
-          scoring_rules: {
-            type: 'heuristic',
-            checks: [
-              'required_fields',
-              'authorization',
-              'severity_priority',
-              'reproducibility',
-            ],
-          },
-          points: 5,
-          order_index: 3,
         },
       ],
     },

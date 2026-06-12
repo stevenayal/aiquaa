@@ -10,21 +10,10 @@ export type AssessmentQuestionType =
   | 'true_false'
   | 'short_text'
   | 'doc_analysis'
-  | 'test_case_matrix'
-  | 'response_analysis'
-  | 'bug_report';
+  | 'response_analysis';
 
 export type AssessmentAttemptStatus = 'in_progress' | 'submitted' | 'graded';
-export type AssessmentScoringMode = 'automatic' | 'heuristic';
-export type TestCaseType =
-  | 'positivo'
-  | 'negativo'
-  | 'borde'
-  | 'seguridad'
-  | 'contrato';
-export type TestCasePriority = 'Alta' | 'Media' | 'Baja';
-export type BugSeverity = 'Crítica' | 'Alta' | 'Media' | 'Baja';
-export type BugPriority = 'Alta' | 'Media' | 'Baja';
+export type AssessmentScoringMode = 'automatic';
 
 export interface Assessment {
   id: string;
@@ -123,32 +112,6 @@ export interface AssessmentFeedback {
   message: string;
   recommendations: string[];
   created_at?: string;
-}
-
-export interface TestCaseDraft {
-  title: string;
-  endpoint: string;
-  method: string;
-  preconditions: string;
-  input: string;
-  steps: string;
-  expectedResult: string;
-  caseType: TestCaseType;
-  priority: TestCasePriority;
-}
-
-export interface BugReportDraft {
-  title: string;
-  endpoint: string;
-  method: string;
-  description: string;
-  stepsToReproduce: string;
-  actualResult: string;
-  expectedResult: string;
-  severity: BugSeverity;
-  priority: BugPriority;
-  evidence: string;
-  environment: string;
 }
 
 export interface ApiDocScenario {

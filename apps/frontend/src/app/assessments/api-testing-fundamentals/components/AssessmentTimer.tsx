@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 function formatSeconds(totalSeconds: number) {
   const minutes = Math.floor(totalSeconds / 60);
@@ -9,54 +9,36 @@ function formatSeconds(totalSeconds: number) {
 }
 
 export default function AssessmentTimer({
-  startedAt,
-  durationMinutes,
-  onExpire,
+  suggestedMinutes = 10,
 }: {
-  startedAt: string;
-  durationMinutes: number;
-  onExpire?: () => void;
+  suggestedMinutes?: number;
 }) {
-  const expireRef = useRef(false);
-  const [secondsLeft, setSecondsLeft] = useState(() => {
-    const elapsed = Math.floor(
-      (Date.now() - new Date(startedAt).getTime()) / 1000
-    );
-    return Math.max(durationMinutes * 60 - elapsed, 0);
-  });
+  const [elapsed, setElapsed] = useState(0);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
-      setSecondsLeft((current) => {
-        if (current <= 1) {
-          window.clearInterval(timer);
-          if (!expireRef.current) {
-            expireRef.current = true;
-            onExpire?.();
-          }
-          return 0;
-        }
-        return current - 1;
-      });
+      setElapsed((current) => current + 1);
     }, 1000);
 
     return () => window.clearInterval(timer);
-  }, [onExpire]);
+  }, []);
+
+  const overSuggested = elapsed > suggestedMinutes * 60;
 
   return (
     <div
       className={`rounded-3xl border px-5 py-4 ${
-        secondsLeft <= 300
-          ? 'border-red-500/30 bg-red-500/10 text-red-100'
+        overSuggested
+          ? 'border-amber-500/30 bg-amber-500/10 text-amber-100'
           : 'border-slate-800 bg-slate-900/80 text-slate-100'
       }`}
     >
       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-        Tiempo restante
+        Tiempo en esta sección
       </p>
-      <p className="mt-2 text-3xl font-bold">{formatSeconds(secondsLeft)}</p>
+      <p className="mt-2 text-3xl font-bold">{formatSeconds(elapsed)}</p>
       <p className="mt-1 text-xs text-slate-400">
-        El assessment se envía automáticamente cuando el contador llega a cero.
+        Sugerido: ~{suggestedMinutes} min
       </p>
     </div>
   );

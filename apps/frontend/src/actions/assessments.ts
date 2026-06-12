@@ -194,14 +194,8 @@ function getProcessCodeFromAttemptMetadata(
     : undefined;
 }
 
-function getSectionScoringMode(
-  sectionSlug: string
-): AssessmentSectionScore['scoring_mode'] {
-  return sectionSlug === 'level-1-concepts' ||
-    sectionSlug === 'level-2-doc-interpretation' ||
-    sectionSlug === 'level-4-response-analysis'
-    ? 'automatic'
-    : 'heuristic';
+function getSectionScoringMode(): AssessmentSectionScore['scoring_mode'] {
+  return 'automatic';
 }
 
 export async function getAssessmentOverviewAction(
@@ -234,12 +228,13 @@ export async function startAssessmentAttemptAction(input?: {
     .maybeSingle();
 
   if (existingAttempt) {
+    const savedSlug = existingAttempt.current_section_slug;
+    const slugValid = sections.some((s) => s.slug === savedSlug);
     return {
       attempt: mapAttempt(existingAttempt),
-      sectionSlug:
-        existingAttempt.current_section_slug ||
-        firstSectionSlug ||
-        sections[0]?.slug,
+      sectionSlug: slugValid
+        ? savedSlug
+        : firstSectionSlug || sections[0]?.slug,
     };
   }
 
@@ -363,7 +358,7 @@ export async function submitAssessmentSectionAction(input: {
     if (error) throw new Error(error.message);
   }
 
-  const scoringMode = getSectionScoringMode(bundle.section.slug);
+  const scoringMode = getSectionScoringMode();
   const sectionFeedback = feedbackMessages.join(' ');
 
   const { data: savedScore, error: scoreError } = await supabase
