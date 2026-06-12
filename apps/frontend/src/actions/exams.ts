@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 interface SaveExamResultPayload {
   exam_type:
@@ -86,13 +87,16 @@ export async function getLeaderboardAction(
 export async function getXpRankingAction(page = 1, limit = 20) {
   const supabase = createClient();
   const offset = (page - 1) * limit;
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   // ranking_candidatos view excludes audience='empresa' at DB level
   // and includes achievement_count via subquery in the view
   const { data, error, count } = await supabase
     .from('ranking_candidatos')
     .select(
-      'total_xp, level, current_streak, last_activity_at, display_name, avatar_url, achievement_count, main_badge',
+      'user_id, total_xp, level, current_streak, last_activity_at, display_name, avatar_url, achievement_count, main_badge',
       { count: 'exact' }
     )
     .order('total_xp', { ascending: false })
@@ -110,6 +114,7 @@ export async function getXpRankingAction(page = 1, limit = 20) {
     achievementCount: row.achievement_count ?? 0,
     lastActivityAt: row.last_activity_at,
     mainBadge: row.main_badge ?? null,
+    isCurrentUser: Boolean(user?.id && row.user_id === user.id),
   }));
 
   return {
@@ -131,7 +136,7 @@ export async function getExamResultsAction() {
   const { data, error } = await supabase
     .from('exam_results')
     .select(
-      'id, exam_type, exam_mode, score, total_questions, passing_score, passed, percentage, time_spent, model, language, created_at'
+      'id, exam_type, exam_mode, score, total_questions, max_possible_score, passing_score, passed, percentage, time_spent, model, language, created_at'
     )
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
@@ -139,6 +144,98 @@ export async function getExamResultsAction() {
 
   if (error) return { error: error.message, data: null };
   return { data };
+}
+
+type LearningObjectiveRow = {
+  learning_objectives: unknown;
+};
+
+type LatamLearningObjectiveAggregate = {
+  totalPercentage: number;
+  sampleSize: number;
+};
+
+function normalizeLearningObjectiveRows(
+  value: unknown
+): Array<{ learningObjective: string; percentage: number }> {
+  if (!value) return [];
+
+  const rows = Array.isArray(value)
+    ? value
+    : typeof value === 'object'
+      ? Object.entries(value as Record<string, unknown>).map(
+          ([learningObjective, item]) => ({
+            learningObjective,
+            ...(typeof item === 'object' && item !== null ? item : {}),
+          })
+        )
+      : [];
+
+  return rows
+    .map((item) => {
+      if (!item || typeof item !== 'object') return null;
+      const row = item as Record<string, unknown>;
+      const learningObjective =
+        typeof row.learningObjective === 'string'
+          ? row.learningObjective
+          : typeof row.learning_objective === 'string'
+            ? row.learning_objective
+            : null;
+      const percentage =
+        typeof row.percentage === 'number'
+          ? row.percentage
+          : typeof row.percentage === 'string'
+            ? Number(row.percentage)
+            : Number.NaN;
+
+      if (!learningObjective || Number.isNaN(percentage)) return null;
+      return { learningObjective, percentage };
+    })
+    .filter(
+      (item): item is { learningObjective: string; percentage: number } =>
+        item !== null
+    );
+}
+
+export async function getIstqbLatamComparisonAction() {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from('exam_results')
+    .select('learning_objectives')
+    .eq('exam_type', 'istqb')
+    .eq('exam_mode', 'exam')
+    .not('learning_objectives', 'is', null)
+    .limit(500);
+
+  if (error) return { error: error.message, data: null };
+
+  const aggregates = new Map<string, LatamLearningObjectiveAggregate>();
+
+  for (const result of (data ?? []) as LearningObjectiveRow[]) {
+    for (const row of normalizeLearningObjectiveRows(
+      result.learning_objectives
+    )) {
+      const current = aggregates.get(row.learningObjective) ?? {
+        totalPercentage: 0,
+        sampleSize: 0,
+      };
+      current.totalPercentage += row.percentage;
+      current.sampleSize += 1;
+      aggregates.set(row.learningObjective, current);
+    }
+  }
+
+  const comparison = Array.from(aggregates.entries())
+    .map(([learningObjective, aggregate]) => ({
+      learningObjective,
+      averagePercentage: Math.round(
+        aggregate.totalPercentage / aggregate.sampleSize
+      ),
+      sampleSize: aggregate.sampleSize,
+    }))
+    .sort((a, b) => a.learningObjective.localeCompare(b.learningObjective));
+
+  return { data: comparison };
 }
 
 export async function getMyXpProfileAction() {
