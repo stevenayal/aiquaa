@@ -13,6 +13,7 @@ const EXAM_OPTIONS = [
   { value: 'git', label: 'Git' },
   { value: 'performance', label: 'Rendimiento / Performance' },
   { value: 'api-testing-fundamentals', label: 'API Testing Fundamentals' },
+  { value: 'api-banking', label: 'API Banking — Challenge práctico' },
 ];
 
 export default function NuevoProcesoPage() {

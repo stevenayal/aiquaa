@@ -1,5 +1,8 @@
 import { createAdminClient } from '@/lib/supabase/admin';
-import { apiTestingFundamentalsDefinition } from '../data/assessment-definition';
+import {
+  API_TESTING_SEED_VERSION,
+  apiTestingFundamentalsDefinition,
+} from '../data/assessment-definition';
 
 export async function ensureApiTestingFundamentalsSeeded() {
   const supabase = createAdminClient();
@@ -13,7 +16,10 @@ export async function ensureApiTestingFundamentalsSeeded() {
     duration_minutes: apiTestingFundamentalsDefinition.duration_minutes,
     total_score: apiTestingFundamentalsDefinition.total_score,
     is_active: apiTestingFundamentalsDefinition.is_active,
-    metadata: apiTestingFundamentalsDefinition.metadata ?? {},
+    metadata: {
+      ...(apiTestingFundamentalsDefinition.metadata ?? {}),
+      seedVersion: API_TESTING_SEED_VERSION,
+    },
     updated_at: new Date().toISOString(),
   };
 

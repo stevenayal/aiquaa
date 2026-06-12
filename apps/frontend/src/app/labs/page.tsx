@@ -12,23 +12,6 @@ export default function LabsPage() {
   const { t } = useLanguage();
   const { user } = useSupabaseAuth();
 
-  const getToolPresentation = <
-    T extends { id: string; icon: string; description: string },
-  >(
-    tool: T
-  ) => {
-    if (tool.id === 'api-testing-fundamentals') {
-      return {
-        ...tool,
-        icon: 'API',
-        description:
-          'Assessment progresivo para validar conceptos de API, diseno de casos, analisis de respuestas y bug reporting',
-      };
-    }
-
-    return tool;
-  };
-
   const toolCategories = [
     {
       id: 'formacion',
@@ -69,14 +52,33 @@ export default function LabsPage() {
           featured: true,
           implementedDate: 'Nov 2025',
         },
+      ],
+    },
+    {
+      id: 'apis',
+      name: '🔌 APIs',
+      description:
+        'Evaluá tus habilidades de API testing: teoría y práctica con corrección automática',
+      tools: [
         {
           id: 'api-testing-fundamentals',
-          name: 'API Testing Fundamentals Challenge',
+          name: 'API Testing — Fundamentos (Examen teórico)',
           description:
-            'Assessment progresivo para validar conceptos de API, diseÃ±o de casos, anÃ¡lisis de respuestas y bug reporting',
-          icon: 'ðŸŒ',
+            'Conceptos de API, lectura de documentación, diseño de casos y análisis de respuestas en 5 niveles progresivos — auto-corregido, 100 pts',
+          icon: '🌐',
           color: 'from-emerald-500 to-teal-600',
           href: '/labs/api-testing-fundamentals',
+          featured: true,
+          implementedDate: 'Jun 2026',
+        },
+        {
+          id: 'api-banking-challenge',
+          name: 'API Banking — Challenge práctico',
+          description:
+            'Testeá una API bancaria simulada: encontrá 12 bugs intencionales, diseñá casos, reportá bugs y recibí un score automático de 100 pts',
+          icon: '🏦',
+          color: 'from-blue-500 to-indigo-600',
+          href: '/assessments/api-banking',
           featured: true,
           implementedDate: 'Jun 2026',
         },
@@ -109,17 +111,6 @@ export default function LabsPage() {
           href: '/labs/test-app/report',
           featured: true,
           implementedDate: 'Nov 2025',
-        },
-        {
-          id: 'api-banking-challenge',
-          name: 'QA API Challenge — Banking',
-          description:
-            'Encontrá 12 bugs intencionales en una API bancaria simulada. Diseñá casos de prueba, reportá bugs y recibí un score automático de 100 pts.',
-          icon: '🏦',
-          color: 'from-emerald-500 to-teal-600',
-          href: '/assessments/api-banking',
-          featured: true,
-          implementedDate: 'Jun 2026',
         },
       ],
     },
@@ -391,8 +382,6 @@ export default function LabsPage() {
               .filter((tool) => tool.featured)
               .slice(0, 3)
               .map((tool, index) => {
-                const presentation = getToolPresentation(tool);
-
                 return (
                   <Link
                     key={tool.id}
@@ -417,13 +406,13 @@ export default function LabsPage() {
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-xl">{presentation.icon}</span>
+                          <span className="text-xl">{tool.icon}</span>
                           <h3
                             className={`font-bold ${
                               isDarkMode ? 'text-white' : 'text-brand-text'
                             }`}
                           >
-                            {presentation.name}
+                            {tool.name}
                           </h3>
                         </div>
                         <p
@@ -431,7 +420,7 @@ export default function LabsPage() {
                             isDarkMode ? 'text-slate-400' : 'text-brand-muted'
                           }`}
                         >
-                          {presentation.description}
+                          {tool.description}
                         </p>
                       </div>
                     </div>
@@ -466,8 +455,6 @@ export default function LabsPage() {
               {/* Tools Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {category.tools.map((tool) => {
-                  const presentation = getToolPresentation(tool);
-
                   return (
                     <Link
                       key={tool.id}
@@ -481,7 +468,7 @@ export default function LabsPage() {
                       >
                         {/* Badges Container */}
                         <div className="flex items-start justify-between gap-2 mb-3">
-                          <div className="text-3xl">{presentation.icon}</div>
+                          <div className="text-3xl">{tool.icon}</div>
                           <div className="flex flex-col items-end gap-2">
                             {tool.featured && (
                               <span
@@ -501,11 +488,9 @@ export default function LabsPage() {
                             )}
                           </div>
                         </div>
-                        <h3 className="text-xl font-bold mb-2">
-                          {presentation.name}
-                        </h3>
+                        <h3 className="text-xl font-bold mb-2">{tool.name}</h3>
                         <p className="text-white/90 text-sm">
-                          {presentation.description}
+                          {tool.description}
                         </p>
                       </div>
                       <div className="p-6 shrink-0">

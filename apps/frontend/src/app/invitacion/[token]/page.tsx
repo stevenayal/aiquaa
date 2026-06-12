@@ -8,7 +8,22 @@ const EXAM_LABELS: Record<string, string> = {
   git: 'Git — Control de versiones',
   performance: 'Performance Testing',
   'api-testing-fundamentals': 'API Testing Fundamentals',
+  'api-banking': 'API Banking Challenge',
 };
+
+const EXAM_URLS: Record<string, string> = {
+  istqb: '/labs/istqb',
+  git: '/labs/git',
+  performance: '/labs/performance',
+  'api-testing-fundamentals': '/assessments/api-testing-fundamentals/start',
+  'api-banking': '/assessments/api-banking/start',
+};
+
+function examHref(examType: string, code: string) {
+  const base = EXAM_URLS[examType];
+  if (!base) return null;
+  return `${base}?code=${encodeURIComponent(code)}`;
+}
 
 type Props = { params: Promise<{ token: string }> };
 
@@ -143,15 +158,36 @@ export default async function InvitacionTokenPage({ params }: Props) {
                     <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-slate-400">
                       Evaluaciones a rendir
                     </p>
-                    {proceso.exam_types.map((et) => (
-                      <div
-                        key={et}
-                        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-sm font-medium text-indigo-800 dark:text-indigo-200"
-                      >
-                        <span>📋</span>
-                        {EXAM_LABELS[et] ?? et}
-                      </div>
-                    ))}
+                    {proceso.exam_types.map((et) => {
+                      const href = examHref(et, proceso.code);
+                      const chip = (
+                        <>
+                          <span>📋</span>
+                          {EXAM_LABELS[et] ?? et}
+                        </>
+                      );
+                      return href ? (
+                        <Link
+                          key={et}
+                          href={href}
+                          className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-sm font-medium text-indigo-800 dark:text-indigo-200 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors"
+                        >
+                          <span className="flex items-center gap-2">
+                            {chip}
+                          </span>
+                          <span className="text-xs font-semibold">
+                            Rendir →
+                          </span>
+                        </Link>
+                      ) : (
+                        <div
+                          key={et}
+                          className="flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-sm font-medium text-indigo-800 dark:text-indigo-200"
+                        >
+                          {chip}
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
 

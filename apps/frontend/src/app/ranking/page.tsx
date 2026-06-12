@@ -73,6 +73,18 @@ const EXAM_TABS = [
     color: 'from-emerald-500 to-teal-600',
   },
   {
+    key: 'api-testing-fundamentals',
+    label: 'API Testing',
+    emoji: '🌐',
+    color: 'from-cyan-500 to-sky-600',
+  },
+  {
+    key: 'api-banking',
+    label: 'API Banking',
+    emoji: '🏦',
+    color: 'from-blue-500 to-indigo-600',
+  },
+  {
     key: 'xp',
     label: 'XP Comunidad',
     emoji: '🚀',
@@ -81,6 +93,14 @@ const EXAM_TABS = [
 ] as const;
 
 type TabKey = (typeof EXAM_TABS)[number]['key'];
+
+const EXAM_TAB_URLS: Record<string, string> = {
+  git: '/labs/git',
+  istqb: '/labs/istqb',
+  performance: '/labs/performance',
+  'api-testing-fundamentals': '/assessments/api-testing-fundamentals',
+  'api-banking': '/assessments/api-banking',
+};
 
 const MEDAL = ['🥇', '🥈', '🥉'];
 
@@ -194,7 +214,13 @@ function LevelBar({
 
 // ── XP Comunidad tab ──────────────────────────────────────────────────────────
 
-function XpComunidadTab({ isDarkMode, currentUserName }: { isDarkMode: boolean; currentUserName: string | null }) {
+function XpComunidadTab({
+  isDarkMode,
+  currentUserName,
+}: {
+  isDarkMode: boolean;
+  currentUserName: string | null;
+}) {
   const [data, setData] = useState<XpRankingResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -255,26 +281,53 @@ function XpComunidadTab({ isDarkMode, currentUserName }: { isDarkMode: boolean; 
   return (
     <div className="space-y-5">
       {/* Cómo ganar XP */}
-      <div className={`rounded-2xl border ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200 shadow-sm'}`}>
+      <div
+        className={`rounded-2xl border ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200 shadow-sm'}`}
+      >
         <button
-          onClick={() => setShowHowTo(v => !v)}
+          onClick={() => setShowHowTo((v) => !v)}
           className={`w-full flex items-center justify-between px-5 py-3 text-sm font-semibold ${isDarkMode ? 'text-slate-200' : 'text-gray-700'}`}
         >
           <span>💡 ¿Cómo ganar XP?</span>
           <span>{showHowTo ? '▲' : '▼'}</span>
         </button>
         {showHowTo && (
-          <div className={`px-5 pb-4 space-y-2 border-t ${isDarkMode ? 'border-slate-700' : 'border-gray-100'}`}>
+          <div
+            className={`px-5 pb-4 space-y-2 border-t ${isDarkMode ? 'border-slate-700' : 'border-gray-100'}`}
+          >
             {[
-              { emoji: '📋', action: 'Completar simulacro ISTQB (aprobar)', xp: '+100 XP' },
-              { emoji: '⚡', action: 'Completar examen Performance (aprobar)', xp: '+80 XP' },
-              { emoji: '🌿', action: 'Completar examen GIT (aprobar)', xp: '+60 XP' },
-              { emoji: '🔗', action: 'Generar casos All Pairs (20+ pares)', xp: '+20 XP' },
+              {
+                emoji: '📋',
+                action: 'Completar simulacro ISTQB (aprobar)',
+                xp: '+100 XP',
+              },
+              {
+                emoji: '⚡',
+                action: 'Completar examen Performance (aprobar)',
+                xp: '+80 XP',
+              },
+              {
+                emoji: '🌿',
+                action: 'Completar examen GIT (aprobar)',
+                xp: '+60 XP',
+              },
+              {
+                emoji: '🔗',
+                action: 'Generar casos All Pairs (20+ pares)',
+                xp: '+20 XP',
+              },
               { emoji: '💬', action: 'Crear un post en el foro', xp: '+10 XP' },
               { emoji: '🌅', action: 'Check-in diario', xp: '+5 XP' },
             ].map(({ emoji, action, xp }) => (
-              <div key={action} className="flex items-center justify-between text-sm pt-2">
-                <span className={isDarkMode ? 'text-slate-300' : 'text-gray-600'}>{emoji} {action}</span>
+              <div
+                key={action}
+                className="flex items-center justify-between text-sm pt-2"
+              >
+                <span
+                  className={isDarkMode ? 'text-slate-300' : 'text-gray-600'}
+                >
+                  {emoji} {action}
+                </span>
                 <span className="font-bold text-purple-500">{xp}</span>
               </div>
             ))}
@@ -400,82 +453,85 @@ function XpComunidadTab({ isDarkMode, currentUserName }: { isDarkMode: boolean; 
 
         {/* Filas */}
         {(isFirstPage ? rest : data.data).map((entry, i, arr) => {
-          const isCurrentUser = currentUserName !== null && entry.displayName === currentUserName;
+          const isCurrentUser =
+            currentUserName !== null && entry.displayName === currentUserName;
           return (
-          <div
-            key={entry.position}
-            className={`flex items-center gap-3 px-5 py-4 ${
-              i < arr.length - 1
-                ? isDarkMode
-                  ? 'border-b border-slate-700'
-                  : 'border-b border-gray-100'
-                : ''
-            } ${isCurrentUser ? 'border-l-4 border-purple-500' : ''} ${isDarkMode ? 'hover:bg-slate-700/40' : 'hover:bg-gray-50'} transition-colors`}
-          >
-            {/* Posición */}
-            <span
-              className={`w-8 text-center text-sm font-bold shrink-0 ${isDarkMode ? 'text-slate-400' : 'text-gray-400'}`}
+            <div
+              key={entry.position}
+              className={`flex items-center gap-3 px-5 py-4 ${
+                i < arr.length - 1
+                  ? isDarkMode
+                    ? 'border-b border-slate-700'
+                    : 'border-b border-gray-100'
+                  : ''
+              } ${isCurrentUser ? 'border-l-4 border-purple-500' : ''} ${isDarkMode ? 'hover:bg-slate-700/40' : 'hover:bg-gray-50'} transition-colors`}
             >
-              {entry.position}
-            </span>
-
-            {/* Avatar + badge */}
-            <div className="relative shrink-0">
-              <MiniAvatar
-                name={entry.displayName}
-                avatarUrl={entry.avatarUrl}
-              />
-              {entry.mainBadge && (
-                <span className="absolute -top-1 -right-1 text-sm leading-none">
-                  {entry.mainBadge}
-                </span>
-              )}
-            </div>
-
-            {/* Info */}
-            <div className="flex-1 min-w-0 space-y-1">
-              <p
-                className={`text-sm font-semibold truncate flex items-center gap-1.5 ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}
+              {/* Posición */}
+              <span
+                className={`w-8 text-center text-sm font-bold shrink-0 ${isDarkMode ? 'text-slate-400' : 'text-gray-400'}`}
               >
-                {isCurrentUser && <span>🫵</span>}
-                {entry.displayName}
-                {isCurrentUser && (
-                  <span className="ml-1 px-1.5 py-0.5 rounded-full text-xs font-bold bg-purple-500 text-white shrink-0">Tú</span>
+                {entry.position}
+              </span>
+
+              {/* Avatar + badge */}
+              <div className="relative shrink-0">
+                <MiniAvatar
+                  name={entry.displayName}
+                  avatarUrl={entry.avatarUrl}
+                />
+                {entry.mainBadge && (
+                  <span className="absolute -top-1 -right-1 text-sm leading-none">
+                    {entry.mainBadge}
+                  </span>
                 )}
-              </p>
-              <LevelBar
-                level={entry.level}
-                totalXp={entry.totalXp}
-                isDarkMode={isDarkMode}
-              />
-              <p
-                className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
-              >
-                {formatRelative(entry.lastActivityAt)}
-              </p>
-            </div>
+              </div>
 
-            {/* XP + stats */}
-            <div className="text-right shrink-0 space-y-0.5">
-              <p
-                className={`text-sm font-extrabold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
-              >
-                {entry.totalXp.toLocaleString()} XP
-              </p>
-              <p
-                className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-              >
-                Nv. {entry.level}
-              </p>
-              {entry.achievementCount > 0 && (
+              {/* Info */}
+              <div className="flex-1 min-w-0 space-y-1">
+                <p
+                  className={`text-sm font-semibold truncate flex items-center gap-1.5 ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}
+                >
+                  {isCurrentUser && <span>🫵</span>}
+                  {entry.displayName}
+                  {isCurrentUser && (
+                    <span className="ml-1 px-1.5 py-0.5 rounded-full text-xs font-bold bg-purple-500 text-white shrink-0">
+                      Tú
+                    </span>
+                  )}
+                </p>
+                <LevelBar
+                  level={entry.level}
+                  totalXp={entry.totalXp}
+                  isDarkMode={isDarkMode}
+                />
                 <p
                   className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
                 >
-                  🏅 {entry.achievementCount}
+                  {formatRelative(entry.lastActivityAt)}
                 </p>
-              )}
+              </div>
+
+              {/* XP + stats */}
+              <div className="text-right shrink-0 space-y-0.5">
+                <p
+                  className={`text-sm font-extrabold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                >
+                  {entry.totalXp.toLocaleString()} XP
+                </p>
+                <p
+                  className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                >
+                  Nv. {entry.level}
+                </p>
+                {entry.achievementCount > 0 && (
+                  <p
+                    className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+                  >
+                    🏅 {entry.achievementCount}
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
           );
         })}
       </div>
@@ -725,11 +781,15 @@ export default function RankingPage() {
     git: [],
     istqb: [],
     performance: [],
+    'api-testing-fundamentals': [],
+    'api-banking': [],
   });
   const [examLoading, setExamLoading] = useState<Record<string, boolean>>({
     git: true,
     istqb: true,
     performance: true,
+    'api-testing-fundamentals': true,
+    'api-banking': true,
   });
   const [showWelcome, setShowWelcome] = useState(false);
 
@@ -745,7 +805,15 @@ export default function RankingPage() {
   }, [isWelcome, router]);
 
   useEffect(() => {
-    (['git', 'istqb', 'performance'] as const).forEach((key) => {
+    (
+      [
+        'git',
+        'istqb',
+        'performance',
+        'api-testing-fundamentals',
+        'api-banking',
+      ] as const
+    ).forEach((key) => {
       getLeaderboardAction(key, 20)
         .then((res) => {
           setExamData((prev) => ({
@@ -857,7 +925,14 @@ export default function RankingPage() {
         {isReportes ? (
           <ReportadoresTab isDarkMode={isDarkMode} />
         ) : isXp ? (
-          <XpComunidadTab isDarkMode={isDarkMode} currentUserName={user?.user_metadata?.full_name || user?.user_metadata?.display_name || null} />
+          <XpComunidadTab
+            isDarkMode={isDarkMode}
+            currentUserName={
+              user?.user_metadata?.full_name ||
+              user?.user_metadata?.display_name ||
+              null
+            }
+          />
         ) : isLoading ? (
           <div className="flex justify-center py-16">
             <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-indigo-500" />
@@ -878,13 +953,7 @@ export default function RankingPage() {
               ¡Sé el primero en completar el examen y aparecer acá!
             </p>
             <a
-              href={
-                activeTab === 'git'
-                  ? '/labs/git'
-                  : activeTab === 'istqb'
-                    ? '/labs/istqb'
-                    : '/labs/performance'
-              }
+              href={EXAM_TAB_URLS[activeTab] ?? '/labs'}
               className="inline-block mt-4 px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition-colors"
             >
               {tab.emoji} Ir al examen
@@ -919,7 +988,8 @@ export default function RankingPage() {
                         <p
                           className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
                         >
-                          {entry.best_score}/{entry.max_possible_score ?? entry.total_questions}
+                          {entry.best_score}/
+                          {entry.max_possible_score ?? entry.total_questions}
                         </p>
                         <div
                           className={`w-full rounded-t-lg flex items-center justify-center text-2xl ${heights[podiumRank]} ${
@@ -986,7 +1056,8 @@ export default function RankingPage() {
                       <p
                         className={`text-sm font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
                       >
-                        {entry.best_score}/{entry.max_possible_score ?? entry.total_questions}
+                        {entry.best_score}/
+                        {entry.max_possible_score ?? entry.total_questions}
                       </p>
                       <p
                         className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
@@ -1012,23 +1083,24 @@ export default function RankingPage() {
               </div>
             )}
 
-            <div className={`rounded-2xl p-4 flex items-center justify-between gap-4 ${isDarkMode ? 'bg-amber-900/20 border border-amber-700/50' : 'bg-amber-50 border border-amber-200'}`}>
+            <div
+              className={`rounded-2xl p-4 flex items-center justify-between gap-4 ${isDarkMode ? 'bg-amber-900/20 border border-amber-700/50' : 'bg-amber-50 border border-amber-200'}`}
+            >
               <div>
-                <p className={`text-sm font-semibold ${isDarkMode ? 'text-amber-200' : 'text-amber-900'}`}>
+                <p
+                  className={`text-sm font-semibold ${isDarkMode ? 'text-amber-200' : 'text-amber-900'}`}
+                >
                   ¿Querés mejorar tu posición?
                 </p>
-                <p className={`text-xs mt-0.5 ${isDarkMode ? 'text-amber-400/80' : 'text-amber-700'}`}>
-                  Practicá con Modo Entrenamiento antes de rendir el examen oficial.
+                <p
+                  className={`text-xs mt-0.5 ${isDarkMode ? 'text-amber-400/80' : 'text-amber-700'}`}
+                >
+                  Practicá con Modo Entrenamiento antes de rendir el examen
+                  oficial.
                 </p>
               </div>
               <a
-                href={
-                  activeTab === 'git'
-                    ? '/labs/git'
-                    : activeTab === 'istqb'
-                      ? '/labs/istqb'
-                      : '/labs/performance'
-                }
+                href={EXAM_TAB_URLS[activeTab] ?? '/labs'}
                 className="shrink-0 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold rounded-lg transition-colors"
               >
                 Practicar →

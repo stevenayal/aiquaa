@@ -8,7 +8,8 @@ interface SaveExamResultPayload {
     | 'istqb'
     | 'performance'
     | 'test-app'
-    | 'api-testing-fundamentals';
+    | 'api-testing-fundamentals'
+    | 'api-banking';
   exam_mode: 'exam' | 'training';
   participant_name?: string;
   participant_email?: string;
@@ -65,7 +66,12 @@ export async function saveExamResultAction(payload: SaveExamResultPayload) {
 }
 
 export async function getLeaderboardAction(
-  examType: 'git' | 'istqb' | 'performance' | 'api-testing-fundamentals',
+  examType:
+    | 'git'
+    | 'istqb'
+    | 'performance'
+    | 'api-testing-fundamentals'
+    | 'api-banking',
   limit = 20
 ) {
   const supabase = createClient();

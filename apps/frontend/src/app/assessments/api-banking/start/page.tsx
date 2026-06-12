@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { getExamUserDefaults } from '@/lib/exam-user-defaults';
+import ProcessCodeInput from '@/components/labs/ProcessCodeInput';
 import { SESSION_KEYS } from '../types';
 
 export default function StartPage() {
@@ -11,6 +12,7 @@ export default function StartPage() {
   const { user, isLoading: authLoading } = useSupabaseAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [processCode, setProcessCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -23,7 +25,19 @@ export default function StartPage() {
     }
   }, [user]);
 
-  async function startChallenge(candidateName: string, candidateEmail: string) {
+  // Pre-fill process code from ?code= (links desde invitaciones/procesos)
+  useEffect(() => {
+    const codeParam = new URLSearchParams(window.location.search).get('code');
+    if (codeParam) setProcessCode(codeParam);
+  }, []);
+
+  async function handleStart(ev: React.FormEvent) {
+    ev.preventDefault();
+    if (!name.trim()) {
+      setError('El nombre es requerido.');
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -32,9 +46,9 @@ export default function StartPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          candidateName: candidateName.trim(),
-          candidateEmail: candidateEmail.trim() || undefined,
-          aiquaaUserId: user?.id ?? undefined,
+          candidateName: name.trim(),
+          candidateEmail: email.trim() || undefined,
+          processCode: processCode.trim() || undefined,
         }),
       });
 
@@ -48,7 +62,7 @@ export default function StartPage() {
 
       sessionStorage.setItem(SESSION_KEYS.attemptId, String(attemptId));
       sessionStorage.setItem(SESSION_KEYS.challengeToken, challengeToken);
-      sessionStorage.setItem(SESSION_KEYS.candidateName, candidateName.trim());
+      sessionStorage.setItem(SESSION_KEYS.candidateName, name.trim());
       sessionStorage.setItem(SESSION_KEYS.startedAt, new Date().toISOString());
 
       router.push('/assessments/api-banking/workspace');
@@ -59,41 +73,19 @@ export default function StartPage() {
     }
   }
 
-  async function handleStart(ev: React.FormEvent) {
-    ev.preventDefault();
-    if (!name.trim()) {
-      setError('El nombre es requerido.');
-      return;
-    }
-    await startChallenge(name, email);
-  }
-
-  // If logged in and we already have name → auto-start
-  useEffect(() => {
-    if (!authLoading && user) {
-      const defaults = getExamUserDefaults(user);
-      if (defaults.fullName) {
-        startChallenge(defaults.fullName, defaults.email);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authLoading, user]);
-
-  // Show spinner while auto-starting
-  if (authLoading || (user && loading)) {
+  if (authLoading) {
     return (
       <main className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
         <div className="text-center space-y-3">
           <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto" />
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Iniciando challenge...
+            Cargando...
           </p>
         </div>
       </main>
     );
   }
 
-  // Guest: show form
   return (
     <main className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md space-y-6">
@@ -102,7 +94,7 @@ export default function StartPage() {
             Iniciar challenge
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            QA API Challenge — Banking Transactions
+            API Banking — Challenge práctico
           </p>
         </div>
 
@@ -136,6 +128,13 @@ export default function StartPage() {
               disabled={loading}
             />
           </div>
+
+          <ProcessCodeInput
+            value={processCode}
+            onChange={setProcessCode}
+            onNormalizedCode={setProcessCode}
+            autoValidate
+          />
 
           {error && (
             <p className="text-sm text-red-600 dark:text-red-400">{error}</p>

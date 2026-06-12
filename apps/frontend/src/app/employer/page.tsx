@@ -32,6 +32,7 @@ const EXAM_LABELS: Record<string, string> = {
   git: 'Git',
   performance: 'Rendimiento',
   'api-testing-fundamentals': 'API Testing Fundamentals',
+  'api-banking': 'API Banking Challenge',
 };
 
 function formatDate(iso: string) {
