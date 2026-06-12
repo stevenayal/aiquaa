@@ -87,6 +87,8 @@ Si descubres una vulnerabilidad de seguridad en AIQUAA, por favor sigue estos pa
 - Hashing con bcrypt (cost: 12)
 - Requisitos mínimos de complejidad
 - Rate limiting en intentos de login
+- Supabase Auth debe mantener activada la protección contra contraseñas filtradas:
+  Dashboard -> Authentication -> Password Security -> Leaked Password Protection.
 
 ### Base de Datos
 
