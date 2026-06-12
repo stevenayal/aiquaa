@@ -105,6 +105,28 @@ export default function LabsPage() {
           featured: true,
           implementedDate: 'Nov 2025',
         },
+        {
+          id: 'database-fundamentals',
+          name: 'Base de Datos — Fundamentos',
+          description:
+            'Prueba técnica teórica sobre modelo relacional, SQL básico, joins, agregaciones y constraints',
+          icon: '🗄️',
+          color: 'from-violet-500 to-fuchsia-600',
+          href: '/assessments/database-fundamentals',
+          featured: true,
+          implementedDate: 'Jun 2026',
+        },
+        {
+          id: 'database-practice',
+          name: 'Base de Datos — Práctica SQL',
+          description:
+            'Challenge práctico con una mini base e-commerce: predecí resultados, detectá bugs y escribí SQL',
+          icon: '🧮',
+          color: 'from-lime-500 to-emerald-600',
+          href: '/assessments/database-practice',
+          featured: true,
+          implementedDate: 'Jun 2026',
+        },
       ],
     },
     {
