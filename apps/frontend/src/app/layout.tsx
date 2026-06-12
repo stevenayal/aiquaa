@@ -7,6 +7,7 @@ import { ThemeProvider } from '../contexts/ThemeContext';
 import { LanguageProvider } from '../contexts/LanguageContext';
 // import { initializeSentry } from '../lib/observability'; // Temporarily disabled for Server Components
 import Providers from './providers';
+import { Analytics } from '@vercel/analytics/next';
 
 const sora = Sora({ subsets: ['latin'], variable: '--font-sora' });
 
@@ -92,6 +93,7 @@ export default function RootLayout({
             </LanguageProvider>
           </Providers>
         </ErrorBoundary>
+        <Analytics />
       </body>
     </html>
   );
