@@ -238,6 +238,35 @@ export async function getIstqbLatamComparisonAction() {
   return { data: comparison };
 }
 
+export async function getIstqbAttemptHistoryAction(limit = 6) {
+  const supabase = createClient();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+  if (userError || !user) return { error: 'No autenticado', data: null };
+
+  const { data, error } = await supabase
+    .from('exam_results')
+    .select(
+      'id, score, total_questions, max_possible_score, passed, percentage, time_spent, model, language, created_at'
+    )
+    .eq('user_id', user.id)
+    .eq('exam_type', 'istqb')
+    .eq('exam_mode', 'exam')
+    .order('created_at', { ascending: false })
+    .limit(limit);
+
+  if (error) return { error: error.message, data: null };
+
+  return {
+    data: (data ?? []).sort(
+      (a, b) =>
+        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+    ),
+  };
+}
+
 export async function getMyXpProfileAction() {
   const supabase = createClient();
   const {

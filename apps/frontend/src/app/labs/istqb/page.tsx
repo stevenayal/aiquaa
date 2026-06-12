@@ -11,10 +11,8 @@ import { loadExamData } from './utils';
 import { SuruFloating } from '@/components/Suru';
 import ExamAuthGate from '@/components/labs/ExamAuthGate';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
-import { saveExamResultAction } from '@/actions/exams';
 import { getExamUserDefaults } from '@/lib/exam-user-defaults';
 import ProcessCodeInput from '@/components/labs/ProcessCodeInput';
-import type { ExamResult } from './types';
 
 export default function ISTQBSimulatorPage() {
   const { isDarkMode } = useTheme();
@@ -36,25 +34,6 @@ export default function ISTQBSimulatorPage() {
       setParticipantName(defaults.fullName);
     }
   }, [user, participantName]);
-
-  const handleExamComplete = async (result: ExamResult) => {
-    await saveExamResultAction({
-      exam_type: 'istqb',
-      exam_mode: examMode as 'exam' | 'training',
-      score: result.score,
-      total_questions: result.totalQuestions,
-      correct_answers: result.correctAnswers,
-      incorrect_answers: result.incorrectAnswers,
-      passing_score: 26,
-      passed: result.passed,
-      percentage: result.percentage,
-      time_spent: result.timeSpent,
-      model,
-      language,
-      learning_objectives: result.learningObjectiveAnalysis,
-      process_code: processCode.trim() || undefined,
-    });
-  };
 
   const examId = `${language}-model-${model.toLowerCase()}`;
   const finalExamId = examId === 'es-model-a' ? 'es-model-a' : examId;
@@ -194,8 +173,9 @@ export default function ISTQBSimulatorPage() {
         mode={examMode}
         examData={examData}
         onReset={handleReset}
+        model={model}
+        processCode={processCode}
         language={language}
-        onExamComplete={handleExamComplete}
       />
     );
   }

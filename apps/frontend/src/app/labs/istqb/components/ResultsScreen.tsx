@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
-import { getIstqbLatamComparisonAction } from '@/actions/exams';
+import {
+  getIstqbAttemptHistoryAction,
+  getIstqbLatamComparisonAction,
+} from '@/actions/exams';
 import type { ExamResult } from '../types';
 import { exportToCSV, downloadCSV, formatTime } from '../utils';
 import { generateExamPDF } from '../utils/pdfExport';
@@ -12,6 +15,8 @@ interface ResultsScreenProps {
   result: ExamResult;
   onReset: () => void;
   mode: 'exam' | 'training';
+  model?: string;
+  processCode?: string;
   language: 'es' | 'en';
 }
 
@@ -21,10 +26,106 @@ interface LatamComparison {
   sampleSize: number;
 }
 
+interface AttemptHistory {
+  id: string;
+  score: number;
+  total_questions: number;
+  max_possible_score: number | null;
+  passed: boolean;
+  percentage: number;
+  time_spent: number;
+  model: string | null;
+  language: string | null;
+  created_at: string;
+}
+
+const ISTQB_SYLLABUS_PATH =
+  '/resources/istqb/CTFL-v4.0-ES-Programa-de-Estudio.pdf';
+
+function getStudyRecommendation(
+  learningObjective: string,
+  language: 'es' | 'en'
+) {
+  const chapter = learningObjective.match(/LO\s*(\d+)/i)?.[1];
+  const recommendations = {
+    es: {
+      defaultTitle: 'Repasar el syllabus CTFL v4.0',
+      defaultDescription:
+        'Relee el objetivo, sus palabras clave y los ejemplos oficiales.',
+      chapters: {
+        '1': [
+          'Fundamentos de testing',
+          'Enfocate en objetivos, principios y valor del testing.',
+        ],
+        '2': [
+          'Testing en el ciclo de vida',
+          'Repasa niveles, tipos y enfoques de desarrollo.',
+        ],
+        '3': [
+          'Testing estatico',
+          'Practica revisiones, analisis estatico y defectos tempranos.',
+        ],
+        '4': [
+          'Analisis y diseno de pruebas',
+          'Refuerza tecnicas de caja negra, caja blanca y basadas en experiencia.',
+        ],
+        '5': [
+          'Gestion de actividades de testing',
+          'Revisa planificacion, riesgos, monitoreo y control.',
+        ],
+        '6': [
+          'Herramientas de testing',
+          'Repasa beneficios, riesgos y criterios de adopcion de herramientas.',
+        ],
+      },
+    },
+    en: {
+      defaultTitle: 'Review the CTFL v4.0 syllabus',
+      defaultDescription:
+        'Re-read the objective, keywords, and official examples.',
+      chapters: {
+        '1': [
+          'Testing fundamentals',
+          'Focus on testing objectives, principles, and value.',
+        ],
+        '2': [
+          'Testing through the SDLC',
+          'Review levels, types, and development approaches.',
+        ],
+        '3': [
+          'Static testing',
+          'Practice reviews, static analysis, and early defect detection.',
+        ],
+        '4': [
+          'Test analysis and design',
+          'Strengthen black-box, white-box, and experience-based techniques.',
+        ],
+        '5': [
+          'Managing test activities',
+          'Review planning, risks, monitoring, and control.',
+        ],
+        '6': [
+          'Test tools',
+          'Review benefits, risks, and adoption criteria for tools.',
+        ],
+      },
+    },
+  } as const;
+
+  const localized = recommendations[language];
+  const [title, description] = localized.chapters[
+    chapter as keyof typeof localized.chapters
+  ] ?? [localized.defaultTitle, localized.defaultDescription];
+
+  return { title, description, href: ISTQB_SYLLABUS_PATH };
+}
+
 export default function ResultsScreen({
   result,
   onReset,
   mode,
+  model,
+  processCode,
   language,
 }: ResultsScreenProps) {
   const { isDarkMode } = useTheme();
@@ -36,6 +137,8 @@ export default function ResultsScreen({
   );
   const [latamComparison, setLatamComparison] = useState<LatamComparison[]>([]);
   const [latamLoading, setLatamLoading] = useState(true);
+  const [attemptHistory, setAttemptHistory] = useState<AttemptHistory[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(true);
   const toggleExplanation = (questionId: number) => {
     setExpandedExplanations((prev) => {
       const next = new Set(prev);
@@ -44,7 +147,11 @@ export default function ResultsScreen({
       return next;
     });
   };
-  const { saveError } = useSubmitResults(result, mode);
+  const { isSaved, saveError } = useSubmitResults(result, mode, {
+    model,
+    language,
+    processCode,
+  });
 
   useEffect(() => {
     let active = true;
@@ -65,6 +172,35 @@ export default function ResultsScreen({
       active = false;
     };
   }, []);
+
+  useEffect(() => {
+    let active = true;
+
+    if (mode !== 'exam') {
+      setAttemptHistory([]);
+      setHistoryLoading(false);
+      return () => {
+        active = false;
+      };
+    }
+
+    setHistoryLoading(true);
+    getIstqbAttemptHistoryAction()
+      .then((res) => {
+        if (!active) return;
+        setAttemptHistory((res.data as AttemptHistory[] | null) ?? []);
+      })
+      .catch(() => {
+        if (active) setAttemptHistory([]);
+      })
+      .finally(() => {
+        if (active) setHistoryLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [isSaved, mode]);
 
   const t = {
     es: {
@@ -107,6 +243,20 @@ export default function ResultsScreen({
       latamAverage: 'Promedio LATAM',
       sample: 'muestra',
       saveErrorTitle: 'No pudimos guardar tu resultado',
+      progressHistory: 'Historial de progreso',
+      historyLoading: 'Cargando historial...',
+      historyNoData:
+        'Rendi al menos dos examenes para ver tu curva de aprendizaje.',
+      studyRecommendations: 'Recomendaciones de estudio',
+      studyRecommendationsDesc:
+        'Prioriza estos objetivos antes del proximo intento.',
+      noStudyRecommendations:
+        'No hay recomendaciones urgentes: ningun LO quedo por debajo de 50%.',
+      openSyllabus: 'Abrir syllabus',
+      questionTime: 'Tiempo en pregunta',
+      averageQuestionTime: 'Promedio por pregunta',
+      fastestQuestion: 'Mas rapida',
+      slowestQuestion: 'Mas lenta',
       question: 'Pregunta',
       yourAnswer: 'Tu Respuesta:',
       correctAnswer: 'Respuesta Correcta:',
@@ -155,6 +305,19 @@ export default function ResultsScreen({
       latamAverage: 'LATAM average',
       sample: 'sample',
       saveErrorTitle: 'We could not save your result',
+      progressHistory: 'Progress history',
+      historyLoading: 'Loading history...',
+      historyNoData: 'Take at least two exams to see your learning curve.',
+      studyRecommendations: 'Study recommendations',
+      studyRecommendationsDesc:
+        'Prioritize these objectives before the next attempt.',
+      noStudyRecommendations:
+        'No urgent recommendations: no LO landed below 50%.',
+      openSyllabus: 'Open syllabus',
+      questionTime: 'Question time',
+      averageQuestionTime: 'Average per question',
+      fastestQuestion: 'Fastest',
+      slowestQuestion: 'Slowest',
       question: 'Question',
       yourAnswer: 'Your Answer:',
       correctAnswer: 'Correct Answer:',
@@ -182,6 +345,34 @@ export default function ResultsScreen({
   const hasLatamComparison = result.learningObjectiveAnalysis.some((lo) =>
     latamByLearningObjective.has(lo.learningObjective)
   );
+  const weakLearningObjectives = result.learningObjectiveAnalysis.filter(
+    (lo) => lo.percentage < 50
+  );
+  const questionTimes = result.answers
+    .map((answer) => answer.timeSpent)
+    .filter((time) => time > 0);
+  const averageQuestionTime =
+    questionTimes.length > 0
+      ? Math.round(
+          questionTimes.reduce((total, time) => total + time, 0) /
+            questionTimes.length
+        )
+      : 0;
+  const fastestQuestionTime =
+    questionTimes.length > 0 ? Math.min(...questionTimes) : 0;
+  const slowestQuestionTime =
+    questionTimes.length > 0 ? Math.max(...questionTimes) : 0;
+  const historyPoints =
+    attemptHistory.length > 1
+      ? attemptHistory
+          .map((attempt, index) => {
+            const x = 16 + (index * 288) / (attemptHistory.length - 1);
+            const clamped = Math.min(100, Math.max(0, attempt.percentage));
+            const y = 104 - clamped * 0.88;
+            return `${x},${y}`;
+          })
+          .join(' ')
+      : '';
 
   return (
     <div
@@ -603,6 +794,209 @@ export default function ResultsScreen({
                     </ul>
                   </div>
                 </div>
+
+                <div
+                  className={`p-5 rounded-xl border-2 shadow-sm ${
+                    isDarkMode
+                      ? 'border-blue-700 bg-blue-900/10'
+                      : 'border-blue-200 bg-blue-50/40'
+                  }`}
+                >
+                  <div className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
+                    <h4
+                      className={`font-semibold ${
+                        isDarkMode ? 'text-blue-200' : 'text-blue-900'
+                      }`}
+                    >
+                      {text.progressHistory}
+                    </h4>
+                    {historyLoading && (
+                      <span
+                        className={`text-sm ${
+                          isDarkMode ? 'text-slate-300' : 'text-gray-600'
+                        }`}
+                      >
+                        {text.historyLoading}
+                      </span>
+                    )}
+                  </div>
+                  {!historyLoading && attemptHistory.length > 1 ? (
+                    <div className="mt-4">
+                      <svg
+                        viewBox="0 0 320 120"
+                        className="h-40 w-full"
+                        role="img"
+                        aria-label={text.progressHistory}
+                      >
+                        <line
+                          x1="16"
+                          y1="104"
+                          x2="304"
+                          y2="104"
+                          className={
+                            isDarkMode ? 'stroke-slate-600' : 'stroke-gray-300'
+                          }
+                          strokeWidth="1"
+                        />
+                        <line
+                          x1="16"
+                          y1="46.8"
+                          x2="304"
+                          y2="46.8"
+                          className={
+                            isDarkMode ? 'stroke-green-700' : 'stroke-green-300'
+                          }
+                          strokeDasharray="4 4"
+                          strokeWidth="1"
+                        />
+                        <polyline
+                          fill="none"
+                          points={historyPoints}
+                          className={
+                            isDarkMode ? 'stroke-amber-300' : 'stroke-amber-600'
+                          }
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="3"
+                        />
+                        {attemptHistory.map((attempt, index) => {
+                          const x =
+                            16 + (index * 288) / (attemptHistory.length - 1);
+                          const clamped = Math.min(
+                            100,
+                            Math.max(0, attempt.percentage)
+                          );
+                          const y = 104 - clamped * 0.88;
+
+                          return (
+                            <circle
+                              key={attempt.id}
+                              cx={x}
+                              cy={y}
+                              r="4"
+                              className={
+                                attempt.passed
+                                  ? isDarkMode
+                                    ? 'fill-green-300'
+                                    : 'fill-green-600'
+                                  : isDarkMode
+                                    ? 'fill-red-300'
+                                    : 'fill-red-600'
+                              }
+                            />
+                          );
+                        })}
+                      </svg>
+                      <div className="mt-2 grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+                        {attemptHistory.map((attempt) => (
+                          <div
+                            key={attempt.id}
+                            className={
+                              isDarkMode ? 'text-slate-300' : 'text-gray-700'
+                            }
+                          >
+                            {new Date(attempt.created_at).toLocaleDateString(
+                              language === 'es' ? 'es-PY' : 'en-US',
+                              { month: 'short', day: 'numeric' }
+                            )}
+                            : <strong>{attempt.percentage.toFixed(0)}%</strong>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    !historyLoading && (
+                      <p
+                        className={`mt-3 text-sm ${
+                          isDarkMode ? 'text-slate-300' : 'text-gray-600'
+                        }`}
+                      >
+                        {text.historyNoData}
+                      </p>
+                    )
+                  )}
+                </div>
+
+                <div
+                  className={`p-5 rounded-xl border-2 shadow-sm ${
+                    isDarkMode
+                      ? 'border-purple-700 bg-purple-900/10'
+                      : 'border-purple-200 bg-purple-50/40'
+                  }`}
+                >
+                  <h4
+                    className={`font-semibold ${
+                      isDarkMode ? 'text-purple-200' : 'text-purple-900'
+                    }`}
+                  >
+                    {text.studyRecommendations}
+                  </h4>
+                  <p
+                    className={`mt-1 text-sm ${
+                      isDarkMode ? 'text-slate-300' : 'text-gray-600'
+                    }`}
+                  >
+                    {text.studyRecommendationsDesc}
+                  </p>
+                  {weakLearningObjectives.length > 0 ? (
+                    <div className="mt-4 space-y-3">
+                      {weakLearningObjectives.map((lo) => {
+                        const recommendation = getStudyRecommendation(
+                          lo.learningObjective,
+                          language
+                        );
+
+                        return (
+                          <div
+                            key={lo.learningObjective}
+                            className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between"
+                          >
+                            <div>
+                              <p
+                                className={`font-semibold ${
+                                  isDarkMode
+                                    ? 'text-slate-100'
+                                    : 'text-gray-900'
+                                }`}
+                              >
+                                {lo.learningObjective} - {recommendation.title}
+                              </p>
+                              <p
+                                className={`text-sm ${
+                                  isDarkMode
+                                    ? 'text-slate-300'
+                                    : 'text-gray-600'
+                                }`}
+                              >
+                                {recommendation.description}
+                              </p>
+                            </div>
+                            <a
+                              href={recommendation.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`text-sm font-semibold underline decoration-dotted ${
+                                isDarkMode
+                                  ? 'text-purple-200 hover:text-white'
+                                  : 'text-purple-800 hover:text-purple-950'
+                              }`}
+                            >
+                              {text.openSyllabus}
+                            </a>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p
+                      className={`mt-4 text-sm ${
+                        isDarkMode ? 'text-slate-300' : 'text-gray-600'
+                      }`}
+                    >
+                      {text.noStudyRecommendations}
+                    </p>
+                  )}
+                </div>
               </div>
             )}
 
@@ -777,6 +1171,37 @@ export default function ResultsScreen({
 
             {activeTab === 'details' && (
               <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {[
+                    [text.averageQuestionTime, averageQuestionTime],
+                    [text.fastestQuestion, fastestQuestionTime],
+                    [text.slowestQuestion, slowestQuestionTime],
+                  ].map(([label, value]) => (
+                    <div
+                      key={label}
+                      className={`p-4 rounded-xl border-2 shadow-sm ${
+                        isDarkMode
+                          ? 'border-slate-700 bg-slate-700/40'
+                          : 'border-slate-200 bg-slate-50'
+                      }`}
+                    >
+                      <p
+                        className={`text-sm font-medium ${
+                          isDarkMode ? 'text-slate-300' : 'text-gray-600'
+                        }`}
+                      >
+                        {label}
+                      </p>
+                      <p
+                        className={`mt-1 text-2xl font-bold ${
+                          isDarkMode ? 'text-white' : 'text-gray-900'
+                        }`}
+                      >
+                        {formatTime(Number(value))}
+                      </p>
+                    </div>
+                  ))}
+                </div>
                 {result.answers.map((answer, index) => (
                   <div
                     key={answer.questionId}
@@ -812,7 +1237,7 @@ export default function ResultsScreen({
                             </span>
                           )}
                         </h3>
-                        <div className="flex gap-2 text-sm flex-shrink-0">
+                        <div className="flex flex-wrap justify-end gap-2 text-sm">
                           <span
                             className={`px-3 py-1 rounded-full font-medium border ${
                               isDarkMode
@@ -830,6 +1255,15 @@ export default function ResultsScreen({
                             }`}
                           >
                             {answer.kLevel}
+                          </span>
+                          <span
+                            className={`px-3 py-1 rounded-full font-semibold border ${
+                              isDarkMode
+                                ? 'bg-slate-700 text-slate-200 border-slate-600'
+                                : 'bg-slate-100 text-slate-800 border-slate-200'
+                            }`}
+                          >
+                            {text.questionTime}: {formatTime(answer.timeSpent)}
                           </span>
                         </div>
                       </div>
