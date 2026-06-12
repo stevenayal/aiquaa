@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient } from '@/lib/supabase/server';
+import { getExamUserDefaults } from '@/lib/exam-user-defaults';
 import { signChallengeToken } from '../../challenge/_lib/auth';
 
 export const runtime = 'nodejs';
@@ -8,27 +9,31 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { candidateName, candidateEmail, processCode } = body ?? {};
+    let body: Record<string, unknown> = {};
+    try {
+      body = await req.json();
+    } catch {
+      body = {};
+    }
+    const { processCode } = body ?? {};
 
-    if (!candidateName?.trim()) {
+    const authClient = createClient();
+    const {
+      data: { user },
+      error: userError,
+    } = await authClient.auth.getUser();
+
+    if (userError || !user) {
       return NextResponse.json(
-        { error: 'candidateName is required' },
-        { status: 400 }
+        { error: 'Iniciá sesión para rendir este challenge.' },
+        { status: 401 }
       );
     }
 
-    // Resolver el usuario server-side (no confiar en el body); null si invitado
-    let aiquaaUserId: string | null = null;
-    try {
-      const authClient = createClient();
-      const {
-        data: { user },
-      } = await authClient.auth.getUser();
-      aiquaaUserId = user?.id ?? null;
-    } catch {
-      aiquaaUserId = null;
-    }
+    const defaults = getExamUserDefaults(user);
+    const candidateName =
+      defaults.fullName || defaults.email || `Usuario ${user.id.slice(0, 8)}`;
+    const candidateEmail = defaults.email || null;
 
     const supabase = createAdminClient();
 
@@ -75,9 +80,9 @@ export async function POST(req: NextRequest) {
       .from('qac_attempts')
       .insert({
         catalog_id: assessment.id,
-        candidate_name: candidateName.trim(),
-        candidate_email: candidateEmail?.trim() ?? null,
-        aiquaa_user_id: aiquaaUserId,
+        candidate_name: candidateName,
+        candidate_email: candidateEmail,
+        aiquaa_user_id: user.id,
         process_code: resolvedProcessCode,
         status: 'in_progress',
       })
@@ -102,7 +107,7 @@ export async function POST(req: NextRequest) {
     const challengeToken = await signChallengeToken(sessionId, 'usr_001');
 
     return NextResponse.json(
-      { attemptId: attempt.id, challengeToken, sessionId },
+      { attemptId: attempt.id, challengeToken, sessionId, candidateName },
       { status: 201 }
     );
   } catch {

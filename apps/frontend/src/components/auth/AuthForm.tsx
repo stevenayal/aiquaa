@@ -75,6 +75,10 @@ export default function AuthForm({
   const searchParams = useSearchParams();
   const error = searchParams?.get('error');
   const message = searchParams?.get('message');
+  const redirect = searchParams?.get('redirect');
+  const redirectQuery = redirect
+    ? `?redirect=${encodeURIComponent(redirect)}`
+    : '';
 
   const isLogin = mode === 'login';
   const audience: Audience = (formData.audience as Audience) || 'candidato';
@@ -101,8 +105,8 @@ export default function AuthForm({
   const linkHref = isLogin
     ? isEmpresa
       ? '/empresa/registro'
-      : '/register'
-    : '/login';
+      : `/register${redirectQuery}`
+    : `/login${redirectQuery}`;
 
   const fieldClass = (hasError: boolean) =>
     `w-full px-4 py-2.5 rounded-xl border text-sm outline-none shadow-sm transition-all duration-200 focus-visible:ring-2 focus-visible:ring-indigo-400/70 focus-visible:ring-offset-1 ${
@@ -541,7 +545,7 @@ export default function AuthForm({
                   ¿Olvidaste tu contraseña?
                 </Link>
                 <Link
-                  href="/register"
+                  href={`/register${redirectQuery}`}
                   className="font-semibold text-indigo-500 hover:text-indigo-400 underline-offset-4 hover:underline"
                 >
                   {t('auth.register.link')}

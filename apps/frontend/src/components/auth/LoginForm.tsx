@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { resendConfirmationAction } from '@/actions/auth';
 import { createClient } from '@/lib/supabase/client';
 import AuthForm from './AuthForm';
@@ -9,6 +9,7 @@ import EmailVerificationModal from './EmailVerificationModal';
 
 export default function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showAlert, setShowAlert] = useState(false);
@@ -21,6 +22,14 @@ export default function LoginForm() {
   const [showVerifyModal, setShowVerifyModal] = useState(false);
 
   const passwordRef = useRef<HTMLInputElement>(null);
+
+  const getSafeRedirect = () => {
+    const redirect = searchParams?.get('redirect');
+    if (!redirect || !redirect.startsWith('/') || redirect.startsWith('//')) {
+      return null;
+    }
+    return redirect;
+  };
 
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
@@ -71,7 +80,10 @@ export default function LoginForm() {
       setShowAlert(true);
     } else {
       const audience = data.user?.user_metadata?.audience;
-      router.push(audience === 'empresa' ? '/empresa' : '/ranking?welcome=1');
+      router.push(
+        getSafeRedirect() ??
+          (audience === 'empresa' ? '/empresa' : '/ranking?welcome=1')
+      );
       router.refresh();
     }
   };
@@ -108,34 +120,34 @@ export default function LoginForm() {
 
   return (
     <>
-    {showVerifyModal && (
-      <EmailVerificationModal
-        email={formData.email}
-        context="login-blocked"
-        onClose={() => setShowVerifyModal(false)}
-        onResend={handleResend}
+      {showVerifyModal && (
+        <EmailVerificationModal
+          email={formData.email}
+          context="login-blocked"
+          onClose={() => setShowVerifyModal(false)}
+          onResend={handleResend}
+        />
+      )}
+      <AuthForm
+        mode="login"
+        onSubmit={handleSubmit}
+        isLoading={isLoading}
+        errors={errors}
+        formData={formData}
+        onFieldChange={handleChange}
+        onPasswordChange={handlePasswordChange}
+        onClearErrors={() => {
+          setErrors({});
+          setShowAlert(false);
+        }}
+        socialLoginError={socialLoginError}
+        onSocialError={() => {}}
+        showAlert={showAlert}
+        alertMessage={alertMessage}
+        alertType={alertType}
+        showResend={false}
+        passwordRef={passwordRef}
       />
-    )}
-    <AuthForm
-      mode="login"
-      onSubmit={handleSubmit}
-      isLoading={isLoading}
-      errors={errors}
-      formData={formData}
-      onFieldChange={handleChange}
-      onPasswordChange={handlePasswordChange}
-      onClearErrors={() => {
-        setErrors({});
-        setShowAlert(false);
-      }}
-      socialLoginError={socialLoginError}
-      onSocialError={() => {}}
-      showAlert={showAlert}
-      alertMessage={alertMessage}
-      alertType={alertType}
-      showResend={false}
-      passwordRef={passwordRef}
-    />
     </>
   );
 }
