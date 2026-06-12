@@ -68,6 +68,26 @@ export async function ensureApiTestingFundamentalsSeeded() {
     );
   }
 
+  // Podar secciones que ya no existen en la definición (las FK en cascada
+  // eliminan sus preguntas, respuestas y scores).
+  const definedSlugs = new Set(
+    apiTestingFundamentalsDefinition.sections.map((section) => section.slug)
+  );
+  const staleSectionIds = sections
+    .filter((section) => !definedSlugs.has(section.slug))
+    .map((section) => section.id);
+
+  if (staleSectionIds.length > 0) {
+    const { error: pruneSectionsError } = await supabase
+      .from('assessment_sections')
+      .delete()
+      .in('id', staleSectionIds);
+
+    if (pruneSectionsError) {
+      throw new Error(pruneSectionsError.message);
+    }
+  }
+
   for (const section of apiTestingFundamentalsDefinition.sections) {
     const seededSection = sections.find((item) => item.slug === section.slug);
 
@@ -99,6 +119,17 @@ export async function ensureApiTestingFundamentalsSeeded() {
 
     if (questionsError) {
       throw new Error(questionsError.message);
+    }
+
+    // Podar preguntas sobrantes si la sección se achicó respecto al seed previo.
+    const { error: pruneQuestionsError } = await supabase
+      .from('assessment_questions')
+      .delete()
+      .eq('section_id', seededSection.id)
+      .gt('order_index', section.questions.length);
+
+    if (pruneQuestionsError) {
+      throw new Error(pruneQuestionsError.message);
     }
   }
 
