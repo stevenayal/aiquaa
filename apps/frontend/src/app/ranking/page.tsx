@@ -86,6 +86,18 @@ const EXAM_TABS = [
     color: 'from-blue-500 to-indigo-600',
   },
   {
+    key: 'database-fundamentals',
+    label: 'DB Fundamentos',
+    emoji: '🗄️',
+    color: 'from-amber-500 to-yellow-600',
+  },
+  {
+    key: 'database-practice',
+    label: 'DB Práctica',
+    emoji: '🧮',
+    color: 'from-lime-500 to-green-600',
+  },
+  {
     key: 'xp',
     label: 'XP Comunidad',
     emoji: '🚀',
@@ -101,6 +113,8 @@ const EXAM_TAB_URLS: Record<string, string> = {
   performance: '/labs/performance',
   'api-testing-fundamentals': '/assessments/api-testing-fundamentals',
   'api-banking': '/assessments/api-banking',
+  'database-fundamentals': '/assessments/database-fundamentals',
+  'database-practice': '/assessments/database-practice',
 };
 
 const MEDAL = ['🥇', '🥈', '🥉'];
@@ -777,6 +791,8 @@ export default function RankingPage() {
     performance: [],
     'api-testing-fundamentals': [],
     'api-banking': [],
+    'database-fundamentals': [],
+    'database-practice': [],
   });
   const [examLoading, setExamLoading] = useState<Record<string, boolean>>({
     git: true,
@@ -784,6 +800,8 @@ export default function RankingPage() {
     performance: true,
     'api-testing-fundamentals': true,
     'api-banking': true,
+    'database-fundamentals': true,
+    'database-practice': true,
   });
   const [showWelcome, setShowWelcome] = useState(false);
 
@@ -806,6 +824,8 @@ export default function RankingPage() {
         'performance',
         'api-testing-fundamentals',
         'api-banking',
+        'database-fundamentals',
+        'database-practice',
       ] as const
     ).forEach((key) => {
       getLeaderboardAction(key, 20)

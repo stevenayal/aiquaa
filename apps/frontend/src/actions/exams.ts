@@ -10,7 +10,9 @@ interface SaveExamResultPayload {
     | 'performance'
     | 'test-app'
     | 'api-testing-fundamentals'
-    | 'api-banking';
+    | 'api-banking'
+    | 'database-fundamentals'
+    | 'database-practice';
   exam_mode: 'exam' | 'training';
   participant_name?: string;
   participant_email?: string;
@@ -72,7 +74,9 @@ export async function getLeaderboardAction(
     | 'istqb'
     | 'performance'
     | 'api-testing-fundamentals'
-    | 'api-banking',
+    | 'api-banking'
+    | 'database-fundamentals'
+    | 'database-practice',
   limit = 20
 ) {
   const supabase = createClient();

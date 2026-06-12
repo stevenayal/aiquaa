@@ -92,6 +92,8 @@ const EXAM_LABELS: Record<string, string> = {
   performance: 'Performance',
   'api-testing-fundamentals': 'API Testing Fundamentals',
   'api-banking': 'API Banking Challenge',
+  'database-fundamentals': 'Bases de Datos — Fundamentos',
+  'database-practice': 'Bases de Datos — Práctica SQL',
 };
 
 const SOURCES = [

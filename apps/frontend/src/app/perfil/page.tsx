@@ -15,7 +15,15 @@ import { xpForLevel, PY_TIMEZONE } from '@/lib/xp';
 
 interface ExamResultRow {
   id: string;
-  exam_type: 'git' | 'istqb' | 'performance' | 'api-testing-fundamentals';
+  exam_type:
+    | 'git'
+    | 'istqb'
+    | 'performance'
+    | 'test-app'
+    | 'api-testing-fundamentals'
+    | 'api-banking'
+    | 'database-fundamentals'
+    | 'database-practice';
   exam_mode: 'exam' | 'training';
   score: number;
   total_questions: number;
@@ -27,6 +35,23 @@ interface ExamResultRow {
   language?: string;
   created_at: string;
 }
+
+const EXAM_DISPLAY: Record<string, { emoji: string; label: string }> = {
+  git: { emoji: '🌿', label: 'GIT' },
+  istqb: { emoji: '📋', label: 'ISTQB CTFL' },
+  performance: { emoji: '⚡', label: 'Performance' },
+  'test-app': { emoji: '🧪', label: 'Test App' },
+  'api-testing-fundamentals': {
+    emoji: '🌐',
+    label: 'API Testing Fundamentals',
+  },
+  'api-banking': { emoji: '🏦', label: 'API Banking Challenge' },
+  'database-fundamentals': {
+    emoji: '🗄️',
+    label: 'Bases de Datos — Fundamentos',
+  },
+  'database-practice': { emoji: '🧮', label: 'Bases de Datos — Práctica SQL' },
+};
 
 const formatTime = (s: number) => {
   const m = Math.floor(s / 60);
@@ -841,21 +866,16 @@ export default function PerfilPage() {
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <span className="text-lg shrink-0">
-                      {r.exam_type === 'git'
-                        ? '🌿'
-                        : r.exam_type === 'performance'
-                          ? '⚡'
-                          : '📋'}
+                      {EXAM_DISPLAY[r.exam_type]?.emoji ?? '📋'}
                     </span>
                     <div className="min-w-0">
                       <p
                         className={`text-sm font-medium ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}
                       >
-                        {r.exam_type === 'git'
-                          ? 'GIT'
-                          : r.exam_type === 'performance'
-                            ? 'Performance'
-                            : `ISTQB CTFL${r.model ? ` · Modelo ${r.model}` : ''}`}
+                        {EXAM_DISPLAY[r.exam_type]?.label ?? r.exam_type}
+                        {r.exam_type === 'istqb' && r.model
+                          ? ` · Modelo ${r.model}`
+                          : ''}
                         {' · '}
                         <span
                           className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}

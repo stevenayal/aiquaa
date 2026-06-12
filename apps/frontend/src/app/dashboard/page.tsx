@@ -47,6 +47,16 @@ const LAB_INFO = {
     label: 'API Banking — Challenge práctico',
     href: '/assessments/api-banking',
   },
+  'database-fundamentals': {
+    emoji: '🗄️',
+    label: 'Bases de Datos — Fundamentos',
+    href: '/assessments/database-fundamentals',
+  },
+  'database-practice': {
+    emoji: '🧮',
+    label: 'Bases de Datos — Práctica SQL',
+    href: '/assessments/database-practice',
+  },
 } as const;
 
 export default function DashboardPage() {
