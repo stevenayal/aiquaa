@@ -5,7 +5,11 @@ import type { ExamResult } from '../types';
 export function useSubmitResults(
   result: ExamResult,
   mode: 'exam' | 'training',
-  processCode?: string
+  options?: {
+    processCode?: string;
+    model?: string;
+    language?: string;
+  }
 ) {
   const [isSaved, setIsSaved] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,7 +35,9 @@ export function useSubmitResults(
           time_spent: result.timeSpent,
           answers: result.answers as any,
           learning_objectives: result.learningObjectiveAnalysis as any,
-          process_code: processCode?.trim() || undefined,
+          model: options?.model,
+          language: options?.language,
+          process_code: options?.processCode?.trim() || undefined,
         });
 
         if (res.error) {

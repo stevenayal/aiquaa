@@ -72,6 +72,7 @@ export interface AnswerDetail {
   isCorrect: boolean;
   learningObjective: string;
   kLevel: string;
+  timeSpent: number;
   explanations: Record<string, Explanation>;
 }
 

@@ -43,15 +43,13 @@ export function shuffleArray<T>(array: T[]): T[] {
 
 export function selectRandomQuestions(
   questions: ExamQuestion[],
-  count: number,
+  count: number
 ): ExamQuestion[] {
   const shuffled = shuffleArray(questions);
   return shuffled.slice(0, count);
 }
 
-export function shuffleQuestionOptions(
-  question: ExamQuestion,
-): ExamQuestion {
+export function shuffleQuestionOptions(question: ExamQuestion): ExamQuestion {
   const shuffledOptions = shuffleArray(question.options);
   return {
     ...question,
@@ -62,7 +60,7 @@ export function shuffleQuestionOptions(
 export function prepareExamQuestions(
   questions: ExamQuestion[],
   count: number,
-  shuffleOptions: boolean = true,
+  shuffleOptions: boolean = true
 ): ExamQuestion[] {
   const selected = selectRandomQuestions(questions, count);
 
@@ -75,7 +73,7 @@ export function prepareExamQuestions(
 
 export function checkAnswer(
   userAnswer: string[],
-  correctAnswer: string[],
+  correctAnswer: string[]
 ): boolean {
   if (userAnswer.length !== correctAnswer.length) {
     return false;
@@ -89,7 +87,7 @@ export function checkAnswer(
 
 export function calculateScore(
   questions: ExamQuestion[],
-  answers: Map<number, string[]>,
+  answers: Map<number, string[]>
 ): number {
   let score = 0;
 
@@ -109,6 +107,7 @@ export function generateExamResult(
   answers: Map<number, string[]>,
   timeSpent: number,
   passingScore: number,
+  questionDurations: Map<number, number> = new Map()
 ): ExamResult {
   const answerDetails: AnswerDetail[] = questions.map((question) => {
     const userAnswer = answers.get(question.id) || [];
@@ -122,6 +121,7 @@ export function generateExamResult(
       isCorrect,
       learningObjective: question.learningObjective,
       kLevel: question.kLevel,
+      timeSpent: questionDurations.get(question.id) ?? 0,
       explanations: question.explanations,
     };
   });
@@ -132,9 +132,8 @@ export function generateExamResult(
   const percentage = (score / questions.length) * 100;
   const passed = score >= passingScore;
 
-  const learningObjectiveAnalysis = calculateLearningObjectiveAnalysis(
-    answerDetails,
-  );
+  const learningObjectiveAnalysis =
+    calculateLearningObjectiveAnalysis(answerDetails);
 
   return {
     participantName,
@@ -151,7 +150,7 @@ export function generateExamResult(
 }
 
 export function calculateLearningObjectiveAnalysis(
-  answers: AnswerDetail[],
+  answers: AnswerDetail[]
 ): LearningObjectiveResult[] {
   const loMap = new Map<string, { total: number; correct: number }>();
 
@@ -179,7 +178,7 @@ export function calculateLearningObjectiveAnalysis(
   });
 
   return results.sort((a, b) =>
-    a.learningObjective.localeCompare(b.learningObjective),
+    a.learningObjective.localeCompare(b.learningObjective)
   );
 }
 
@@ -198,6 +197,7 @@ export function exportToCSV(result: ExamResult): string {
     'Correcto',
     'Learning Objective',
     'K-Level',
+    'Tiempo por Pregunta (s)',
   ];
 
   const rows = result.answers.map((answer) => [
@@ -208,6 +208,7 @@ export function exportToCSV(result: ExamResult): string {
     answer.isCorrect ? 'Sí' : 'No',
     answer.learningObjective,
     answer.kLevel,
+    answer.timeSpent.toString(),
   ]);
 
   const csv = [
