@@ -1,16 +1,69 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect, useMemo, useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
+import { getExamResultsAction } from '@/actions/exams';
 import BugReportWidget from '@/components/BugReportWidget';
 import { SuruFloating } from '@/components/Suru';
+
+interface ExamProgressResult {
+  exam_type: string;
+  exam_mode: string;
+  score: number;
+  total_questions: number;
+  max_possible_score: number | null;
+  passed: boolean;
+  percentage: number;
+  created_at: string;
+}
+
+interface ToolProgress {
+  passed: boolean;
+  bestScore: number;
+  maxScore: number;
+  bestPercentage: number;
+  lastAttemptAt: string;
+}
+
+function formatProgressDate(iso: string) {
+  return new Date(iso).toLocaleDateString('es-PY', {
+    day: '2-digit',
+    month: 'short',
+  });
+}
 
 export default function LabsPage() {
   const { isDarkMode } = useTheme();
   const { t } = useLanguage();
   const { user } = useSupabaseAuth();
+  const [examResults, setExamResults] = useState<ExamProgressResult[]>([]);
+
+  useEffect(() => {
+    let active = true;
+
+    if (!user) {
+      setExamResults([]);
+      return () => {
+        active = false;
+      };
+    }
+
+    getExamResultsAction()
+      .then((res) => {
+        if (!active) return;
+        setExamResults((res.data as ExamProgressResult[] | null) ?? []);
+      })
+      .catch(() => {
+        if (active) setExamResults([]);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [user]);
 
   const toolCategories = [
     {
@@ -277,6 +330,39 @@ export default function LabsPage() {
     },
   ];
 
+  const progressByTool = useMemo(() => {
+    const progress = new Map<string, ToolProgress>();
+
+    for (const result of examResults) {
+      const maxScore =
+        result.max_possible_score ?? result.total_questions ?? result.score;
+      const current = progress.get(result.exam_type);
+      const currentBest = current?.bestPercentage ?? -1;
+      const isBetter = result.percentage > currentBest;
+
+      progress.set(result.exam_type, {
+        passed:
+          Boolean(current?.passed) ||
+          (result.exam_mode === 'exam' && result.passed),
+        bestScore: isBetter
+          ? result.score
+          : (current?.bestScore ?? result.score),
+        maxScore: isBetter ? maxScore : (current?.maxScore ?? maxScore),
+        bestPercentage: isBetter
+          ? result.percentage
+          : (current?.bestPercentage ?? result.percentage),
+        lastAttemptAt:
+          !current ||
+          new Date(result.created_at).getTime() >
+            new Date(current.lastAttemptAt).getTime()
+            ? result.created_at
+            : current.lastAttemptAt,
+      });
+    }
+
+    return progress;
+  }, [examResults]);
+
   return (
     <div
       className={`min-h-screen py-12 md:py-16 transition-colors duration-300 ${
@@ -382,6 +468,8 @@ export default function LabsPage() {
               .filter((tool) => tool.featured)
               .slice(0, 3)
               .map((tool, index) => {
+                const progress = progressByTool.get(tool.id);
+
                 return (
                   <Link
                     key={tool.id}
@@ -414,6 +502,11 @@ export default function LabsPage() {
                           >
                             {tool.name}
                           </h3>
+                          {progress?.passed && (
+                            <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold uppercase text-emerald-400">
+                              Aprobado
+                            </span>
+                          )}
                         </div>
                         <p
                           className={`text-xs ${
@@ -422,6 +515,18 @@ export default function LabsPage() {
                         >
                           {tool.description}
                         </p>
+                        {progress && (
+                          <p
+                            className={`mt-2 text-xs font-semibold ${
+                              isDarkMode
+                                ? 'text-emerald-300'
+                                : 'text-emerald-700'
+                            }`}
+                          >
+                            Mejor: {progress.bestScore}/{progress.maxScore} (
+                            {Math.round(progress.bestPercentage)}%)
+                          </p>
+                        )}
                       </div>
                     </div>
                   </Link>
@@ -455,6 +560,8 @@ export default function LabsPage() {
               {/* Tools Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {category.tools.map((tool) => {
+                  const progress = progressByTool.get(tool.id);
+
                   return (
                     <Link
                       key={tool.id}
@@ -470,6 +577,11 @@ export default function LabsPage() {
                         <div className="flex items-start justify-between gap-2 mb-3">
                           <div className="text-3xl">{tool.icon}</div>
                           <div className="flex flex-col items-end gap-2">
+                            {progress?.passed && (
+                              <span className="px-2 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                                Aprobado
+                              </span>
+                            )}
                             {tool.featured && (
                               <span
                                 className={`px-2 py-1 rounded-full text-xs font-semibold ${
@@ -492,6 +604,28 @@ export default function LabsPage() {
                         <p className="text-white/90 text-sm">
                           {tool.description}
                         </p>
+                        {progress && (
+                          <div className="mt-4 rounded-lg bg-white/15 p-3 text-sm backdrop-blur-sm">
+                            <div className="flex items-center justify-between gap-3 font-semibold">
+                              <span>Mejor puntaje</span>
+                              <span>
+                                {progress.bestScore}/{progress.maxScore}
+                              </span>
+                            </div>
+                            <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/25">
+                              <div
+                                className="h-full rounded-full bg-white"
+                                style={{
+                                  width: `${Math.min(100, Math.max(0, progress.bestPercentage))}%`,
+                                }}
+                              />
+                            </div>
+                            <p className="mt-2 text-xs text-white/85">
+                              Ultimo intento:{' '}
+                              {formatProgressDate(progress.lastAttemptAt)}
+                            </p>
+                          </div>
+                        )}
                       </div>
                       <div className="p-6 shrink-0">
                         <div className="flex items-center justify-between">
@@ -500,7 +634,11 @@ export default function LabsPage() {
                               isDarkMode ? 'text-slate-400' : 'text-brand-muted'
                             }`}
                           >
-                            {t('labs.action')}
+                            {progress?.passed
+                              ? 'Mejorar puntaje'
+                              : progress
+                                ? 'Reintentar'
+                                : t('labs.action')}
                           </span>
                           <svg
                             className={`w-5 h-5 transition-colors ${

@@ -38,6 +38,7 @@ interface XpRankingEntry {
   achievementCount: number;
   lastActivityAt: string | null;
   mainBadge: string | null;
+  isCurrentUser: boolean;
 }
 
 interface XpRankingResponse {
@@ -214,13 +215,7 @@ function LevelBar({
 
 // ── XP Comunidad tab ──────────────────────────────────────────────────────────
 
-function XpComunidadTab({
-  isDarkMode,
-  currentUserName,
-}: {
-  isDarkMode: boolean;
-  currentUserName: string | null;
-}) {
+function XpComunidadTab({ isDarkMode }: { isDarkMode: boolean }) {
   const [data, setData] = useState<XpRankingResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -453,8 +448,7 @@ function XpComunidadTab({
 
         {/* Filas */}
         {(isFirstPage ? rest : data.data).map((entry, i, arr) => {
-          const isCurrentUser =
-            currentUserName !== null && entry.displayName === currentUserName;
+          const isCurrentUser = entry.isCurrentUser;
           return (
             <div
               key={entry.position}
@@ -925,14 +919,7 @@ export default function RankingPage() {
         {isReportes ? (
           <ReportadoresTab isDarkMode={isDarkMode} />
         ) : isXp ? (
-          <XpComunidadTab
-            isDarkMode={isDarkMode}
-            currentUserName={
-              user?.user_metadata?.full_name ||
-              user?.user_metadata?.display_name ||
-              null
-            }
-          />
+          <XpComunidadTab isDarkMode={isDarkMode} />
         ) : isLoading ? (
           <div className="flex justify-center py-16">
             <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-indigo-500" />

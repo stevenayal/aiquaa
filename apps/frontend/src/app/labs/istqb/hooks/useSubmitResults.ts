@@ -9,10 +9,12 @@ export function useSubmitResults(
 ) {
   const [isSaved, setIsSaved] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
     const submit = async () => {
       setIsSubmitting(true);
+      setSaveError(null);
       try {
         const res = await saveExamResultAction({
           exam_type: 'istqb',
@@ -34,11 +36,15 @@ export function useSubmitResults(
 
         if (res.error) {
           console.error('Error guardando resultado ISTQB:', res.error);
+          setSaveError(res.error);
         } else {
           setIsSaved(true);
         }
       } catch (err) {
         console.error('Error guardando resultado ISTQB:', err);
+        setSaveError(
+          err instanceof Error ? err.message : 'No se pudo guardar el resultado'
+        );
       } finally {
         setIsSubmitting(false);
       }
@@ -47,5 +53,5 @@ export function useSubmitResults(
     submit();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return { isSaved, isSubmitting };
+  return { isSaved, isSubmitting, saveError };
 }
