@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { startAssessmentAttemptAction } from '@/actions/assessments';
@@ -12,6 +12,12 @@ export default function StartApiTestingFundamentalsPage() {
   const [processCode, setProcessCode] = useState('');
   const [error, setError] = useState('');
   const [isPending, startTransition] = useTransition();
+
+  // Pre-fill desde ?code= (links de invitaciones/procesos de empresa)
+  useEffect(() => {
+    const codeParam = new URLSearchParams(window.location.search).get('code');
+    if (codeParam) setProcessCode(codeParam);
+  }, []);
 
   function handleStart() {
     setError('');

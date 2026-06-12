@@ -2,6 +2,9 @@ import type { AssessmentSeedDefinition } from '../types';
 
 export const API_TESTING_FUNDAMENTALS_SLUG = 'api-testing-fundamentals';
 
+// Bumpear cuando cambie la definición (secciones/preguntas) para forzar re-seed.
+export const API_TESTING_SEED_VERSION = 1;
+
 export const apiTestingFundamentalsDefinition: AssessmentSeedDefinition = {
   slug: API_TESTING_FUNDAMENTALS_SLUG,
   title: 'API Testing Fundamentals Challenge',

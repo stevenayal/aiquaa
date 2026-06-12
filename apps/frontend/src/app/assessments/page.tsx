@@ -26,7 +26,7 @@ export default function AssessmentsIndexPage() {
             <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
               <div className="max-w-3xl">
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-amber-300">
-                  Nuevo challenge
+                  Examen teórico · Auto-corregido
                 </p>
                 <h2 className="mt-2 text-3xl font-bold">{overview.title}</h2>
                 <p className="mt-3 text-slate-300">{overview.description}</p>
@@ -80,18 +80,18 @@ export default function AssessmentsIndexPage() {
             <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
               <div className="max-w-3xl">
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-300">
-                  API Testing · Semi Senior
+                  Challenge práctico · Auto-corregido · Semi Senior
                 </p>
                 <h2 className="mt-2 text-3xl font-bold">
-                  QA API Challenge{' '}
+                  API Banking{' '}
                   <span className="font-normal text-slate-400">
-                    — Banking Transactions
+                    — Challenge práctico (Banking Transactions)
                   </span>
                 </h2>
                 <p className="mt-3 text-slate-300">
-                  Explorá y testeá una API bancaria simulada. Identificá 12
-                  bugs intencionales, diseñá casos de prueba y generá un
-                  reporte profesional. Auto-scoring de 100 pts.
+                  Explorá y testeá una API bancaria simulada. Identificá 12 bugs
+                  intencionales, diseñá casos de prueba y generá un reporte
+                  profesional. Auto-scoring de 100 pts.
                 </p>
                 <div className="mt-5 flex flex-wrap gap-3 text-sm text-slate-300">
                   <span className="rounded-full border border-slate-700 px-3 py-1">
@@ -117,10 +117,26 @@ export default function AssessmentsIndexPage() {
             </div>
             <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
               {[
-                { label: 'Diseño de tests', pts: 25, desc: 'Variedad y cobertura' },
-                { label: 'Validación API', pts: 25, desc: 'Bugs funcionales y contrato' },
-                { label: 'Seguridad', pts: 20, desc: 'IDOR, datos sensibles, auth' },
-                { label: 'Bug Reporting', pts: 20, desc: 'Calidad y completitud' },
+                {
+                  label: 'Diseño de tests',
+                  pts: 25,
+                  desc: 'Variedad y cobertura',
+                },
+                {
+                  label: 'Validación API',
+                  pts: 25,
+                  desc: 'Bugs funcionales y contrato',
+                },
+                {
+                  label: 'Seguridad',
+                  pts: 20,
+                  desc: 'IDOR, datos sensibles, auth',
+                },
+                {
+                  label: 'Bug Reporting',
+                  pts: 20,
+                  desc: 'Calidad y completitud',
+                },
                 { label: 'Resumen', pts: 10, desc: 'Síntesis ejecutiva' },
               ].map((cat) => (
                 <div

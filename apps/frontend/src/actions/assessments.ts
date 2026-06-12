@@ -1,14 +1,19 @@
 'use server';
 
 import { saveExamResultAction } from '@/actions/exams';
-import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient } from '@/lib/supabase/server';
-import { API_TESTING_FUNDAMENTALS_SLUG } from '@/app/assessments/api-testing-fundamentals/data/assessment-definition';
+import {
+  API_TESTING_FUNDAMENTALS_SLUG,
+  API_TESTING_SEED_VERSION,
+} from '@/app/assessments/api-testing-fundamentals/data/assessment-definition';
 import {
   API_TESTING_GAMIFICATION_RULES,
   buildApiTestingGamificationEvents,
-  calculateXpLevel,
 } from '@/app/assessments/api-testing-fundamentals/lib/gamification';
+import {
+  ensureXpRules,
+  grantGamificationXpEvent,
+} from '@/lib/gamification/grant-xp';
 import {
   buildAssessmentFeedback,
   deriveCandidateLevel,
@@ -31,24 +36,6 @@ import type {
   AssessmentSectionScore,
 } from '@/app/assessments/api-testing-fundamentals/types';
 
-type XpRuleRow = {
-  id: string | number;
-  event_type: string;
-  xp_amount: number;
-  description: string;
-  daily_limit: number | null;
-  is_active: boolean;
-};
-
-type UserXpRow = {
-  id: string;
-  user_id: string;
-  total_xp: number;
-  level: number;
-  current_streak: number | null;
-  longest_streak: number | null;
-};
-
 async function getAuthenticatedUser() {
   const supabase = createClient();
   const {
@@ -63,117 +50,6 @@ async function getAuthenticatedUser() {
   return { supabase, user };
 }
 
-async function ensureApiTestingGamificationRules() {
-  const admin = createAdminClient();
-
-  const payload = API_TESTING_GAMIFICATION_RULES.map((rule) => ({
-    event_type: rule.eventType,
-    xp_amount: rule.xpAmount,
-    description: rule.description,
-    daily_limit: rule.dailyLimit,
-    is_active: true,
-  }));
-
-  const { error } = await admin
-    .from('xp_rules')
-    .upsert(payload, { onConflict: 'event_type' });
-
-  if (error) {
-    throw new Error(error.message);
-  }
-}
-
-async function grantGamificationXpEvent(input: {
-  userId: string;
-  eventType: string;
-  source: string;
-  sourceId: string;
-  metadata: Record<string, unknown>;
-}) {
-  const admin = createAdminClient();
-  const deduplicationKey = `${input.eventType}:${input.sourceId}`;
-
-  const [
-    { data: rule, error: ruleError },
-    { data: existing, error: existingError },
-  ] = await Promise.all([
-    admin
-      .from('xp_rules')
-      .select('id, event_type, xp_amount, description, daily_limit, is_active')
-      .eq('event_type', input.eventType)
-      .eq('is_active', true)
-      .maybeSingle<XpRuleRow>(),
-    admin
-      .from('xp_history')
-      .select('id')
-      .eq('user_id', input.userId)
-      .eq('deduplication_key', deduplicationKey)
-      .maybeSingle(),
-  ]);
-
-  if (ruleError) throw new Error(ruleError.message);
-  if (existingError) throw new Error(existingError.message);
-  if (!rule || existing) return;
-
-  if (rule.daily_limit !== null && rule.daily_limit !== undefined) {
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
-    const tomorrowStart = new Date(todayStart);
-    tomorrowStart.setDate(tomorrowStart.getDate() + 1);
-
-    const { count, error: countError } = await admin
-      .from('xp_history')
-      .select('id', { count: 'exact', head: true })
-      .eq('user_id', input.userId)
-      .eq('event_type', input.eventType)
-      .gte('created_at', todayStart.toISOString())
-      .lt('created_at', tomorrowStart.toISOString());
-
-    if (countError) throw new Error(countError.message);
-    if ((count ?? 0) >= rule.daily_limit) return;
-  }
-
-  const { data: currentXp, error: currentXpError } = await admin
-    .from('user_xp')
-    .select('id, user_id, total_xp, level, current_streak, longest_streak')
-    .eq('user_id', input.userId)
-    .maybeSingle<UserXpRow>();
-
-  if (currentXpError) throw new Error(currentXpError.message);
-
-  const nextTotalXp = (currentXp?.total_xp ?? 0) + rule.xp_amount;
-  const nextLevel = calculateXpLevel(nextTotalXp);
-  const now = new Date().toISOString();
-
-  const { error: historyError } = await admin.from('xp_history').insert({
-    user_id: input.userId,
-    xp_rule_id: rule.id,
-    event_type: input.eventType,
-    xp_amount: rule.xp_amount,
-    source: input.source,
-    source_id: input.sourceId,
-    deduplication_key: deduplicationKey,
-    metadata: input.metadata,
-  });
-
-  if (historyError) throw new Error(historyError.message);
-
-  const { error: userXpError } = await admin.from('user_xp').upsert(
-    {
-      user_id: input.userId,
-      total_xp: nextTotalXp,
-      level: nextLevel,
-      current_streak: currentXp?.current_streak ?? 0,
-      longest_streak: currentXp?.longest_streak ?? 0,
-      last_activity_at: now,
-      updated_at: now,
-    },
-    { onConflict: 'user_id' }
-  );
-
-  if (userXpError) throw new Error(userXpError.message);
-}
-
 async function awardApiTestingGamification(input: {
   userId: string;
   attemptId: string;
@@ -182,7 +58,7 @@ async function awardApiTestingGamification(input: {
   score: number;
   candidateLevel: string;
 }) {
-  await ensureApiTestingGamificationRules();
+  await ensureXpRules(API_TESTING_GAMIFICATION_RULES);
 
   const events = buildApiTestingGamificationEvents({
     attemptId: input.attemptId,
@@ -204,20 +80,42 @@ async function awardApiTestingGamification(input: {
   }
 }
 
+// Memo por instancia: una vez verificada la versión del seed, las requests
+// siguientes de esa lambda no vuelven a comparar metadata.
+let verifiedSeedVersion: number | null = null;
+
 async function getAssessmentBySlug(slug: string) {
-  if (slug === API_TESTING_FUNDAMENTALS_SLUG) {
-    await ensureApiTestingFundamentalsSeeded();
+  const { supabase } = await getAuthenticatedUser();
+
+  const fetchAssessment = () =>
+    supabase
+      .from('assessments')
+      .select('*')
+      .eq('slug', slug)
+      .eq('is_active', true)
+      .maybeSingle();
+
+  let { data: assessment } = await fetchAssessment();
+
+  if (
+    slug === API_TESTING_FUNDAMENTALS_SLUG &&
+    verifiedSeedVersion !== API_TESTING_SEED_VERSION
+  ) {
+    const seededVersion = (
+      assessment?.metadata as Record<string, unknown> | null
+    )?.seedVersion;
+
+    if (!assessment || seededVersion !== API_TESTING_SEED_VERSION) {
+      await ensureApiTestingFundamentalsSeeded();
+      ({ data: assessment } = await fetchAssessment());
+    }
+
+    if (assessment) {
+      verifiedSeedVersion = API_TESTING_SEED_VERSION;
+    }
   }
 
-  const { supabase } = await getAuthenticatedUser();
-  const { data: assessment, error } = await supabase
-    .from('assessments')
-    .select('*')
-    .eq('slug', slug)
-    .eq('is_active', true)
-    .single();
-
-  if (error || !assessment) {
+  if (!assessment) {
     throw new Error('Assessment no encontrado');
   }
 
@@ -602,7 +500,7 @@ export async function finalizeAssessmentAttemptAction(attemptId: string) {
   const correctAnswers = answers.filter((answer) => answer.is_correct).length;
   const incorrectAnswers = Math.max(0, answers.length - correctAnswers);
 
-  await saveExamResultAction({
+  const examResult = await saveExamResultAction({
     exam_type: 'api-testing-fundamentals',
     exam_mode: 'exam',
     score: totalScore,
@@ -628,6 +526,13 @@ export async function finalizeAssessmentAttemptAction(attemptId: string) {
       recommendations: generatedFeedback.recommendations,
     },
   });
+
+  if (examResult?.error) {
+    console.warn(
+      '[assessments] no se pudo guardar exam_results para api-testing-fundamentals',
+      examResult.error
+    );
+  }
 
   try {
     await awardApiTestingGamification({

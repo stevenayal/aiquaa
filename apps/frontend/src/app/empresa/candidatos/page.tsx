@@ -41,6 +41,7 @@ const EXAM_LABELS: Record<string, string> = {
   git: 'Git',
   performance: 'Performance',
   'api-testing-fundamentals': 'API Testing Fundamentals',
+  'api-banking': 'API Banking Challenge',
 };
 
 type SortKey = 'percentage' | 'created_at' | 'participant_name';

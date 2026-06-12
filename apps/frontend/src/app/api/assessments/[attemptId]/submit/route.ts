@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { autoScore } from '@/app/assessments/api-banking/lib/scoring';
+import {
+  API_BANKING_GAMIFICATION_RULES,
+  API_BANKING_PASS_THRESHOLD,
+  buildApiBankingGamificationEvents,
+} from '@/app/assessments/api-banking/lib/gamification';
+import {
+  ensureXpRules,
+  grantGamificationXpEvent,
+} from '@/lib/gamification/grant-xp';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -18,7 +27,9 @@ export async function POST(
   // Fetch attempt
   const { data: attempt } = await supabase
     .from('qac_attempts')
-    .select('id, status')
+    .select(
+      'id, status, started_at, aiquaa_user_id, candidate_name, candidate_email, process_code'
+    )
     .eq('id', attemptId)
     .single();
 
@@ -91,16 +102,93 @@ export async function POST(
   });
 
   // Update attempt status
+  const submittedAt = new Date().toISOString();
   await supabase
     .from('qac_attempts')
     .update({
       status: 'submitted',
-      submitted_at: new Date().toISOString(),
+      submitted_at: submittedAt,
       total_score: scoreResult.totalScore,
       summary: summary ?? null,
-      updated_at: new Date().toISOString(),
+      updated_at: submittedAt,
     })
     .eq('id', attemptId);
+
+  // Resultado para ranking/dashboard de empresa + XP (solo usuarios autenticados:
+  // exam_results.user_id es NOT NULL). Nunca debe romper el submit del candidato.
+  if (attempt.aiquaa_user_id) {
+    const totalScore = Math.round(scoreResult.totalScore);
+    const passed = totalScore >= API_BANKING_PASS_THRESHOLD;
+    const timeSpentSeconds = Math.max(
+      60,
+      Math.round(
+        (new Date(submittedAt).getTime() -
+          new Date(attempt.started_at).getTime()) /
+          1000
+      )
+    );
+
+    const { error: examResultError } = await supabase
+      .from('exam_results')
+      .insert({
+        user_id: attempt.aiquaa_user_id,
+        exam_type: 'api-banking',
+        exam_mode: 'exam',
+        score: totalScore,
+        total_questions: scoreResult.bugsTotal,
+        max_possible_score: 100,
+        correct_answers: scoreResult.bugsFound,
+        incorrect_answers: Math.max(
+          0,
+          scoreResult.bugsTotal - scoreResult.bugsFound
+        ),
+        passing_score: API_BANKING_PASS_THRESHOLD,
+        passed,
+        percentage: totalScore,
+        time_spent: timeSpentSeconds,
+        process_code: attempt.process_code ?? null,
+        participant_name: attempt.candidate_name,
+        participant_email: attempt.candidate_email,
+        metadata: {
+          qac_attempt_id: attemptId,
+          test_design_score: scoreResult.testDesignScore,
+          api_validation_score: scoreResult.apiValidationScore,
+          security_score: scoreResult.securityScore,
+          bug_reporting_score: scoreResult.bugReportingScore,
+          executive_summary_score: scoreResult.executiveSummaryScore,
+          bugs_found: scoreResult.bugsFound,
+          bugs_total: scoreResult.bugsTotal,
+        },
+      });
+
+    if (examResultError) {
+      console.warn(
+        '[api-banking] no se pudo guardar exam_results',
+        examResultError.message
+      );
+    }
+
+    try {
+      await ensureXpRules(API_BANKING_GAMIFICATION_RULES);
+      const events = buildApiBankingGamificationEvents({
+        attemptId,
+        totalScore,
+        bugsFound: scoreResult.bugsFound,
+        bugsTotal: scoreResult.bugsTotal,
+      });
+      for (const event of events) {
+        await grantGamificationXpEvent({
+          userId: attempt.aiquaa_user_id,
+          eventType: event.eventType,
+          source: 'API_BANKING',
+          sourceId: event.sourceId,
+          metadata: event.metadata,
+        });
+      }
+    } catch (gamificationError) {
+      console.warn('[api-banking] gamification sync failed', gamificationError);
+    }
+  }
 
   return NextResponse.json({ ok: true, score: scoreResult }, { status: 200 });
 }

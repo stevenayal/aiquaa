@@ -91,6 +91,7 @@ const EXAM_LABELS: Record<string, string> = {
   git: 'Git',
   performance: 'Performance',
   'api-testing-fundamentals': 'API Testing Fundamentals',
+  'api-banking': 'API Banking Challenge',
 };
 
 const SOURCES = [

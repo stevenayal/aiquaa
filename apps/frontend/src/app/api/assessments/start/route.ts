@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { createClient } from '@/lib/supabase/server';
 import { signChallengeToken } from '../../challenge/_lib/auth';
 
 export const runtime = 'nodejs';
@@ -8,7 +9,7 @@ export const dynamic = 'force-dynamic';
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { candidateName, candidateEmail, aiquaaUserId } = body ?? {};
+    const { candidateName, candidateEmail, processCode } = body ?? {};
 
     if (!candidateName?.trim()) {
       return NextResponse.json(
@@ -17,7 +18,42 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Resolver el usuario server-side (no confiar en el body); null si invitado
+    let aiquaaUserId: string | null = null;
+    try {
+      const authClient = createClient();
+      const {
+        data: { user },
+      } = await authClient.auth.getUser();
+      aiquaaUserId = user?.id ?? null;
+    } catch {
+      aiquaaUserId = null;
+    }
+
     const supabase = createAdminClient();
+
+    // Validar código de proceso si fue provisto
+    let resolvedProcessCode: string | null = null;
+    if (typeof processCode === 'string' && processCode.trim()) {
+      const { data: process } = await supabase
+        .from('hiring_processes')
+        .select('code, status, expires_at')
+        .ilike('code', processCode.trim())
+        .eq('status', 'active')
+        .maybeSingle();
+
+      const expired =
+        process?.expires_at && new Date(process.expires_at) < new Date();
+
+      if (!process || expired) {
+        return NextResponse.json(
+          { error: 'Código de proceso inválido, vencido o cerrado.' },
+          { status: 400 }
+        );
+      }
+
+      resolvedProcessCode = process.code;
+    }
 
     // Find the api-banking assessment
     const { data: assessment, error: aErr } = await supabase
@@ -41,7 +77,8 @@ export async function POST(req: NextRequest) {
         catalog_id: assessment.id,
         candidate_name: candidateName.trim(),
         candidate_email: candidateEmail?.trim() ?? null,
-        aiquaa_user_id: aiquaaUserId ?? null,
+        aiquaa_user_id: aiquaaUserId,
+        process_code: resolvedProcessCode,
         status: 'in_progress',
       })
       .select('id')

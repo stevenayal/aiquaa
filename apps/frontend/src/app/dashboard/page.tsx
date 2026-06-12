@@ -38,9 +38,14 @@ const LAB_INFO = {
     href: '/labs/performance',
   },
   'api-testing-fundamentals': {
-    emoji: 'API',
-    label: 'API Testing Fundamentals',
+    emoji: '🌐',
+    label: 'API Testing — Fundamentos',
     href: '/assessments/api-testing-fundamentals',
+  },
+  'api-banking': {
+    emoji: '🏦',
+    label: 'API Banking — Challenge práctico',
+    href: '/assessments/api-banking',
   },
 } as const;
 
