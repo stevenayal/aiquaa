@@ -3,10 +3,8 @@ import type {
   AssessmentQuestion,
   AssessmentSection,
   AssessmentSectionScore,
-  BugReportDraft,
   CandidateLevel,
   ResponseAnalysisScenario,
-  TestCaseDraft,
 } from '../types';
 
 type ScoreResult = {
@@ -16,11 +14,7 @@ type ScoreResult = {
 };
 
 function normalizeText(value: string) {
-  return value
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .trim();
+  return value.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
 }
 
 function tokenize(value: string) {
@@ -211,212 +205,6 @@ function scoreResponseAnalysis(
   };
 }
 
-function getEndpointRules(method: string) {
-  switch (method.toUpperCase()) {
-    case 'GET':
-      return ['401', '404', 'contrato', 'id', 'respuesta'];
-    case 'POST':
-      return [
-        'name',
-        'price',
-        'stock',
-        'active',
-        'duplicado',
-        '401',
-        'contrato',
-      ];
-    case 'PUT':
-      return ['price', 'stock', 'active', '401', '404', 'contrato'];
-    case 'DELETE':
-      return ['401', '403', '404', 'admin', 'autorizacion'];
-    default:
-      return [];
-  }
-}
-
-function scoreTestCases(
-  question: AssessmentQuestion,
-  answer: unknown
-): ScoreResult {
-  const cases = Array.isArray(answer) ? (answer as TestCaseDraft[]) : [];
-  const minimumCases = Number(question.metadata?.minimumCases ?? 4);
-  const recommendedTypes =
-    (question.metadata?.recommendedTypes as string[] | undefined) ?? [];
-  const endpointRules = getEndpointRules(
-    String(question.metadata?.method ?? '')
-  );
-  const feedback: string[] = [];
-
-  if (cases.length === 0) {
-    return {
-      score: 0,
-      isCorrect: false,
-      feedback: 'No se cargaron casos de prueba para esta consigna.',
-    };
-  }
-
-  const completeCases = cases.filter((testCase) =>
-    [
-      testCase.title,
-      testCase.endpoint,
-      testCase.method,
-      testCase.preconditions,
-      testCase.input,
-      testCase.steps,
-      testCase.expectedResult,
-      testCase.caseType,
-      testCase.priority,
-    ].every((field) => String(field ?? '').trim().length > 0)
-  ).length;
-
-  const uniqueTypes = new Set(
-    cases.map((testCase) => normalizeText(testCase.caseType ?? ''))
-  );
-  const recommendedCoverage = recommendedTypes.filter((type) =>
-    uniqueTypes.has(normalizeText(type))
-  ).length;
-
-  const combinedText = cases
-    .map((testCase) =>
-      [
-        testCase.title,
-        testCase.preconditions,
-        testCase.input,
-        testCase.steps,
-        testCase.expectedResult,
-      ].join(' ')
-    )
-    .join(' ');
-  const ruleMatches = countKeywordMatches(combinedText, endpointRules);
-
-  const coverageRatio = recommendedTypes.length
-    ? recommendedCoverage / recommendedTypes.length
-    : 1;
-  const completenessRatio =
-    completeCases / Math.max(cases.length, minimumCases);
-  const rulesRatio = endpointRules.length
-    ? ruleMatches / endpointRules.length
-    : 1;
-  const countRatio = Math.min(1, cases.length / minimumCases);
-
-  const weightedRatio =
-    countRatio * 0.2 +
-    completenessRatio * 0.3 +
-    coverageRatio * 0.3 +
-    rulesRatio * 0.2;
-  const score = Math.max(
-    0,
-    Math.min(question.points, Math.round(question.points * weightedRatio))
-  );
-
-  if (cases.length < minimumCases) {
-    feedback.push(
-      `Se esperaban al menos ${minimumCases} casos y cargaste ${cases.length}.`
-    );
-  }
-  if (coverageRatio < 0.7) {
-    feedback.push(
-      'Falta cobertura de tipos de caso clave (positivo, negativo, borde, seguridad o contrato).'
-    );
-  }
-  if (completenessRatio < 0.8) {
-    feedback.push(
-      'Varios casos están incompletos o sin resultado esperado claro.'
-    );
-  }
-  if (rulesRatio < 0.6) {
-    feedback.push(
-      'No se reflejan suficientes reglas de negocio o validaciones relevantes.'
-    );
-  }
-
-  return {
-    score,
-    isCorrect: score >= Math.ceil(question.points * 0.6),
-    feedback:
-      feedback.length > 0
-        ? feedback.join(' ')
-        : 'Los casos cubren bien la documentación y las reglas principales.',
-  };
-}
-
-function scoreBugReport(
-  question: AssessmentQuestion,
-  answer: unknown
-): ScoreResult {
-  const bug = (answer ?? {}) as BugReportDraft;
-  const endpoint = String(question.metadata?.endpoint ?? '');
-  const method = String(question.metadata?.method ?? '');
-  const expectedStatus = String(question.metadata?.expectedStatus ?? '');
-  const actualStatus = String(question.metadata?.actualStatus ?? '');
-  const requiredFields = [
-    bug.title,
-    bug.endpoint,
-    bug.method,
-    bug.description,
-    bug.stepsToReproduce,
-    bug.actualResult,
-    bug.expectedResult,
-    bug.severity,
-    bug.priority,
-    bug.evidence,
-    bug.environment,
-  ];
-
-  const completedRequired = requiredFields.filter(
-    (field) => String(field ?? '').trim().length > 0
-  ).length;
-  const completenessRatio = completedRequired / requiredFields.length;
-  const endpointOk =
-    normalizeText(bug.endpoint ?? '') === normalizeText(endpoint) &&
-    normalizeText(bug.method ?? '') === normalizeText(method);
-  const expectedOk =
-    normalizeText(bug.expectedResult ?? '').includes(expectedStatus) ||
-    normalizeText(bug.expectedResult ?? '').includes('forbidden') ||
-    normalizeText(bug.expectedResult ?? '').includes('unauthorized') ||
-    normalizeText(bug.expectedResult ?? '').includes('bad request') ||
-    normalizeText(bug.expectedResult ?? '').includes('not found');
-  const actualOk = normalizeText(bug.actualResult ?? '').includes(actualStatus);
-  const severityOk = String(bug.severity ?? '').trim().length > 0;
-  const priorityOk = String(bug.priority ?? '').trim().length > 0;
-
-  let score = 0;
-  if (completenessRatio >= 0.9) score += 2;
-  else if (completenessRatio >= 0.7) score += 1;
-  if (endpointOk) score += 1;
-  if (expectedOk && actualOk) score += 1;
-  if (severityOk && priorityOk) score += 1;
-
-  const feedback: string[] = [];
-  if (completenessRatio < 0.9) {
-    feedback.push(
-      'Faltan algunos campos obligatorios o están demasiado vacíos.'
-    );
-  }
-  if (!endpointOk) {
-    feedback.push('Endpoint o método no coinciden con el bug de referencia.');
-  }
-  if (!(expectedOk && actualOk)) {
-    feedback.push(
-      'El resultado actual o esperado no refleja claramente los status codes esperados.'
-    );
-  }
-  if (!(severityOk && priorityOk)) {
-    feedback.push(
-      'La severidad y/o prioridad necesitan estar mejor clasificadas.'
-    );
-  }
-
-  return {
-    score: Math.min(question.points, score),
-    isCorrect: score >= 3,
-    feedback:
-      feedback.length > 0
-        ? feedback.join(' ')
-        : 'Bug report claro, reproducible y bien clasificado.',
-  };
-}
-
 export function scoreAssessmentQuestion(
   question: AssessmentQuestion,
   answer: unknown
@@ -430,10 +218,6 @@ export function scoreAssessmentQuestion(
       return scoreShortText(question, answer);
     case 'response_analysis':
       return scoreResponseAnalysis(question, answer);
-    case 'test_case_matrix':
-      return scoreTestCases(question, answer);
-    case 'bug_report':
-      return scoreBugReport(question, answer);
     default:
       return {
         score: 0,

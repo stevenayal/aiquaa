@@ -59,8 +59,8 @@ export default function StartApiTestingFundamentalsPage() {
           API Testing Fundamentals Challenge
         </h1>
         <p className="mt-3 text-slate-300">
-          Vas a completar 5 niveles progresivos con autosave, scoring por
-          sección y resultado final consolidado.
+          Vas a completar 3 niveles teóricos con autosave, scoring por sección y
+          resultado final consolidado.
         </p>
 
         <div className="mt-8 grid gap-4 rounded-2xl border border-slate-800 bg-slate-950/70 p-5 md:grid-cols-3">
@@ -68,13 +68,13 @@ export default function StartApiTestingFundamentalsPage() {
             <p className="text-xs uppercase tracking-[0.18em] text-slate-400">
               Duración sugerida
             </p>
-            <p className="mt-2 text-lg font-semibold">60 a 90 minutos</p>
+            <p className="mt-2 text-lg font-semibold">~30 minutos</p>
           </div>
           <div>
             <p className="text-xs uppercase tracking-[0.18em] text-slate-400">
               Modalidad
             </p>
-            <p className="mt-2 text-lg font-semibold">Conceptual + práctica</p>
+            <p className="mt-2 text-lg font-semibold">Conceptual</p>
           </div>
           <div>
             <p className="text-xs uppercase tracking-[0.18em] text-slate-400">

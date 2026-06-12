@@ -12,39 +12,15 @@ import {
 import ApiDocCard from '../../components/ApiDocCard';
 import AssessmentProgress from '../../components/AssessmentProgress';
 import AssessmentTimer from '../../components/AssessmentTimer';
-import BugReportForm from '../../components/BugReportForm';
 import MultipleChoiceQuestion from '../../components/MultipleChoiceQuestion';
 import RequestResponseBlock from '../../components/RequestResponseBlock';
 import SectionNavigator from '../../components/SectionNavigator';
 import SectionSummaryCard from '../../components/SectionSummaryCard';
 import ShortAnswerQuestion from '../../components/ShortAnswerQuestion';
-import TestCaseForm from '../../components/TestCaseForm';
 import TrueFalseQuestion from '../../components/TrueFalseQuestion';
-import type {
-  ApiDocScenario,
-  AssessmentQuestion,
-  AssessmentSectionPayload,
-  BugReportDraft,
-  TestCaseDraft,
-} from '../../types';
+import type { ApiDocScenario, AssessmentSectionPayload } from '../../types';
 
 type AnswerMap = Record<string, unknown>;
-
-function emptyBugReport(question: AssessmentQuestion): BugReportDraft {
-  return {
-    title: '',
-    endpoint: String(question.metadata?.endpoint ?? ''),
-    method: String(question.metadata?.method ?? ''),
-    description: '',
-    stepsToReproduce: '',
-    actualResult: '',
-    expectedResult: '',
-    severity: 'Media',
-    priority: 'Media',
-    evidence: '',
-    environment: 'QA / Staging',
-  };
-}
 
 export default function AssessmentSectionPage() {
   const params = useParams<{ sectionId: string }>();
@@ -139,7 +115,7 @@ export default function AssessmentSectionPage() {
     scheduleAutosave(questionId, value);
   }
 
-  async function handleSubmitSection(expired?: boolean) {
+  async function handleSubmitSection() {
     if (!attemptId || !payload) return;
 
     setSubmitError('');
@@ -159,9 +135,7 @@ export default function AssessmentSectionPage() {
 
         await finalizeAssessmentAttemptAction(attemptId);
         router.push(
-          `/assessments/api-testing-fundamentals/result?attempt=${attemptId}${
-            expired ? '&expired=1' : ''
-          }`
+          `/assessments/api-testing-fundamentals/result?attempt=${attemptId}`
         );
       } catch (submitSectionError) {
         setSubmitError(
@@ -210,11 +184,7 @@ export default function AssessmentSectionPage() {
             </h1>
             <p className="mt-3 text-sm text-slate-400">{savingMessage}</p>
           </div>
-          <AssessmentTimer
-            startedAt={payload.attempt.started_at}
-            durationMinutes={payload.attempt.max_score > 0 ? 90 : 90}
-            onExpire={() => void handleSubmitSection(true)}
-          />
+          <AssessmentTimer suggestedMinutes={10} />
         </div>
 
         <AssessmentProgress
@@ -391,25 +361,6 @@ export default function AssessmentSectionPage() {
                       }
                     />
                   ) : null}
-
-                  {question.question_type === 'test_case_matrix' ? (
-                    <TestCaseForm
-                      question={question}
-                      value={(answer as TestCaseDraft[] | undefined) ?? []}
-                      onChange={(value) => updateAnswer(question.id, value)}
-                    />
-                  ) : null}
-
-                  {question.question_type === 'bug_report' ? (
-                    <BugReportForm
-                      question={question}
-                      value={
-                        (answer as BugReportDraft | undefined) ??
-                        emptyBugReport(question)
-                      }
-                      onChange={(value) => updateAnswer(question.id, value)}
-                    />
-                  ) : null}
                 </div>
               </div>
             );
@@ -448,7 +399,7 @@ export default function AssessmentSectionPage() {
                 : 'Enviar nivel y continuar'
             }
             isSubmitting={isPending}
-            onSubmit={() => void handleSubmitSection(false)}
+            onSubmit={() => void handleSubmitSection()}
           />
         </div>
       </div>
