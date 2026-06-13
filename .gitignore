@@ -97,3 +97,10 @@ aiquaa-pr32-resolve/
 .claire/worktrees/nifty-jang-d16912/apps/backend/src/integrations/aiquaa-talent/aiquaa-talent-webhook.client.spec.ts
 aiquaa/
 .env.txt
+
+# Scratch / build artifacts at repo root (anti-reincidencia dead code)
+/build_errors*
+/test-*.js
+/test-*.cjs
+/test-*.html
+/test-*.sql
