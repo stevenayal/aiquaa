@@ -357,7 +357,7 @@ export default function LabsPage() {
                               />
                             </div>
                             <p className="mt-2 text-xs text-white/85">
-                              Ultimo intento:{' '}
+                              Último intento:{' '}
                               {formatProgressDate(progress.lastAttemptAt)}
                             </p>
                           </div>
