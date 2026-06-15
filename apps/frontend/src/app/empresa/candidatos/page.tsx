@@ -68,24 +68,30 @@ export default function CandidatosPage() {
   useEffect(() => {
     const load = async () => {
       const supabase = createClient();
-      const [{ data: procs }, { data: res }] = await Promise.all([
-        supabase
-          .from('hiring_processes')
-          .select('id, code, position_name, status')
-          .order('created_at', { ascending: false }),
-        supabase
+
+      const { data: procs } = await supabase
+        .from('hiring_processes')
+        .select('id, code, position_name, status')
+        .order('created_at', { ascending: false });
+
+      // Filtro server-side: solo traer exam_results de los procesos de esta
+      // empresa (.in), en vez de cargar toda la plataforma y filtrar en cliente.
+      // Sin procesos no hay resultados que cargar: se evita la query.
+      const processCodes = (procs ?? [])
+        .map((p) => p.code)
+        .filter((c): c is string => Boolean(c));
+
+      let myResults: ExamResult[] = [];
+      if (processCodes.length > 0) {
+        const { data: res } = await supabase
           .from('exam_results')
           .select(
             'id, participant_name, participant_email, exam_type, score, percentage, passed, time_spent, created_at, process_code'
           )
-          .not('process_code', 'is', null)
-          .order('created_at', { ascending: false }),
-      ]);
-
-      const myCodes = new Set((procs ?? []).map((p) => p.code));
-      const myResults = (res ?? []).filter(
-        (r) => r.process_code && myCodes.has(r.process_code)
-      );
+          .in('process_code', processCodes)
+          .order('created_at', { ascending: false });
+        myResults = (res ?? []) as ExamResult[];
+      }
 
       setProcesses(procs ?? []);
       setResults(myResults);
