@@ -15,6 +15,8 @@ export default function HomePage() {
   const { t } = useLanguage();
   const [memberCount, setMemberCount] = useState<string>('50+');
   const [memberLabel, setMemberLabel] = useState<string>('testers activos');
+  // Sección de planes oculta hasta que el plan Pro esté disponible.
+  const SHOW_PRICING = false;
 
   useEffect(() => {
     fetch('/api/community/members')
@@ -343,6 +345,7 @@ export default function HomePage() {
       </section>
 
       {/* Planes / Pricing */}
+      {SHOW_PRICING && (
       <section
         className={`py-16 md:py-20 transition-colors duration-300 ${
           isDarkMode
@@ -570,6 +573,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* Final CTA */}
       <section
