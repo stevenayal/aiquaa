@@ -18,7 +18,7 @@ export default function AssessmentsLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ExamAuthGate examName="AIQUAA Assessments" examEmoji="ðŸ§ª">
+    <ExamAuthGate examName="AIQUAA Assessments" examEmoji="🧪">
       {children}
     </ExamAuthGate>
   );
