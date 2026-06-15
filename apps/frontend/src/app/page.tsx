@@ -13,7 +13,7 @@ import { STUDY_RESOURCE_COUNT } from '@/lib/studyResources';
 export default function HomePage() {
   const { isDarkMode } = useTheme();
   const { t } = useLanguage();
-  const [memberCount, setMemberCount] = useState<string>('36+');
+  const [memberCount, setMemberCount] = useState<string>('80+');
   const [memberLabel, setMemberLabel] = useState<string>('usuarios registrados');
   // Sección de planes oculta hasta que el plan Pro esté disponible.
   const SHOW_PRICING = false;
@@ -27,10 +27,10 @@ export default function HomePage() {
           setMemberCount(`${count}+`);
           setMemberLabel(t('home.hero.stats.community'));
         }
-        // count === 0 o error: se mantiene el fallback '36+' / 'usuarios registrados'
+        // count === 0 o error: se mantiene el fallback '80+' / 'usuarios registrados'
       })
       .catch(() => {
-        // se mantiene el fallback '36+' / 'usuarios registrados'
+        // se mantiene el fallback '80+' / 'usuarios registrados'
       });
   }, [t]);
 
