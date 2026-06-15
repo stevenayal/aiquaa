@@ -7,6 +7,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import LogoMark from '@/components/LogoMark';
 import ISTQBHighlight from '@/components/ISTQBHighlight';
 import { SuruFloating } from '@/components/Suru';
+import { LABS_TOOL_COUNT } from '@/lib/labsCatalog';
+import { STUDY_RESOURCE_COUNT } from '@/lib/studyResources';
 
 export default function HomePage() {
   const { isDarkMode } = useTheme();
@@ -103,25 +105,25 @@ export default function HomePage() {
 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                   <Link
-                    href="/labs"
+                    href="/register"
                     className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl shadow-2xl hover:shadow-indigo-500/50 transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-500/50"
                   >
                     <span className="relative z-10">
-                      {t('home.hero.cta.secondary')}
+                      {t('home.hero.cta.primary')}
                     </span>
                     <span className="ml-2 group-hover:translate-x-1 transition-transform">
                       →
                     </span>
                   </Link>
                   <Link
-                    href="/register"
+                    href="/labs"
                     className={`inline-flex items-center justify-center px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300 focus:outline-none focus:ring-4 border-2 ${
                       isDarkMode
                         ? 'text-slate-300 border-slate-600 hover:bg-slate-800/50 hover:border-slate-500 focus:ring-slate-500/50'
                         : 'text-slate-700 border-slate-300 hover:bg-slate-100 hover:border-slate-400 focus:ring-slate-300/50'
                     }`}
                   >
-                    {t('home.hero.cta.primary')}
+                    {t('home.hero.cta.secondary')}
                   </Link>
                 </div>
 
@@ -159,8 +161,14 @@ export default function HomePage() {
 
                 <div className="grid grid-cols-3 gap-3 sm:gap-6 pt-8 max-w-lg mx-auto lg:mx-0">
                   {[
-                    { value: '15+', label: t('home.hero.stats.tools') },
-                    { value: '50+', label: t('home.hero.stats.resources') },
+                    {
+                      value: String(LABS_TOOL_COUNT),
+                      label: t('home.hero.stats.tools'),
+                    },
+                    {
+                      value: String(STUDY_RESOURCE_COUNT),
+                      label: t('home.hero.stats.resources'),
+                    },
                     { value: memberCount, label: memberLabel },
                   ].map((stat) => (
                     <div

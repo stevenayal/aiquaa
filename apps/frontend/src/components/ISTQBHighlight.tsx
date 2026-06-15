@@ -131,7 +131,7 @@ export default function ISTQBHighlight() {
                       <div className={`text-3xl font-bold mb-1 ${
                         isDarkMode ? 'text-green-400' : 'text-green-600'
                       }`}>
-                        80+
+                        120
                       </div>
                       <div className={`text-sm ${
                         isDarkMode ? 'text-slate-400' : 'text-brand-muted'
