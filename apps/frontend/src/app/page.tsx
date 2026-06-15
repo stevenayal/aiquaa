@@ -13,8 +13,8 @@ import { STUDY_RESOURCE_COUNT } from '@/lib/studyResources';
 export default function HomePage() {
   const { isDarkMode } = useTheme();
   const { t } = useLanguage();
-  const [memberCount, setMemberCount] = useState<string>('50+');
-  const [memberLabel, setMemberLabel] = useState<string>('testers activos');
+  const [memberCount, setMemberCount] = useState<string>('36+');
+  const [memberLabel, setMemberLabel] = useState<string>('usuarios registrados');
   // Sección de planes oculta hasta que el plan Pro esté disponible.
   const SHOW_PRICING = false;
 
@@ -23,17 +23,14 @@ export default function HomePage() {
       .then((r) => r.json())
       .then((data) => {
         const count: number = data.count ?? 0;
-        if (count >= 50) {
-          setMemberCount(String(count));
+        if (count > 0) {
+          setMemberCount(`${count}+`);
           setMemberLabel(t('home.hero.stats.community'));
-        } else if (count > 0) {
-          setMemberCount(String(count));
-          // keep 'testers activos'
         }
-        // count === 0: keep '50+' and 'testers activos'
+        // count === 0 o error: se mantiene el fallback '36+' / 'usuarios registrados'
       })
       .catch(() => {
-        // keep '50+' and 'testers activos'
+        // se mantiene el fallback '36+' / 'usuarios registrados'
       });
   }, [t]);
 
