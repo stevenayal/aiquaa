@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
+// Sin esto, Next.js cachea el GET en build-time y sirve un conteo fijo.
+// Revalidamos cada 60s para reflejar nuevos registros sin pegarle a la DB en cada visita.
+export const revalidate = 60;
+
 export async function GET() {
   try {
     const supabase = createClient(
