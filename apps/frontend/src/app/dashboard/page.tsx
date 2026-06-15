@@ -104,6 +104,9 @@ export default function DashboardPage() {
     'istqb',
     'performance',
     'api-testing-fundamentals',
+    'api-banking',
+    'database-fundamentals',
+    'database-practice',
   ] as const;
   const recommended = allTypes.find((t) => !passedTypes.has(t)) ?? null;
   const allPassed = allTypes.every((t) => passedTypes.has(t));

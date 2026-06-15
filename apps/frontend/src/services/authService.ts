@@ -72,7 +72,7 @@ class AuthService {
     if (typeof window !== 'undefined') {
       localStorage.setItem('accessToken', accessToken);
       if (refreshToken) {
-        localStorage.setItem('refreshToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
       }
     }
   }
