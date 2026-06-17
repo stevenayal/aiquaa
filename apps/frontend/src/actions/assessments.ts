@@ -345,7 +345,11 @@ export async function saveAssessmentAnswerAction(input: {
   currentSectionSlug?: string;
 }) {
   const { supabase } = await getAuthenticatedUser();
-  await getAttemptRecord(input.attemptId);
+  const attempt = await getAttemptRecord(input.attemptId);
+
+  if (attempt.status === 'graded') {
+    throw new Error('El examen ya fue entregado y no admite cambios.');
+  }
 
   const timestamp = new Date().toISOString();
 
@@ -382,6 +386,10 @@ export async function submitAssessmentSectionAction(input: {
 }) {
   const { supabase } = await getAuthenticatedUser();
   const bundle = await loadSectionBundle(input.attemptId, input.sectionSlug);
+
+  if (bundle.attempt.status === 'graded') {
+    throw new Error('El examen ya fue entregado y no admite cambios.');
+  }
 
   let sectionScore = 0;
   const feedbackMessages: string[] = [];

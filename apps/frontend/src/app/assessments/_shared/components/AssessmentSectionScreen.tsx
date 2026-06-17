@@ -63,6 +63,10 @@ export default function AssessmentSectionScreen({
         setLoading(true);
         const data = await getAssessmentSectionAction(attemptId, sectionSlug);
         if (cancelled) return;
+        if (data.attempt.status === 'graded') {
+          router.replace(`${basePath}/result?attempt=${attemptId}`);
+          return;
+        }
         setPayload(data);
         const nextAnswers: AnswerMap = {};
         data.answers.forEach((answer) => {
@@ -92,6 +96,18 @@ export default function AssessmentSectionScreen({
       );
     };
   }, [attemptId, basePath, router, sectionSlug]);
+
+  useEffect(() => {
+    if (!payload || payload.attempt.status === 'graded') return;
+
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = '';
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [payload]);
 
   function scheduleAutosave(questionId: string, value: unknown) {
     if (!attemptId) return;
@@ -145,7 +161,7 @@ export default function AssessmentSectionScreen({
         }
 
         await finalizeAssessmentAttemptAction(attemptId);
-        router.push(`${basePath}/result?attempt=${attemptId}`);
+        router.replace(`${basePath}/result?attempt=${attemptId}`);
       } catch (submitSectionError) {
         setSubmitError(
           submitSectionError instanceof Error
