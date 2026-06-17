@@ -214,6 +214,18 @@ export default function ExamSimulator({
   }, [isRunning, mode]);
 
   useEffect(() => {
+    if (mode !== 'exam' || !isRunning || hasSubmitted) return;
+
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = '';
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isRunning, mode, hasSubmitted]);
+
+  useEffect(() => {
     const questionId = questions[currentQuestionIndex]?.id;
     if (!questionId) return;
 
