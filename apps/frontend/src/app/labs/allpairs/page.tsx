@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { PairwiseInput, PairwiseResult, toCsv } from '@aiquaa/allpairs-core';
 import { useToolUsage } from '@/hooks/useToolUsage';
+import labsService from '@/services/labsService';
 import EditorTab from './components/EditorTab';
 import JsonYamlTab from './components/JsonYamlTab';
 import ExamplesTab from './components/ExamplesTab';
@@ -71,6 +72,12 @@ export default function AllPairsPage() {
       }
 
       setResult(data);
+      void labsService
+        .trackAllPairs({
+          sessionId: crypto.randomUUID(),
+          combinationsCount: data.rows.length,
+        })
+        .catch(() => {});
     } catch (err: any) {
       void logError(err, 'generate');
       setError(err.message || 'Failed to generate pairwise combinations');
@@ -114,7 +121,8 @@ export default function AllPairsPage() {
             Generador All Pairs
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Genera combinaciones de pruebas pairwise para reducir casos de prueba manteniendo la cobertura
+            Genera combinaciones de pruebas pairwise para reducir casos de
+            prueba manteniendo la cobertura
           </p>
         </div>
 
@@ -150,9 +158,7 @@ export default function AllPairsPage() {
             {activeTab === 'json-yaml' && (
               <JsonYamlTab input={input} onChange={setInput} />
             )}
-            {activeTab === 'examples' && (
-              <ExamplesTab onSelect={setInput} />
-            )}
+            {activeTab === 'examples' && <ExamplesTab onSelect={setInput} />}
             {activeTab === 'help' && <HelpTab />}
           </div>
         </div>
@@ -172,7 +178,9 @@ export default function AllPairsPage() {
         {error && (
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
             <p className="text-red-800 dark:text-red-300 font-medium">Error</p>
-            <p className="text-red-600 dark:text-red-400 text-sm mt-1">{error}</p>
+            <p className="text-red-600 dark:text-red-400 text-sm mt-1">
+              {error}
+            </p>
           </div>
         )}
 
