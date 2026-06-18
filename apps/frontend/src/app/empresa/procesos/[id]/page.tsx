@@ -377,7 +377,7 @@ export default function ProcesoDetailPage() {
       }
       setProcess(proc);
 
-      const [{ data: res }, { data: prsp }] = await Promise.all([
+      const [{ data: res }, assessmentRes, { data: prsp }] = await Promise.all([
         supabase
           .from('exam_results')
           .select(
@@ -385,10 +385,52 @@ export default function ProcesoDetailPage() {
           )
           .eq('process_code', proc.code)
           .order('percentage', { ascending: false }),
+        supabase
+          .from('assessment_attempts')
+          .select(
+            'id, total_score, percentage, passed, started_at, submitted_at, created_at, assessments!inner(slug), profiles(display_name, email)'
+          )
+          .eq('metadata->>processCode', proc.code)
+          .eq('status', 'graded')
+          .order('percentage', { ascending: false }),
         getProspectsForProcessAction(proc.id),
       ]);
 
-      setResults(res ?? []);
+      const mappedAttempts: ExamResult[] = (assessmentRes.data ?? []).map(
+        (r: {
+          id: string;
+          total_score: number | null;
+          percentage: number | null;
+          passed: boolean | null;
+          started_at: string | null;
+          submitted_at: string | null;
+          created_at: string;
+          assessments: { slug: string } | null;
+          profiles: {
+            display_name: string | null;
+            email: string | null;
+          } | null;
+        }) => ({
+          id: r.id,
+          participant_name: r.profiles?.display_name ?? null,
+          participant_email: r.profiles?.email ?? null,
+          exam_type: r.assessments?.slug ?? 'unknown',
+          score: r.total_score ?? 0,
+          percentage: r.percentage ?? 0,
+          passed: r.passed ?? false,
+          time_spent:
+            r.submitted_at && r.started_at
+              ? Math.floor(
+                  (new Date(r.submitted_at).getTime() -
+                    new Date(r.started_at).getTime()) /
+                    1000
+                )
+              : 0,
+          created_at: r.created_at,
+        })
+      );
+
+      setResults([...(res ?? []), ...mappedAttempts]);
       setProspects(prsp ?? []);
       setLoading(false);
     };
