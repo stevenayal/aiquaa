@@ -390,7 +390,7 @@ export default function ProcesoDetailPage() {
           .select(
             'id, total_score, percentage, passed, started_at, submitted_at, created_at, assessments!inner(slug), profiles(display_name, email)'
           )
-          .eq('metadata->>processCode', proc.code)
+          .filter('metadata->>processCode', 'eq', proc.code)
           .eq('status', 'graded')
           .order('percentage', { ascending: false }),
         getProspectsForProcessAction(proc.id),
