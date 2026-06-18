@@ -13,34 +13,23 @@ ALTER TABLE hiring_processes
 
 ALTER TABLE hiring_process_groups ENABLE ROW LEVEL SECURITY;
 
+-- Use profiles.empresa_id to avoid infinite recursion on empresa_miembros RLS
 CREATE POLICY "empresa_members_select_groups" ON hiring_process_groups
   FOR SELECT USING (
-    empresa_id IN (
-      SELECT empresa_id FROM empresa_miembros
-      WHERE user_id = auth.uid() AND status = 'active'
-    )
+    empresa_id = (SELECT empresa_id FROM profiles WHERE id = auth.uid())
   );
 
 CREATE POLICY "empresa_members_insert_groups" ON hiring_process_groups
   FOR INSERT WITH CHECK (
-    empresa_id IN (
-      SELECT empresa_id FROM empresa_miembros
-      WHERE user_id = auth.uid() AND status = 'active'
-    )
+    empresa_id = (SELECT empresa_id FROM profiles WHERE id = auth.uid())
   );
 
 CREATE POLICY "empresa_members_update_groups" ON hiring_process_groups
   FOR UPDATE USING (
-    empresa_id IN (
-      SELECT empresa_id FROM empresa_miembros
-      WHERE user_id = auth.uid() AND status = 'active'
-    )
+    empresa_id = (SELECT empresa_id FROM profiles WHERE id = auth.uid())
   );
 
 CREATE POLICY "empresa_members_delete_groups" ON hiring_process_groups
   FOR DELETE USING (
-    empresa_id IN (
-      SELECT empresa_id FROM empresa_miembros
-      WHERE user_id = auth.uid() AND status = 'active'
-    )
+    empresa_id = (SELECT empresa_id FROM profiles WHERE id = auth.uid())
   );
