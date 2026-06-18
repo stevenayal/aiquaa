@@ -397,20 +397,7 @@ export default function ProcesoDetailPage() {
       ]);
 
       const mappedAttempts: ExamResult[] = (assessmentRes.data ?? []).map(
-        (r: {
-          id: string;
-          total_score: number | null;
-          percentage: number | null;
-          passed: boolean | null;
-          started_at: string | null;
-          submitted_at: string | null;
-          created_at: string;
-          assessments: { slug: string } | null;
-          profiles: {
-            display_name: string | null;
-            email: string | null;
-          } | null;
-        }) => ({
+        (r: any) => ({
           id: r.id,
           participant_name: r.profiles?.display_name ?? null,
           participant_email: r.profiles?.email ?? null,
