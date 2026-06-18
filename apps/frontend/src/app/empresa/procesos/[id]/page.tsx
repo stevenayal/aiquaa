@@ -388,7 +388,7 @@ export default function ProcesoDetailPage() {
         supabase
           .from('assessment_attempts')
           .select(
-            'id, total_score, percentage, passed, started_at, submitted_at, created_at, assessments!inner(slug), profiles(display_name, email)'
+            'id, user_id, total_score, percentage, passed, started_at, submitted_at, created_at, assessments!inner(slug)'
           )
           .filter('metadata->>processCode', 'eq', proc.code)
           .eq('status', 'graded')
@@ -396,26 +396,43 @@ export default function ProcesoDetailPage() {
         getProspectsForProcessAction(proc.id),
       ]);
 
-      const mappedAttempts: ExamResult[] = (assessmentRes.data ?? []).map(
-        (r: any) => ({
-          id: r.id,
-          participant_name: r.profiles?.display_name ?? null,
-          participant_email: r.profiles?.email ?? null,
-          exam_type: r.assessments?.slug ?? 'unknown',
-          score: r.total_score ?? 0,
-          percentage: r.percentage ?? 0,
-          passed: r.passed ?? false,
-          time_spent:
-            r.submitted_at && r.started_at
-              ? Math.floor(
-                  (new Date(r.submitted_at).getTime() -
-                    new Date(r.started_at).getTime()) /
-                    1000
-                )
-              : 0,
-          created_at: r.created_at,
-        })
-      );
+      // profiles has no FK from assessment_attempts — fetch separately
+      const attemptRows = assessmentRes.data ?? [];
+      const userIds = [
+        ...new Set(attemptRows.map((r: any) => r.user_id).filter(Boolean)),
+      ];
+      const profileMap: Record<
+        string,
+        { display_name: string | null; email: string | null }
+      > = {};
+      if (userIds.length > 0) {
+        const { data: profileRows } = await supabase
+          .from('profiles')
+          .select('id, display_name, email')
+          .in('id', userIds);
+        (profileRows ?? []).forEach((p: any) => {
+          profileMap[p.id] = p;
+        });
+      }
+
+      const mappedAttempts: ExamResult[] = attemptRows.map((r: any) => ({
+        id: r.id,
+        participant_name: profileMap[r.user_id]?.display_name ?? null,
+        participant_email: profileMap[r.user_id]?.email ?? null,
+        exam_type: r.assessments?.slug ?? 'unknown',
+        score: r.total_score ?? 0,
+        percentage: r.percentage ?? 0,
+        passed: r.passed ?? false,
+        time_spent:
+          r.submitted_at && r.started_at
+            ? Math.floor(
+                (new Date(r.submitted_at).getTime() -
+                  new Date(r.started_at).getTime()) /
+                  1000
+              )
+            : 0,
+        created_at: r.created_at,
+      }));
 
       setResults([...(res ?? []), ...mappedAttempts]);
       setProspects(prsp ?? []);
