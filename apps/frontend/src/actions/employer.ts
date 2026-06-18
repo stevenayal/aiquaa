@@ -13,6 +13,15 @@ export interface HiringProcess {
   status: 'draft' | 'active' | 'closed';
   expires_at?: string;
   created_at: string;
+  group_id?: string | null;
+}
+
+export interface ProcessGroup {
+  id: string;
+  empresa_id: string;
+  name: string;
+  description?: string | null;
+  created_at: string;
 }
 
 export interface ProcessCandidate {
@@ -52,12 +61,107 @@ function generateCode(company: string): string {
   return `${slug}-${year}-${rand}`;
 }
 
+export async function getMyProcessGroupsAction(): Promise<{
+  data: ProcessGroup[] | null;
+  error: string | null;
+}> {
+  const supabase = createClient();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+  if (userError || !user) return { error: 'No autenticado', data: null };
+
+  const { data, error } = await supabase
+    .from('hiring_process_groups')
+    .select('*')
+    .order('created_at', { ascending: true });
+
+  if (error) return { error: error.message, data: null };
+  return { data: data ?? [], error: null };
+}
+
+export async function createProcessGroupAction(payload: {
+  name: string;
+  description?: string;
+}): Promise<{ data: ProcessGroup | null; error: string | null }> {
+  const supabase = createClient();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+  if (userError || !user) return { error: 'No autenticado', data: null };
+
+  const { data: membership } = await supabase
+    .from('empresa_miembros')
+    .select('empresa_id')
+    .eq('user_id', user.id)
+    .eq('status', 'active')
+    .single();
+
+  if (!membership?.empresa_id)
+    return { error: 'No pertenecés a ninguna empresa', data: null };
+
+  const { data, error } = await supabase
+    .from('hiring_process_groups')
+    .insert({
+      empresa_id: membership.empresa_id,
+      name: payload.name.trim(),
+      description: payload.description?.trim() || null,
+    })
+    .select()
+    .single();
+
+  if (error) return { error: error.message, data: null };
+  return { data, error: null };
+}
+
+export async function deleteProcessGroupAction(
+  groupId: string
+): Promise<{ error: string | null }> {
+  const supabase = createClient();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+  if (userError || !user) return { error: 'No autenticado' };
+
+  const { error } = await supabase
+    .from('hiring_process_groups')
+    .delete()
+    .eq('id', groupId);
+
+  if (error) return { error: error.message };
+  return { error: null };
+}
+
+export async function assignProcessToGroupAction(
+  processId: string,
+  groupId: string | null
+): Promise<{ error: string | null }> {
+  const supabase = createClient();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+  if (userError || !user) return { error: 'No autenticado' };
+
+  const { error } = await supabase
+    .from('hiring_processes')
+    .update({ group_id: groupId })
+    .eq('id', processId);
+
+  if (error) return { error: error.message };
+  return { error: null };
+}
+
 export async function createHiringProcessAction(payload: {
   company_name: string;
   position_name: string;
   description?: string;
   exam_types: string[];
   expires_at?: string;
+  group_id?: string | null;
 }) {
   const supabase = createClient();
   const {
@@ -75,14 +179,16 @@ export async function createHiringProcessAction(payload: {
     .eq('id', user.id)
     .single();
 
+  const { group_id, ...rest } = payload;
   const { data, error } = await supabase
     .from('hiring_processes')
     .insert({
-      ...payload,
+      ...rest,
       code,
       created_by: user.id,
       status: 'active',
       ...(profile?.empresa_id ? { empresa_id: profile.empresa_id } : {}),
+      ...(group_id ? { group_id } : {}),
     })
     .select()
     .single();

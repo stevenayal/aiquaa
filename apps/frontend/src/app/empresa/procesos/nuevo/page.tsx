@@ -1,10 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
+import {
+  getMyProcessGroupsAction,
+  type ProcessGroup,
+} from '@/actions/employer';
 
 const EXAM_OPTIONS = [
   {
@@ -72,11 +76,17 @@ export default function NuevoProcesoPage() {
   const [examTypes, setExamTypes] = useState<string[]>([]);
   const [expiresAt, setExpiresAt] = useState('');
   const [status, setStatus] = useState<'draft' | 'active'>('active');
+  const [groupId, setGroupId] = useState<string>('');
+  const [groups, setGroups] = useState<ProcessGroup[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [createdCode, setCreatedCode] = useState<string | null>(null);
   const [createdId, setCreatedId] = useState<string | null>(null);
   const [codeCopied, setCodeCopied] = useState(false);
+
+  useEffect(() => {
+    getMyProcessGroupsAction().then(({ data }) => setGroups(data ?? []));
+  }, []);
 
   const toggleExam = (id: string) => {
     setExamTypes((prev) =>
@@ -136,6 +146,7 @@ export default function NuevoProcesoPage() {
         exam_types: examTypes,
         status,
         expires_at: expiresAt || null,
+        ...(groupId ? { group_id: groupId } : {}),
       });
 
     if (insertError) {
@@ -295,6 +306,32 @@ export default function NuevoProcesoPage() {
               maxLength={500}
             />
           </div>
+
+          {/* Event group */}
+          {groups.length > 0 && (
+            <div>
+              <label className={labelClass}>
+                Evento{' '}
+                <span
+                  className={isDarkMode ? 'text-slate-500' : 'text-gray-400'}
+                >
+                  (opcional)
+                </span>
+              </label>
+              <select
+                className={inputClass}
+                value={groupId}
+                onChange={(e) => setGroupId(e.target.value)}
+              >
+                <option value="">— Sin categoría —</option>
+                {groups.map((g) => (
+                  <option key={g.id} value={g.id}>
+                    {g.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {/* Exam types */}
           <div>
