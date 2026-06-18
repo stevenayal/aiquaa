@@ -58,7 +58,23 @@ const STATUS_LABELS: Record<
     color: 'bg-red-100 text-red-600',
     darkColor: 'bg-red-900/40 text-red-300',
   },
+  expired: {
+    text: 'Vencido',
+    color: 'bg-amber-100 text-amber-700',
+    darkColor: 'bg-amber-900/40 text-amber-300',
+  },
 };
+
+function getEffectiveStatus(process: HiringProcess): string {
+  if (
+    process.status === 'active' &&
+    process.expires_at &&
+    new Date(process.expires_at) < new Date()
+  ) {
+    return 'expired';
+  }
+  return process.status;
+}
 
 const PROSPECT_STATUS_CONFIG: Record<
   ProspectStatus,
@@ -552,7 +568,9 @@ export default function ProcesoDetailPage() {
     );
   }
 
-  const statusInfo = STATUS_LABELS[process!.status];
+  const effectiveStatus = getEffectiveStatus(process!);
+  const statusInfo = STATUS_LABELS[effectiveStatus] ?? STATUS_LABELS.draft;
+  const isExpired = effectiveStatus === 'expired';
 
   return (
     <div
@@ -625,6 +643,30 @@ export default function ProcesoDetailPage() {
             )}
           </div>
         </div>
+
+        {/* Expired banner */}
+        {isExpired && (
+          <div
+            className={`rounded-xl border px-4 py-3 text-sm flex items-center gap-2 ${
+              isDarkMode
+                ? 'bg-amber-900/20 border-amber-700/50 text-amber-300'
+                : 'bg-amber-50 border-amber-200 text-amber-800'
+            }`}
+          >
+            <span>⚠️</span>
+            <span>
+              Este proceso venció el{' '}
+              <strong>
+                {new Date(process!.expires_at!).toLocaleDateString('es-PY', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric',
+                })}
+              </strong>{' '}
+              — los candidatos ya no pueden rendir.
+            </span>
+          </div>
+        )}
 
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
