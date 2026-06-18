@@ -92,20 +92,19 @@ export async function createProcessGroupAction(payload: {
   } = await supabase.auth.getUser();
   if (userError || !user) return { error: 'No autenticado', data: null };
 
-  const { data: membership } = await supabase
-    .from('empresa_miembros')
+  const { data: profile } = await supabase
+    .from('profiles')
     .select('empresa_id')
-    .eq('user_id', user.id)
-    .eq('status', 'active')
+    .eq('id', user.id)
     .single();
 
-  if (!membership?.empresa_id)
+  if (!profile?.empresa_id)
     return { error: 'No pertenecés a ninguna empresa', data: null };
 
   const { data, error } = await supabase
     .from('hiring_process_groups')
     .insert({
-      empresa_id: membership.empresa_id,
+      empresa_id: profile.empresa_id,
       name: payload.name.trim(),
       description: payload.description?.trim() || null,
     })
