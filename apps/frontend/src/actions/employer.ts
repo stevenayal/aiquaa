@@ -451,8 +451,9 @@ export interface EventProcessStat {
   topScore: number | null;
 }
 
-export interface EventTopCandidate {
+export interface EventCandidate {
   name: string;
+  email: string | null;
   examType: string;
   processCode: string;
   percentage: number;
@@ -469,7 +470,8 @@ export interface EventExamTypeStat {
 export interface EventStats {
   group: ProcessGroup;
   processes: EventProcessStat[];
-  topCandidates: EventTopCandidate[];
+  /** All candidates sorted by percentage DESC (use .slice(0,10) for chart) */
+  allCandidates: EventCandidate[];
   byExamType: EventExamTypeStat[];
   totals: {
     candidates: number;
@@ -514,7 +516,7 @@ export async function getEventStatsAction(groupId: string): Promise<{
       data: {
         group,
         processes: [],
-        topCandidates: [],
+        allCandidates: [],
         byExamType: [],
         totals: { candidates: 0, passed: 0, passRate: 0, avgScore: null },
       },
@@ -522,19 +524,80 @@ export async function getEventStatsAction(groupId: string): Promise<{
     };
   }
 
-  const { data: results, error: resultsError } = await supabase
-    .from('exam_results')
-    .select(
-      'participant_name, participant_email, exam_type, percentage, passed, process_code'
-    )
-    .in('process_code', codes);
+  // Fetch from exam_results (istqb, git, performance, api-testing-fundamentals, api-banking)
+  const [examResultsRes, assessmentAttemptsRes] = await Promise.all([
+    supabase
+      .from('exam_results')
+      .select(
+        'participant_name, participant_email, exam_type, percentage, passed, process_code'
+      )
+      .in('process_code', codes),
+    // database-fundamentals and database-practice live in assessment_attempts
+    supabase
+      .from('assessment_attempts')
+      .select(
+        'user_id, total_score, percentage, passed, created_at, assessments!inner(slug), metadata'
+      )
+      .or(codes.map((c) => `metadata->>processCode.eq.${c}`).join(','))
+      .eq('status', 'graded'),
+  ]);
 
-  if (resultsError) return { error: resultsError.message, data: null };
-  const allResults = results ?? [];
+  if (examResultsRes.error)
+    return { error: examResultsRes.error.message, data: null };
 
-  // Per-process stats
+  const examRows = examResultsRes.data ?? [];
+
+  // Resolve user_ids from assessment_attempts to names/emails
+  const attemptRows = assessmentAttemptsRes.data ?? [];
+  const userIds = [
+    ...new Set(attemptRows.map((r: any) => r.user_id).filter(Boolean)),
+  ];
+  const profileMap: Record<
+    string,
+    { display_name: string | null; email: string | null }
+  > = {};
+  if (userIds.length > 0) {
+    const { data: profileRows } = await supabase
+      .from('profiles')
+      .select('id, display_name, email')
+      .in('id', userIds);
+    (profileRows ?? []).forEach((p: any) => {
+      profileMap[p.id] = p;
+    });
+  }
+
+  // Normalise assessment_attempts into the same shape
+  const mappedAttempts: EventCandidate[] = attemptRows.map((r: any) => {
+    const profile = profileMap[r.user_id];
+    const processCode =
+      typeof r.metadata === 'object' && r.metadata !== null
+        ? ((r.metadata as Record<string, string>).processCode ?? '')
+        : '';
+    return {
+      name: profile?.display_name || profile?.email || 'Sin nombre',
+      email: profile?.email ?? null,
+      examType: (r.assessments as any)?.slug ?? 'unknown',
+      processCode,
+      percentage: r.percentage ?? 0,
+      passed: r.passed ?? false,
+    };
+  });
+
+  // Normalise exam_results
+  const mappedExams: EventCandidate[] = examRows.map((r) => ({
+    name: r.participant_name || r.participant_email || 'Sin nombre',
+    email: r.participant_email ?? null,
+    examType: r.exam_type,
+    processCode: r.process_code ?? '',
+    percentage: r.percentage ?? 0,
+    passed: r.passed ?? false,
+  }));
+
+  const allRaw = [...mappedExams, ...mappedAttempts];
+
+  // Per-process stats (across both sources)
   const processStats: EventProcessStat[] = processes.map((p) => {
-    const rows = allResults.filter((r) => r.process_code === p.code);
+    const rows = allRaw.filter((r) => r.processCode === p.code);
     const passed = rows.filter((r) => r.passed).length;
     const scores = rows.map((r) => r.percentage);
     return {
@@ -550,39 +613,24 @@ export async function getEventStatsAction(groupId: string): Promise<{
     };
   });
 
-  // Top 10 candidates: best attempt per (email OR name) across all processes
-  const bestByKey = new Map<
-    string,
-    {
-      name: string;
-      examType: string;
-      processCode: string;
-      percentage: number;
-      passed: boolean;
-    }
-  >();
-  for (const r of allResults) {
-    const key = (r.participant_email || r.participant_name || '').toLowerCase();
+  // Deduplicate by identity key (email ?? name), keeping best score per person
+  const bestByKey = new Map<string, EventCandidate>();
+  for (const r of allRaw) {
+    const key = (r.email || r.name || '').toLowerCase().trim();
     if (!key) continue;
     const existing = bestByKey.get(key);
     if (!existing || r.percentage > existing.percentage) {
-      bestByKey.set(key, {
-        name: r.participant_name || r.participant_email || 'Sin nombre',
-        examType: r.exam_type,
-        processCode: r.process_code ?? '',
-        percentage: r.percentage,
-        passed: r.passed,
-      });
+      bestByKey.set(key, r);
     }
   }
-  const topCandidates = Array.from(bestByKey.values())
-    .sort((a, b) => b.percentage - a.percentage)
-    .slice(0, 10);
+  const allCandidates = Array.from(bestByKey.values()).sort(
+    (a, b) => b.percentage - a.percentage
+  );
 
-  // By exam type
+  // By exam type (across both sources, all rows not deduplicated)
   const examTypeMap = new Map<string, { total: number; passed: number }>();
-  for (const r of allResults) {
-    const et = r.exam_type;
+  for (const r of allRaw) {
+    const et = r.examType;
     const cur = examTypeMap.get(et) ?? { total: 0, passed: 0 };
     examTypeMap.set(et, {
       total: cur.total + 1,
@@ -598,12 +646,13 @@ export async function getEventStatsAction(groupId: string): Promise<{
     })
   );
 
-  const totalCandidates = allResults.length;
-  const totalPassed = allResults.filter((r) => r.passed).length;
+  const totalCandidates = allCandidates.length;
+  const totalPassed = allCandidates.filter((r) => r.passed).length;
   const avgScore =
     totalCandidates > 0
       ? Math.round(
-          allResults.reduce((sum, r) => sum + r.percentage, 0) / totalCandidates
+          allCandidates.reduce((sum, r) => sum + r.percentage, 0) /
+            totalCandidates
         )
       : null;
 
@@ -611,7 +660,7 @@ export async function getEventStatsAction(groupId: string): Promise<{
     data: {
       group,
       processes: processStats,
-      topCandidates,
+      allCandidates,
       byExamType,
       totals: {
         candidates: totalCandidates,
