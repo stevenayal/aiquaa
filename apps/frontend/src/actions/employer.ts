@@ -249,13 +249,17 @@ export async function validateProcessCodeAction(code: string) {
   const supabase = createClient();
   const { data, error } = await supabase
     .from('hiring_processes')
-    .select('code, company_name, position_name, status')
+    .select('code, company_name, position_name, status, expires_at')
     .ilike('code', code.trim())
     .eq('status', 'active')
     .single();
 
-  if (error || !data) return { valid: false, process: null };
-  return { valid: true, process: data };
+  if (error || !data)
+    return { valid: false, process: null, reason: 'not_found' as const };
+  if (data.expires_at && new Date(data.expires_at) < new Date()) {
+    return { valid: false, process: null, reason: 'expired' as const };
+  }
+  return { valid: true, process: data, reason: null };
 }
 
 export async function updateProcessStatusAction(
@@ -430,6 +434,194 @@ export async function getEmpresaDashboardStatsAction(): Promise<{
         month,
         value,
       })),
+    },
+    error: null,
+  };
+}
+
+export interface EventProcessStat {
+  id: string;
+  code: string;
+  position_name: string;
+  status: 'draft' | 'active' | 'closed';
+  expires_at: string | null;
+  candidateCount: number;
+  passedCount: number;
+  passRate: number;
+  topScore: number | null;
+}
+
+export interface EventTopCandidate {
+  name: string;
+  examType: string;
+  processCode: string;
+  percentage: number;
+  passed: boolean;
+}
+
+export interface EventExamTypeStat {
+  examType: string;
+  total: number;
+  passed: number;
+  passRate: number;
+}
+
+export interface EventStats {
+  group: ProcessGroup;
+  processes: EventProcessStat[];
+  topCandidates: EventTopCandidate[];
+  byExamType: EventExamTypeStat[];
+  totals: {
+    candidates: number;
+    passed: number;
+    passRate: number;
+    avgScore: number | null;
+  };
+}
+
+export async function getEventStatsAction(groupId: string): Promise<{
+  data: EventStats | null;
+  error: string | null;
+}> {
+  const supabase = createClient();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+  if (userError || !user) return { error: 'No autenticado', data: null };
+
+  const { data: group, error: groupError } = await supabase
+    .from('hiring_process_groups')
+    .select('*')
+    .eq('id', groupId)
+    .single();
+
+  if (groupError || !group)
+    return { error: 'Evento no encontrado', data: null };
+
+  const { data: procs, error: procsError } = await supabase
+    .from('hiring_processes')
+    .select('id, code, position_name, status, expires_at')
+    .eq('group_id', groupId)
+    .order('created_at', { ascending: true });
+
+  if (procsError) return { error: procsError.message, data: null };
+  const processes = procs ?? [];
+
+  const codes = processes.map((p) => p.code);
+  if (codes.length === 0) {
+    return {
+      data: {
+        group,
+        processes: [],
+        topCandidates: [],
+        byExamType: [],
+        totals: { candidates: 0, passed: 0, passRate: 0, avgScore: null },
+      },
+      error: null,
+    };
+  }
+
+  const { data: results, error: resultsError } = await supabase
+    .from('exam_results')
+    .select(
+      'participant_name, participant_email, exam_type, percentage, passed, process_code'
+    )
+    .in('process_code', codes);
+
+  if (resultsError) return { error: resultsError.message, data: null };
+  const allResults = results ?? [];
+
+  // Per-process stats
+  const processStats: EventProcessStat[] = processes.map((p) => {
+    const rows = allResults.filter((r) => r.process_code === p.code);
+    const passed = rows.filter((r) => r.passed).length;
+    const scores = rows.map((r) => r.percentage);
+    return {
+      id: p.id,
+      code: p.code,
+      position_name: p.position_name,
+      status: p.status,
+      expires_at: p.expires_at,
+      candidateCount: rows.length,
+      passedCount: passed,
+      passRate: rows.length > 0 ? Math.round((passed / rows.length) * 100) : 0,
+      topScore: scores.length > 0 ? Math.max(...scores) : null,
+    };
+  });
+
+  // Top 10 candidates: best attempt per (email OR name) across all processes
+  const bestByKey = new Map<
+    string,
+    {
+      name: string;
+      examType: string;
+      processCode: string;
+      percentage: number;
+      passed: boolean;
+    }
+  >();
+  for (const r of allResults) {
+    const key = (r.participant_email || r.participant_name || '').toLowerCase();
+    if (!key) continue;
+    const existing = bestByKey.get(key);
+    if (!existing || r.percentage > existing.percentage) {
+      bestByKey.set(key, {
+        name: r.participant_name || r.participant_email || 'Sin nombre',
+        examType: r.exam_type,
+        processCode: r.process_code ?? '',
+        percentage: r.percentage,
+        passed: r.passed,
+      });
+    }
+  }
+  const topCandidates = Array.from(bestByKey.values())
+    .sort((a, b) => b.percentage - a.percentage)
+    .slice(0, 10);
+
+  // By exam type
+  const examTypeMap = new Map<string, { total: number; passed: number }>();
+  for (const r of allResults) {
+    const et = r.exam_type;
+    const cur = examTypeMap.get(et) ?? { total: 0, passed: 0 };
+    examTypeMap.set(et, {
+      total: cur.total + 1,
+      passed: cur.passed + (r.passed ? 1 : 0),
+    });
+  }
+  const byExamType: EventExamTypeStat[] = Array.from(examTypeMap.entries()).map(
+    ([examType, { total, passed }]) => ({
+      examType,
+      total,
+      passed,
+      passRate: total > 0 ? Math.round((passed / total) * 100) : 0,
+    })
+  );
+
+  const totalCandidates = allResults.length;
+  const totalPassed = allResults.filter((r) => r.passed).length;
+  const avgScore =
+    totalCandidates > 0
+      ? Math.round(
+          allResults.reduce((sum, r) => sum + r.percentage, 0) / totalCandidates
+        )
+      : null;
+
+  return {
+    data: {
+      group,
+      processes: processStats,
+      topCandidates,
+      byExamType,
+      totals: {
+        candidates: totalCandidates,
+        passed: totalPassed,
+        passRate:
+          totalCandidates > 0
+            ? Math.round((totalPassed / totalCandidates) * 100)
+            : 0,
+        avgScore,
+      },
     },
     error: null,
   };

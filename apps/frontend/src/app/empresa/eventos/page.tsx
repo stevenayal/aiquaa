@@ -223,18 +223,30 @@ export default function EventosPage() {
                         </p>
                       )}
                     </div>
-                    <button
-                      onClick={() => handleDeleteGroup(group.id)}
-                      disabled={deletingId === group.id}
-                      className={`shrink-0 text-xs px-2 py-1 rounded transition-colors ${
-                        isDarkMode
-                          ? 'text-red-400 hover:bg-red-900/30'
-                          : 'text-red-500 hover:bg-red-50'
-                      }`}
-                      title="Eliminar evento"
-                    >
-                      {deletingId === group.id ? '...' : '🗑️ Eliminar'}
-                    </button>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <Link
+                        href={`/empresa/eventos/${group.id}`}
+                        className={`text-xs px-2 py-1 rounded transition-colors ${
+                          isDarkMode
+                            ? 'text-indigo-400 hover:bg-slate-700'
+                            : 'text-indigo-600 hover:bg-indigo-50'
+                        }`}
+                      >
+                        📊 Estadísticas
+                      </Link>
+                      <button
+                        onClick={() => handleDeleteGroup(group.id)}
+                        disabled={deletingId === group.id}
+                        className={`text-xs px-2 py-1 rounded transition-colors ${
+                          isDarkMode
+                            ? 'text-red-400 hover:bg-red-900/30'
+                            : 'text-red-500 hover:bg-red-50'
+                        }`}
+                        title="Eliminar evento"
+                      >
+                        {deletingId === group.id ? '...' : '🗑️ Eliminar'}
+                      </button>
+                    </div>
                   </div>
 
                   {/* Process chips */}

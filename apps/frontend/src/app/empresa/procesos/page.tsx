@@ -25,7 +25,19 @@ const statusLabel: Record<string, { text: string; className: string }> = {
   draft: { text: 'Borrador', className: 'bg-gray-100 text-gray-600' },
   active: { text: 'Activo', className: 'bg-green-100 text-green-700' },
   closed: { text: 'Cerrado', className: 'bg-red-100 text-red-600' },
+  expired: { text: 'Vencido', className: 'bg-amber-100 text-amber-700' },
 };
+
+function getEffectiveStatus(p: HiringProcess): string {
+  if (
+    p.status === 'active' &&
+    p.expires_at &&
+    new Date(p.expires_at) < new Date()
+  ) {
+    return 'expired';
+  }
+  return p.status;
+}
 
 function ProcessCard({
   p,
@@ -34,7 +46,9 @@ function ProcessCard({
   p: HiringProcess;
   isDarkMode: boolean;
 }) {
-  const s = statusLabel[p.status] ?? statusLabel.draft;
+  const effectiveStatus = getEffectiveStatus(p);
+  const s = statusLabel[effectiveStatus] ?? statusLabel.draft;
+  const isExpired = effectiveStatus === 'expired';
   return (
     <div
       className={`rounded-xl border p-5 transition-colors ${
@@ -54,11 +68,13 @@ function ProcessCard({
             <span
               className={`text-xs font-medium px-2 py-0.5 rounded-full ${
                 isDarkMode
-                  ? p.status === 'active'
-                    ? 'bg-green-900/40 text-green-300'
-                    : p.status === 'closed'
-                      ? 'bg-red-900/40 text-red-300'
-                      : 'bg-slate-700 text-slate-400'
+                  ? isExpired
+                    ? 'bg-amber-900/40 text-amber-300'
+                    : p.status === 'active'
+                      ? 'bg-green-900/40 text-green-300'
+                      : p.status === 'closed'
+                        ? 'bg-red-900/40 text-red-300'
+                        : 'bg-slate-700 text-slate-400'
                   : s.className
               }`}
             >
@@ -89,9 +105,18 @@ function ProcessCard({
             </span>
             {p.expires_at && (
               <span
-                className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+                className={`text-xs ${
+                  isExpired
+                    ? isDarkMode
+                      ? 'text-amber-400'
+                      : 'text-amber-600'
+                    : isDarkMode
+                      ? 'text-slate-500'
+                      : 'text-gray-400'
+                }`}
               >
-                Vence: {new Date(p.expires_at).toLocaleDateString('es-PY')}
+                {isExpired ? 'Venció:' : 'Vence:'}{' '}
+                {new Date(p.expires_at).toLocaleDateString('es-PY')}
               </span>
             )}
           </div>
@@ -241,12 +266,20 @@ export default function ProcesosPage() {
                       >
                         ({groupProcesses.length})
                       </span>
-                      <Link
-                        href="/empresa/eventos"
-                        className={`ml-auto text-xs transition-colors ${isDarkMode ? 'text-slate-500 hover:text-slate-300' : 'text-gray-400 hover:text-gray-600'}`}
-                      >
-                        Gestionar →
-                      </Link>
+                      <div className="ml-auto flex items-center gap-3">
+                        <Link
+                          href={`/empresa/eventos/${group.id}`}
+                          className={`text-xs transition-colors ${isDarkMode ? 'text-indigo-400 hover:text-indigo-300' : 'text-indigo-600 hover:text-indigo-500'}`}
+                        >
+                          📊 Stats
+                        </Link>
+                        <Link
+                          href="/empresa/eventos"
+                          className={`text-xs transition-colors ${isDarkMode ? 'text-slate-500 hover:text-slate-300' : 'text-gray-400 hover:text-gray-600'}`}
+                        >
+                          Gestionar →
+                        </Link>
+                      </div>
                     </div>
                     <div className="space-y-3">
                       {groupProcesses.map((p) => (
