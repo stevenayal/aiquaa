@@ -118,6 +118,10 @@ export default function EventoDetailPage() {
   const [stats, setStats] = useState<EventStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [filterPassed, setFilterPassed] = useState<'all' | 'passed' | 'failed'>(
+    'all'
+  );
+  const [searchCand, setSearchCand] = useState('');
 
   useEffect(() => {
     getEventStatsAction(groupId).then(({ data, error: err }) => {
@@ -162,9 +166,11 @@ export default function EventoDetailPage() {
     );
   }
 
-  const { group, processes, topCandidates, byExamType, totals } = stats;
+  const { group, processes, allCandidates, byExamType, totals } = stats;
 
-  const topChartData = topCandidates.map((c) => ({
+  const top10 = allCandidates.slice(0, 10);
+
+  const topChartData = top10.map((c) => ({
     name: c.name.length > 22 ? c.name.slice(0, 22) + '…' : c.name,
     fullName: c.name,
     puntaje: c.percentage,
@@ -189,6 +195,24 @@ export default function EventoDetailPage() {
         color: '#e2e8f0',
       }
     : { backgroundColor: '#fff', border: '1px solid #e2e8f0' };
+
+  const filteredCandidates = allCandidates.filter((c) => {
+    const matchSearch =
+      !searchCand ||
+      c.name.toLowerCase().includes(searchCand.toLowerCase()) ||
+      (c.email ?? '').toLowerCase().includes(searchCand.toLowerCase());
+    const matchPass =
+      filterPassed === 'all' ||
+      (filterPassed === 'passed' && c.passed) ||
+      (filterPassed === 'failed' && !c.passed);
+    return matchSearch && matchPass;
+  });
+
+  const inputClass = `rounded-lg border px-3 py-1.5 text-sm outline-none transition-colors focus:ring-2 focus:ring-indigo-500 ${
+    isDarkMode
+      ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
+      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+  }`;
 
   return (
     <div
@@ -336,7 +360,7 @@ export default function EventoDetailPage() {
                   </ResponsiveContainer>
                 )}
                 <p
-                  className={`text-xs mt-2 ${isDarkMode ? 'text-slate-600' : 'text-gray-300'}`}
+                  className={`text-xs mt-2 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
                 >
                   🟢 Aprobado · 🔴 No aprobado
                 </p>
@@ -408,9 +432,190 @@ export default function EventoDetailPage() {
               </div>
             </div>
 
+            {/* All participants table */}
+            <div className={`${cardClass} overflow-hidden`}>
+              <div
+                className={`px-5 py-4 border-b flex items-center justify-between gap-4 flex-wrap ${isDarkMode ? 'border-slate-700' : 'border-gray-100'}`}
+              >
+                <p
+                  className={`text-sm font-semibold ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}
+                >
+                  Todos los participantes{' '}
+                  <span
+                    className={`font-normal text-xs ml-1 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+                  >
+                    ({filteredCandidates.length} de {allCandidates.length})
+                  </span>
+                </p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <input
+                    type="text"
+                    placeholder="Buscar nombre o email..."
+                    value={searchCand}
+                    onChange={(e) => setSearchCand(e.target.value)}
+                    className={`${inputClass} w-48`}
+                  />
+                  <div
+                    className={`flex rounded-lg border overflow-hidden text-xs font-medium ${isDarkMode ? 'border-slate-600' : 'border-gray-200'}`}
+                  >
+                    {(['all', 'passed', 'failed'] as const).map((f) => (
+                      <button
+                        key={f}
+                        onClick={() => setFilterPassed(f)}
+                        className={`px-3 py-1.5 transition-colors ${
+                          filterPassed === f
+                            ? f === 'passed'
+                              ? 'bg-green-600 text-white'
+                              : f === 'failed'
+                                ? 'bg-red-600 text-white'
+                                : isDarkMode
+                                  ? 'bg-slate-600 text-white'
+                                  : 'bg-gray-200 text-gray-800'
+                            : isDarkMode
+                              ? 'text-slate-400 hover:bg-slate-700'
+                              : 'text-gray-500 hover:bg-gray-50'
+                        }`}
+                      >
+                        {f === 'all'
+                          ? 'Todos'
+                          : f === 'passed'
+                            ? 'Aprobados'
+                            : 'No aprobados'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr
+                      className={`text-xs font-medium uppercase tracking-wider ${
+                        isDarkMode
+                          ? 'bg-slate-800/50 text-slate-400'
+                          : 'bg-gray-50 text-gray-500'
+                      }`}
+                    >
+                      <th className="px-4 py-3 text-center w-10">#</th>
+                      <th className="px-5 py-3 text-left">Participante</th>
+                      <th className="px-4 py-3 text-left">Examen</th>
+                      <th className="px-4 py-3 text-left">Proceso</th>
+                      <th className="px-4 py-3 text-center">Puntaje</th>
+                      <th className="px-4 py-3 text-center">Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody
+                    className={`divide-y ${isDarkMode ? 'divide-slate-700/50' : 'divide-gray-100'}`}
+                  >
+                    {filteredCandidates.length === 0 ? (
+                      <tr>
+                        <td
+                          colSpan={6}
+                          className={`px-5 py-8 text-center text-sm ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+                        >
+                          Sin resultados para este filtro
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredCandidates.map((c, i) => {
+                        const globalRank =
+                          allCandidates.findIndex(
+                            (x) =>
+                              x.name === c.name &&
+                              x.processCode === c.processCode
+                          ) + 1;
+                        return (
+                          <tr
+                            key={i}
+                            className={`transition-colors ${
+                              isDarkMode
+                                ? 'hover:bg-slate-800/30'
+                                : 'hover:bg-gray-50'
+                            }`}
+                          >
+                            <td
+                              className={`px-4 py-3 text-center text-xs font-mono ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+                            >
+                              {globalRank === 1
+                                ? '🥇'
+                                : globalRank === 2
+                                  ? '🥈'
+                                  : globalRank === 3
+                                    ? '🥉'
+                                    : globalRank}
+                            </td>
+                            <td className="px-5 py-3">
+                              <p
+                                className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                              >
+                                {c.name}
+                              </p>
+                              {c.email && c.email !== c.name && (
+                                <p
+                                  className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+                                >
+                                  {c.email}
+                                </p>
+                              )}
+                            </td>
+                            <td
+                              className={`px-4 py-3 text-sm ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}
+                            >
+                              {EXAM_LABELS[c.examType] ?? c.examType}
+                            </td>
+                            <td className="px-4 py-3">
+                              <span
+                                className={`font-mono text-xs px-2 py-0.5 rounded ${isDarkMode ? 'bg-slate-700 text-slate-300' : 'bg-gray-100 text-gray-600'}`}
+                              >
+                                {c.processCode}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 text-center">
+                              <div className="flex items-center justify-center gap-2">
+                                <div
+                                  className={`h-1.5 w-16 rounded-full overflow-hidden ${isDarkMode ? 'bg-slate-700' : 'bg-gray-200'}`}
+                                >
+                                  <div
+                                    className={`h-full rounded-full ${c.passed ? 'bg-green-500' : 'bg-red-500'}`}
+                                    style={{ width: `${c.percentage}%` }}
+                                  />
+                                </div>
+                                <span
+                                  className={`text-xs font-semibold w-10 text-right ${isDarkMode ? 'text-slate-200' : 'text-gray-700'}`}
+                                >
+                                  {c.percentage}%
+                                </span>
+                              </div>
+                            </td>
+                            <td className="px-4 py-3 text-center">
+                              <span
+                                className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                                  c.passed
+                                    ? isDarkMode
+                                      ? 'bg-green-900/40 text-green-300'
+                                      : 'bg-green-100 text-green-700'
+                                    : isDarkMode
+                                      ? 'bg-red-900/40 text-red-300'
+                                      : 'bg-red-100 text-red-600'
+                                }`}
+                              >
+                                {c.passed ? 'Aprobado' : 'No aprobado'}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
             {/* Processes table */}
             <div className={`${cardClass} overflow-hidden`}>
-              <div className="px-5 py-4 border-b ${isDarkMode ? 'border-slate-700' : 'border-gray-100'}">
+              <div
+                className={`px-5 py-4 border-b ${isDarkMode ? 'border-slate-700' : 'border-gray-100'}`}
+              >
                 <p
                   className={`text-sm font-semibold ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}
                 >
@@ -436,7 +641,9 @@ export default function EventoDetailPage() {
                       <th className="px-4 py-3 text-center">Estado</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100 dark:divide-slate-700/50">
+                  <tbody
+                    className={`divide-y ${isDarkMode ? 'divide-slate-700/50' : 'divide-gray-100'}`}
+                  >
                     {processes.map((p) => {
                       const eff = getEffectiveStatus(p);
                       const badge = STATUS_BADGE[eff];
