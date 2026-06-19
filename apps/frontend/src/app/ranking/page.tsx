@@ -120,9 +120,11 @@ const EXAM_TAB_URLS: Record<string, string> = {
 const MEDAL = ['🥇', '🥈', '🥉'];
 
 function getInitials(name: string) {
-  const parts = name.trim().split(' ');
+  const trimmed = name.trim();
+  if (!trimmed) return '?';
+  const parts = trimmed.split(' ');
   if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
-  return name.slice(0, 2).toUpperCase();
+  return trimmed.slice(0, 2).toUpperCase();
 }
 
 const COLORS = [
