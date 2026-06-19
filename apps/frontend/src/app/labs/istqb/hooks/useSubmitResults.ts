@@ -35,6 +35,12 @@ export function useSubmitResults(
           time_spent: result.timeSpent,
           answers: result.answers as any,
           learning_objectives: result.learningObjectiveAnalysis as any,
+          section_scores: result.learningObjectiveAnalysis?.map((lo) => ({
+            section: lo.learningObjective,
+            correct: lo.correctAnswers,
+            total: lo.totalQuestions,
+            percentage: Math.round(lo.percentage),
+          })),
           model: options?.model,
           language: options?.language,
           process_code: options?.processCode?.trim() || undefined,
