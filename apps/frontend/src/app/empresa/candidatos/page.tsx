@@ -38,7 +38,7 @@ type ExamResult = {
   process_code: string | null;
   section_scores: SectionScore[] | null;
   learning_objectives: unknown | null;
-  profiles?: { display_name: string | null } | null;
+  profiles?: { display_name: string | null }[] | null;
 };
 
 type HiringProcess = {
@@ -106,7 +106,7 @@ export default function CandidatosPage() {
         // Use current profile name when available; fall back to the snapshot stored at exam time
         myResults = ((res ?? []) as ExamResult[]).map((r) => ({
           ...r,
-          participant_name: r.profiles?.display_name ?? r.participant_name,
+          participant_name: r.profiles?.[0]?.display_name ?? r.participant_name,
         }));
       }
 
