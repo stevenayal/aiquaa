@@ -28,6 +28,7 @@ type ExamResult = {
   id: string;
   participant_name: string | null;
   participant_email: string | null;
+  user_id: string | null;
   exam_type: string;
   score: number;
   percentage: number;
@@ -37,6 +38,7 @@ type ExamResult = {
   process_code: string | null;
   section_scores: SectionScore[] | null;
   learning_objectives: unknown | null;
+  profiles?: { display_name: string | null }[] | null;
 };
 
 type HiringProcess = {
@@ -97,11 +99,15 @@ export default function CandidatosPage() {
         const { data: res } = await supabase
           .from('exam_results')
           .select(
-            'id, participant_name, participant_email, exam_type, score, percentage, passed, time_spent, created_at, process_code, section_scores, learning_objectives'
+            'id, participant_name, participant_email, user_id, exam_type, score, percentage, passed, time_spent, created_at, process_code, section_scores, learning_objectives, profiles(display_name)'
           )
           .in('process_code', processCodes)
           .order('created_at', { ascending: false });
-        myResults = (res ?? []) as ExamResult[];
+        // Use current profile name when available; fall back to the snapshot stored at exam time
+        myResults = ((res ?? []) as ExamResult[]).map((r) => ({
+          ...r,
+          participant_name: r.profiles?.[0]?.display_name ?? r.participant_name,
+        }));
       }
 
       setProcesses(procs ?? []);

@@ -57,8 +57,15 @@ export async function saveExamResultAction(payload: SaveExamResultPayload) {
   } = await supabase.auth.getUser();
   if (userError || !user) return { error: 'No autenticado' };
 
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('display_name')
+    .eq('id', user.id)
+    .single();
+
   const resolvedName =
     payload.participant_name?.trim() ||
+    profile?.display_name?.trim() ||
     user.user_metadata?.full_name?.trim() ||
     null;
 

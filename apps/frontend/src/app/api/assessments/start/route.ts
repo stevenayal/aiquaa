@@ -30,12 +30,21 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const supabase = createAdminClient();
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('display_name')
+      .eq('id', user.id)
+      .single();
+
     const defaults = getExamUserDefaults(user);
     const candidateName =
-      defaults.fullName || defaults.email || `Usuario ${user.id.slice(0, 8)}`;
+      profile?.display_name?.trim() ||
+      defaults.fullName ||
+      defaults.email ||
+      `Usuario ${user.id.slice(0, 8)}`;
     const candidateEmail = defaults.email || null;
-
-    const supabase = createAdminClient();
 
     // Validar código de proceso si fue provisto
     let resolvedProcessCode: string | null = null;
