@@ -581,6 +581,15 @@ export async function finalizeAssessmentAttemptAction(attemptId: string) {
       percentage,
       time_spent: timeSpentSeconds,
       process_code: getProcessCodeFromAttemptMetadata(attempt.metadata),
+      section_scores: sectionScores.map((ss) => {
+        const sec = sections.find((s) => s.id === ss.section_id);
+        return {
+          section: sec?.title ?? ss.section_id,
+          correct: ss.score,
+          total: ss.max_score,
+          percentage: Math.round((ss.score / Math.max(1, ss.max_score)) * 100),
+        };
+      }),
       metadata: {
         assessment_attempt_id: attemptId,
         candidate_level: candidateLevel,

@@ -36,6 +36,13 @@ interface SaveExamResultPayload {
   language?: string;
   // Analysis
   learning_objectives?: object;
+  // Per-section breakdown (standardized across exam types)
+  section_scores?: Array<{
+    section: string;
+    correct: number;
+    total: number;
+    percentage: number;
+  }>;
   // Hiring process
   process_code?: string;
   // Extra structured data (bugs, sections, etc.)

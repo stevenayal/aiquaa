@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import Link from 'next/link';
 import { useEffect, useState, useMemo } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -16,6 +17,13 @@ import {
   YAxis,
 } from 'recharts';
 
+type SectionScore = {
+  section: string;
+  correct: number;
+  total: number;
+  percentage: number;
+};
+
 type ExamResult = {
   id: string;
   participant_name: string | null;
@@ -27,6 +35,8 @@ type ExamResult = {
   time_spent: number;
   created_at: string;
   process_code: string | null;
+  section_scores: SectionScore[] | null;
+  learning_objectives: unknown | null;
 };
 
 type HiringProcess = {
@@ -64,6 +74,7 @@ export default function CandidatosPage() {
   );
   const [sortKey, setSortKey] = useState<SortKey>('percentage');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -86,7 +97,7 @@ export default function CandidatosPage() {
         const { data: res } = await supabase
           .from('exam_results')
           .select(
-            'id, participant_name, participant_email, exam_type, score, percentage, passed, time_spent, created_at, process_code'
+            'id, participant_name, participant_email, exam_type, score, percentage, passed, time_spent, created_at, process_code, section_scores, learning_objectives'
           )
           .in('process_code', processCodes)
           .order('created_at', { ascending: false });
@@ -243,6 +254,37 @@ export default function CandidatosPage() {
       examenes: cnt,
     }));
   }, [filtered]);
+
+  const getSectionScores = (r: ExamResult): SectionScore[] | null => {
+    if (r.section_scores && r.section_scores.length > 0)
+      return r.section_scores;
+    if (r.learning_objectives) {
+      const raw = Array.isArray(r.learning_objectives)
+        ? r.learning_objectives
+        : [];
+      const mapped = (raw as Record<string, unknown>[])
+        .map((lo) => {
+          const section =
+            typeof lo.learningObjective === 'string'
+              ? lo.learningObjective
+              : null;
+          const correct =
+            typeof lo.correctAnswers === 'number' ? lo.correctAnswers : null;
+          const total =
+            typeof lo.totalQuestions === 'number' ? lo.totalQuestions : null;
+          const pct =
+            typeof lo.percentage === 'number'
+              ? Math.round(lo.percentage)
+              : null;
+          if (!section || correct === null || total === null || pct === null)
+            return null;
+          return { section, correct, total, percentage: pct };
+        })
+        .filter((x): x is SectionScore => x !== null);
+      return mapped.length > 0 ? mapped : null;
+    }
+    return null;
+  };
 
   const toggleSort = (key: SortKey) => {
     if (sortKey === key) setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
@@ -473,6 +515,7 @@ export default function CandidatosPage() {
                     >
                       Fecha <SortIcon k="created_at" />
                     </th>
+                    <th className="px-5 py-3 w-8" />
                   </tr>
                 </thead>
                 <tbody>
@@ -481,104 +524,192 @@ export default function CandidatosPage() {
                       (p) => p.code === r.process_code
                     );
                     return (
-                      <tr
-                        key={r.id}
-                        className={`border-t ${isDarkMode ? 'border-slate-700' : 'border-gray-100'} ${
-                          i % 2 === 0
-                            ? isDarkMode
-                              ? 'bg-dark-secondary'
-                              : 'bg-white'
-                            : isDarkMode
-                              ? 'bg-slate-800/30'
-                              : 'bg-gray-50/50'
-                        }`}
-                      >
-                        <td className="px-5 py-3">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span
-                              className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
-                            >
-                              {r.participant_name || (
+                      <React.Fragment key={r.id}>
+                        <tr
+                          className={`border-t ${isDarkMode ? 'border-slate-700' : 'border-gray-100'} ${
+                            i % 2 === 0
+                              ? isDarkMode
+                                ? 'bg-dark-secondary'
+                                : 'bg-white'
+                              : isDarkMode
+                                ? 'bg-slate-800/30'
+                                : 'bg-gray-50/50'
+                          } cursor-pointer`}
+                          onClick={() =>
+                            setExpandedId((prev) =>
+                              prev === r.id ? null : r.id
+                            )
+                          }
+                        >
+                          <td className="px-5 py-3">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span
+                                className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                              >
+                                {r.participant_name || (
+                                  <span
+                                    className={`italic ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+                                  >
+                                    Sin nombre
+                                  </span>
+                                )}
+                              </span>
+                              {(attemptInfo.totalMap.get(r.id) ?? 1) > 1 && (
                                 <span
-                                  className={`italic ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+                                  className={`text-xs px-1.5 py-0.5 rounded font-mono ${isDarkMode ? 'bg-slate-700 text-slate-300' : 'bg-gray-100 text-gray-500'}`}
                                 >
-                                  Sin nombre
+                                  intento {attemptInfo.indexMap.get(r.id)}/
+                                  {attemptInfo.totalMap.get(r.id)}
                                 </span>
                               )}
-                            </span>
-                            {(attemptInfo.totalMap.get(r.id) ?? 1) > 1 && (
-                              <span
-                                className={`text-xs px-1.5 py-0.5 rounded font-mono ${isDarkMode ? 'bg-slate-700 text-slate-300' : 'bg-gray-100 text-gray-500'}`}
+                            </div>
+                            {r.participant_email && (
+                              <div
+                                className={`text-xs mt-0.5 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
                               >
-                                intento {attemptInfo.indexMap.get(r.id)}/
-                                {attemptInfo.totalMap.get(r.id)}
+                                {r.participant_email}
+                              </div>
+                            )}
+                          </td>
+                          <td className="px-5 py-3">
+                            <span
+                              className={`font-mono text-xs px-2 py-0.5 rounded ${isDarkMode ? 'bg-slate-700 text-slate-300' : 'bg-gray-100 text-gray-600'}`}
+                            >
+                              {EXAM_LABELS[r.exam_type] ?? r.exam_type}
+                            </span>
+                          </td>
+                          <td className="px-5 py-3">
+                            {proc ? (
+                              <Link
+                                href={`/empresa/procesos/${proc.id}`}
+                                className={`text-xs hover:underline ${isDarkMode ? 'text-indigo-400' : 'text-indigo-600'}`}
+                              >
+                                {proc.position_name}
+                              </Link>
+                            ) : (
+                              <span
+                                className={`text-xs font-mono ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                              >
+                                {r.process_code}
                               </span>
                             )}
-                          </div>
-                          {r.participant_email && (
-                            <div
-                              className={`text-xs mt-0.5 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-                            >
-                              {r.participant_email}
+                          </td>
+                          <td className="px-5 py-3">
+                            <div className="flex items-center gap-2">
+                              <span
+                                className={`font-bold text-base ${r.passed ? 'text-green-500' : 'text-red-500'}`}
+                              >
+                                {r.percentage}%
+                              </span>
+                              <span
+                                className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
+                                  r.passed
+                                    ? isDarkMode
+                                      ? 'bg-green-900/40 text-green-300'
+                                      : 'bg-green-50 text-green-700'
+                                    : isDarkMode
+                                      ? 'bg-red-900/40 text-red-300'
+                                      : 'bg-red-50 text-red-700'
+                                }`}
+                              >
+                                {r.passed ? '✓' : '✗'}
+                              </span>
                             </div>
-                          )}
-                        </td>
-                        <td className="px-5 py-3">
-                          <span
-                            className={`font-mono text-xs px-2 py-0.5 rounded ${isDarkMode ? 'bg-slate-700 text-slate-300' : 'bg-gray-100 text-gray-600'}`}
+                          </td>
+                          <td
+                            className={`px-5 py-3 text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
                           >
-                            {EXAM_LABELS[r.exam_type] ?? r.exam_type}
-                          </span>
-                        </td>
-                        <td className="px-5 py-3">
-                          {proc ? (
-                            <Link
-                              href={`/empresa/procesos/${proc.id}`}
-                              className={`text-xs hover:underline ${isDarkMode ? 'text-indigo-400' : 'text-indigo-600'}`}
-                            >
-                              {proc.position_name}
-                            </Link>
-                          ) : (
+                            {mins(r.time_spent)}
+                          </td>
+                          <td
+                            className={`px-5 py-3 text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                          >
+                            {new Date(r.created_at).toLocaleDateString('es-PY')}
+                          </td>
+                          <td className="px-3 py-3 text-center">
                             <span
-                              className={`text-xs font-mono ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                              className={`text-xs transition-transform inline-block ${isDarkMode ? 'text-slate-400' : 'text-gray-400'}`}
+                              style={{
+                                transform:
+                                  expandedId === r.id
+                                    ? 'rotate(90deg)'
+                                    : 'rotate(0deg)',
+                              }}
                             >
-                              {r.process_code}
+                              ▶
                             </span>
-                          )}
-                        </td>
-                        <td className="px-5 py-3">
-                          <div className="flex items-center gap-2">
-                            <span
-                              className={`font-bold text-base ${r.passed ? 'text-green-500' : 'text-red-500'}`}
-                            >
-                              {r.percentage}%
-                            </span>
-                            <span
-                              className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
-                                r.passed
-                                  ? isDarkMode
-                                    ? 'bg-green-900/40 text-green-300'
-                                    : 'bg-green-50 text-green-700'
-                                  : isDarkMode
-                                    ? 'bg-red-900/40 text-red-300'
-                                    : 'bg-red-50 text-red-700'
-                              }`}
-                            >
-                              {r.passed ? '✓' : '✗'}
-                            </span>
-                          </div>
-                        </td>
-                        <td
-                          className={`px-5 py-3 text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-                        >
-                          {mins(r.time_spent)}
-                        </td>
-                        <td
-                          className={`px-5 py-3 text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-                        >
-                          {new Date(r.created_at).toLocaleDateString('es-PY')}
-                        </td>
-                      </tr>
+                          </td>
+                        </tr>
+                        {expandedId === r.id &&
+                          (() => {
+                            const scores = getSectionScores(r);
+                            return (
+                              <tr
+                                key={`${r.id}-detail`}
+                                className={`border-t ${isDarkMode ? 'border-slate-700 bg-slate-800/50' : 'border-gray-100 bg-gray-50'}`}
+                              >
+                                <td colSpan={7} className="px-6 py-4">
+                                  {scores && scores.length > 0 ? (
+                                    <div className="space-y-2">
+                                      <p
+                                        className={`text-xs font-semibold uppercase tracking-wide mb-3 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                                      >
+                                        Desglose por área
+                                      </p>
+                                      {scores.map((s) => (
+                                        <div
+                                          key={s.section}
+                                          className="flex items-center gap-3"
+                                        >
+                                          <span
+                                            className={`text-xs w-48 shrink-0 truncate ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}
+                                            title={s.section}
+                                          >
+                                            {s.section}
+                                          </span>
+                                          <div
+                                            className={`flex-1 rounded-full h-2 ${isDarkMode ? 'bg-slate-700' : 'bg-gray-200'}`}
+                                          >
+                                            <div
+                                              className={`h-2 rounded-full transition-all ${s.percentage >= 60 ? 'bg-green-500' : 'bg-red-400'}`}
+                                              style={{
+                                                width: `${s.percentage}%`,
+                                              }}
+                                            />
+                                          </div>
+                                          <span
+                                            className={`text-xs w-20 shrink-0 text-right font-mono ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                                          >
+                                            {s.correct}/{s.total} (
+                                            {s.percentage}%)
+                                          </span>
+                                          <span className="text-xs w-4 shrink-0">
+                                            {s.percentage >= 60 ? (
+                                              <span className="text-green-500">
+                                                ✓
+                                              </span>
+                                            ) : (
+                                              <span className="text-red-400">
+                                                ✗
+                                              </span>
+                                            )}
+                                          </span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  ) : (
+                                    <p
+                                      className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+                                    >
+                                      Sin desglose disponible para este tipo de
+                                      examen
+                                    </p>
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          })()}
+                      </React.Fragment>
                     );
                   })}
                 </tbody>
