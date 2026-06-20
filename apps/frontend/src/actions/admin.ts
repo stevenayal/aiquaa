@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 async function requireAdmin() {
   const supabase = createClient();
@@ -31,10 +32,13 @@ export async function getAdminUsersAction() {
 }
 
 export async function changeUserRoleAction(targetUserId: string, newRole: 'comunidad' | 'employer' | 'admin') {
-  const { error, supabase } = await requireAdmin();
-  if (error || !supabase) return { error };
+  // Gate: only admins can reach the service-role call below
+  const { error } = await requireAdmin();
+  if (error) return { error };
 
-  const { error: fnError } = await supabase.rpc('change_user_role', {
+  // Use service-role client so this call cannot be replicated via user JWT
+  const adminClient = createAdminClient();
+  const { error: fnError } = await adminClient.rpc('change_user_role', {
     target_user_id: targetUserId,
     new_role: newRole,
   });

@@ -120,9 +120,11 @@ const EXAM_TAB_URLS: Record<string, string> = {
 const MEDAL = ['🥇', '🥈', '🥉'];
 
 function getInitials(name: string) {
-  const parts = name.trim().split(' ');
+  const trimmed = name.trim();
+  if (!trimmed) return '?';
+  const parts = trimmed.split(' ');
   if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
-  return name.slice(0, 2).toUpperCase();
+  return trimmed.slice(0, 2).toUpperCase();
 }
 
 const COLORS = [
@@ -916,12 +918,27 @@ export default function RankingPage() {
 
         {/* Tabs */}
         <div
+          role="tablist"
+          aria-label="Tipos de ranking"
           className={`flex rounded-xl p-1 gap-1 flex-wrap ${isDarkMode ? 'bg-slate-800' : 'bg-gray-200'}`}
         >
           {EXAM_TABS.map((t) => (
             <button
               key={t.key}
+              id={`ranking-tab-${t.key}`}
+              role="tab"
+              aria-selected={activeTab === t.key}
+              aria-controls="ranking-tabpanel"
               onClick={() => setActiveTab(t.key)}
+              onKeyDown={(e) => {
+                const keys = EXAM_TABS.map((tab) => tab.key);
+                const idx = keys.indexOf(t.key);
+                if (e.key === 'ArrowRight') {
+                  setActiveTab(keys[(idx + 1) % keys.length]);
+                } else if (e.key === 'ArrowLeft') {
+                  setActiveTab(keys[(idx - 1 + keys.length) % keys.length]);
+                }
+              }}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-sm font-semibold transition-all min-w-[100px] ${
                 activeTab === t.key
                   ? `bg-gradient-to-r ${t.color} text-white shadow-md`
@@ -936,6 +953,7 @@ export default function RankingPage() {
         </div>
 
         {/* Contenido */}
+        <div id="ranking-tabpanel" role="tabpanel" aria-labelledby={`ranking-tab-${activeTab}`}>
         {isReportes ? (
           <ReportadoresTab isDarkMode={isDarkMode} />
         ) : isXp ? (
@@ -1121,6 +1139,7 @@ export default function RankingPage() {
             </p>
           </>
         )}
+        </div>
       </div>
     </div>
   );

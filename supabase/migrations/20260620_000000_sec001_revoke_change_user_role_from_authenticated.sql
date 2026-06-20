@@ -1,0 +1,13 @@
+-- SEC-001: Revocar EXECUTE de change_user_role() para el rol authenticated.
+--
+-- Contexto: La función es SECURITY DEFINER y ya tiene un guard interno que valida
+-- que el caller sea admin. Sin embargo, cualquier usuario autenticado podía llamarla
+-- directamente via POST /rest/v1/rpc/change_user_role con su JWT, bypassando el
+-- server action de Next.js.
+--
+-- Fix: El server action changeUserRoleAction() ahora usa createAdminClient()
+-- (service role key). La autorización se valida en capa de aplicación con requireAdmin()
+-- antes de hacer la llamada. La función DB ya no necesita ser callable por authenticated.
+--
+-- Permisos resultantes: postgres (superuser) + service_role únicamente.
+REVOKE EXECUTE ON FUNCTION public.change_user_role(uuid, text) FROM authenticated;

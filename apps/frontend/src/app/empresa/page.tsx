@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
-import { getMyMembershipAction } from '@/actions/empresa-admin';
-import type { EmpresaMemberRole } from '@/actions/empresa-admin';
+import { getMyMembershipAction, getMyEmpresaAction } from '@/actions/empresa-admin';
+import type { EmpresaMemberRole, Empresa } from '@/actions/empresa-admin';
 import {
   getEmpresaDashboardStatsAction,
   type EmpresaDashboardStats,
@@ -120,6 +120,7 @@ export default function EmpresaDashboardPage() {
   const { user } = useSupabaseAuth();
   const { isDarkMode } = useTheme();
   const [myRole, setMyRole] = useState<EmpresaMemberRole | null>(null);
+  const [empresa, setEmpresa] = useState<Empresa | null>(null);
   const [stats, setStats] = useState<EmpresaDashboardStats | null>(null);
   const [statsLoading, setStatsLoading] = useState(true);
   const [bannerDismissed, setBannerDismissed] = useState(false);
@@ -137,6 +138,9 @@ export default function EmpresaDashboardPage() {
     getMyMembershipAction().then(({ data }) => {
       if (data) setMyRole(data.role as EmpresaMemberRole);
     });
+    getMyEmpresaAction().then(({ data }) => {
+      if (data) setEmpresa(data);
+    });
     getEmpresaDashboardStatsAction().then(({ data }) => {
       if (data) setStats(data);
       setStatsLoading(false);
@@ -149,9 +153,7 @@ export default function EmpresaDashboardPage() {
   };
 
   const companyName =
-    user?.user_metadata?.company_name ||
-    user?.user_metadata?.full_name ||
-    'tu empresa';
+    empresa?.nombre_comercial || empresa?.razon_social || 'tu empresa';
 
   const isAdmin = myRole === 'owner' || myRole === 'admin';
   const links = isAdmin ? [...BASE_LINKS, ADMIN_LINK] : BASE_LINKS;
