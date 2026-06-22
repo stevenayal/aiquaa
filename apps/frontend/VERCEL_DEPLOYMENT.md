@@ -31,11 +31,11 @@ Para que el frontend funcione correctamente en Vercel, necesitas configurar las 
 ### Variables para OAuth (Recomendadas)
 
 6. **NEXT_PUBLIC_GOOGLE_CLIENT_ID**
-   - Valor: `91995874414-kqjeag1g4h46nmlg1nodb7aqb6jud80r.apps.googleusercontent.com`
+   - Valor: `<YOUR_GOOGLE_CLIENT_ID>`
    - Descripción: Para autenticación con Google
 
 7. **NEXT_PUBLIC_GITHUB_CLIENT_ID**
-   - Valor: `Ov23lictkb4l9L1uwTny`
+   - Valor: `<YOUR_GITHUB_CLIENT_ID>`
    - Descripción: Para autenticación con GitHub
 
 ## Cómo Configurar en Vercel
@@ -48,11 +48,13 @@ Para que el frontend funcione correctamente en Vercel, necesitas configurar las 
 ## Configuración de OAuth
 
 ### Google OAuth ✅
-- **Client ID**: `91995874414-kqjeag1g4h46nmlg1nodb7aqb6jud80r.apps.googleusercontent.com`
+
+- **Client ID**: `<YOUR_GOOGLE_CLIENT_ID>`
 - **URLs de redirección**: Configuradas en Google Cloud Console
 
 ### GitHub OAuth ✅
-- **Client ID**: `Ov23lictkb4l9L1uwTny`
+
+- **Client ID**: `<YOUR_GITHUB_CLIENT_ID>`
 - **URLs de redirección**: Configuradas en GitHub Developer Settings
 
 ## Solución de Problemas
@@ -62,6 +64,7 @@ Para que el frontend funcione correctamente en Vercel, necesitas configurar las 
 Este error ocurre cuando las variables de entorno no están configuradas correctamente en Vercel.
 
 **Solución:**
+
 1. Verifica que `NEXT_PUBLIC_API_URL` esté configurada en Vercel
 2. Asegúrate de que el valor sea correcto (ej: `https://api.aiquaa.com`)
 3. Redespliega la aplicación después de configurar las variables
@@ -69,6 +72,7 @@ Este error ocurre cuando las variables de entorno no están configuradas correct
 ### Botones de OAuth no funcionan
 
 **Solución:**
+
 1. Verifica que las variables `NEXT_PUBLIC_GOOGLE_CLIENT_ID` y `NEXT_PUBLIC_GITHUB_CLIENT_ID` estén configuradas
 2. Asegúrate de que el backend esté configurado con los mismos Client IDs
 3. Verifica que las URLs de redirección estén configuradas correctamente

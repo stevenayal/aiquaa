@@ -18,6 +18,7 @@ module.exports = {
   ignorePatterns: [
     '.eslintrc.js',
     'prisma/**',
+    'scripts/**',
     'test/**',
     'src/**/*.spec.ts',
     'jest.*.config.ts',

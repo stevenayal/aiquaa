@@ -3,6 +3,7 @@
 ## ✅ Preparación Completada
 
 Los archivos ya están listos para Railway:
+
 - ✅ Puerto configurado para usar `process.env.PORT`
 - ✅ Escuchando en `0.0.0.0` (requerido por Railway)
 - ✅ `railway.json` creado con configuración óptima
@@ -27,16 +28,19 @@ Los archivos ya están listos para Railway:
 Railway detectará automáticamente que es un proyecto Node.js. Necesitas configurar:
 
 **Root Directory:**
+
 ```
 apps/backend
 ```
 
 **Build Command:** (Ya está en railway.json, pero verifica)
+
 ```
 npm run build
 ```
 
 **Start Command:** (Ya está en railway.json, pero verifica)
+
 ```
 npm run start:prod
 ```
@@ -47,8 +51,8 @@ Click en la pestaña **"Variables"** y agrega TODAS estas variables:
 
 ```bash
 # Database - Prisma Accelerate
-DATABASE_URL=prisma+postgres://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqd3RfaWQiOjEsInNlY3VyZV9rZXkiOiJza19IZnVibWdSRE50cjQxbHNvZHpIVWMiLCJhcGlfa2V5IjoiMDFLNlRZOU04MURDWThWS1NOVzExMTZNREYiLCJ0ZW5hbnRfaWQiOiIxMjBiN2ZmNjlkMTY2MmI5YjY0YmEwN2YzMWQ4YmIxMjQ1OTYzYWYxZTAxYzg0YTIwNDRlYjhmYWZhMTQxNmMxIiwiaW50ZXJuYWxfc2VjcmV0IjoiNmY1MDk1YmEtZjVkYS00NDkwLTkxNDgtN2RiZjAwMjNhMjgxIn0.GEWG2Swr_Xr455cU4ZVI7HUqJhRIo_vyJHPdQXcbsN0
-POSTGRES_URL=postgres://120b7ff69d1662b9b64ba07f31d8bb1245963af1e01c84a2044eb8fafa1416c1:sk_HfubmgRDNtr41lsodzHUc@db.prisma.io:5432/postgres?sslmode=require
+DATABASE_URL=prisma+postgres://accelerate.prisma-data.net/?api_key=<YOUR_PRISMA_ACCELERATE_API_KEY>
+POSTGRES_URL=postgres://<user>:<password>@db.prisma.io:5432/postgres?sslmode=require
 
 # JWT - ⚠️ CAMBIA ESTE SECRET EN PRODUCCIÓN
 JWT_SECRET=production-super-secret-jwt-key-change-this-min-32-chars
@@ -61,22 +65,23 @@ EMAIL_FROM=AIQUAA <no-reply@aiquaa.com>
 SMTP_URL=smtp://user:pass@smtp.gmail.com:587
 
 # OAuth - Google
-GOOGLE_CLIENT_ID=91995874414-ivu60t764qt4gu4t8u5reiu9dnsnqm7h.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=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
+GOOGLE_CLIENT_ID=<YOUR_GOOGLE_CLIENT_ID>
+GOOGLE_CLIENT_SECRET=<YOUR_GOOGLE_CLIENT_SECRET>
 
 # OAuth - GitHub
-GITHUB_CLIENT_ID=Ov23lictkb4l9L1uwTny
-GITHUB_CLIENT_SECRET=a596ad4f1a8e0fc9fbe74b1d99316f95881b3f46
+GITHUB_CLIENT_ID=<YOUR_GITHUB_CLIENT_ID>
+GITHUB_CLIENT_SECRET=<YOUR_GITHUB_CLIENT_SECRET>
 
 # Supabase (si lo usas)
-SUPABASE_URL=https://hxixxbiufyntcywajkrh.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4aXh4Yml1ZnludGN5d2Fqa3JoIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NDQ3MjQwNCwiZXhwIjoyMDcwMDQ4NDA0fQ.vRoL7-BvfQbB08nrsdY_L2hvAirMNpnE1mVOK-2vexU
+SUPABASE_URL=https://<YOUR_SUPABASE_PROJECT_REF>.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=<YOUR_SUPABASE_SERVICE_ROLE_KEY>
 
 # Node Environment
 NODE_ENV=production
 ```
 
 **⚠️ IMPORTANTE:**
+
 - Railway asigna automáticamente la variable `PORT`, NO la agregues manualmente
 - La variable `FRONT_ORIGIN` la agregarás después de desplegar el frontend
 
@@ -93,11 +98,13 @@ NODE_ENV=production
 ### **5. Obtener la URL del Backend**
 
 Una vez desplegado, Railway te asignará una URL como:
+
 ```
 https://aiquaa-backend-production.up.railway.app
 ```
 
 O similar. La encontrarás en:
+
 - La pestaña **"Deployments"**
 - O en **"Settings"** → **"Domains"**
 
@@ -126,6 +133,7 @@ NEXT_PUBLIC_BACKEND_URL=https://tu-backend.up.railway.app
 3. Click en **"Redeploy"**
 
 O simplemente haz un git push:
+
 ```bash
 git add .
 git commit -m "chore: update backend URL to Railway"
@@ -138,9 +146,11 @@ Una vez que tengas la URL del frontend en Vercel (ej: `https://aiquaa.vercel.app
 
 1. Ve a Railway → Variables
 2. Agrega:
+
 ```bash
 FRONT_ORIGIN=https://tu-frontend.vercel.app
 ```
+
 3. Railway redesplegará automáticamente
 
 ---
@@ -152,6 +162,7 @@ FRONT_ORIGIN=https://tu-frontend.vercel.app
 1. Ve a: https://console.cloud.google.com/apis/credentials
 2. Edita tu OAuth 2.0 Client ID
 3. En **"Authorized redirect URIs"**, agrega:
+
 ```
 https://tu-backend.up.railway.app/api/v1/auth/google/callback
 ```
@@ -161,6 +172,7 @@ https://tu-backend.up.railway.app/api/v1/auth/google/callback
 1. Ve a: https://github.com/settings/developers
 2. Edita tu OAuth App
 3. En **"Authorization callback URL"**, actualiza a:
+
 ```
 https://tu-backend.up.railway.app/api/v1/auth/github/callback
 ```
@@ -170,13 +182,15 @@ https://tu-backend.up.railway.app/api/v1/auth/github/callback
 ## ✅ Verificación Post-Despliegue
 
 ### **1. Health Check del Backend**
+
 ```bash
 curl https://tu-backend.up.railway.app/api/v1/health
 ```
 
 Debe responder:
+
 ```json
-{"status":"ok","timestamp":"..."}
+{ "status": "ok", "timestamp": "..." }
 ```
 
 ### **2. Verificar CORS**
@@ -190,6 +204,7 @@ Abre tu frontend en Vercel y abre DevTools (F12):
 ### **3. Test de Autenticación Completo**
 
 Prueba:
+
 - ✅ Registro de usuario
 - ✅ Login con credenciales
 - ✅ OAuth con Google
@@ -202,15 +217,18 @@ Prueba:
 Railway te proporciona:
 
 ### **Logs en Tiempo Real:**
+
 - Click en tu servicio
 - Pestaña **"Logs"**
 - Verás todos los console.log de tu aplicación
 
 ### **Métricas:**
+
 - Pestaña **"Metrics"**
 - CPU, Memoria, Network usage
 
 ### **Deployments:**
+
 - Pestaña **"Deployments"**
 - Historial de todos tus deploys
 - Rollback fácil si algo falla
@@ -222,11 +240,13 @@ Railway te proporciona:
 ### **Error: "Build failed"**
 
 Verifica los logs en Railway. Posibles causas:
+
 - Dependencias no instaladas correctamente
 - Error en el build de TypeScript
 - Falta alguna variable de entorno
 
 **Solución:**
+
 ```bash
 # Localmente, verifica que el build funcione:
 cd apps/backend
@@ -239,6 +259,7 @@ npm run start:prod
 El servidor no está escuchando en el puerto correcto.
 
 **Verificación:**
+
 - Asegúrate que `src/main.ts` use `process.env.PORT`
 - Verifica que escuche en `0.0.0.0`, no `localhost`
 
@@ -247,12 +268,14 @@ El servidor no está escuchando en el puerto correcto.
 Las variables de entorno no están configuradas.
 
 **Verificación:**
+
 - Revisa que `DATABASE_URL` y `POSTGRES_URL` estén en Railway
 - Verifica que no haya espacios extras o saltos de línea
 
 ### **Error de CORS en el frontend**
 
 **Solución:**
+
 1. Asegúrate que `FRONT_ORIGIN` en Railway tenga la URL correcta del frontend
 2. Verifica que Railway haya redesplegado después de agregar la variable
 3. Limpia caché del navegador (Ctrl + Shift + R)
