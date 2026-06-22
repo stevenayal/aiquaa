@@ -8,9 +8,11 @@
 ## 🎯 Problemas Identificados y Resueltos
 
 ### 1. **Guards de Passport Faltantes** ❌ → ✅
+
 **Problema:** Las rutas OAuth de Google y GitHub no tenían los decoradores `@UseGuards` necesarios, causando que Passport no interceptara las peticiones.
 
 **Solución:**
+
 ```typescript
 // apps/backend/src/auth/auth.controller.ts
 @Get('google')
@@ -25,9 +27,11 @@ async githubAuth() { ... }
 ---
 
 ### 2. **Variable BACKEND_URL Faltante** ❌ → ✅
+
 **Problema:** Las estrategias OAuth de Google y GitHub necesitaban `BACKEND_URL` para construir las callback URLs, pero la variable no existía.
 
 **Solución:**
+
 ```bash
 # apps/backend/.env
 BACKEND_URL=http://localhost:3001  # ✅ Agregado
@@ -36,9 +40,11 @@ BACKEND_URL=http://localhost:3001  # ✅ Agregado
 ---
 
 ### 3. **Variables de NextAuth Faltantes** ❌ → ✅
+
 **Problema:** El frontend no tenía configuradas las variables requeridas por NextAuth.
 
 **Solución:**
+
 ```bash
 # apps/frontend/.env.local
 NEXTAUTH_SECRET=dev-secret-key-change-in-production-min-32-characters-long  # ✅ Agregado
@@ -52,9 +58,11 @@ GITHUB_CLIENT_SECRET=...  # ✅ Agregado
 ---
 
 ### 4. **Estructura de Respuesta Incorrecta** ❌ → ✅
+
 **Problema:** NextAuth esperaba `data.success && data.data?.user` pero el backend devolvía directamente `{ access_token, refresh_token, user }`.
 
 **Solución:**
+
 ```typescript
 // apps/frontend/src/auth.ts (línea 41)
 // ANTES:
@@ -63,7 +71,8 @@ if (data.success && data.data?.user) {
 }
 
 // DESPUÉS:
-if (data.user) {  // ✅ Corregido
+if (data.user) {
+  // ✅ Corregido
   return {
     id: data.user.id.toString(),
     email: data.user.email,
@@ -76,14 +85,18 @@ if (data.user) {  // ✅ Corregido
 ---
 
 ### 5. **Verificación de Email Bloqueante** ❌ → ✅
+
 **Problema:** El backend impedía el login si el email no estaba verificado, bloqueando el flujo de registro.
 
 **Solución:**
+
 ```typescript
 // apps/backend/src/auth/auth.service.ts (líneas 87-89)
 // ANTES:
 if (!user.emailVerifiedAt) {
-  throw new BadRequestException('Por favor verifica tu email antes de iniciar sesión');
+  throw new BadRequestException(
+    'Por favor verifica tu email antes de iniciar sesión'
+  );
 }
 
 // DESPUÉS:
@@ -94,9 +107,11 @@ if (!user.emailVerifiedAt) {
 ---
 
 ### 6. **Login Automático Después del Registro** ❌ → ✅
+
 **Problema:** El frontend intentaba login automático después del registro, pero causaba problemas cuando el email no estaba verificado.
 
 **Solución:**
+
 ```typescript
 // apps/frontend/src/components/auth/RegisterForm.tsx (líneas 84-92)
 // ANTES:
@@ -104,12 +119,14 @@ if (!user.emailVerifiedAt) {
 
 // DESPUÉS:
 if (result.success) {
-  setAlertMessage('Registro exitoso. Revisa tu email para verificar tu cuenta.');
+  setAlertMessage(
+    'Registro exitoso. Revisa tu email para verificar tu cuenta.'
+  );
   setAlertType('success');
   setShowAlert(true);
 
   setTimeout(() => {
-    window.location.href = '/login?message=registration_success';  // ✅ Solo redirige
+    window.location.href = '/login?message=registration_success'; // ✅ Solo redirige
   }, 2000);
 }
 ```
@@ -117,43 +134,50 @@ if (result.success) {
 ---
 
 ### 7. **Credenciales OAuth Actualizadas** ❌ → ✅
+
 **Problema:** Las credenciales de OAuth estaban desactualizadas o incorrectas.
 
 **Solución:**
+
 ```bash
 # Backend y Frontend actualizados con:
-GOOGLE_CLIENT_ID=91995874414-ivu60t764qt4gu4t8u5reiu9dnsnqm7h.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=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
-GITHUB_CLIENT_ID=Ov23lictkb4l9L1uwTny
-GITHUB_CLIENT_SECRET=a596ad4f1a8e0fc9fbe74b1d99316f95881b3f46
+GOOGLE_CLIENT_ID=<YOUR_GOOGLE_CLIENT_ID>
+GOOGLE_CLIENT_SECRET=<YOUR_GOOGLE_CLIENT_SECRET>
+GITHUB_CLIENT_ID=<YOUR_GITHUB_CLIENT_ID>
+GITHUB_CLIENT_SECRET=<YOUR_GITHUB_CLIENT_SECRET>
 ```
 
 ---
 
 ### 8. **Problemas de Compilación TypeScript** ❌ → ✅
+
 **Problema:** El backend no compilaba debido a configuración incorrecta de TypeScript.
 
 **Solución:**
+
 ```json
 // apps/backend/tsconfig.json
 {
   "compilerOptions": {
-    "module": "commonjs",  // ✅ Cambiado de ES2020
-    "noEmit": false,  // ✅ Agregado (override del base)
-    "allowImportingTsExtensions": false  // ✅ Deshabilitado
+    "module": "commonjs", // ✅ Cambiado de ES2020
+    "noEmit": false, // ✅ Agregado (override del base)
+    "allowImportingTsExtensions": false // ✅ Deshabilitado
   }
 }
 ```
 
 **Archivos creados:**
+
 - `apps/backend/nest-cli.json` ✅
 
 ---
 
 ### 9. **Sentry Profiling con Node.js v22** ❌ → ✅
+
 **Problema:** `@sentry/profiling-node` no es compatible con Node.js v22, causando errores al arrancar.
 
 **Solución:**
+
 ```typescript
 // apps/backend/src/observability/sentry.service.ts
 // import { ProfilingIntegration } from '@sentry/profiling-node';  // ✅ Comentado
@@ -221,6 +245,7 @@ Sentry.init({
 ## ✅ Estado del Backend
 
 ### **Puerto:** 3001
+
 ### **Status:** ✅ Running
 
 ```
@@ -230,6 +255,7 @@ Sentry.init({
 ```
 
 ### **Rutas de Autenticación Disponibles:**
+
 - ✅ POST `/api/v1/auth/register`
 - ✅ POST `/api/v1/auth/login`
 - ✅ GET `/api/v1/auth/google` (con Guard)
@@ -245,6 +271,7 @@ Sentry.init({
 ## 🧪 Próximos Pasos para Pruebas
 
 1. **Iniciar el frontend:**
+
    ```bash
    cd apps/frontend
    npm run dev
@@ -269,16 +296,19 @@ Sentry.init({
 ## ⚠️ Notas Importantes
 
 ### **Redis (No Crítico)**
+
 - El backend intenta conectarse a Redis en `localhost:6379`
 - Redis no es esencial para autenticación
 - Solo afecta el sistema de caché
 
 ### **SMTP (No Crítico)**
+
 - El backend usa Ethereal como fallback para emails
 - Los emails de verificación se enviarán a Ethereal en desarrollo
 - En producción, configurar un SMTP real
 
 ### **Sentry Profiling**
+
 - Temporalmente deshabilitado por incompatibilidad con Node.js v22
 - La aplicación funciona normalmente sin profiling
 - Considerar actualizar `@sentry/profiling-node` cuando haya una versión compatible
@@ -288,9 +318,11 @@ Sentry.init({
 ## 🔐 Seguridad
 
 ### **Secretos Expuestos en .env**
+
 ⚠️ **IMPORTANTE:** Los archivos `.env` y `.env.local` con secretos reales NO deben commitearse a Git.
 
 Asegúrate que estén en `.gitignore`:
+
 ```gitignore
 .env
 .env.local
@@ -298,6 +330,7 @@ Asegúrate que estén en `.gitignore`:
 ```
 
 ### **Para Producción:**
+
 1. Generar nuevo `NEXTAUTH_SECRET` con `openssl rand -base64 32`
 2. Usar credenciales OAuth específicas de producción
 3. Configurar SMTP real para emails
@@ -307,16 +340,16 @@ Asegúrate que estén en `.gitignore`:
 
 ## 📊 Resumen Ejecutivo
 
-| Componente | Estado | Detalles |
-|------------|--------|----------|
-| **Backend** | ✅ Funcionando | Puerto 3001, todas las rutas activas |
-| **Guards OAuth** | ✅ Corregido | Google y GitHub con guards |
-| **Variables ENV** | ✅ Configuradas | Backend y Frontend completos |
-| **NextAuth** | ✅ Configurado | Todas las variables presentes |
-| **Compilación** | ✅ Exitosa | TypeScript sin errores |
-| **Credenciales OAuth** | ✅ Actualizadas | Google y GitHub sincronizados |
-| **Verificación Email** | ✅ Opcional | No bloquea login |
-| **Login Auto-Registro** | ✅ Eliminado | Flujo simplificado |
+| Componente              | Estado          | Detalles                             |
+| ----------------------- | --------------- | ------------------------------------ |
+| **Backend**             | ✅ Funcionando  | Puerto 3001, todas las rutas activas |
+| **Guards OAuth**        | ✅ Corregido    | Google y GitHub con guards           |
+| **Variables ENV**       | ✅ Configuradas | Backend y Frontend completos         |
+| **NextAuth**            | ✅ Configurado  | Todas las variables presentes        |
+| **Compilación**         | ✅ Exitosa      | TypeScript sin errores               |
+| **Credenciales OAuth**  | ✅ Actualizadas | Google y GitHub sincronizados        |
+| **Verificación Email**  | ✅ Opcional     | No bloquea login                     |
+| **Login Auto-Registro** | ✅ Eliminado    | Flujo simplificado                   |
 
 ---
 

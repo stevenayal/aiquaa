@@ -7,6 +7,7 @@ El sistema de foro está **completamente conectado** con el backend de Supabase.
 ## ✅ **Backend Implementado**
 
 ### 1. **Esquema de Base de Datos (Prisma)**
+
 - **Threads**: Con título, contenido, categoría, tags, contador de vistas
 - **Posts**: Respuestas a threads con marcado de solución
 - **Categorías**: Organización temática del foro
@@ -14,6 +15,7 @@ El sistema de foro está **completamente conectado** con el backend de Supabase.
 - **Usuarios**: Sistema de autenticación completo
 
 ### 2. **API Endpoints del Foro**
+
 ```
 GET    /forum/categories     - Obtener categorías
 GET    /forum/tags          - Obtener tags disponibles
@@ -29,6 +31,7 @@ GET    /forum/search        - Búsqueda avanzada
 ```
 
 ### 3. **Funcionalidades Implementadas**
+
 - ✅ **CRUD completo** de threads y posts
 - ✅ **Sistema de categorías** y tags
 - ✅ **Búsqueda y filtros** avanzados
@@ -41,12 +44,14 @@ GET    /forum/search        - Búsqueda avanzada
 ## 🌐 **Base de Datos: Supabase**
 
 ### **Credenciales Configuradas**
+
 - **Host**: `aws-0-us-east-1.pooler.supabase.com:6543`
 - **Database**: `postgres`
-- **Usuario**: `postgres.hxixxbiufyntcywajkrh`
+- **Usuario**: `postgres.<YOUR_SUPABASE_PROJECT_REF>`
 - **Pooler**: Habilitado para conexiones eficientes
 
 ### **Estructura de Tablas**
+
 ```sql
 -- Usuarios del sistema
 users (id, email, name, role, ...)
@@ -70,18 +75,21 @@ threads_thread_tags (threadId, threadTagId)
 ## 🚀 **Cómo Usar el Sistema**
 
 ### 1. **Iniciar el Backend**
+
 ```bash
 cd apps/backend
 npm run start:dev
 ```
 
 ### 2. **Iniciar el Frontend**
+
 ```bash
 cd apps/frontend
 npm run dev
 ```
 
 ### 3. **Acceder al Foro**
+
 - **URL**: `http://localhost:3000/forum`
 - **Registro**: `http://localhost:3000/register`
 - **Login**: `http://localhost:3000/login`
@@ -89,12 +97,14 @@ npm run dev
 ## 🔧 **Configuración del Frontend**
 
 ### **Variables de Entorno**
+
 ```bash
 # apps/frontend/.env.local
 NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
 
 ### **Servicios Configurados**
+
 - **AuthService**: Manejo de autenticación
 - **ForumService**: Operaciones del foro
 - **AuthContext**: Estado global de autenticación
@@ -102,15 +112,18 @@ NEXT_PUBLIC_API_URL=http://localhost:3001
 ## 📊 **Datos de Prueba**
 
 ### **Categorías Predefinidas**
+
 - General, Tecnología, QA, Testing
 - Herramientas, Carrera, Eventos
 
 ### **Tags Populares**
+
 - selenium, cypress, playwright
 - automation, api-testing, performance
 - security, mobile, web, devops
 
 ### **Threads de Ejemplo**
+
 - "¿Cómo empezar en QA Automation?"
 - "Comparación: Selenium vs Cypress vs Playwright"
 - "Mejores prácticas para testing de APIs"
@@ -118,12 +131,14 @@ NEXT_PUBLIC_API_URL=http://localhost:3001
 ## 🧪 **Testing del Sistema**
 
 ### 1. **Crear Usuario de Prueba**
+
 ```bash
 cd apps/backend
 node scripts/seed-forum.js
 ```
 
 ### 2. **Verificar Endpoints**
+
 ```bash
 # Obtener categorías
 curl http://localhost:3001/forum/categories
@@ -138,16 +153,19 @@ curl http://localhost:3001/forum/stats
 ## 🔒 **Seguridad Implementada**
 
 ### **Autenticación**
+
 - JWT tokens con refresh automático
 - Validación de permisos por usuario
 - Protección de rutas sensibles
 
 ### **Validación**
+
 - DTOs con class-validator
 - Sanitización de inputs
 - Prevención de XSS e inyección
 
 ### **Autorización**
+
 - Solo autores pueden editar/eliminar contenido
 - Verificación de roles y permisos
 - Soft delete para preservar integridad
@@ -155,6 +173,7 @@ curl http://localhost:3001/forum/stats
 ## 📱 **Características del Frontend**
 
 ### **Componentes del Foro**
+
 - **ForumMain**: Vista principal con estadísticas
 - **ForumThreadList**: Lista de threads con acciones
 - **ForumCreateThread**: Formulario de creación
@@ -162,6 +181,7 @@ curl http://localhost:3001/forum/stats
 - **ForumStats**: Métricas en tiempo real
 
 ### **Funcionalidades**
+
 - ✅ Crear, editar, eliminar threads
 - ✅ Sistema de categorías y tags
 - ✅ Búsqueda avanzada con filtros
@@ -173,12 +193,14 @@ curl http://localhost:3001/forum/stats
 ## 🚧 **Próximos Pasos Recomendados**
 
 ### 1. **Inmediatos**
+
 - [ ] Ejecutar migración de Prisma
 - [ ] Insertar datos de prueba
 - [ ] Probar endpoints del foro
 - [ ] Verificar conexión frontend-backend
 
 ### 2. **Mejoras Futuras**
+
 - [ ] Notificaciones en tiempo real
 - [ ] Sistema de reputación
 - [ ] Moderación de contenido
@@ -190,6 +212,7 @@ curl http://localhost:3001/forum/stats
 ### **Problemas Comunes**
 
 #### **Error de Conexión a Base de Datos**
+
 ```bash
 # Verificar variables de entorno
 cat apps/backend/.env
@@ -199,6 +222,7 @@ npx prisma db pull
 ```
 
 #### **Error de Autenticación**
+
 ```bash
 # Verificar JWT_SECRET
 # Verificar tokens en localStorage
@@ -206,12 +230,14 @@ npx prisma db pull
 ```
 
 #### **Error de CORS**
+
 ```bash
 # Verificar FRONT_ORIGIN en .env
 # Verificar configuración de CORS en main.ts
 ```
 
 ### **Logs y Debugging**
+
 ```bash
 # Backend logs
 cd apps/backend

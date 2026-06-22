@@ -11,6 +11,7 @@ openssl rand -base64 32
 ```
 
 **Ejemplo de salida**:
+
 ```
 8K9xL2mN5pQ7rT3vW6yZ1aC4dF8gH0jK2mN5pQ7rT3vW
 ```
@@ -28,6 +29,7 @@ Ve a: https://generate-secret.vercel.app/32
 ### Opción D: Manualmente
 
 Genera un string aleatorio de mínimo 32 caracteres. Ejemplo:
+
 ```
 my-super-secret-key-2024-aiquaa-production-min32chars
 ```
@@ -45,6 +47,7 @@ Esta es la URL de tu aplicación frontend desplegada en Vercel.
 3. En la pestaña principal verás el dominio asignado
 
 **Ejemplos**:
+
 ```
 # Dominio automático de Vercel
 https://aiquaa-l6ypbd8fe-stevenayals-projects.vercel.app
@@ -55,6 +58,7 @@ https://app.aiquaa.com
 ```
 
 **⚠️ IMPORTANTE**:
+
 - Debe comenzar con `https://` (no `http://`)
 - No debe terminar con `/`
 
@@ -73,11 +77,13 @@ Estas son las URLs de tu backend desplegado en Railway.
 5. Verás algo como: `aiquaabackend-production.up.railway.app`
 
 **Valor a usar**:
+
 ```
 https://aiquaabackend-production.up.railway.app
 ```
 
 **⚠️ IMPORTANTE**:
+
 - Debe comenzar con `https://` (no `http://`)
 - No debe incluir `/api/v1` al final
 - No debe terminar con `/`
@@ -111,6 +117,7 @@ Si quieres permitir login con Google:
 7. Copia el **Client ID** y **Client Secret**
 
 **Variables**:
+
 ```env
 GOOGLE_CLIENT_ID=123456789-abc.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=GOCSPX-abc123def456
@@ -132,8 +139,9 @@ Si quieres permitir login con GitHub:
 7. Copia el **Client Secret** (solo se muestra una vez)
 
 **Variables**:
+
 ```env
-GITHUB_CLIENT_ID=Ov23lictkb4l9L1uwTny
+GITHUB_CLIENT_ID=<YOUR_GITHUB_CLIENT_ID>
 GITHUB_CLIENT_SECRET=abc123def456ghi789jkl012mno345pqr678
 ```
 
