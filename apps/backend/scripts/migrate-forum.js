@@ -1,3 +1,4 @@
+/* eslint-disable */
 const { execSync } = require('child_process');
 const path = require('path');
 
@@ -11,7 +12,9 @@ try {
 
   // Crear la migración
   console.log('📝 Creando migración del foro...');
-  execSync('npx prisma migrate dev --name add_forum_features --create-only', { stdio: 'inherit' });
+  execSync('npx prisma migrate dev --name add_forum_features --create-only', {
+    stdio: 'inherit',
+  });
   console.log('✅ Migración creada');
 
   // Aplicar la migración
@@ -20,8 +23,7 @@ try {
   console.log('✅ Migración aplicada exitosamente');
 
   console.log('🎉 Foro migrado exitosamente!');
-  console.log('📊 Puedes verificar el estado en: https://hxixxbiufyntcywajkrh.supabase.co');
-
+  console.log('📊 Puedes verificar el estado en tu proyecto Supabase');
 } catch (error) {
   console.error('❌ Error durante la migración:', error.message);
   process.exit(1);
