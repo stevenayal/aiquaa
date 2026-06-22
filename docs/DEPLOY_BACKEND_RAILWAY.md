@@ -5,6 +5,7 @@
 Vercel está diseñado para funciones serverless, no para aplicaciones NestJS completas. NestJS requiere un servidor HTTP persistente, lo cual es incompatible con la arquitectura serverless de Vercel.
 
 **Railway** es perfecto para NestJS porque:
+
 - ✅ Soporta servidores Node.js persistentes
 - ✅ Gratis para empezar ($5 créditos mensuales)
 - ✅ Deploy automático desde Git
@@ -46,8 +47,8 @@ En Railway Dashboard → Variables, agrega:
 
 ```bash
 # Database - Prisma Accelerate
-DATABASE_URL=prisma+postgres://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqd3RfaWQiOjEsInNlY3VyZV9rZXkiOiJza19IZnVibWdSRE50cjQxbHNvZHpIVWMiLCJhcGlfa2V5IjoiMDFLNlRZOU04MURDWThWS1NOVzExMTZNREYiLCJ0ZW5hbnRfaWQiOiIxMjBiN2ZmNjlkMTY2MmI5YjY0YmEwN2YzMWQ4YmIxMjQ1OTYzYWYxZTAxYzg0YTIwNDRlYjhmYWZhMTQxNmMxIiwiaW50ZXJuYWxfc2VjcmV0IjoiNmY1MDk1YmEtZjVkYS00NDkwLTkxNDgtN2RiZjAwMjNhMjgxIn0.GEWG2Swr_Xr455cU4ZVI7HUqJhRIo_vyJHPdQXcbsN0
-POSTGRES_URL=postgres://120b7ff69d1662b9b64ba07f31d8bb1245963af1e01c84a2044eb8fafa1416c1:sk_HfubmgRDNtr41lsodzHUc@db.prisma.io:5432/postgres?sslmode=require
+DATABASE_URL=prisma+postgres://accelerate.prisma-data.net/?api_key=<YOUR_PRISMA_ACCELERATE_API_KEY>
+POSTGRES_URL=postgres://<user>:<password>@db.prisma.io:5432/postgres?sslmode=require
 
 # JWT
 JWT_SECRET=production-super-secret-jwt-key-min-32-characters-long
@@ -60,12 +61,12 @@ EMAIL_FROM=AIQUAA <no-reply@aiquaa.com>
 SMTP_URL=smtp://user:pass@smtp.gmail.com:587
 
 # OAuth - Google
-GOOGLE_CLIENT_ID=91995874414-ivu60t764qt4gu4t8u5reiu9dnsnqm7h.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=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
+GOOGLE_CLIENT_ID=<YOUR_GOOGLE_CLIENT_ID>
+GOOGLE_CLIENT_SECRET=<YOUR_GOOGLE_CLIENT_SECRET>
 
 # OAuth - GitHub
-GITHUB_CLIENT_ID=Ov23lictkb4l9L1uwTny
-GITHUB_CLIENT_SECRET=a596ad4f1a8e0fc9fbe74b1d99316f95881b3f46
+GITHUB_CLIENT_ID=<YOUR_GITHUB_CLIENT_ID>
+GITHUB_CLIENT_SECRET=<YOUR_GITHUB_CLIENT_SECRET>
 
 # Backend Config
 BACKEND_PORT=3001
@@ -78,6 +79,7 @@ FRONT_ORIGIN=https://tu-frontend.vercel.app
 ### **Paso 5: Generar Dominio**
 
 1. Railway te asignará automáticamente una URL como:
+
    ```
    https://aiquaa-backend-production.up.railway.app
    ```
@@ -99,13 +101,15 @@ FRONT_ORIGIN=https://tu-frontend.vercel.app
 ## ✅ Verificación Post-Despliegue
 
 ### **1. Health Check**
+
 ```bash
 curl https://tu-backend.up.railway.app/api/v1/health
 ```
 
 Debe responder:
+
 ```json
-{"status":"ok","timestamp":"..."}
+{ "status": "ok", "timestamp": "..." }
 ```
 
 ### **2. Logs en Tiempo Real**
@@ -128,11 +132,13 @@ Luego redeploy el frontend en Vercel.
 ## 🔄 Actualizar OAuth Callbacks
 
 ### **Google Cloud Console:**
+
 ```
 https://tu-backend.up.railway.app/api/v1/auth/google/callback
 ```
 
 ### **GitHub OAuth App:**
+
 ```
 https://tu-backend.up.railway.app/api/v1/auth/github/callback
 ```
@@ -157,6 +163,7 @@ https://tu-backend.up.railway.app/api/v1/auth/github/callback
 ## 🐛 Troubleshooting
 
 ### **Build falla en Railway:**
+
 - Verifica que `apps/backend/package.json` tenga:
   ```json
   "scripts": {
@@ -166,6 +173,7 @@ https://tu-backend.up.railway.app/api/v1/auth/github/callback
   ```
 
 ### **App no inicia:**
+
 - Verifica los logs en Railway Dashboard
 - Asegúrate que el puerto esté configurado correctamente:
   ```typescript
@@ -173,6 +181,7 @@ https://tu-backend.up.railway.app/api/v1/auth/github/callback
   ```
 
 ### **Error de conexión a DB:**
+
 - Verifica que `DATABASE_URL` y `POSTGRES_URL` estén configurados
 - Ejecuta `prisma generate` antes del build (ya está en scripts)
 
@@ -180,15 +189,15 @@ https://tu-backend.up.railway.app/api/v1/auth/github/callback
 
 ## 🎉 Ventajas de Railway vs Vercel para NestJS
 
-| Feature | Railway | Vercel |
-|---------|---------|--------|
-| **NestJS nativo** | ✅ Sí | ❌ No (requiere adaptadores) |
-| **Servidor persistente** | ✅ Sí | ❌ Serverless |
-| **WebSockets** | ✅ Sí | ❌ No |
-| **Logs en tiempo real** | ✅ Sí | ⚠️ Limitados |
-| **Cron jobs** | ✅ Sí | ❌ No |
-| **Deploy automático** | ✅ Desde Git | ✅ Desde Git |
-| **Precio** | $5 créditos gratis | Gratis (serverless) |
+| Feature                  | Railway            | Vercel                       |
+| ------------------------ | ------------------ | ---------------------------- |
+| **NestJS nativo**        | ✅ Sí              | ❌ No (requiere adaptadores) |
+| **Servidor persistente** | ✅ Sí              | ❌ Serverless                |
+| **WebSockets**           | ✅ Sí              | ❌ No                        |
+| **Logs en tiempo real**  | ✅ Sí              | ⚠️ Limitados                 |
+| **Cron jobs**            | ✅ Sí              | ❌ No                        |
+| **Deploy automático**    | ✅ Desde Git       | ✅ Desde Git                 |
+| **Precio**               | $5 créditos gratis | Gratis (serverless)          |
 
 ---
 
