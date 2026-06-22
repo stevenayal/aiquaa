@@ -120,9 +120,11 @@ const EXAM_TAB_URLS: Record<string, string> = {
 const MEDAL = ['🥇', '🥈', '🥉'];
 
 function getInitials(name: string) {
-  const parts = name.trim().split(' ');
+  const trimmed = name.trim();
+  if (!trimmed) return '?';
+  const parts = trimmed.split(' ');
   if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
-  return name.slice(0, 2).toUpperCase();
+  return trimmed.slice(0, 2).toUpperCase();
 }
 
 const COLORS = [
@@ -916,12 +918,27 @@ export default function RankingPage() {
 
         {/* Tabs */}
         <div
+          role="tablist"
+          aria-label="Tipos de ranking"
           className={`flex rounded-xl p-1 gap-1 flex-wrap ${isDarkMode ? 'bg-slate-800' : 'bg-gray-200'}`}
         >
           {EXAM_TABS.map((t) => (
             <button
               key={t.key}
+              id={`ranking-tab-${t.key}`}
+              role="tab"
+              aria-selected={activeTab === t.key}
+              aria-controls="ranking-tabpanel"
               onClick={() => setActiveTab(t.key)}
+              onKeyDown={(e) => {
+                const keys = EXAM_TABS.map((tab) => tab.key);
+                const idx = keys.indexOf(t.key);
+                if (e.key === 'ArrowRight') {
+                  setActiveTab(keys[(idx + 1) % keys.length]);
+                } else if (e.key === 'ArrowLeft') {
+                  setActiveTab(keys[(idx - 1 + keys.length) % keys.length]);
+                }
+              }}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-sm font-semibold transition-all min-w-[100px] ${
                 activeTab === t.key
                   ? `bg-gradient-to-r ${t.color} text-white shadow-md`
@@ -936,191 +953,197 @@ export default function RankingPage() {
         </div>
 
         {/* Contenido */}
-        {isReportes ? (
-          <ReportadoresTab isDarkMode={isDarkMode} />
-        ) : isXp ? (
-          <XpComunidadTab isDarkMode={isDarkMode} />
-        ) : isLoading ? (
-          <div className="flex justify-center py-16">
-            <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-indigo-500" />
-          </div>
-        ) : entries.length === 0 ? (
-          <div
-            className={`text-center py-16 rounded-2xl ${isDarkMode ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-gray-200'}`}
-          >
-            <p className="text-5xl mb-3">📭</p>
-            <p
-              className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}
+        <div
+          id="ranking-tabpanel"
+          role="tabpanel"
+          aria-labelledby={`ranking-tab-${activeTab}`}
+        >
+          {isReportes ? (
+            <ReportadoresTab isDarkMode={isDarkMode} />
+          ) : isXp ? (
+            <XpComunidadTab isDarkMode={isDarkMode} />
+          ) : isLoading ? (
+            <div className="flex justify-center py-16">
+              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-indigo-500" />
+            </div>
+          ) : entries.length === 0 ? (
+            <div
+              className={`text-center py-16 rounded-2xl ${isDarkMode ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-gray-200'}`}
             >
-              Aún no hay resultados
-            </p>
-            <p
-              className={`text-sm mt-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-            >
-              ¡Sé el primero en completar el examen y aparecer acá!
-            </p>
-            <a
-              href={EXAM_TAB_URLS[activeTab] ?? '/labs'}
-              className="inline-block mt-4 px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition-colors"
-            >
-              {tab.emoji} Ir al examen
-            </a>
-          </div>
-        ) : (
-          <>
-            {/* Podio top 3 */}
-            {top3.length > 0 && (
-              <div
-                className={`rounded-2xl p-6 ${isDarkMode ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-gray-200 shadow-sm'}`}
+              <p className="text-5xl mb-3">📭</p>
+              <p
+                className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}
               >
-                <div className="flex items-end justify-center gap-4">
-                  {[top3[1], top3[0], top3[2]].map((entry, i) => {
-                    if (!entry) return <div key={i} className="w-24" />;
-                    const podiumRank = i === 1 ? 0 : i === 0 ? 1 : 2;
-                    const heights = ['h-32', 'h-24', 'h-20'];
-                    return (
-                      <div
-                        key={entry.rank}
-                        className="flex flex-col items-center gap-2 flex-1"
+                Aún no hay resultados
+              </p>
+              <p
+                className={`text-sm mt-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+              >
+                ¡Sé el primero en completar el examen y aparecer acá!
+              </p>
+              <a
+                href={EXAM_TAB_URLS[activeTab] ?? '/labs'}
+                className="inline-block mt-4 px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition-colors"
+              >
+                {tab.emoji} Ir al examen
+              </a>
+            </div>
+          ) : (
+            <>
+              {/* Podio top 3 */}
+              {top3.length > 0 && (
+                <div
+                  className={`rounded-2xl p-6 ${isDarkMode ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-gray-200 shadow-sm'}`}
+                >
+                  <div className="flex items-end justify-center gap-4">
+                    {[top3[1], top3[0], top3[2]].map((entry, i) => {
+                      if (!entry) return <div key={i} className="w-24" />;
+                      const podiumRank = i === 1 ? 0 : i === 0 ? 1 : 2;
+                      const heights = ['h-32', 'h-24', 'h-20'];
+                      return (
+                        <div
+                          key={entry.rank}
+                          className="flex flex-col items-center gap-2 flex-1"
+                        >
+                          <MiniAvatar
+                            name={entry.display_name}
+                            avatarUrl={entry.avatar_url}
+                          />
+                          <p
+                            className={`text-xs font-semibold text-center break-words w-full max-w-[96px] line-clamp-2 leading-tight ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}
+                          >
+                            {entry.display_name}
+                          </p>
+                          <p
+                            className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                          >
+                            {entry.best_score}/
+                            {entry.max_possible_score ?? entry.total_questions}
+                          </p>
+                          <div
+                            className={`w-full rounded-t-lg flex items-center justify-center text-2xl ${heights[podiumRank]} ${
+                              podiumRank === 0
+                                ? 'bg-gradient-to-t from-yellow-600 to-yellow-400'
+                                : podiumRank === 1
+                                  ? 'bg-gradient-to-t from-slate-500 to-slate-400'
+                                  : 'bg-gradient-to-t from-amber-800 to-amber-600'
+                            }`}
+                          >
+                            {MEDAL[podiumRank]}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Tabla del resto */}
+              {rest.length > 0 && (
+                <div
+                  className={`rounded-2xl overflow-hidden ${isDarkMode ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-gray-200 shadow-sm'}`}
+                >
+                  {rest.map((entry, i) => (
+                    <div
+                      key={entry.rank}
+                      className={`flex items-center gap-4 px-5 py-3.5 ${
+                        i < rest.length - 1
+                          ? isDarkMode
+                            ? 'border-b border-slate-700'
+                            : 'border-b border-gray-100'
+                          : ''
+                      } ${isDarkMode ? 'hover:bg-slate-700/50' : 'hover:bg-gray-50'} transition-colors`}
+                    >
+                      <span
+                        className={`w-6 text-center text-sm font-bold shrink-0 ${isDarkMode ? 'text-slate-400' : 'text-gray-400'}`}
                       >
-                        <MiniAvatar
-                          name={entry.display_name}
-                          avatarUrl={entry.avatar_url}
-                        />
+                        {entry.rank}
+                      </span>
+                      <MiniAvatar
+                        name={entry.display_name}
+                        avatarUrl={entry.avatar_url}
+                      />
+                      <div className="flex-1 min-w-0">
                         <p
-                          className={`text-xs font-semibold text-center break-words w-full max-w-[96px] line-clamp-2 leading-tight ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}
+                          className={`text-sm font-semibold truncate ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}
                         >
                           {entry.display_name}
                         </p>
                         <p
-                          className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                          className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+                        >
+                          {entry.attempts} intento
+                          {entry.attempts !== 1 ? 's' : ''}
+                          {' · '}
+                          {new Date(entry.achieved_at).toLocaleDateString(
+                            'es-PY',
+                            { day: '2-digit', month: 'short' }
+                          )}
+                        </p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p
+                          className={`text-sm font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
                         >
                           {entry.best_score}/
                           {entry.max_possible_score ?? entry.total_questions}
                         </p>
-                        <div
-                          className={`w-full rounded-t-lg flex items-center justify-center text-2xl ${heights[podiumRank]} ${
-                            podiumRank === 0
-                              ? 'bg-gradient-to-t from-yellow-600 to-yellow-400'
-                              : podiumRank === 1
-                                ? 'bg-gradient-to-t from-slate-500 to-slate-400'
-                                : 'bg-gradient-to-t from-amber-800 to-amber-600'
-                          }`}
+                        <p
+                          className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
                         >
-                          {MEDAL[podiumRank]}
-                        </div>
+                          {Number(entry.best_percentage).toFixed(0)}%
+                        </p>
                       </div>
-                    );
-                  })}
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-semibold shrink-0 ${
+                          entry.passed
+                            ? isDarkMode
+                              ? 'bg-emerald-900/40 text-emerald-300'
+                              : 'bg-emerald-100 text-emerald-700'
+                            : isDarkMode
+                              ? 'bg-red-900/40 text-red-300'
+                              : 'bg-red-100 text-red-700'
+                        }`}
+                      >
+                        {entry.passed ? '✓' : '✗'}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Tabla del resto */}
-            {rest.length > 0 && (
               <div
-                className={`rounded-2xl overflow-hidden ${isDarkMode ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-gray-200 shadow-sm'}`}
+                className={`rounded-2xl p-4 flex items-center justify-between gap-4 ${isDarkMode ? 'bg-amber-900/20 border border-amber-700/50' : 'bg-amber-50 border border-amber-200'}`}
               >
-                {rest.map((entry, i) => (
-                  <div
-                    key={entry.rank}
-                    className={`flex items-center gap-4 px-5 py-3.5 ${
-                      i < rest.length - 1
-                        ? isDarkMode
-                          ? 'border-b border-slate-700'
-                          : 'border-b border-gray-100'
-                        : ''
-                    } ${isDarkMode ? 'hover:bg-slate-700/50' : 'hover:bg-gray-50'} transition-colors`}
+                <div>
+                  <p
+                    className={`text-sm font-semibold ${isDarkMode ? 'text-amber-200' : 'text-amber-900'}`}
                   >
-                    <span
-                      className={`w-6 text-center text-sm font-bold shrink-0 ${isDarkMode ? 'text-slate-400' : 'text-gray-400'}`}
-                    >
-                      {entry.rank}
-                    </span>
-                    <MiniAvatar
-                      name={entry.display_name}
-                      avatarUrl={entry.avatar_url}
-                    />
-                    <div className="flex-1 min-w-0">
-                      <p
-                        className={`text-sm font-semibold truncate ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}
-                      >
-                        {entry.display_name}
-                      </p>
-                      <p
-                        className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
-                      >
-                        {entry.attempts} intento
-                        {entry.attempts !== 1 ? 's' : ''}
-                        {' · '}
-                        {new Date(entry.achieved_at).toLocaleDateString(
-                          'es-PY',
-                          { day: '2-digit', month: 'short' }
-                        )}
-                      </p>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <p
-                        className={`text-sm font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
-                      >
-                        {entry.best_score}/
-                        {entry.max_possible_score ?? entry.total_questions}
-                      </p>
-                      <p
-                        className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-                      >
-                        {Number(entry.best_percentage).toFixed(0)}%
-                      </p>
-                    </div>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-semibold shrink-0 ${
-                        entry.passed
-                          ? isDarkMode
-                            ? 'bg-emerald-900/40 text-emerald-300'
-                            : 'bg-emerald-100 text-emerald-700'
-                          : isDarkMode
-                            ? 'bg-red-900/40 text-red-300'
-                            : 'bg-red-100 text-red-700'
-                      }`}
-                    >
-                      {entry.passed ? '✓' : '✗'}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <div
-              className={`rounded-2xl p-4 flex items-center justify-between gap-4 ${isDarkMode ? 'bg-amber-900/20 border border-amber-700/50' : 'bg-amber-50 border border-amber-200'}`}
-            >
-              <div>
-                <p
-                  className={`text-sm font-semibold ${isDarkMode ? 'text-amber-200' : 'text-amber-900'}`}
+                    ¿Querés mejorar tu posición?
+                  </p>
+                  <p
+                    className={`text-xs mt-0.5 ${isDarkMode ? 'text-amber-400/80' : 'text-amber-700'}`}
+                  >
+                    Practicá con Modo Entrenamiento antes de rendir el examen
+                    oficial.
+                  </p>
+                </div>
+                <a
+                  href={EXAM_TAB_URLS[activeTab] ?? '/labs'}
+                  className="shrink-0 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold rounded-lg transition-colors"
                 >
-                  ¿Querés mejorar tu posición?
-                </p>
-                <p
-                  className={`text-xs mt-0.5 ${isDarkMode ? 'text-amber-400/80' : 'text-amber-700'}`}
-                >
-                  Practicá con Modo Entrenamiento antes de rendir el examen
-                  oficial.
-                </p>
+                  Practicar →
+                </a>
               </div>
-              <a
-                href={EXAM_TAB_URLS[activeTab] ?? '/labs'}
-                className="shrink-0 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold rounded-lg transition-colors"
+              <p
+                className={`text-center text-xs ${isDarkMode ? 'text-slate-600' : 'text-gray-400'}`}
               >
-                Practicar →
-              </a>
-            </div>
-            <p
-              className={`text-center text-xs ${isDarkMode ? 'text-slate-600' : 'text-gray-400'}`}
-            >
-              Solo se cuentan resultados de modo examen · Actualizado en tiempo
-              real
-            </p>
-          </>
-        )}
+                Solo se cuentan resultados de modo examen · Actualizado en
+                tiempo real
+              </p>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

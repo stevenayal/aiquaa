@@ -115,14 +115,14 @@ export default function DashboardPage() {
 
   const currentLevelXp = xp ? xpForLevel(xp.level) : 0;
   const nextLevelXp = xp ? xpForLevel(xp.level + 1) : 100;
-  const xpPct = xp
-    ? Math.min(
-        100,
-        Math.round(
-          ((xp.totalXp - currentLevelXp) / (nextLevelXp - currentLevelXp)) * 100
+  const xpRange = nextLevelXp - currentLevelXp;
+  const xpPct =
+    xp && xpRange > 0
+      ? Math.min(
+          100,
+          Math.round(((xp.totalXp - currentLevelXp) / xpRange) * 100)
         )
-      )
-    : 0;
+      : 0;
 
   if (loading) {
     return (

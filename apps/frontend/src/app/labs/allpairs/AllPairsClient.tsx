@@ -129,16 +129,35 @@ export default function AllPairsClient() {
         {/* Tabs */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg mb-6">
           <div className="border-b border-gray-200 dark:border-gray-700">
-            <nav className="flex -mb-px">
-              {[
-                { id: 'editor' as Tab, label: 'Editor' },
-                { id: 'json-yaml' as Tab, label: 'JSON/YAML' },
-                { id: 'examples' as Tab, label: 'Ejemplos' },
-                { id: 'help' as Tab, label: 'Ayuda' },
-              ].map((tab) => (
+            <nav
+              role="tablist"
+              aria-label="Secciones del generador"
+              className="flex -mb-px"
+            >
+              {(
+                [
+                  { id: 'editor' as Tab, label: 'Editor' },
+                  { id: 'json-yaml' as Tab, label: 'JSON/YAML' },
+                  { id: 'examples' as Tab, label: 'Ejemplos' },
+                  { id: 'help' as Tab, label: 'Ayuda' },
+                ] as const
+              ).map((tab, i, tabs) => (
                 <button
                   key={tab.id}
+                  id={`allpairs-tab-${tab.id}`}
+                  role="tab"
+                  aria-selected={activeTab === tab.id}
+                  aria-controls="allpairs-tabpanel"
                   onClick={() => setActiveTab(tab.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'ArrowRight') {
+                      setActiveTab(tabs[(i + 1) % tabs.length].id);
+                    } else if (e.key === 'ArrowLeft') {
+                      setActiveTab(
+                        tabs[(i - 1 + tabs.length) % tabs.length].id
+                      );
+                    }
+                  }}
                   className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
                     activeTab === tab.id
                       ? 'border-blue-500 text-blue-600 dark:text-blue-400'
@@ -151,7 +170,12 @@ export default function AllPairsClient() {
             </nav>
           </div>
 
-          <div className="p-6">
+          <div
+            id="allpairs-tabpanel"
+            role="tabpanel"
+            aria-labelledby={`allpairs-tab-${activeTab}`}
+            className="p-6"
+          >
             {activeTab === 'editor' && (
               <EditorTab input={input} onChange={setInput} />
             )}
