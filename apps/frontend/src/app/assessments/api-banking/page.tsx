@@ -1,9 +1,51 @@
+import { Metadata } from 'next';
 import Link from 'next/link';
 
-export const metadata = {
-  title: 'QA API Challenge - Banking Transactions — AIQUAA',
+export const metadata: Metadata = {
+  title: 'API Banking — Challenge Práctico | AIQUAA',
   description:
-    'Prueba técnica de API Testing sobre un sistema bancario simulado.',
+    'Testeá una API bancaria simulada: encontrá 12 bugs intencionales, diseñá casos, reportá bugs y recibí un score automático de 100 pts.',
+  keywords: [
+    'API Banking',
+    'API testing práctico',
+    'bugs intencionales',
+    'testing bancario',
+    'QA',
+    'testing',
+    'AIQUAA',
+    'evaluación práctica',
+    'desafío API',
+    'reporte de bugs',
+  ],
+  openGraph: {
+    title: 'API Banking — Challenge Práctico | AIQUAA',
+    description:
+      'Testeá una API bancaria simulada: encontrá 12 bugs intencionales y recibí un score automático.',
+    url: 'https://aiquaa.com/assessments/api-banking',
+    siteName: 'AIQUAA',
+    type: 'website',
+    locale: 'es_PY',
+    images: [
+      {
+        url: '/api/og?title=API%20Banking%20Challenge&subtitle=Encontrá%2012%20bugs%20intencionales%20en%20una%20API%20bancaria&section=Assessments',
+        width: 1200,
+        height: 630,
+        alt: 'API Banking Challenge - AIQUAA',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'API Banking — Challenge Práctico | AIQUAA',
+    description: 'Encontrá 12 bugs intencionales en una API bancaria.',
+    images: [
+      '/api/og?title=API%20Banking%20Challenge&subtitle=Encontrá%2012%20bugs%20intencionales&section=Assessments',
+    ],
+    creator: '@stevenayal',
+  },
+  alternates: {
+    canonical: 'https://aiquaa.com/assessments/api-banking',
+  },
 };
 
 export default function ApiBankingLandingPage() {

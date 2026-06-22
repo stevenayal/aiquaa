@@ -1,0 +1,26 @@
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "@id": "https://aiquaa.com/blog/sql-para-qa/#blogposting",
+  "headline": "SQL para QA: Guía Completa para Testers",
+  "description": "Aprende SQL desde cero para testing de bases de datos. Incluye consultas JOIN, agregaciones, constraints y casos de uso para QA.",
+  "url": "https://aiquaa.com/blog/sql-para-qa",
+  "datePublished": "2024-01-15",
+  "dateModified": "2024-01-15",
+  "author": {
+    "@type": "Organization",
+    "@id": "https://aiquaa.com/#organization"
+  },
+  "publisher": {
+    "@id": "https://aiquaa.com/#organization"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://aiquaa.com/blog/sql-para-qa"
+  },
+  "wordCount": 2500,
+  "articleSection": "QA Technical",
+  "keywords": "SQL, bases de datos, QA, testing, PostgreSQL, MySQL, JOIN, consultas SQL",
+  "inLanguage": "es",
+  "isAccessibleForFree": true
+}

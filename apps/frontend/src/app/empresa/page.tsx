@@ -4,7 +4,10 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
-import { getMyMembershipAction, getMyEmpresaAction } from '@/actions/empresa-admin';
+import {
+  getMyMembershipAction,
+  getMyEmpresaAction,
+} from '@/actions/empresa-admin';
 import type { EmpresaMemberRole, Empresa } from '@/actions/empresa-admin';
 import {
   getEmpresaDashboardStatsAction,

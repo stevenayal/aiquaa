@@ -1,0 +1,56 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://aiquaa.com/#organization",
+  "name": "AIQUAA",
+  "url": "https://aiquaa.com",
+  "logo": {
+    "@type": "ImageObject",
+    "url": "https://aiquaa.com/favicon-512.png",
+    "width": 512,
+    "height": 512
+  },
+  "description": "Plataforma educativa y de herramientas para la comunidad QA en Paraguay y LATAM. Ofrece simuladores ISTQB, generadores de casos de prueba con IA, y herramientas de automatización.",
+  "foundingDate": "2024",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Asunción",
+    "addressCountry": "PY"
+  },
+  "areaServed": {
+    "@type": "GeoCircle",
+    "geoMidpoint": {
+      "@type": "GeoCoordinates",
+      "latitude": -25.2637,
+      "longitude": -57.5759
+    },
+    "geoRadius": "5000 km"
+  },
+  "knowsAbout": [
+    "Quality Assurance",
+    "Software Testing",
+    "ISTQB",
+    "Performance Testing",
+    "Test Automation",
+    "Playwright",
+    "Selenium",
+    "API Testing",
+    "Pairwise Testing",
+    "All Pairs",
+    "Bug Hunting",
+    "QA Tools",
+    "Testing certifications",
+    "Software quality"
+  ],
+  "sameAs": [
+    "https://github.com/stevenayal/aiquaa",
+    "https://linkedin.com/company/aiquaa",
+    "https://twitter.com/aiquaa"
+  ],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "customer service",
+    "email": "hola@aiquaa.com",
+    "availableLanguage": ["Spanish", "English"]
+  }
+}

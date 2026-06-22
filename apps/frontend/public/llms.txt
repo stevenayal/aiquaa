@@ -1,0 +1,60 @@
+# AIQUAA
+
+> Plataforma educativa y de herramientas para la comunidad QA en Paraguay y LATAM. Ofrece simuladores ISTQB, generadores de casos de prueba con IA, y herramientas de automatización.
+
+## Docs
+
+- [ISTQB CTFL v4.0](https://aiquaa.com/labs/istqb): Simulacro oficial de 40 preguntas con modo examen y entrenamiento
+- [Performance Testing](https://aiquaa.com/labs/performance): Examen sobre fundamentos y herramientas de performance
+- [Examen GIT](https://aiquaa.com/labs/git): Evaluación técnica de control de versiones con 40 preguntas
+- [API Testing Fundamentals](https://aiquaa.com/labs/api-testing-fundamentals): Examen teórico de APIs con 5 niveles progresivos
+- [API Banking Challenge](https://aiquaa.com/assessments/api-banking): Challenge práctico con API bancaria simulada
+- [Database Fundamentals](https://aiquaa.com/assessments/database-fundamentals): Fundamentos de SQL y bases de datos
+- [Database Practice](https://aiquaa.com/assessments/database-practice): Challenge práctico SQL con mini e-commerce
+
+## Herramientas
+
+- [Generador All Pairs](https://aiquaa.com/labs/allpairs): Genera combinaciones pairwise para diseño de pruebas
+- [Validador JSON](https://aiquaa.com/labs/json-validator): Valida y formatea JSON en tiempo real
+- [Decodificador JWT](https://aiquaa.com/labs/jwt-decoder): Decodifica tokens JWT y verifica estructura
+- [Validador YAML](https://aiquaa.com/labs/yaml-validator): Valida YAML y convierte a JSON
+- [Validador Cron](https://aiquaa.com/labs/cron-validator): Valida expresiones cron y calcula ejecuciones
+- [Generador de Datos](https://aiquaa.com/labs/data-generator): Genera datos aleatorios para testing
+- [Checklist de Pruebas](https://aiquaa.com/labs/checklist): Plantillas para testing funcional y regresión
+- [Análisis de Requisitos](https://aiquaa.com/labs/req-lint): Detecta ambigüedades según heurísticas ISTQB
+- [Matriz de Riesgos](https://aiquaa.com/labs/risk-matrix): Evalúa y prioriza riesgos del proyecto
+- [Convertidor Base64](https://aiquaa.com/labs/base64-converter): Codifica y decodifica Base64
+- [JSON to Test Plans](https://aiquaa.com/labs/json-to-testplans): Convierte JSON a CSV para TestRail/Zephyr
+
+## Evaluaciones
+
+- [Database Fundamentals](https://aiquaa.com/assessments/database-fundamentals): Fundamentos de SQL y bases de datos relacionales
+- [Database Practice](https://aiquaa.com/assessments/database-practice): Challenge práctico SQL con mini e-commerce
+- [API Banking Challenge](https://aiquaa.com/assessments/api-banking): Challenge práctico con API bancaria simulada
+- [AIQUAA Test App](https://aiquaa.com/labs/test-app): App con bugs para Bug Hunting
+- [Generador de Informes](https://aiquaa.com/labs/test-app/report): Crea informes PDF de Bug Hunting
+
+## Recursos
+
+- [Blog QA](https://aiquaa.com/blog): Artículos técnicos sobre testing y calidad
+- [Comunidad](https://aiquaa.com/comunidad): Foro y discusiones de QA
+- [Ranking](https://aiquaa.com/ranking): Leaderboard de la comunidad
+- [Ideas Board](https://aiquaa.com/ideas-board): Propone mejoras y vota
+
+## Key Facts
+
+- Fundada en Paraguay para la comunidad QA LATAM
+- Plataforma freemium con herramientas gratuitas
+- 23 herramientas especializadas en QA
+- Integración con GitHub Issues para bug reports
+- Gamificación con XP y logros
+- Simulador ISTQB CTFL v4.0 con 40 preguntas oficiales
+- Examen Performance Testing con 27 preguntas
+- Examen GIT con 40 preguntas
+- Validación pairwise con algoritmo 2-way coverage
+
+## Contact
+
+- Website: https://aiquaa.com
+- GitHub: https://github.com/stevenayal/aiquaa
+- Email: hola@aiquaa.com

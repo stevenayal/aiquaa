@@ -24,8 +24,8 @@ export default function AssessmentsError({
           No se pudo cargar la evaluación
         </h1>
         <p className="text-sm text-gray-500 dark:text-slate-400 mb-6">
-          Ocurrió un error inesperado. Tu progreso guardado no se perdió —
-          podés intentar reiniciar o volver a Labs.
+          Ocurrió un error inesperado. Tu progreso guardado no se perdió — podés
+          intentar reiniciar o volver a Labs.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button

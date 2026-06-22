@@ -24,8 +24,8 @@ export default function LabsError({
           Este lab no pudo cargar
         </h1>
         <p className="text-sm text-gray-500 dark:text-slate-400 mb-6">
-          Ocurrió un error inesperado. Podés intentar reiniciar el lab o
-          volver al catálogo de herramientas.
+          Ocurrió un error inesperado. Podés intentar reiniciar el lab o volver
+          al catálogo de herramientas.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button

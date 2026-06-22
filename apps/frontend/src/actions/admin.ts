@@ -5,7 +5,9 @@ import { createAdminClient } from '@/lib/supabase/admin';
 
 async function requireAdmin() {
   const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return { error: 'No autenticado', supabase: null };
 
   const { data: profile } = await supabase
@@ -14,7 +16,8 @@ async function requireAdmin() {
     .eq('id', user.id)
     .single();
 
-  if (profile?.role !== 'admin') return { error: 'Acceso denegado', supabase: null };
+  if (profile?.role !== 'admin')
+    return { error: 'Acceso denegado', supabase: null };
   return { error: null, supabase };
 }
 
@@ -31,7 +34,10 @@ export async function getAdminUsersAction() {
   return { data };
 }
 
-export async function changeUserRoleAction(targetUserId: string, newRole: 'comunidad' | 'employer' | 'admin') {
+export async function changeUserRoleAction(
+  targetUserId: string,
+  newRole: 'comunidad' | 'employer' | 'admin'
+) {
   // Gate: only admins can reach the service-role call below
   const { error } = await requireAdmin();
   if (error) return { error };
@@ -53,10 +59,12 @@ export async function getAdminProcessesAction() {
 
   const { data, error: dbError } = await supabase
     .from('hiring_processes')
-    .select(`
+    .select(
+      `
       id, code, company_name, position_name, status, created_at, expires_at,
       profiles!hiring_processes_created_by_fkey(display_name, email)
-    `)
+    `
+    )
     .order('created_at', { ascending: false });
 
   if (dbError) return { error: dbError.message, data: null };
@@ -75,20 +83,20 @@ export async function getAdminStatsAction() {
 
   const userCounts = {
     total: users.data?.length ?? 0,
-    admins: users.data?.filter(u => u.role === 'admin').length ?? 0,
-    employers: users.data?.filter(u => u.role === 'employer').length ?? 0,
-    comunidad: users.data?.filter(u => u.role === 'comunidad').length ?? 0,
+    admins: users.data?.filter((u) => u.role === 'admin').length ?? 0,
+    employers: users.data?.filter((u) => u.role === 'employer').length ?? 0,
+    comunidad: users.data?.filter((u) => u.role === 'comunidad').length ?? 0,
   };
 
   const processCounts = {
     total: processes.data?.length ?? 0,
-    active: processes.data?.filter(p => p.status === 'active').length ?? 0,
-    closed: processes.data?.filter(p => p.status === 'closed').length ?? 0,
+    active: processes.data?.filter((p) => p.status === 'active').length ?? 0,
+    closed: processes.data?.filter((p) => p.status === 'closed').length ?? 0,
   };
 
   const resultCounts = {
     total: results.data?.length ?? 0,
-    passed: results.data?.filter(r => r.passed).length ?? 0,
+    passed: results.data?.filter((r) => r.passed).length ?? 0,
   };
 
   return { data: { userCounts, processCounts, resultCounts } };

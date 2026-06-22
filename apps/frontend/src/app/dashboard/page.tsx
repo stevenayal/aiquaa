@@ -118,7 +118,10 @@ export default function DashboardPage() {
   const xpRange = nextLevelXp - currentLevelXp;
   const xpPct =
     xp && xpRange > 0
-      ? Math.min(100, Math.round(((xp.totalXp - currentLevelXp) / xpRange) * 100))
+      ? Math.min(
+          100,
+          Math.round(((xp.totalXp - currentLevelXp) / xpRange) * 100)
+        )
       : 0;
 
   if (loading) {

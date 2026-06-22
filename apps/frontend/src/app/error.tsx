@@ -19,9 +19,7 @@ export default function GlobalError({
         <div className="text-5xl mb-4" aria-hidden="true">
           ⚠️
         </div>
-        <h1 className="text-xl font-bold text-gray-900 mb-2">
-          Algo salió mal
-        </h1>
+        <h1 className="text-xl font-bold text-gray-900 mb-2">Algo salió mal</h1>
         <p className="text-sm text-gray-500 mb-6">
           Ocurrió un error inesperado. Podés intentar recargar la página o
           volver al inicio.

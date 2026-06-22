@@ -1,11 +1,49 @@
-# *
-User-agent: *
+# AI Crawlers - Permitidos para visibilidad AI
+User-agent: GPTBot
 Allow: /
-Disallow: /admin/
-Disallow: /api/
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: GoogleOther
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: FacebookBot
+Allow: /
+
+# Bloquear crawlers agresivos
+User-agent: Bytespider
+Disallow: /
 
 # Host
 Host: https://aiquaa.com
 
 # Sitemaps
 Sitemap: https://aiquaa.com/sitemap.xml
+
+# Reglas generales
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
