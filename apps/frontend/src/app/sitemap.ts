@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { listPosts } from '@/lib/devto';
+import { toolCategories } from '@/lib/labsCatalog';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://aiquaa.com';
@@ -51,7 +52,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily',
       priority: 0.8,
     },
+    {
+      url: `${baseUrl}/ranking`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/ideas-board`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
   ];
 
-  return [...routes, ...blogPosts];
+  // Individual lab routes
+  const labRoutes: MetadataRoute.Sitemap = toolCategories.flatMap((category) =>
+    category.tools.map((tool) => ({
+      url: `${baseUrl}${tool.href}`,
+      lastModified: new Date(),
+      changeFrequency: (category.id === 'formacion'
+        ? 'weekly'
+        : 'monthly') as MetadataRoute.Sitemap[number]['changeFrequency'],
+      priority: tool.featured ? 0.8 : 0.6,
+    }))
+  );
+
+  return [...routes, ...labRoutes, ...blogPosts];
 }

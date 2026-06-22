@@ -1,0 +1,217 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://aiquaa.com/labs/istqb/#software",
+      "name": "AIQUAA ISTQB CTFL v4.0 Simulator",
+      "url": "https://aiquaa.com/labs/istqb",
+      "description": "Simulador de examen ISTQB CTFL v4.0 con 40 preguntas oficiales, modo examen y entrenamiento",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "40 preguntas ISTQB CTFL v4.0",
+        "3 modelos de examen (A, B, C)",
+        "Modo examen y entrenamiento",
+        "Español e inglés",
+        "Explicaciones detalladas",
+        "Ranking comunitario"
+      ],
+      "author": {
+        "@id": "https://aiquaa.com/#organization"
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://aiquaa.com/labs/performance/#software",
+      "name": "AIQUAA Performance Testing Exam",
+      "url": "https://aiquaa.com/labs/performance",
+      "description": "Examen de Performance Testing con 27 preguntas sobre fundamentos, métricas y herramientas",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "27 preguntas de Performance Testing",
+        "3 secciones: Fundamentos, Métricas, Herramientas",
+        "Modo examen y entrenamiento",
+        "Material de estudio oficial PtU CPTJM"
+      ],
+      "author": {
+        "@id": "https://aiquaa.com/#organization"
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://aiquaa.com/labs/git/#software",
+      "name": "AIQUAA GIT Technical Exam",
+      "url": "https://aiquaa.com/labs/git",
+      "description": "Examen técnico de GIT con 40 preguntas sobre control de versiones",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "40 preguntas de GIT",
+        "Fundamentos de control de versiones",
+        "Modo examen y entrenamiento",
+        "Ranking comunitario"
+      ],
+      "author": {
+        "@id": "https://aiquaa.com/#organization"
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://aiquaa.com/labs/allpairs/#software",
+      "name": "AIQUAA All Pairs Generator",
+      "url": "https://aiquaa.com/labs/allpairs",
+      "description": "Generador de combinaciones pairwise para diseño de pruebas con algoritmo 2-way coverage",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Generación de combinaciones pairwise",
+        "Editor visual de parámetros",
+        "Importación JSON/YAML",
+        "Exportación CSV",
+        "Algoritmo 2-way coverage"
+      ],
+      "author": {
+        "@id": "https://aiquaa.com/#organization"
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://aiquaa.com/labs/api-testing-fundamentals/#software",
+      "name": "AIQUAA API Testing Fundamentals",
+      "url": "https://aiquaa.com/labs/api-testing-fundamentals",
+      "description": "Examen teórico de API Testing con 5 niveles progresivos y corrección automática",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "5 niveles progresivos",
+        "100 puntos posibles",
+        "Corrección automática",
+        "Contenido teórico y práctico"
+      ],
+      "author": {
+        "@id": "https://aiquaa.com/#organization"
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://aiquaa.com/labs/json-validator/#software",
+      "name": "AIQUAA JSON Validator",
+      "url": "https://aiquaa.com/labs/json-validator",
+      "description": "Validador de JSON que valida sintaxis, formatea y detecta errores en tiempo real",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Validación en tiempo real",
+        "Formateo automático",
+        "Detección de errores",
+        "Interfaz intuitiva"
+      ],
+      "author": {
+        "@id": "https://aiquaa.com/#organization"
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://aiquaa.com/labs/data-generator/#software",
+      "name": "AIQUAA Data Generator",
+      "url": "https://aiquaa.com/labs/data-generator",
+      "description": "Generador de datos aleatorios para testing: nombres, emails, teléfonos y más",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Generación de datos aleatorios",
+        "Nombres, emails, teléfonos",
+        "Múltiples formatos",
+        "Exportación CSV"
+      ],
+      "author": {
+        "@id": "https://aiquaa.com/#organization"
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://aiquaa.com/assessments/database-fundamentals/#software",
+      "name": "AIQUAA Database Fundamentals Assessment",
+      "url": "https://aiquaa.com/assessments/database-fundamentals",
+      "description": "Evaluación teórica de fundamentos de bases de datos relacionales: modelo relacional, claves, SQL, JOINs y agregaciones",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "100 puntos posibles",
+        "3 niveles progresivos",
+        "Selección múltiple, verdadero/falso, respuestas cortas",
+        "Corrección automática",
+        "Duración: 30 minutos"
+      ],
+      "author": {
+        "@id": "https://aiquaa.com/#organization"
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://aiquaa.com/assessments/database-practice/#software",
+      "name": "AIQUAA Database Practice Challenge",
+      "url": "https://aiquaa.com/assessments/database-practice",
+      "description": "Challenge práctico de SQL con mini e-commerce: predecir resultados, detectar bugs y escribir consultas",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Challenge práctico",
+        "Mini e-commerce de prueba",
+        "Predecir resultados de consultas",
+        "Detectar bugs en SQL",
+        "Escribir consultas correctas"
+      ],
+      "author": {
+        "@id": "https://aiquaa.com/#organization"
+      }
+    }
+  ]
+}

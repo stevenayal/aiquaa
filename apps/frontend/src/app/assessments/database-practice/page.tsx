@@ -1,5 +1,53 @@
+import { Metadata } from 'next';
 import { databasePracticeDefinition } from './data/assessment-definition';
 import AssessmentWelcome from '../_shared/components/AssessmentWelcome';
+
+export const metadata: Metadata = {
+  title: 'Bases de Datos — Práctica SQL | AIQUAA',
+  description:
+    'Challenge práctico con una mini base e-commerce: predecí resultados, detectá bugs y escribí SQL. Evalúa tus habilidades prácticas de SQL.',
+  keywords: [
+    'práctica SQL',
+    'SQL queries',
+    'consultas SQL',
+    'e-commerce',
+    'bases de datos',
+    'QA',
+    'testing',
+    'AIQUAA',
+    'evaluación práctica',
+    'desafío SQL',
+  ],
+  openGraph: {
+    title: 'Bases de Datos — Práctica SQL | AIQUAA',
+    description:
+      'Challenge práctico con una mini base e-commerce: predecí resultados, detectá bugs y escribí SQL.',
+    url: 'https://aiquaa.com/assessments/database-practice',
+    siteName: 'AIQUAA',
+    type: 'website',
+    locale: 'es_PY',
+    images: [
+      {
+        url: '/api/og?title=Bases%20de%20Datos%20-%20Práctica%20SQL&subtitle=Challenge%20práctico%20con%20mini%20base%20e-commerce&section=Assessments',
+        width: 1200,
+        height: 630,
+        alt: 'Bases de Datos Práctica SQL - AIQUAA',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Bases de Datos — Práctica SQL | AIQUAA',
+    description: 'Challenge práctico con mini base e-commerce.',
+    images: [
+      '/api/og?title=Bases%20de%20Datos%20-%20Práctica%20SQL&subtitle=Challenge%20práctico&section=Assessments',
+    ],
+    creator: '@stevenayal',
+  },
+  alternates: {
+    canonical: 'https://aiquaa.com/assessments/database-practice',
+  },
+};
 
 export default function DatabasePracticePage() {
   const overview = {
