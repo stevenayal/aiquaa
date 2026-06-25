@@ -3,6 +3,10 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient } from '@/lib/supabase/server';
 import { getExamUserDefaults } from '@/lib/exam-user-defaults';
 import { signChallengeToken } from '../../challenge/_lib/auth';
+import {
+  DEFAULT_API_TARGET_ID,
+  isApiChallengeTargetId,
+} from '@/app/assessments/api-banking/data/apiChallengeTargets';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -16,6 +20,22 @@ export async function POST(req: NextRequest) {
       body = {};
     }
     const { processCode } = body ?? {};
+    const requestedApiTarget = body?.apiTarget;
+
+    if (
+      requestedApiTarget !== undefined &&
+      !isApiChallengeTargetId(requestedApiTarget)
+    ) {
+      return NextResponse.json(
+        { error: 'API target invalido.' },
+        { status: 400 }
+      );
+    }
+
+    const apiTarget =
+      typeof requestedApiTarget === 'string'
+        ? requestedApiTarget
+        : DEFAULT_API_TARGET_ID;
 
     const authClient = createClient();
     const {
@@ -93,6 +113,7 @@ export async function POST(req: NextRequest) {
         candidate_email: candidateEmail,
         aiquaa_user_id: user.id,
         process_code: resolvedProcessCode,
+        api_target: apiTarget,
         status: 'in_progress',
       })
       .select('id')
@@ -116,7 +137,13 @@ export async function POST(req: NextRequest) {
     const challengeToken = await signChallengeToken(sessionId, 'usr_001');
 
     return NextResponse.json(
-      { attemptId: attempt.id, challengeToken, sessionId, candidateName },
+      {
+        attemptId: attempt.id,
+        challengeToken,
+        sessionId,
+        candidateName,
+        apiTarget,
+      },
       { status: 201 }
     );
   } catch {

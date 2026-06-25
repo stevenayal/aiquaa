@@ -160,23 +160,23 @@ export default function AssessmentsIndexPage() {
             </div>
           ))}
 
-          {/* QA API Challenge — Banking Transactions */}
+          {/* API Testing Challenge */}
           <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-8 shadow-2xl shadow-cyan-950/20">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
               <div className="max-w-3xl">
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-300">
-                  Challenge práctico · Auto-corregido · Semi Senior
+                  Challenge practico - Auto-corregido - Flexible
                 </p>
                 <h2 className="mt-2 text-3xl font-bold">
-                  API Banking{' '}
+                  API Testing{' '}
                   <span className="font-normal text-slate-400">
-                    — Challenge práctico (Banking Transactions)
+                    - Challenge practico con APIs publicas
                   </span>
                 </h2>
                 <p className="mt-3 text-slate-300">
-                  Explorá y testeá una API bancaria simulada. Identificá 12 bugs
-                  intencionales, diseñá casos de prueba y generá un reporte
-                  profesional. Auto-scoring de 100 pts.
+                  Elegi entre Rick and Morty, Chuck Norris o NASA. Disena casos
+                  reproducibles, documenta hallazgos y genera un reporte
+                  profesional. Auto-scoring flexible de 100 pts.
                 </p>
                 <div className="mt-5 flex flex-wrap gap-3 text-sm text-slate-300">
                   <span className="rounded-full border border-slate-700 px-3 py-1">
@@ -186,7 +186,7 @@ export default function AssessmentsIndexPage() {
                     Semi Senior
                   </span>
                   <span className="rounded-full border border-slate-700 px-3 py-1">
-                    90–120 min
+                    90-120 min
                   </span>
                   <span className="rounded-full border border-slate-700 px-3 py-1">
                     100 puntos
@@ -203,26 +203,26 @@ export default function AssessmentsIndexPage() {
             <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
               {[
                 {
-                  label: 'Diseño de tests',
-                  pts: 25,
+                  label: 'Diseno de tests',
+                  pts: 30,
                   desc: 'Variedad y cobertura',
                 },
                 {
-                  label: 'Validación API',
+                  label: 'Evidencia',
                   pts: 25,
-                  desc: 'Bugs funcionales y contrato',
+                  desc: 'Requests reproducibles',
                 },
                 {
-                  label: 'Seguridad',
-                  pts: 20,
-                  desc: 'IDOR, datos sensibles, auth',
+                  label: 'Contrato y datos',
+                  pts: 15,
+                  desc: 'Schema, errores, filtros',
                 },
                 {
-                  label: 'Bug Reporting',
+                  label: 'Reportes',
                   pts: 20,
-                  desc: 'Calidad y completitud',
+                  desc: 'Impacto y prioridad',
                 },
-                { label: 'Resumen', pts: 10, desc: 'Síntesis ejecutiva' },
+                { label: 'Resumen', pts: 10, desc: 'Sintesis ejecutiva' },
               ].map((cat) => (
                 <div
                   key={cat.label}

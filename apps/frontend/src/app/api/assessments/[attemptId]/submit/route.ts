@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { autoScore } from '@/app/assessments/api-banking/lib/scoring';
 import {
+  API_CHALLENGE_MIN_FINDINGS,
+  API_CHALLENGE_MIN_SUMMARY_CHARS,
+  API_CHALLENGE_MIN_TEST_CASES,
+  DEFAULT_API_TARGET_ID,
+} from '@/app/assessments/api-banking/data/apiChallengeTargets';
+import {
   API_BANKING_GAMIFICATION_RULES,
   API_BANKING_PASS_THRESHOLD,
   buildApiBankingGamificationEvents,
@@ -28,7 +34,7 @@ export async function POST(
   const { data: attempt } = await supabase
     .from('qac_attempts')
     .select(
-      'id, status, started_at, aiquaa_user_id, candidate_name, candidate_email, process_code'
+      'id, status, started_at, aiquaa_user_id, candidate_name, candidate_email, process_code, api_target'
     )
     .eq('id', attemptId)
     .single();
@@ -85,7 +91,35 @@ export async function POST(
     createdAt: r.created_at,
   }));
 
+  if (testCases.length < API_CHALLENGE_MIN_TEST_CASES) {
+    return NextResponse.json(
+      {
+        error: `Necesitas al menos ${API_CHALLENGE_MIN_TEST_CASES} casos de prueba para enviar.`,
+      },
+      { status: 400 }
+    );
+  }
+
+  if (bugReports.length < API_CHALLENGE_MIN_FINDINGS) {
+    return NextResponse.json(
+      {
+        error: `Necesitas al menos ${API_CHALLENGE_MIN_FINDINGS} hallazgos para enviar.`,
+      },
+      { status: 400 }
+    );
+  }
+
+  if ((summary?.trim().length ?? 0) < API_CHALLENGE_MIN_SUMMARY_CHARS) {
+    return NextResponse.json(
+      {
+        error: `El resumen ejecutivo debe tener al menos ${API_CHALLENGE_MIN_SUMMARY_CHARS} caracteres.`,
+      },
+      { status: 400 }
+    );
+  }
+
   const scoreResult = autoScore(testCases as any, bugReports as any, summary);
+  const apiTarget = attempt.api_target || DEFAULT_API_TARGET_ID;
 
   // Persist score
   await supabase.from('qac_scores').upsert({
@@ -151,6 +185,7 @@ export async function POST(
         participant_email: attempt.candidate_email,
         metadata: {
           qac_attempt_id: attemptId,
+          api_target: apiTarget,
           test_design_score: scoreResult.testDesignScore,
           api_validation_score: scoreResult.apiValidationScore,
           security_score: scoreResult.securityScore,

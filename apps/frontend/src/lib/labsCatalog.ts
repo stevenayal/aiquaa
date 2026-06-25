@@ -103,10 +103,10 @@ export const toolCategories: LabCategory[] = [
       },
       {
         id: 'api-banking-challenge',
-        name: 'API Banking — Challenge práctico',
+        name: 'API Testing - Challenge practico',
         description:
-          'Testeá una API bancaria simulada: encontrá 12 bugs intencionales, diseñá casos, reportá bugs y recibí un score automático de 100 pts',
-        icon: '🏦',
+          'Prueba tecnica flexible con APIs publicas: elegi Chuck Norris, NASA o Rick and Morty, disena casos y reporta hallazgos con score automatico de 100 pts',
+        icon: '🌐',
         color: 'from-blue-500 to-indigo-600',
         href: '/assessments/api-banking',
         featured: true,
@@ -117,8 +117,7 @@ export const toolCategories: LabCategory[] = [
   {
     id: 'evaluacion',
     name: '🐛 Testing & Evaluación',
-    description:
-      'Aplicaciones para practicar y evaluar habilidades de testing',
+    description: 'Aplicaciones para practicar y evaluar habilidades de testing',
     tools: [
       {
         id: 'test-app',

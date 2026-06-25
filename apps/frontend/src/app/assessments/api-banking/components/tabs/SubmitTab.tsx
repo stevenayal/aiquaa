@@ -2,6 +2,10 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import {
+  API_CHALLENGE_MIN_FINDINGS,
+  API_CHALLENGE_MIN_TEST_CASES,
+} from '../../data/apiChallengeTargets';
 import { ProgressTracker } from '../ProgressTracker';
 
 interface Props {
@@ -23,7 +27,10 @@ export function SubmitTab({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const canSubmit = testCasesCount >= 1 && bugReportsCount >= 1;
+  const canSubmit =
+    testCasesCount >= API_CHALLENGE_MIN_TEST_CASES &&
+    bugReportsCount >= API_CHALLENGE_MIN_FINDINGS &&
+    hasSummary;
 
   async function handleSubmit() {
     if (!canSubmit || !attemptId) return;
@@ -34,7 +41,6 @@ export function SubmitTab({
     if (result.error) {
       setError(result.error);
     } else {
-      // Clear session storage
       sessionStorage.clear();
       router.push(`/assessments/api-banking/result/${attemptId}`);
     }
@@ -47,7 +53,7 @@ export function SubmitTab({
           Finalizar challenge
         </h2>
         <p className="text-xs text-slate-500">
-          Revisá tu progreso antes de enviar. Una vez enviado no podrás
+          Revisa tu progreso antes de enviar. Una vez enviado no podras
           modificar tu respuesta.
         </p>
       </div>
@@ -61,12 +67,17 @@ export function SubmitTab({
       <div className="rounded-lg border border-amber-200 dark:border-amber-800/50 bg-amber-50 dark:bg-amber-900/10 p-3 text-xs text-amber-700 dark:text-amber-400">
         <strong>Antes de enviar:</strong>
         <ul className="mt-1 list-disc list-inside space-y-0.5">
-          <li>¿Documentaste todos los bugs que encontraste?</li>
+          <li>Incluiste URLs, parametros y datos para replicar tus pruebas.</li>
           <li>
-            ¿Tus casos de prueba cubren escenarios positivos, negativos y de
-            seguridad?
+            Tus casos cubren escenarios positivos, negativos, borde y contrato.
           </li>
-          <li>¿El resumen ejecutivo refleja tus hallazgos principales?</li>
+          <li>
+            Tus hallazgos pueden ser bugs, riesgos, inconsistencias,
+            limitaciones o mejoras testables.
+          </li>
+          <li>
+            El resumen ejecutivo refleja cobertura, riesgos y recomendacion.
+          </li>
         </ul>
       </div>
 
@@ -84,7 +95,9 @@ export function SubmitTab({
 
       {!canSubmit && (
         <p className="text-xs text-slate-400 text-center">
-          Necesitás al menos 1 caso de prueba y 1 bug report para enviar.
+          Necesitas al menos {API_CHALLENGE_MIN_TEST_CASES} casos,{' '}
+          {API_CHALLENGE_MIN_FINDINGS} hallazgos y un resumen completo para
+          enviar.
         </p>
       )}
     </div>

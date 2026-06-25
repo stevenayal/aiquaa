@@ -37,9 +37,9 @@ const EXAM_OPTIONS = [
   },
   {
     id: 'api-banking',
-    label: 'API Banking — Challenge práctico',
+    label: 'API Testing - Challenge practico',
     description:
-      'Testear una API bancaria simulada, diseñar casos y reportar bugs — auto-corregido, 100 pts',
+      'Prueba practica flexible con APIs publicas, casos reproducibles y hallazgos - auto-corregido, 100 pts',
   },
   {
     id: 'database-fundamentals',

@@ -1,13 +1,15 @@
 'use client';
 
+import {
+  API_CHALLENGE_MIN_FINDINGS,
+  API_CHALLENGE_MIN_TEST_CASES,
+} from '../data/apiChallengeTargets';
+
 interface ProgressTrackerProps {
   testCasesCount: number;
   bugReportsCount: number;
   hasSummary: boolean;
 }
-
-const MIN_TEST_CASES = 3;
-const MIN_BUG_REPORTS = 2;
 
 export function ProgressTracker({
   testCasesCount,
@@ -16,13 +18,13 @@ export function ProgressTracker({
 }: ProgressTrackerProps) {
   const items = [
     {
-      label: `Casos de prueba (mín. ${MIN_TEST_CASES})`,
-      done: testCasesCount >= MIN_TEST_CASES,
+      label: `Casos de prueba (min. ${API_CHALLENGE_MIN_TEST_CASES})`,
+      done: testCasesCount >= API_CHALLENGE_MIN_TEST_CASES,
       count: testCasesCount,
     },
     {
-      label: `Bug reports (mín. ${MIN_BUG_REPORTS})`,
-      done: bugReportsCount >= MIN_BUG_REPORTS,
+      label: `Hallazgos (min. ${API_CHALLENGE_MIN_FINDINGS})`,
+      done: bugReportsCount >= API_CHALLENGE_MIN_FINDINGS,
       count: bugReportsCount,
     },
     {
@@ -51,7 +53,7 @@ export function ProgressTracker({
                 : 'bg-slate-100 text-slate-400 dark:bg-slate-800'
             }`}
           >
-            {item.done ? '✓' : '·'}
+            {item.done ? 'OK' : '-'}
           </span>
           <span
             className={

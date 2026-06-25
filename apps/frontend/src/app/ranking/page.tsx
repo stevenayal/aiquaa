@@ -81,8 +81,8 @@ const EXAM_TABS = [
   },
   {
     key: 'api-banking',
-    label: 'API Banking',
-    emoji: '🏦',
+    label: 'API Testing Practico',
+    emoji: '🌐',
     color: 'from-blue-500 to-indigo-600',
   },
   {

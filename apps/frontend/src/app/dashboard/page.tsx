@@ -43,8 +43,8 @@ const LAB_INFO = {
     href: '/assessments/api-testing-fundamentals',
   },
   'api-banking': {
-    emoji: '🏦',
-    label: 'API Banking — Challenge práctico',
+    emoji: '🌐',
+    label: 'API Testing - Challenge practico',
     href: '/assessments/api-banking',
   },
   'database-fundamentals': {

@@ -45,7 +45,7 @@ const EXAM_DISPLAY: Record<string, { emoji: string; label: string }> = {
     emoji: '🌐',
     label: 'API Testing Fundamentals',
   },
-  'api-banking': { emoji: '🏦', label: 'API Banking Challenge' },
+  'api-banking': { emoji: '🌐', label: 'API Testing Challenge' },
   'database-fundamentals': {
     emoji: '🗄️',
     label: 'Bases de Datos — Fundamentos',

@@ -4,8 +4,8 @@ import { useState } from 'react';
 import type { TestCaseInput, TestCaseType, PriorityLevel } from '../../types';
 
 interface Props {
-  onSubmit: (data: TestCaseInput) => Promise<{ error: string | null }>;
-  onCancel: () => void;
+  onSubmit(_data: TestCaseInput): Promise<{ error: string | null }>;
+  onCancel(): void;
 }
 
 const TYPES: TestCaseType[] = [
@@ -56,7 +56,12 @@ export function TestCaseForm({ onSubmit, onCancel }: Props) {
     }
   }
 
-  function field(label: string, name: keyof TestCaseInput, required?: boolean) {
+  function field(
+    label: string,
+    name: keyof TestCaseInput,
+    required?: boolean,
+    placeholder?: string
+  ) {
     return (
       <div className="space-y-1">
         <label className="block text-xs font-medium text-slate-600 dark:text-slate-400">
@@ -69,6 +74,7 @@ export function TestCaseForm({ onSubmit, onCancel }: Props) {
               : 'border-slate-300 dark:border-slate-600'
           } focus:outline-none focus:ring-1 focus:ring-blue-500`}
           rows={name === 'steps' || name === 'expectedResult' ? 3 : 2}
+          placeholder={placeholder}
           value={form[name] as string}
           onChange={(e) => setForm((p) => ({ ...p, [name]: e.target.value }))}
         />
@@ -86,10 +92,30 @@ export function TestCaseForm({ onSubmit, onCancel }: Props) {
         Nuevo caso de prueba
       </h3>
 
-      {field('Título', 'title', true)}
-      {field('Precondiciones', 'preconditions')}
-      {field('Pasos', 'steps', true)}
-      {field('Resultado esperado', 'expectedResult', true)}
+      {field(
+        'Titulo',
+        'title',
+        true,
+        'Ej: Buscar personajes con filtro valido y paginacion'
+      )}
+      {field(
+        'Precondiciones',
+        'preconditions',
+        false,
+        'API elegida, base URL, datos o parametros necesarios.'
+      )}
+      {field(
+        'Pasos',
+        'steps',
+        true,
+        'Inclui metodo, URL completa, parametros y datos usados.'
+      )}
+      {field(
+        'Resultado esperado',
+        'expectedResult',
+        true,
+        'Status code, estructura esperada y campos clave a validar.'
+      )}
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1">

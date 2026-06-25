@@ -159,4 +159,5 @@ export const SESSION_KEYS = {
   challengeToken: 'aiquaa_challenge_token',
   candidateName: 'aiquaa_challenge_candidate_name',
   startedAt: 'aiquaa_challenge_started_at',
+  apiTarget: 'aiquaa_challenge_api_target',
 } as const;

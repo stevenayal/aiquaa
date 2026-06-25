@@ -2,12 +2,13 @@
 
 import { useState } from 'react';
 import type { TestCase, TestCaseInput } from '../../types';
+import { API_CHALLENGE_MIN_TEST_CASES } from '../../data/apiChallengeTargets';
 import { TestCaseForm } from '../forms/TestCaseForm';
 
 interface Props {
   testCases: TestCase[];
-  onAdd: (data: TestCaseInput) => Promise<{ error: string | null }>;
-  onRemove: (id: number) => void;
+  onAdd(_data: TestCaseInput): Promise<{ error: string | null }>;
+  onRemove(_id: number): void;
 }
 
 const TYPE_COLOR: Record<string, string> = {
@@ -54,7 +55,8 @@ export function TestCasesTab({ testCases, onAdd, onRemove }: Props) {
 
       {testCases.length === 0 ? (
         <p className="text-sm text-slate-400 py-4 text-center">
-          No hay casos de prueba aún. Agregá al menos 3.
+          No hay casos de prueba todavia. Agrega al menos{' '}
+          {API_CHALLENGE_MIN_TEST_CASES}.
         </p>
       ) : (
         <div className="space-y-2">
@@ -79,7 +81,7 @@ export function TestCasesTab({ testCases, onAdd, onRemove }: Props) {
                   className="text-slate-400 hover:text-red-500 text-xs shrink-0"
                   title="Eliminar"
                 >
-                  ✕
+                  x
                 </button>
               </div>
               {tc.preconditions && (
