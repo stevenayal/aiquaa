@@ -86,6 +86,7 @@ export async function saveExamResultAction(payload: SaveExamResultPayload) {
 export async function getLeaderboardAction(
   examType:
     | 'git'
+    | 'git-practico'
     | 'istqb'
     | 'performance'
     | 'api-testing-fundamentals'

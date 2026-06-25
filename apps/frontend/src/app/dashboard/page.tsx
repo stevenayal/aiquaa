@@ -31,6 +31,11 @@ interface XpProfile {
 
 const LAB_INFO = {
   git: { emoji: '🌿', label: 'Examen GIT', href: '/labs/git' },
+  'git-practico': {
+    emoji: '🐙',
+    label: 'Git — Prueba Práctica',
+    href: '/labs/git-practico',
+  },
   istqb: { emoji: '📋', label: 'ISTQB CTFL v4.0', href: '/labs/istqb' },
   performance: {
     emoji: '⚡',
@@ -101,6 +106,7 @@ export default function DashboardPage() {
   );
   const allTypes = [
     'git',
+    'git-practico',
     'istqb',
     'performance',
     'api-testing-fundamentals',

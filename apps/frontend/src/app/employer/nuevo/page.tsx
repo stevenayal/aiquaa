@@ -8,9 +8,13 @@ import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { createHiringProcessAction } from '@/actions/employer';
 
+const DEFAULT_REPO_URL = 'https://github.com/stevenayal/bootcamp_ctl_2026';
+const GITHUB_REPO_RE = /^https:\/\/github\.com\/[^/\s]+\/[^/\s]+\/?$/;
+
 const EXAM_OPTIONS = [
   { value: 'istqb', label: 'ISTQB Foundation Level' },
   { value: 'git', label: 'Git' },
+  { value: 'git-practico', label: 'Git — Prueba práctica (GitHub)' },
   { value: 'performance', label: 'Rendimiento / Performance' },
   { value: 'api-testing-fundamentals', label: 'API Testing Fundamentals' },
   { value: 'api-banking', label: 'API Banking — Challenge práctico' },
@@ -29,6 +33,7 @@ export default function NuevoProcesoPage() {
     company_name: '',
     position_name: '',
     description: '',
+    repository_url: DEFAULT_REPO_URL,
     exam_types: ['istqb', 'git', 'performance', 'api-testing-fundamentals'],
     expires_at: '',
   });
@@ -58,12 +63,19 @@ export default function NuevoProcesoPage() {
       setError('Seleccioná al menos un tipo de examen');
       return;
     }
+    if (!GITHUB_REPO_RE.test(form.repository_url.trim())) {
+      setError(
+        'Ingresá un repositorio válido (ej. https://github.com/usuario/repo)'
+      );
+      return;
+    }
 
     startTransition(async () => {
       const { data, error: err } = await createHiringProcessAction({
         company_name: form.company_name.trim(),
         position_name: form.position_name.trim(),
         description: form.description.trim() || undefined,
+        repository_url: form.repository_url.trim(),
         exam_types: form.exam_types,
         expires_at: form.expires_at || undefined,
       });
@@ -146,6 +158,27 @@ export default function NuevoProcesoPage() {
               rows={3}
               className={`w-full px-3 py-2 rounded-lg border text-sm outline-none transition-colors resize-none ${input}`}
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Repositorio de GitHub *
+            </label>
+            <input
+              type="url"
+              value={form.repository_url}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, repository_url: e.target.value }))
+              }
+              placeholder="https://github.com/usuario/repo"
+              className={`w-full px-3 py-2 rounded-lg border text-sm outline-none transition-colors ${input}`}
+            />
+            <p
+              className={`text-xs mt-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}
+            >
+              Repo donde los candidatos harán la prueba práctica de Git. Por
+              defecto el repo del bootcamp.
+            </p>
           </div>
 
           <div>

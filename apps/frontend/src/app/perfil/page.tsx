@@ -17,6 +17,7 @@ interface ExamResultRow {
   id: string;
   exam_type:
     | 'git'
+    | 'git-practico'
     | 'istqb'
     | 'performance'
     | 'test-app'
@@ -38,6 +39,7 @@ interface ExamResultRow {
 
 const EXAM_DISPLAY: Record<string, { emoji: string; label: string }> = {
   git: { emoji: '🌿', label: 'GIT' },
+  'git-practico': { emoji: '🐙', label: 'GitHub Práctico' },
   istqb: { emoji: '📋', label: 'ISTQB CTFL' },
   performance: { emoji: '⚡', label: 'Performance' },
   'test-app': { emoji: '🧪', label: 'Test App' },

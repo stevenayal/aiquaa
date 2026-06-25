@@ -62,6 +62,12 @@ const EXAM_TABS = [
     color: 'from-amber-500 to-orange-600',
   },
   {
+    key: 'git-practico',
+    label: 'Git Práctica',
+    emoji: '🐙',
+    color: 'from-slate-500 to-gray-700',
+  },
+  {
     key: 'istqb',
     label: 'ISTQB CTFL v4.0',
     emoji: '📋',
@@ -109,6 +115,7 @@ type TabKey = (typeof EXAM_TABS)[number]['key'];
 
 const EXAM_TAB_URLS: Record<string, string> = {
   git: '/labs/git',
+  'git-practico': '/labs/git-practico',
   istqb: '/labs/istqb',
   performance: '/labs/performance',
   'api-testing-fundamentals': '/assessments/api-testing-fundamentals',
@@ -789,6 +796,7 @@ export default function RankingPage() {
   const [activeTab, setActiveTab] = useState<TabKey>('reportes');
   const [examData, setExamData] = useState<Record<string, LeaderboardEntry[]>>({
     git: [],
+    'git-practico': [],
     istqb: [],
     performance: [],
     'api-testing-fundamentals': [],
@@ -798,6 +806,7 @@ export default function RankingPage() {
   });
   const [examLoading, setExamLoading] = useState<Record<string, boolean>>({
     git: true,
+    'git-practico': true,
     istqb: true,
     performance: true,
     'api-testing-fundamentals': true,
@@ -822,6 +831,7 @@ export default function RankingPage() {
     (
       [
         'git',
+        'git-practico',
         'istqb',
         'performance',
         'api-testing-fundamentals',
