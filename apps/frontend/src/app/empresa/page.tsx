@@ -246,7 +246,7 @@ export default function EmpresaDashboardPage() {
                     ? String(stats.pendingProspects)
                     : undefined
                 }
-                href="/empresa/procesos"
+                href="/empresa/prospectos"
               />
               <StatCard
                 label="Invitaciones activas"

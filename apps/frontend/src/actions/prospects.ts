@@ -23,6 +23,37 @@ export interface Prospect {
   created_at: string;
 }
 
+export interface ProspectWithProcess extends Prospect {
+  hiring_processes: {
+    id: string;
+    position_name: string;
+    code: string;
+  };
+}
+
+export async function getEmpresaProspectsAction(
+  status?: ProspectStatus
+): Promise<{ data: ProspectWithProcess[] | null; error?: string }> {
+  const supabase = createClient();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+  if (userError || !user) return { data: null, error: 'No autenticado' };
+
+  let query = supabase
+    .from('prospects')
+    .select('*, hiring_processes!inner(id, position_name, code)')
+    .eq('created_by', user.id)
+    .order('created_at', { ascending: false });
+
+  if (status) query = query.eq('status', status);
+
+  const { data, error } = await query;
+  if (error) return { data: null, error: error.message };
+  return { data: (data ?? []) as ProspectWithProcess[] };
+}
+
 export async function getProspectsForProcessAction(
   process_id: string
 ): Promise<{ data: Prospect[] | null; error?: string }> {
