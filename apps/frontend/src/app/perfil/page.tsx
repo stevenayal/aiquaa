@@ -119,6 +119,8 @@ export default function PerfilPage() {
     country: '',
     github_profile: '',
     istqb_level: '',
+    open_to_work: false,
+    talent_visible_to_empresas: false,
   });
   const [initialized, setInitialized] = useState(false);
   const [xpProfile, setXpProfile] = useState<{
@@ -141,6 +143,10 @@ export default function PerfilPage() {
         country: user.user_metadata?.country || '',
         github_profile: user.user_metadata?.github_profile || '',
         istqb_level: user.user_metadata?.istqb_level || '',
+        open_to_work: Boolean(user.user_metadata?.open_to_work),
+        talent_visible_to_empresas: Boolean(
+          user.user_metadata?.talent_visible_to_empresas
+        ),
       });
       setInitialized(true);
     }
@@ -271,6 +277,11 @@ export default function PerfilPage() {
     fd.set('country', formData.country);
     fd.set('github_profile', formData.github_profile);
     fd.set('istqb_level', formData.istqb_level);
+    fd.set('open_to_work', String(formData.open_to_work));
+    fd.set(
+      'talent_visible_to_empresas',
+      String(formData.talent_visible_to_empresas)
+    );
     startTransition(async () => {
       const result = await updateProfileAction(fd);
       if (result.error) {
@@ -586,6 +597,59 @@ export default function PerfilPage() {
           {/* Role — candidatos only */}
           {!isEmpresa && (
             <div>
+              <div
+                className={`rounded-lg border p-4 mb-5 space-y-3 ${isDarkMode ? 'border-slate-700 bg-slate-900/40' : 'border-indigo-100 bg-indigo-50/60'}`}
+              >
+                <div>
+                  <p
+                    className={`text-sm font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                  >
+                    Visibilidad para empresas
+                  </p>
+                  <p
+                    className={`text-xs mt-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}
+                  >
+                    Permití que recruiters de empresas registradas encuentren tu
+                    perfil cuando busquen talento QA en AIQUAA.
+                  </p>
+                </div>
+                <label className="flex gap-3 items-start text-sm">
+                  <input
+                    type="checkbox"
+                    checked={formData.talent_visible_to_empresas}
+                    onChange={(e) =>
+                      setFormData((p) => ({
+                        ...p,
+                        talent_visible_to_empresas: e.target.checked,
+                      }))
+                    }
+                    className="mt-1 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                  />
+                  <span
+                    className={isDarkMode ? 'text-slate-300' : 'text-gray-700'}
+                  >
+                    Mostrar mi perfil en el directorio de talento para empresas
+                  </span>
+                </label>
+                <label className="flex gap-3 items-start text-sm">
+                  <input
+                    type="checkbox"
+                    checked={formData.open_to_work}
+                    onChange={(e) =>
+                      setFormData((p) => ({
+                        ...p,
+                        open_to_work: e.target.checked,
+                      }))
+                    }
+                    className="mt-1 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                  />
+                  <span
+                    className={isDarkMode ? 'text-slate-300' : 'text-gray-700'}
+                  >
+                    Estoy disponible para ser contactado por oportunidades QA
+                  </span>
+                </label>
+              </div>
               <label className={labelClass}>Tu rol en QA</label>
               <div className="grid grid-cols-2 gap-2">
                 {Object.entries(ROLES).map(([value, { label, emoji }]) => {
