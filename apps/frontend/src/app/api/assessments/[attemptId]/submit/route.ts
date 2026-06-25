@@ -16,6 +16,7 @@ import {
   ensureXpRules,
   grantGamificationXpEvent,
 } from '@/lib/gamification/grant-xp';
+import { selectAttemptForSubmitWithApiTargetFallback } from '../../_lib/apiTargetPersistence';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -31,13 +32,10 @@ export async function POST(
   const supabase = createAdminClient();
 
   // Fetch attempt
-  const { data: attempt } = await supabase
-    .from('qac_attempts')
-    .select(
-      'id, status, started_at, aiquaa_user_id, candidate_name, candidate_email, process_code, api_target'
-    )
-    .eq('id', attemptId)
-    .single();
+  const { data: attempt } = await selectAttemptForSubmitWithApiTargetFallback(
+    supabase,
+    attemptId
+  );
 
   if (!attempt)
     return NextResponse.json({ error: 'Attempt not found' }, { status: 404 });
