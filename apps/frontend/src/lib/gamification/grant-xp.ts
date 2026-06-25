@@ -1,5 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/admin';
 import { calculateXpLevel } from '@/app/assessments/api-testing-fundamentals/lib/gamification';
+import { syncRankingAchievementsForUser } from '@/lib/ranking-achievements';
 
 export type XpRuleDefinition = {
   eventType: string;
@@ -135,4 +136,13 @@ export async function grantGamificationXpEvent(input: {
   );
 
   if (userXpError) throw new Error(userXpError.message);
+
+  try {
+    await syncRankingAchievementsForUser(input.userId);
+  } catch (achievementError) {
+    console.warn(
+      '[ranking-achievements] sync after xp failed',
+      achievementError
+    );
+  }
 }

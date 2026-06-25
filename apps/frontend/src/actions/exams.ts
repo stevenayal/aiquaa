@@ -2,6 +2,10 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import {
+  getRankingAchievementsForUser,
+  syncRankingAchievementsForUser,
+} from '@/lib/ranking-achievements';
 
 interface SaveExamResultPayload {
   exam_type:
@@ -80,6 +84,14 @@ export async function saveExamResultAction(payload: SaveExamResultPayload) {
   });
 
   if (error) return { error: error.message };
+  try {
+    await syncRankingAchievementsForUser(user.id);
+  } catch (achievementError) {
+    console.warn(
+      '[ranking-achievements] sync after exam failed',
+      achievementError
+    );
+  }
   return { success: true };
 }
 
@@ -337,4 +349,23 @@ export async function getMyXpProfileAction() {
       position: (count ?? 0) + 1,
     },
   };
+}
+
+export async function getMyRankingAchievementsAction() {
+  const supabase = createClient();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+  if (userError || !user) return { data: [], error: 'No autenticado' };
+
+  try {
+    await syncRankingAchievementsForUser(user.id);
+    const achievements = await getRankingAchievementsForUser(user.id);
+    return { data: achievements };
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : 'No se pudieron cargar logros';
+    return { data: [], error: message };
+  }
 }

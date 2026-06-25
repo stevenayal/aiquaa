@@ -9,7 +9,11 @@ import {
   uploadAvatarAction,
   changePasswordAction,
 } from '@/actions/profile';
-import { getExamResultsAction, getMyXpProfileAction } from '@/actions/exams';
+import {
+  getExamResultsAction,
+  getMyRankingAchievementsAction,
+  getMyXpProfileAction,
+} from '@/actions/exams';
 import Avatar from '@/components/ui/Avatar';
 import { xpForLevel, PY_TIMEZONE } from '@/lib/xp';
 import {
@@ -44,6 +48,18 @@ interface ExamResultRow {
   model?: string;
   language?: string;
   created_at: string;
+}
+
+interface RankingAchievementRow {
+  id: string;
+  rankingType: 'xp_global' | 'exam';
+  rankingSlug: string;
+  rankingLabel: string;
+  position: number;
+  score: number | null;
+  scoreLabel: string | null;
+  achievedAt: string;
+  notifiedAt: string | null;
 }
 
 const formatTime = (s: number) => {
@@ -89,6 +105,11 @@ export default function PerfilPage() {
   const [examTotal, setExamTotal] = useState(0);
   const [examFilter, setExamFilter] = useState<ExamType | 'all'>('all');
   const [examLoadingMore, setExamLoadingMore] = useState(false);
+  const [rankingAchievements, setRankingAchievements] = useState<
+    RankingAchievementRow[]
+  >([]);
+  const [rankingAchievementsLoading, setRankingAchievementsLoading] =
+    useState(true);
 
   const [formData, setFormData] = useState({
     full_name: '',
@@ -161,6 +182,16 @@ export default function PerfilPage() {
     getMyXpProfileAction().then(({ data }) => {
       if (data) setXpProfile(data);
     });
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+    setRankingAchievementsLoading(true);
+    getMyRankingAchievementsAction()
+      .then(({ data }) => {
+        setRankingAchievements((data as RankingAchievementRow[]) || []);
+      })
+      .finally(() => setRankingAchievementsLoading(false));
   }, [user]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -819,6 +850,101 @@ export default function PerfilPage() {
             </div>
           )}
         </div>
+
+        {/* Ranking Achievements */}
+        {!isEmpresa && (
+          <div id="logros-ranking" className={`${card} rounded-xl p-6`}>
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <div>
+                <h2
+                  className={`text-base font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                >
+                  Logros de ranking
+                </h2>
+                <p
+                  className={`text-xs mt-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                >
+                  Reconocimientos por llegar al Top 3 de AIQUAA.
+                </p>
+              </div>
+              <span
+                className={`rounded-full px-2.5 py-1 text-xs font-bold ${
+                  isDarkMode
+                    ? 'bg-amber-900/40 text-amber-300'
+                    : 'bg-amber-100 text-amber-700'
+                }`}
+              >
+                {rankingAchievements.length}
+              </span>
+            </div>
+
+            {rankingAchievementsLoading ? (
+              <div className="flex justify-center py-6">
+                <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-amber-500" />
+              </div>
+            ) : rankingAchievements.length === 0 ? (
+              <div
+                className={`rounded-lg px-4 py-5 text-center ${isDarkMode ? 'bg-slate-700/40' : 'bg-gray-50'}`}
+              >
+                <p
+                  className={`text-sm font-medium ${isDarkMode ? 'text-slate-200' : 'text-gray-700'}`}
+                >
+                  Todavia no tenes logros de ranking.
+                </p>
+                <p
+                  className={`text-xs mt-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                >
+                  Cuando llegues al Top 3 global de XP o de un ranking de
+                  examen, se va a guardar aca con la fecha.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {rankingAchievements.map((achievement) => (
+                  <div
+                    key={achievement.id}
+                    className={`rounded-lg p-4 flex items-start justify-between gap-4 ${
+                      isDarkMode ? 'bg-slate-700/50' : 'bg-gray-50'
+                    }`}
+                  >
+                    <div className="min-w-0">
+                      <p
+                        className={`text-sm font-semibold ${isDarkMode ? 'text-slate-100' : 'text-gray-800'}`}
+                      >
+                        #{achievement.position} {achievement.rankingLabel}
+                      </p>
+                      <p
+                        className={`text-xs mt-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                      >
+                        Logro obtenido el{' '}
+                        {new Date(achievement.achievedAt).toLocaleDateString(
+                          'es-PY',
+                          {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric',
+                            timeZone: PY_TIMEZONE,
+                          }
+                        )}
+                      </p>
+                    </div>
+                    {achievement.scoreLabel && (
+                      <span
+                        className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-bold ${
+                          isDarkMode
+                            ? 'bg-slate-800 text-slate-200'
+                            : 'bg-white text-gray-700 border border-gray-200'
+                        }`}
+                      >
+                        {achievement.scoreLabel}
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Exam History */}
         <div className={`${card} rounded-xl p-6`}>
