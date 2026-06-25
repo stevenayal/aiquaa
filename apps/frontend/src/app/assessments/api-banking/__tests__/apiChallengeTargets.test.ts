@@ -5,6 +5,10 @@ import {
   getApiChallengeTarget,
   isApiChallengeTargetId,
 } from '../data/apiChallengeTargets';
+import {
+  API_CHALLENGE_EVALUATION_CRITERIA,
+  API_CHALLENGE_TOTAL_SCORE,
+} from '../data/evaluationCriteria';
 
 describe('API challenge targets', () => {
   it('defines the three public API options', () => {
@@ -44,5 +48,18 @@ describe('API challenge targets', () => {
     expect(isApiChallengeTargetId('nasa')).toBe(true);
     expect(isApiChallengeTargetId('rick-and-morty')).toBe(true);
     expect(isApiChallengeTargetId('banking')).toBe(false);
+  });
+
+  it('documents clear evaluation criteria for candidates', () => {
+    expect(API_CHALLENGE_TOTAL_SCORE).toBe(100);
+    expect(API_CHALLENGE_EVALUATION_CRITERIA).toHaveLength(5);
+
+    for (const criterion of API_CHALLENGE_EVALUATION_CRITERIA) {
+      expect(criterion.label).toBeTruthy();
+      expect(criterion.summary.length).toBeGreaterThan(40);
+      expect(criterion.fullCredit.length).toBeGreaterThan(80);
+      expect(criterion.checks.length).toBeGreaterThanOrEqual(3);
+      expect(criterion.maxScore).toBeGreaterThan(0);
+    }
   });
 });

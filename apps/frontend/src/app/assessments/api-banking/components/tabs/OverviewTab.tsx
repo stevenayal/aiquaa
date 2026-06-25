@@ -5,6 +5,10 @@ import {
   getApiChallengeTarget,
   type ApiChallengeTargetId,
 } from '../../data/apiChallengeTargets';
+import {
+  API_CHALLENGE_EVALUATION_CRITERIA,
+  API_CHALLENGE_TOTAL_SCORE,
+} from '../../data/evaluationCriteria';
 
 interface Props {
   apiTarget: ApiChallengeTargetId;
@@ -104,23 +108,37 @@ export function OverviewTab({ apiTarget }: Props) {
 
       <section className="space-y-2">
         <h2 className="font-semibold text-slate-900 dark:text-white">
-          Distribucion de puntaje
+          Criterio de evaluacion
         </h2>
-        <div className="space-y-1">
-          {[
-            { label: 'Diseno de casos de prueba', pts: 30 },
-            { label: 'Ejecucion y evidencia', pts: 25 },
-            { label: 'Analisis de contrato y datos', pts: 20 },
-            { label: 'Calidad de reportes', pts: 15 },
-            { label: 'Resumen ejecutivo', pts: 10 },
-          ].map((row) => (
-            <div key={row.label} className="flex justify-between text-xs">
-              <span className="text-slate-600 dark:text-slate-400">
-                {row.label}
-              </span>
-              <span className="font-semibold text-slate-700 dark:text-slate-300">
-                {row.pts} pts
-              </span>
+        <p className="text-xs text-slate-500 dark:text-slate-400">
+          Total: {API_CHALLENGE_TOTAL_SCORE} puntos. La correccion premia
+          criterio QA, claridad y reproducibilidad. No dependes de encontrar un
+          bug real en la API publica.
+        </p>
+        <div className="space-y-3">
+          {API_CHALLENGE_EVALUATION_CRITERIA.map((criterion) => (
+            <div
+              key={criterion.key}
+              className="rounded-lg border border-slate-200 p-3 dark:border-slate-700"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="font-semibold text-slate-800 dark:text-slate-200">
+                    {criterion.label}
+                  </p>
+                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                    {criterion.summary}
+                  </p>
+                </div>
+                <span className="shrink-0 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  {criterion.maxScore} pts
+                </span>
+              </div>
+              <ul className="mt-2 list-disc list-inside space-y-0.5 text-xs text-slate-600 dark:text-slate-400">
+                {criterion.checks.map((check) => (
+                  <li key={check}>{check}</li>
+                ))}
+              </ul>
             </div>
           ))}
         </div>

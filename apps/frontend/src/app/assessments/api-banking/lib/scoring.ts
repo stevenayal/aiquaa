@@ -4,6 +4,7 @@ import {
   API_CHALLENGE_MIN_SUMMARY_CHARS,
   API_CHALLENGE_MIN_TEST_CASES,
 } from '../data/apiChallengeTargets';
+import { API_CHALLENGE_EVALUATION_CRITERIA } from '../data/evaluationCriteria';
 
 export interface ScoreResult {
   testDesignScore: number;
@@ -19,40 +20,20 @@ export interface ScoreResult {
 }
 
 const MAX_SCORES = {
-  testDesign: 30,
-  apiValidation: 25,
-  security: 20,
-  bugReporting: 15,
-  executiveSummary: 10,
+  testDesign: API_CHALLENGE_EVALUATION_CRITERIA[0].maxScore,
+  apiValidation: API_CHALLENGE_EVALUATION_CRITERIA[1].maxScore,
+  security: API_CHALLENGE_EVALUATION_CRITERIA[2].maxScore,
+  bugReporting: API_CHALLENGE_EVALUATION_CRITERIA[3].maxScore,
+  executiveSummary: API_CHALLENGE_EVALUATION_CRITERIA[4].maxScore,
 };
 
-export const RUBRIC_CATEGORIES = [
-  {
-    key: 'testDesignScore',
-    label: 'Diseno de casos de prueba',
-    max: MAX_SCORES.testDesign,
-  },
-  {
-    key: 'apiValidationScore',
-    label: 'Ejecucion y evidencia',
-    max: MAX_SCORES.apiValidation,
-  },
-  {
-    key: 'securityScore',
-    label: 'Analisis de contrato y datos',
-    max: MAX_SCORES.security,
-  },
-  {
-    key: 'bugReportingScore',
-    label: 'Calidad de reportes',
-    max: MAX_SCORES.bugReporting,
-  },
-  {
-    key: 'executiveSummaryScore',
-    label: 'Resumen ejecutivo',
-    max: MAX_SCORES.executiveSummary,
-  },
-] as const;
+export const RUBRIC_CATEGORIES = API_CHALLENGE_EVALUATION_CRITERIA.map(
+  (criterion) => ({
+    key: criterion.key,
+    label: criterion.label,
+    max: criterion.maxScore,
+  })
+);
 
 const HTTP_OR_REPRO_KEYWORDS = [
   'get ',

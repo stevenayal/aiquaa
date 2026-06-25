@@ -6,6 +6,7 @@ import {
   API_CHALLENGE_MIN_FINDINGS,
   API_CHALLENGE_MIN_TEST_CASES,
 } from '../../data/apiChallengeTargets';
+import { API_CHALLENGE_EVALUATION_CRITERIA } from '../../data/evaluationCriteria';
 import { ProgressTracker } from '../ProgressTracker';
 
 interface Props {
@@ -79,6 +80,20 @@ export function SubmitTab({
             El resumen ejecutivo refleja cobertura, riesgos y recomendacion.
           </li>
         </ul>
+      </div>
+
+      <div className="rounded-lg border border-slate-200 dark:border-slate-700 p-3 text-xs text-slate-600 dark:text-slate-400">
+        <strong className="text-slate-700 dark:text-slate-300">
+          Criterio de evaluacion:
+        </strong>
+        <div className="mt-2 grid gap-1">
+          {API_CHALLENGE_EVALUATION_CRITERIA.map((criterion) => (
+            <p key={criterion.key}>
+              <span className="font-semibold">{criterion.maxScore} pts</span> -{' '}
+              {criterion.label}: {criterion.summary}
+            </p>
+          ))}
+        </div>
       </div>
 
       {error && (

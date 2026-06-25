@@ -1,14 +1,11 @@
 import Link from 'next/link';
 import { createAdminClient } from '@/lib/supabase/admin';
-import {
-  RUBRIC_CATEGORIES,
-  RUBRIC_THRESHOLDS,
-  SCORE_MAX,
-} from '../../lib/scoring';
+import { RUBRIC_CATEGORIES, RUBRIC_THRESHOLDS } from '../../lib/scoring';
 import {
   DEFAULT_API_TARGET_ID,
   getApiChallengeTarget,
 } from '../../data/apiChallengeTargets';
+import { API_CHALLENGE_EVALUATION_CRITERIA } from '../../data/evaluationCriteria';
 
 interface Props {
   params: { attemptId: string };
@@ -159,12 +156,18 @@ export default async function ResultPage({ params }: Props) {
           <h2 className="font-semibold text-slate-800 dark:text-slate-200">
             Rubrica aplicada
           </h2>
-          <div className="grid gap-2 text-xs text-slate-600 dark:text-slate-400">
-            <p>Diseno de casos: {SCORE_MAX.testDesign} pts.</p>
-            <p>Ejecucion y evidencia: {SCORE_MAX.apiValidation} pts.</p>
-            <p>Analisis de contrato y datos: {SCORE_MAX.security} pts.</p>
-            <p>Calidad de reportes: {SCORE_MAX.bugReporting} pts.</p>
-            <p>Resumen ejecutivo: {SCORE_MAX.executiveSummary} pts.</p>
+          <div className="grid gap-3 text-xs text-slate-600 dark:text-slate-400">
+            {API_CHALLENGE_EVALUATION_CRITERIA.map((criterion) => (
+              <div
+                key={criterion.key}
+                className="rounded-lg border border-slate-200 p-3 dark:border-slate-700"
+              >
+                <p className="font-semibold text-slate-800 dark:text-slate-200">
+                  {criterion.label} ({criterion.maxScore} pts)
+                </p>
+                <p className="mt-1">{criterion.fullCredit}</p>
+              </div>
+            ))}
           </div>
         </div>
 

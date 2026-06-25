@@ -5,6 +5,10 @@ import {
   API_CHALLENGE_MIN_TEST_CASES,
   API_CHALLENGE_TARGETS,
 } from './data/apiChallengeTargets';
+import {
+  API_CHALLENGE_EVALUATION_CRITERIA,
+  API_CHALLENGE_TOTAL_SCORE,
+} from './data/evaluationCriteria';
 
 export const metadata: Metadata = {
   title: 'API Testing - Challenge Practico | AIQUAA',
@@ -118,24 +122,33 @@ export default function ApiBankingLandingPage() {
             <h2 className="font-semibold text-slate-800 dark:text-slate-200">
               Como se evalua
             </h2>
-            <div className="space-y-2">
-              {[
-                { label: 'Diseno de casos de prueba', pts: 30 },
-                { label: 'Ejecucion y evidencia', pts: 25 },
-                { label: 'Analisis de contrato y datos', pts: 20 },
-                { label: 'Calidad de reportes', pts: 15 },
-                { label: 'Resumen ejecutivo', pts: 10 },
-              ].map((row) => (
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              La evaluacion suma {API_CHALLENGE_TOTAL_SCORE} puntos. No se exige
+              encontrar bugs reales: tambien cuentan riesgos, inconsistencias,
+              limitaciones y mejoras testables si estan bien justificadas.
+            </p>
+            <div className="space-y-3">
+              {API_CHALLENGE_EVALUATION_CRITERIA.map((criterion) => (
                 <div
-                  key={row.label}
-                  className="flex items-center justify-between text-sm"
+                  key={criterion.key}
+                  className="rounded-lg border border-slate-200 p-3 text-sm dark:border-slate-700"
                 >
-                  <span className="text-slate-600 dark:text-slate-400">
-                    {row.label}
-                  </span>
-                  <span className="font-semibold text-slate-700 dark:text-slate-300">
-                    {row.pts} pts
-                  </span>
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="font-semibold text-slate-800 dark:text-slate-200">
+                        {criterion.label}
+                      </p>
+                      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                        {criterion.summary}
+                      </p>
+                    </div>
+                    <span className="shrink-0 font-semibold text-slate-700 dark:text-slate-300">
+                      {criterion.maxScore} pts
+                    </span>
+                  </div>
+                  <p className="mt-2 text-xs text-slate-600 dark:text-slate-400">
+                    {criterion.fullCredit}
+                  </p>
                 </div>
               ))}
             </div>
