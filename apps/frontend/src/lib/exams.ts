@@ -4,6 +4,7 @@
 
 export type ExamType =
   | 'git'
+  | 'git-practico'
   | 'istqb'
   | 'performance'
   | 'test-app'
@@ -20,6 +21,11 @@ export interface ExamMeta {
 
 export const EXAM_META: Record<ExamType, ExamMeta> = {
   git: { emoji: '🌿', label: 'Examen GIT', href: '/labs/git' },
+  'git-practico': {
+    emoji: '🐙',
+    label: 'Git — Prueba práctica',
+    href: '/labs/git-practico',
+  },
   istqb: { emoji: '📋', label: 'ISTQB CTFL v4.0', href: '/labs/istqb' },
   performance: {
     emoji: '⚡',

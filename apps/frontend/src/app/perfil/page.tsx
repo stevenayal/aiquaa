@@ -46,24 +46,6 @@ interface ExamResultRow {
   created_at: string;
 }
 
-const EXAM_DISPLAY: Record<string, { emoji: string; label: string }> = {
-  git: { emoji: '🌿', label: 'GIT' },
-  'git-practico': { emoji: '🐙', label: 'GitHub Práctico' },
-  istqb: { emoji: '📋', label: 'ISTQB CTFL' },
-  performance: { emoji: '⚡', label: 'Performance' },
-  'test-app': { emoji: '🧪', label: 'Test App' },
-  'api-testing-fundamentals': {
-    emoji: '🌐',
-    label: 'API Testing Fundamentals',
-  },
-  'api-banking': { emoji: '🏦', label: 'API Banking Challenge' },
-  'database-fundamentals': {
-    emoji: '🗄️',
-    label: 'Bases de Datos — Fundamentos',
-  },
-  'database-practice': { emoji: '🧮', label: 'Bases de Datos — Práctica SQL' },
-};
-
 const formatTime = (s: number) => {
   const m = Math.floor(s / 60);
   const sec = s % 60;
