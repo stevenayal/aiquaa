@@ -4,8 +4,84 @@ import { NextResponse, type NextRequest } from 'next/server';
 const PROTECTED_ROUTES = ['/perfil', '/dashboard', '/empresa'];
 const AUTH_ROUTES = ['/login', '/register'];
 const PUBLIC_PATHS = ['/empresa/registro'];
+const SUPABASE_AUTH_COOKIE_PATTERN = /^sb-.+-auth-token(?:\.\d+)?$/;
+
+type CookieLike = {
+  name: string;
+};
+
+export function isSupabaseAuthCookie(name: string) {
+  return (
+    name === 'supabase-auth-token' || SUPABASE_AUTH_COOKIE_PATTERN.test(name)
+  );
+}
+
+export function hasSupabaseAuthCookie(cookies: CookieLike[]) {
+  return cookies.some((cookie) => isSupabaseAuthCookie(cookie.name));
+}
+
+export function isProtectedPath(pathname: string) {
+  return (
+    PROTECTED_ROUTES.some((route) => pathname.startsWith(route)) &&
+    !PUBLIC_PATHS.some((path) => pathname.startsWith(path))
+  );
+}
+
+export function isAuthPath(pathname: string) {
+  return AUTH_ROUTES.some((route) => pathname === route);
+}
+
+export function shouldVerifySupabaseUser(
+  pathname: string,
+  cookies: CookieLike[]
+) {
+  return isProtectedPath(pathname) && hasSupabaseAuthCookie(cookies);
+}
+
+function redirectToLogin(request: NextRequest) {
+  const loginUrl = request.nextUrl.clone();
+  const { pathname } = request.nextUrl;
+
+  loginUrl.pathname = '/login';
+  if (pathname.startsWith('/') && !pathname.startsWith('//')) {
+    loginUrl.searchParams.set('redirectedFrom', pathname);
+  }
+
+  return NextResponse.redirect(loginUrl);
+}
+
+function clearSupabaseAuthCookies(
+  request: NextRequest,
+  response: NextResponse
+) {
+  request.cookies
+    .getAll()
+    .filter((cookie) => isSupabaseAuthCookie(cookie.name))
+    .forEach((cookie) => {
+      response.cookies.set(cookie.name, '', {
+        expires: new Date(0),
+        maxAge: 0,
+        path: '/',
+      });
+    });
+}
 
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const requestCookies = request.cookies.getAll();
+
+  if (isAuthPath(pathname)) {
+    return NextResponse.next({ request });
+  }
+
+  if (!isProtectedPath(pathname)) {
+    return NextResponse.next({ request });
+  }
+
+  if (!shouldVerifySupabaseUser(pathname, requestCookies)) {
+    return redirectToLogin(request);
+  }
+
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -29,31 +105,27 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // Verify session only for matched routes — avoids Supabase rate limiting from
-  // calling getUser() on every single request across the entire site.
   const {
     data: { user },
+    error,
   } = await supabase.auth.getUser();
-  const { pathname } = request.nextUrl;
 
-  // Redirect unauthenticated users away from protected routes
-  const isProtected =
-    PROTECTED_ROUTES.some((route) => pathname.startsWith(route)) &&
-    !PUBLIC_PATHS.some((path) => pathname.startsWith(path));
-  if (!user && isProtected) {
-    const loginUrl = request.nextUrl.clone();
-    loginUrl.pathname = '/login';
-    // Only store relative paths — prevents open redirect (e.g. ?redirectedFrom=//evil.com)
-    if (pathname.startsWith('/') && !pathname.startsWith('//')) {
-      loginUrl.searchParams.set('redirectedFrom', pathname);
-    }
-    return NextResponse.redirect(loginUrl);
+  if (error) {
+    console.warn('[auth middleware] Supabase user lookup failed', {
+      code: error.code,
+      message: error.message,
+      pathname,
+      referer: request.headers.get('referer'),
+      userAgent: request.headers.get('user-agent'),
+    });
+
+    const response = redirectToLogin(request);
+    clearSupabaseAuthCookies(request, response);
+    return response;
   }
 
-  // Redirect authenticated users away from auth pages
-  const isAuthRoute = AUTH_ROUTES.some((route) => pathname === route);
-  if (user && isAuthRoute) {
-    return NextResponse.redirect(new URL('/ranking', request.url));
+  if (!user) {
+    return redirectToLogin(request);
   }
 
   return supabaseResponse;
