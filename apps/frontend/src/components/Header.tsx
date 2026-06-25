@@ -166,19 +166,6 @@ const Header = () => {
                     >
                       👤 Mi perfil
                     </Link>
-                    {!isEmpresa && (
-                      <Link
-                        href="/forum"
-                        onClick={() => setIsUserMenuOpen(false)}
-                        className={`flex items-center gap-2 px-4 py-2.5 text-sm transition-colors ${
-                          isDarkMode
-                            ? 'text-slate-200 hover:bg-slate-700'
-                            : 'text-gray-700 hover:bg-gray-50'
-                        }`}
-                      >
-                        💬 Foro
-                      </Link>
-                    )}
                     <div
                       className={`border-t ${isDarkMode ? 'border-slate-700' : 'border-gray-100'}`}
                     />

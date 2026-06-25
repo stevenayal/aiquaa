@@ -6,6 +6,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { getExamResultsAction, getMyXpProfileAction } from '@/actions/exams';
 import { xpForLevel, PY_TIMEZONE } from '@/lib/xp';
+import { EXAM_META, formatExamScore, type ExamType } from '@/lib/exams';
 
 interface ExamResult {
   id: string;
@@ -13,6 +14,7 @@ interface ExamResult {
   exam_mode: string;
   score: number;
   total_questions: number;
+  max_possible_score?: number | null;
   passed: boolean;
   percentage: number;
   time_spent: number | null;
@@ -104,7 +106,7 @@ export default function DashboardPage() {
       .filter((r) => r.passed && r.exam_mode === 'exam')
       .map((r) => r.exam_type)
   );
-  const allTypes = [
+  const allTypes: ExamType[] = [
     'git',
     'git-practico',
     'istqb',
@@ -113,7 +115,7 @@ export default function DashboardPage() {
     'api-banking',
     'database-fundamentals',
     'database-practice',
-  ] as const;
+  ];
   const recommended = allTypes.find((t) => !passedTypes.has(t)) ?? null;
   const allPassed = allTypes.every((t) => passedTypes.has(t));
 
@@ -332,7 +334,8 @@ export default function DashboardPage() {
                   <p
                     className={`font-bold text-base ${isDarkMode ? 'text-amber-200' : 'text-amber-900'}`}
                   >
-                    {LAB_INFO[recommended].emoji} {LAB_INFO[recommended].label}
+                    {EXAM_META[recommended].emoji}{' '}
+                    {EXAM_META[recommended].label}
                   </p>
                   <p
                     className={`text-sm mt-0.5 ${isDarkMode ? 'text-amber-400/80' : 'text-amber-700'}`}
@@ -341,7 +344,7 @@ export default function DashboardPage() {
                   </p>
                 </div>
                 <Link
-                  href={LAB_INFO[recommended].href}
+                  href={EXAM_META[recommended].href}
                   className="shrink-0 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold rounded-lg transition-colors"
                 >
                   Ir al lab →
@@ -429,7 +432,7 @@ export default function DashboardPage() {
               className={`rounded-2xl overflow-hidden ${isDarkMode ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-gray-200 shadow-sm'}`}
             >
               {last3.map((result, i) => {
-                const lab = LAB_INFO[result.exam_type as keyof typeof LAB_INFO];
+                const lab = EXAM_META[result.exam_type as ExamType];
                 const date = new Date(result.created_at).toLocaleDateString(
                   'es-PY',
                   {
@@ -465,7 +468,7 @@ export default function DashboardPage() {
                       <p
                         className={`text-sm font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
                       >
-                        {result.score}/{result.total_questions}
+                        {formatExamScore(result)}
                       </p>
                       <p
                         className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
@@ -498,7 +501,7 @@ export default function DashboardPage() {
                 { href: '/labs', emoji: '🧪', label: 'Labs' },
                 { href: '/ranking', emoji: '🏆', label: 'Ranking' },
                 { href: '/perfil', emoji: '👤', label: 'Mi Perfil' },
-                { href: '/forum', emoji: '💬', label: 'Foro' },
+                { href: '/assessments', emoji: '🌐', label: 'Assessments' },
               ] as const
             ).map(({ href, emoji, label }) => (
               <Link

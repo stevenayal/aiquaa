@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { PairwiseInput, PairwiseResult, toCsv } from '@aiquaa/allpairs-core';
 import { useToolUsage } from '@/hooks/useToolUsage';
-import labsService from '@/services/labsService';
 import EditorTab from './components/EditorTab';
 import JsonYamlTab from './components/JsonYamlTab';
 import ExamplesTab from './components/ExamplesTab';
@@ -72,12 +71,6 @@ export default function AllPairsClient() {
       }
 
       setResult(data);
-      void labsService
-        .trackAllPairs({
-          sessionId: crypto.randomUUID(),
-          combinationsCount: data.rows.length,
-        })
-        .catch(() => {});
     } catch (err: any) {
       void logError(err, 'generate');
       setError(err.message || 'Failed to generate pairwise combinations');

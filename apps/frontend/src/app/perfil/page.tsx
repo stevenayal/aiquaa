@@ -12,6 +12,14 @@ import {
 import { getExamResultsAction, getMyXpProfileAction } from '@/actions/exams';
 import Avatar from '@/components/ui/Avatar';
 import { xpForLevel, PY_TIMEZONE } from '@/lib/xp';
+import {
+  EXAM_META,
+  EXAM_TYPES,
+  formatExamScore,
+  type ExamType,
+} from '@/lib/exams';
+
+const EXAM_PAGE_SIZE = 20;
 
 interface ExamResultRow {
   id: string;
@@ -28,6 +36,7 @@ interface ExamResultRow {
   exam_mode: 'exam' | 'training';
   score: number;
   total_questions: number;
+  max_possible_score?: number | null;
   passing_score: number;
   passed: boolean;
   percentage: number;
@@ -95,6 +104,9 @@ export default function PerfilPage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [examResults, setExamResults] = useState<ExamResultRow[]>([]);
   const [examResultsLoading, setExamResultsLoading] = useState(true);
+  const [examTotal, setExamTotal] = useState(0);
+  const [examFilter, setExamFilter] = useState<ExamType | 'all'>('all');
+  const [examLoadingMore, setExamLoadingMore] = useState(false);
 
   const [formData, setFormData] = useState({
     full_name: '',
@@ -134,13 +146,33 @@ export default function PerfilPage() {
     }
   }, [user, isLoading, initialized, router]);
 
+  // Carga inicial / al cambiar el filtro: reemplaza la lista desde offset 0.
   useEffect(() => {
     if (!user) return;
-    getExamResultsAction().then(({ data }) => {
+    setExamResultsLoading(true);
+    getExamResultsAction({
+      examType: examFilter === 'all' ? undefined : examFilter,
+      limit: EXAM_PAGE_SIZE,
+      offset: 0,
+    }).then(({ data, total }) => {
       setExamResults((data as ExamResultRow[]) || []);
+      setExamTotal(total ?? 0);
       setExamResultsLoading(false);
     });
-  }, [user]);
+  }, [user, examFilter]);
+
+  const loadMoreExams = () => {
+    setExamLoadingMore(true);
+    getExamResultsAction({
+      examType: examFilter === 'all' ? undefined : examFilter,
+      limit: EXAM_PAGE_SIZE,
+      offset: examResults.length,
+    }).then(({ data, total }) => {
+      setExamResults((prev) => [...prev, ...((data as ExamResultRow[]) || [])]);
+      setExamTotal(total ?? 0);
+      setExamLoadingMore(false);
+    });
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -814,6 +846,38 @@ export default function PerfilPage() {
             📊 Historial de exámenes
           </h2>
 
+          {/* Filtro por tipo de examen */}
+          {(examResults.length > 0 || examFilter !== 'all') && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {(['all', ...EXAM_TYPES] as const).map((t) => {
+                const selected = examFilter === t;
+                const label = t === 'all' ? '🗂️ Todos' : EXAM_META[t].emoji;
+                const text =
+                  t === 'all'
+                    ? 'Todos'
+                    : `${EXAM_META[t].emoji} ${EXAM_META[t].label}`;
+                return (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setExamFilter(t)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                      selected
+                        ? 'border-indigo-500 bg-indigo-600 text-white'
+                        : isDarkMode
+                          ? 'border-slate-600 bg-slate-700 text-slate-300 hover:border-indigo-400'
+                          : 'border-gray-300 bg-white text-gray-700 hover:border-indigo-400'
+                    }`}
+                    aria-label={t === 'all' ? 'Todos' : EXAM_META[t].label}
+                    title={t === 'all' ? 'Todos' : EXAM_META[t].label}
+                  >
+                    {t === 'all' ? label : text}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
           {examResultsLoading ? (
             <div className="flex justify-center py-6">
               <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-indigo-500" />
@@ -826,109 +890,115 @@ export default function PerfilPage() {
               <p
                 className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
               >
-                Todavía no rendiste ningún examen.
+                {examFilter === 'all'
+                  ? 'Todavía no rendiste ningún examen.'
+                  : 'No tenés intentos de este tipo de examen todavía.'}
               </p>
-              <div className="flex justify-center gap-3 mt-4 flex-wrap">
-                <a
-                  href="/labs/istqb"
-                  className="text-xs text-indigo-400 hover:underline"
-                >
-                  📋 ISTQB CTFL
-                </a>
-                <span
-                  className={isDarkMode ? 'text-slate-600' : 'text-gray-300'}
-                >
-                  ·
-                </span>
-                <a
-                  href="/labs/git"
-                  className="text-xs text-indigo-400 hover:underline"
-                >
-                  🌿 GIT
-                </a>
-                <span
-                  className={isDarkMode ? 'text-slate-600' : 'text-gray-300'}
-                >
-                  ·
-                </span>
-                <a
-                  href="/labs/performance"
-                  className="text-xs text-indigo-400 hover:underline"
-                >
-                  ⚡ Performance
-                </a>
+              <div className="flex justify-center gap-x-3 gap-y-2 mt-4 flex-wrap">
+                {EXAM_TYPES.map((t) => (
+                  <a
+                    key={t}
+                    href={EXAM_META[t].href}
+                    className="text-xs text-indigo-400 hover:underline"
+                  >
+                    {EXAM_META[t].emoji} {EXAM_META[t].label}
+                  </a>
+                ))}
               </div>
             </div>
           ) : (
-            <div className="space-y-3">
-              {examResults.map((r) => (
-                <div
-                  key={r.id}
-                  className={`flex items-center justify-between px-4 py-3 rounded-lg ${isDarkMode ? 'bg-slate-700/50' : 'bg-gray-50'}`}
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <span className="text-lg shrink-0">
-                      {EXAM_DISPLAY[r.exam_type]?.emoji ?? '📋'}
-                    </span>
-                    <div className="min-w-0">
-                      <p
-                        className={`text-sm font-medium ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}
-                      >
-                        {EXAM_DISPLAY[r.exam_type]?.label ?? r.exam_type}
-                        {r.exam_type === 'istqb' && r.model
-                          ? ` · Modelo ${r.model}`
-                          : ''}
-                        {' · '}
-                        <span
-                          className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+            <>
+              <div className="space-y-3">
+                {examResults.map((r) => (
+                  <div
+                    key={r.id}
+                    className={`flex items-center justify-between px-4 py-3 rounded-lg ${isDarkMode ? 'bg-slate-700/50' : 'bg-gray-50'}`}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span className="text-lg shrink-0">
+                        {EXAM_META[r.exam_type]?.emoji ?? '📋'}
+                      </span>
+                      <div className="min-w-0">
+                        <p
+                          className={`text-sm font-medium ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}
                         >
-                          {r.exam_mode === 'exam' ? 'Examen' : 'Entrenamiento'}
-                        </span>
-                      </p>
-                      <p
-                        className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+                          {EXAM_META[r.exam_type]?.label ?? r.exam_type}
+                          {r.exam_type === 'istqb' && r.model
+                            ? ` · Modelo ${r.model}`
+                            : ''}
+                          {' · '}
+                          <span
+                            className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                          >
+                            {r.exam_mode === 'exam'
+                              ? 'Examen'
+                              : 'Entrenamiento'}
+                          </span>
+                        </p>
+                        <p
+                          className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+                        >
+                          {new Date(r.created_at).toLocaleDateString('es-PY', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric',
+                            timeZone: PY_TIMEZONE,
+                          })}
+                          {' · '}
+                          {formatTime(r.time_spent)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0">
+                      <div className="text-right">
+                        <p
+                          className={`text-sm font-bold ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}
+                        >
+                          {formatExamScore(r)}
+                        </p>
+                        <p
+                          className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+                        >
+                          {r.percentage.toFixed(0)}%
+                        </p>
+                      </div>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                          r.passed
+                            ? isDarkMode
+                              ? 'bg-emerald-900/40 text-emerald-300'
+                              : 'bg-emerald-100 text-emerald-700'
+                            : isDarkMode
+                              ? 'bg-red-900/40 text-red-300'
+                              : 'bg-red-100 text-red-700'
+                        }`}
                       >
-                        {new Date(r.created_at).toLocaleDateString('es-PY', {
-                          day: '2-digit',
-                          month: 'short',
-                          year: 'numeric',
-                          timeZone: PY_TIMEZONE,
-                        })}
-                        {' · '}
-                        {formatTime(r.time_spent)}
-                      </p>
+                        {r.passed ? '✓ Aprobado' : '✗ No aprobado'}
+                      </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 shrink-0">
-                    <div className="text-right">
-                      <p
-                        className={`text-sm font-bold ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}
-                      >
-                        {r.score}/{r.total_questions}
-                      </p>
-                      <p
-                        className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
-                      >
-                        {r.percentage.toFixed(0)}%
-                      </p>
-                    </div>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                        r.passed
-                          ? isDarkMode
-                            ? 'bg-emerald-900/40 text-emerald-300'
-                            : 'bg-emerald-100 text-emerald-700'
-                          : isDarkMode
-                            ? 'bg-red-900/40 text-red-300'
-                            : 'bg-red-100 text-red-700'
-                      }`}
-                    >
-                      {r.passed ? '✓ Aprobado' : '✗ No aprobado'}
-                    </span>
-                  </div>
+                ))}
+              </div>
+
+              {examResults.length < examTotal && (
+                <div className="flex justify-center mt-4">
+                  <button
+                    type="button"
+                    onClick={loadMoreExams}
+                    disabled={examLoadingMore}
+                    className={`px-4 py-2 text-xs font-semibold rounded-lg border transition-colors disabled:opacity-50 ${
+                      isDarkMode
+                        ? 'border-slate-600 text-slate-300 hover:bg-slate-700'
+                        : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    {examLoadingMore
+                      ? 'Cargando...'
+                      : `Ver más (${examTotal - examResults.length})`}
+                  </button>
                 </div>
-              ))}
-            </div>
+              )}
+            </>
           )}
         </div>
       </div>
