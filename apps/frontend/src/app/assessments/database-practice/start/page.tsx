@@ -24,10 +24,17 @@ export default function StartDatabasePracticePage() {
     setError('');
     startTransition(async () => {
       try {
-        const { attempt, sectionSlug } = await startAssessmentAttemptAction({
+        const result = await startAssessmentAttemptAction({
           slug: DATABASE_PRACTICE_SLUG,
           processCode,
         });
+
+        if ('error' in result) {
+          setError(result.error);
+          return;
+        }
+
+        const { attempt, sectionSlug } = result;
 
         if (!sectionSlug) {
           setError('No se encontró la primera sección del assessment.');

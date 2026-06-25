@@ -208,8 +208,8 @@ function getSectionScoringMode(): AssessmentSectionScore['scoring_mode'] {
 async function resolveProcessCode(
   supabase: Awaited<ReturnType<typeof getAuthenticatedUser>>['supabase'],
   processCode?: string
-) {
-  if (!processCode?.trim()) return null;
+): Promise<{ code: string | null } | { error: string }> {
+  if (!processCode?.trim()) return { code: null };
 
   const { data: process } = await supabase
     .from('hiring_processes')
@@ -222,10 +222,10 @@ async function resolveProcessCode(
     process?.expires_at && new Date(process.expires_at) < new Date();
 
   if (!process || expired) {
-    throw new Error('Código de proceso inválido, vencido o cerrado.');
+    return { error: 'Código de proceso inválido, vencido o cerrado.' };
   }
 
-  return process.code as string;
+  return { code: process.code as string };
 }
 
 export async function getAssessmentOverviewAction(
@@ -240,16 +240,20 @@ export async function getAssessmentOverviewAction(
 export async function startAssessmentAttemptAction(input?: {
   slug?: string;
   processCode?: string;
-}) {
+}): Promise<
+  | { attempt: ReturnType<typeof mapAttempt>; sectionSlug: string | null }
+  | { error: string }
+> {
   const slug = input?.slug ?? DEFAULT_ASSESSMENT_SLUG;
   const assessment = await getAssessmentBySlug(slug);
   const sections = await getAssessmentSections(assessment.id);
   const firstSectionSlug = sections[0]?.slug ?? null;
   const { supabase, user } = await getAuthenticatedUser();
-  const resolvedProcessCode = await resolveProcessCode(
-    supabase,
-    input?.processCode
-  );
+  const processResult = await resolveProcessCode(supabase, input?.processCode);
+  if ('error' in processResult) {
+    return { error: processResult.error };
+  }
+  const resolvedProcessCode = processResult.code;
 
   const { data: existingAttempt } = await supabase
     .from('assessment_attempts')
@@ -480,13 +484,29 @@ export async function finalizeAssessmentAttemptAction(attemptId: string) {
   const assessment = await getAssessmentBySlug(attempt.assessmentSlug);
   const registryEntry = ASSESSMENT_REGISTRY[assessment.slug];
   const sections = await getAssessmentSections(assessment.id);
-  const [{ data: scoresRows }, { data: feedbackRows }] = await Promise.all([
+  const [scoresResult, feedbackResult] = await Promise.all([
     supabase.from('assessment_scores').select('*').eq('attempt_id', attemptId),
     supabase
       .from('assessment_feedback')
       .select('*')
       .eq('attempt_id', attemptId),
   ]);
+
+  if (scoresResult.error) {
+    throw new Error(
+      `Error fetching scores for attempt ${attemptId}: ${scoresResult.error.message}`
+    );
+  }
+  if (feedbackResult.error) {
+    console.error('[assessments] assessment_feedback SELECT failed', {
+      attemptId,
+      error: feedbackResult.error.message,
+      hint: 'Verify assessment_feedback table exists and RLS allows authenticated reads',
+    });
+  }
+
+  const scoresRows = scoresResult.data;
+  const feedbackRows = feedbackResult.data;
 
   const sectionScores = (scoresRows ?? []).map((row) => mapSectionScore(row));
 
@@ -515,14 +535,26 @@ export async function finalizeAssessmentAttemptAction(attemptId: string) {
       .from('assessment_feedback')
       .insert(generatedFeedback.feedbackEntries);
 
-    if (feedbackError) throw new Error(feedbackError.message);
+    if (feedbackError) {
+      console.error('[assessments] assessment_feedback INSERT failed', {
+        attemptId,
+        error: feedbackError.message,
+        hint: 'Verify assessment_feedback table exists and RLS allows authenticated inserts',
+      });
+    }
   } else {
     for (const entry of generatedFeedback.feedbackEntries) {
       const { error: feedbackUpdateError } = await supabase
         .from('assessment_feedback')
         .upsert(entry, { onConflict: 'attempt_id,level' });
 
-      if (feedbackUpdateError) throw new Error(feedbackUpdateError.message);
+      if (feedbackUpdateError) {
+        console.error('[assessments] assessment_feedback UPSERT failed', {
+          attemptId,
+          level: entry.level,
+          error: feedbackUpdateError.message,
+        });
+      }
     }
   }
 
