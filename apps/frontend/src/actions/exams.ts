@@ -6,6 +6,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 interface SaveExamResultPayload {
   exam_type:
     | 'git'
+    | 'git-practico'
     | 'istqb'
     | 'performance'
     | 'test-app'
@@ -85,6 +86,7 @@ export async function saveExamResultAction(payload: SaveExamResultPayload) {
 export async function getLeaderboardAction(
   examType:
     | 'git'
+    | 'git-practico'
     | 'istqb'
     | 'performance'
     | 'api-testing-fundamentals'
@@ -143,25 +145,40 @@ export async function getXpRankingAction(page = 1, limit = 20) {
   };
 }
 
-export async function getExamResultsAction() {
+export async function getExamResultsAction(opts?: {
+  examType?: string;
+  limit?: number;
+  offset?: number;
+}) {
   const supabase = createClient();
   const {
     data: { user },
     error: userError,
   } = await supabase.auth.getUser();
-  if (userError || !user) return { error: 'No autenticado', data: null };
+  if (userError || !user)
+    return { error: 'No autenticado', data: null, total: 0 };
 
-  const { data, error } = await supabase
+  const limit = opts?.limit ?? 20;
+  const offset = opts?.offset ?? 0;
+
+  let query = supabase
     .from('exam_results')
     .select(
-      'id, exam_type, exam_mode, score, total_questions, max_possible_score, passing_score, passed, percentage, time_spent, model, language, created_at'
+      'id, exam_type, exam_mode, score, total_questions, max_possible_score, passing_score, passed, percentage, time_spent, model, language, created_at',
+      { count: 'exact' }
     )
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
-    .limit(20);
+    .eq('user_id', user.id);
 
-  if (error) return { error: error.message, data: null };
-  return { data };
+  if (opts?.examType) {
+    query = query.eq('exam_type', opts.examType);
+  }
+
+  const { data, error, count } = await query
+    .order('created_at', { ascending: false })
+    .range(offset, offset + limit - 1);
+
+  if (error) return { error: error.message, data: null, total: 0 };
+  return { data, total: count ?? 0 };
 }
 
 type LearningObjectiveRow = {

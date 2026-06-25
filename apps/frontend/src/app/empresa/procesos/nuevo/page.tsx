@@ -24,6 +24,12 @@ const EXAM_OPTIONS = [
       'Comandos esenciales, branching, merge, rebase y flujos de trabajo colaborativos',
   },
   {
+    id: 'git-practico',
+    label: 'Git — Prueba práctica (GitHub)',
+    description:
+      'Flujo real en un repo: crear issue, rama, subir carpeta y abrir un PR que cierre el issue — verificación automática vía GitHub API',
+  },
+  {
     id: 'performance',
     label: 'Performance Testing — Pruebas de carga',
     description:
@@ -71,8 +77,12 @@ export default function NuevoProcesoPage() {
   const { isDarkMode } = useTheme();
   const router = useRouter();
 
+  const DEFAULT_REPO_URL = 'https://github.com/stevenayal/bootcamp_ctl_2026';
+  const GITHUB_REPO_RE = /^https:\/\/github\.com\/[^/\s]+\/[^/\s]+\/?$/;
+
   const [positionName, setPositionName] = useState('');
   const [description, setDescription] = useState('');
+  const [repositoryUrl, setRepositoryUrl] = useState(DEFAULT_REPO_URL);
   const [examTypes, setExamTypes] = useState<string[]>([]);
   const [expiresAt, setExpiresAt] = useState('');
   const [status, setStatus] = useState<'draft' | 'active'>('active');
@@ -99,6 +109,12 @@ export default function NuevoProcesoPage() {
     if (!positionName.trim()) return;
     if (examTypes.length === 0) {
       setError('Seleccioná al menos un tipo de examen.');
+      return;
+    }
+    if (!GITHUB_REPO_RE.test(repositoryUrl.trim())) {
+      setError(
+        'Ingresá un repositorio válido (ej. https://github.com/usuario/repo).'
+      );
       return;
     }
 
@@ -143,6 +159,7 @@ export default function NuevoProcesoPage() {
         company_name: user.user_metadata?.company_name ?? '',
         position_name: positionName.trim(),
         description: description.trim() || null,
+        repository_url: repositoryUrl.trim(),
         exam_types: examTypes,
         status,
         expires_at: expiresAt || null,
@@ -305,6 +322,25 @@ export default function NuevoProcesoPage() {
               onChange={(e) => setDescription(e.target.value)}
               maxLength={500}
             />
+          </div>
+
+          {/* Repository (required) */}
+          <div>
+            <label className={labelClass}>Repositorio de GitHub *</label>
+            <input
+              type="url"
+              className={inputClass}
+              placeholder="https://github.com/usuario/repo"
+              value={repositoryUrl}
+              onChange={(e) => setRepositoryUrl(e.target.value)}
+              required
+            />
+            <p
+              className={`text-xs mt-1 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+            >
+              Repo donde los candidatos harán la prueba práctica de Git (issue →
+              rama → carpeta → PR). Por defecto el repo del bootcamp.
+            </p>
           </div>
 
           {/* Event group */}

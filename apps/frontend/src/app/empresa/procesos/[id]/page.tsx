@@ -25,6 +25,7 @@ type HiringProcess = {
   expires_at: string | null;
   created_at: string;
   company_name: string;
+  repository_url: string | null;
 };
 
 type ExamResult = {
@@ -105,6 +106,7 @@ const PROSPECT_STATUS_CONFIG: Record<
 const EXAM_LABELS: Record<string, string> = {
   istqb: 'ISTQB CTFL',
   git: 'Git',
+  'git-practico': 'Git — Prueba práctica',
   performance: 'Performance',
   'api-testing-fundamentals': 'API Testing Fundamentals',
   'api-banking': 'API Testing Challenge',
@@ -604,6 +606,16 @@ export default function ProcesoDetailPage() {
               >
                 {process!.description}
               </p>
+            )}
+            {process!.repository_url && (
+              <a
+                href={process!.repository_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`text-sm mt-1 inline-flex items-center gap-1.5 ${isDarkMode ? 'text-indigo-300 hover:text-indigo-200' : 'text-indigo-600 hover:text-indigo-700'}`}
+              >
+                🔗 {process!.repository_url.replace('https://github.com/', '')}
+              </a>
             )}
           </div>
 
