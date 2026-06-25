@@ -7,6 +7,7 @@ import {
   DEFAULT_API_TARGET_ID,
   isApiChallengeTargetId,
 } from '@/app/assessments/api-banking/data/apiChallengeTargets';
+import { insertAttemptWithApiTargetFallback } from '../_lib/apiTargetPersistence';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -105,9 +106,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Create attempt
-    const { data: attempt, error: attemptErr } = await supabase
-      .from('qac_attempts')
-      .insert({
+    const { data: attempt, error: attemptErr } =
+      await insertAttemptWithApiTargetFallback(supabase, {
         catalog_id: assessment.id,
         candidate_name: candidateName,
         candidate_email: candidateEmail,
@@ -115,11 +115,13 @@ export async function POST(req: NextRequest) {
         process_code: resolvedProcessCode,
         api_target: apiTarget,
         status: 'in_progress',
-      })
-      .select('id')
-      .single();
+      });
 
     if (attemptErr || !attempt) {
+      console.warn(
+        '[api-banking] failed to create qac_attempt',
+        attemptErr?.message
+      );
       return NextResponse.json(
         { error: 'Failed to create attempt' },
         { status: 500 }
