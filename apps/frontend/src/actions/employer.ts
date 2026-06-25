@@ -14,6 +14,7 @@ export interface HiringProcess {
   expires_at?: string;
   created_at: string;
   group_id?: string | null;
+  repository_url?: string | null;
 }
 
 export interface ProcessGroup {
@@ -161,6 +162,7 @@ export async function createHiringProcessAction(payload: {
   exam_types: string[];
   expires_at?: string;
   group_id?: string | null;
+  repository_url?: string;
 }) {
   const supabase = createClient();
   const {
@@ -249,7 +251,9 @@ export async function validateProcessCodeAction(code: string) {
   const supabase = createClient();
   const { data, error } = await supabase
     .from('hiring_processes')
-    .select('code, company_name, position_name, status, expires_at')
+    .select(
+      'code, company_name, position_name, status, expires_at, exam_types, repository_url'
+    )
     .ilike('code', code.trim())
     .eq('status', 'active')
     .single();

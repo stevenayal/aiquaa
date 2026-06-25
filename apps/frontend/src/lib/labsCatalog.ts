@@ -50,6 +50,16 @@ export const toolCategories: LabCategory[] = [
         implementedDate: 'Nov 2025',
       },
       {
+        id: 'git-practico',
+        name: 'Prueba Práctica de GitHub',
+        description:
+          'Flujo real en un repo: creá issue, rama, subí una carpeta y abrí un PR que cierre el issue — verificación automática vía GitHub API',
+        icon: '🐙',
+        color: 'from-slate-600 to-slate-800',
+        href: '/labs/git-practico',
+        implementedDate: 'Jun 2026',
+      },
+      {
         id: 'performance',
         name: 'Examen de Performance Testing',
         description:
@@ -117,8 +127,7 @@ export const toolCategories: LabCategory[] = [
   {
     id: 'evaluacion',
     name: '🐛 Testing & Evaluación',
-    description:
-      'Aplicaciones para practicar y evaluar habilidades de testing',
+    description: 'Aplicaciones para practicar y evaluar habilidades de testing',
     tools: [
       {
         id: 'test-app',

@@ -6,6 +6,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 interface SaveExamResultPayload {
   exam_type:
     | 'git'
+    | 'git-practico'
     | 'istqb'
     | 'performance'
     | 'test-app'
