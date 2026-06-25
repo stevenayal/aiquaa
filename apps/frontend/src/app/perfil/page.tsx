@@ -23,7 +23,16 @@ const EXAM_PAGE_SIZE = 20;
 
 interface ExamResultRow {
   id: string;
-  exam_type: ExamType;
+  exam_type:
+    | 'git'
+    | 'git-practico'
+    | 'istqb'
+    | 'performance'
+    | 'test-app'
+    | 'api-testing-fundamentals'
+    | 'api-banking'
+    | 'database-fundamentals'
+    | 'database-practice';
   exam_mode: 'exam' | 'training';
   score: number;
   total_questions: number;
@@ -36,6 +45,24 @@ interface ExamResultRow {
   language?: string;
   created_at: string;
 }
+
+const EXAM_DISPLAY: Record<string, { emoji: string; label: string }> = {
+  git: { emoji: '🌿', label: 'GIT' },
+  'git-practico': { emoji: '🐙', label: 'GitHub Práctico' },
+  istqb: { emoji: '📋', label: 'ISTQB CTFL' },
+  performance: { emoji: '⚡', label: 'Performance' },
+  'test-app': { emoji: '🧪', label: 'Test App' },
+  'api-testing-fundamentals': {
+    emoji: '🌐',
+    label: 'API Testing Fundamentals',
+  },
+  'api-banking': { emoji: '🏦', label: 'API Banking Challenge' },
+  'database-fundamentals': {
+    emoji: '🗄️',
+    label: 'Bases de Datos — Fundamentos',
+  },
+  'database-practice': { emoji: '🧮', label: 'Bases de Datos — Práctica SQL' },
+};
 
 const formatTime = (s: number) => {
   const m = Math.floor(s / 60);

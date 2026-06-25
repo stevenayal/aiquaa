@@ -31,6 +31,41 @@ interface XpProfile {
   position: number;
 }
 
+const LAB_INFO = {
+  git: { emoji: '🌿', label: 'Examen GIT', href: '/labs/git' },
+  'git-practico': {
+    emoji: '🐙',
+    label: 'Git — Prueba Práctica',
+    href: '/labs/git-practico',
+  },
+  istqb: { emoji: '📋', label: 'ISTQB CTFL v4.0', href: '/labs/istqb' },
+  performance: {
+    emoji: '⚡',
+    label: 'Performance Testing',
+    href: '/labs/performance',
+  },
+  'api-testing-fundamentals': {
+    emoji: '🌐',
+    label: 'API Testing — Fundamentos',
+    href: '/assessments/api-testing-fundamentals',
+  },
+  'api-banking': {
+    emoji: '🏦',
+    label: 'API Banking — Challenge práctico',
+    href: '/assessments/api-banking',
+  },
+  'database-fundamentals': {
+    emoji: '🗄️',
+    label: 'Bases de Datos — Fundamentos',
+    href: '/assessments/database-fundamentals',
+  },
+  'database-practice': {
+    emoji: '🧮',
+    label: 'Bases de Datos — Práctica SQL',
+    href: '/assessments/database-practice',
+  },
+} as const;
+
 export default function DashboardPage() {
   const { isDarkMode } = useTheme();
   const { user } = useSupabaseAuth();
@@ -73,6 +108,7 @@ export default function DashboardPage() {
   );
   const allTypes: ExamType[] = [
     'git',
+    'git-practico',
     'istqb',
     'performance',
     'api-testing-fundamentals',

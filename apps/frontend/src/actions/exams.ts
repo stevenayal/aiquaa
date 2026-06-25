@@ -6,6 +6,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 interface SaveExamResultPayload {
   exam_type:
     | 'git'
+    | 'git-practico'
     | 'istqb'
     | 'performance'
     | 'test-app'
@@ -85,6 +86,7 @@ export async function saveExamResultAction(payload: SaveExamResultPayload) {
 export async function getLeaderboardAction(
   examType:
     | 'git'
+    | 'git-practico'
     | 'istqb'
     | 'performance'
     | 'api-testing-fundamentals'
