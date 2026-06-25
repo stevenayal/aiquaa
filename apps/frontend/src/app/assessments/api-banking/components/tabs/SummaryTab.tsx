@@ -1,13 +1,15 @@
 'use client';
 
+import { API_CHALLENGE_MIN_SUMMARY_CHARS } from '../../data/apiChallengeTargets';
+
 interface Props {
   summary: string;
-  onChange: (v: string) => void;
+  onChange(_value: string): void;
 }
 
 export function SummaryTab({ summary, onChange }: Props) {
   const charCount = summary.length;
-  const isGood = charCount >= 100;
+  const isGood = charCount >= API_CHALLENGE_MIN_SUMMARY_CHARS;
 
   return (
     <div className="space-y-3">
@@ -16,8 +18,8 @@ export function SummaryTab({ summary, onChange }: Props) {
           Resumen ejecutivo
         </h2>
         <p className="text-xs text-slate-500">
-          Describí tus hallazgos principales, riesgos identificados y
-          recomendaciones. Mínimo 100 caracteres.
+          Sintetiza alcance, cobertura, hallazgos, riesgos y recomendacion
+          final. Minimo {API_CHALLENGE_MIN_SUMMARY_CHARS} caracteres.
         </p>
       </div>
 
@@ -26,14 +28,17 @@ export function SummaryTab({ summary, onChange }: Props) {
         rows={12}
         placeholder={`Ejemplo:
 
-Durante la evaluación de la API bancaria identifiqué los siguientes hallazgos críticos:
+Durante la evaluacion de la API seleccionada cubri escenarios positivos, negativos, de borde y contrato sobre los endpoints principales.
 
-1. **Bug de autorización**: El endpoint GET /accounts/{accountId} no valida que la cuenta pertenezca al usuario autenticado...
+Hallazgos principales:
+1. [Bug/riesgo/inconsistencia] ...
+2. [Limitacion o mejora testable] ...
 
-2. **Exposición de datos sensibles**: GET /users/me incluye el campo internalRiskScore...
+Riesgos:
+- ...
 
-Riesgos principales: [...]
-Recomendaciones: [...]`}
+Recomendacion final:
+- ...`}
         value={summary}
         onChange={(e) => onChange(e.target.value)}
       />
@@ -48,13 +53,14 @@ Recomendaciones: [...]`}
               : 'text-slate-400'
           }
         >
-          {charCount} caracteres {isGood ? '✓' : `(mín. 100)`}
+          {charCount} caracteres{' '}
+          {isGood ? 'OK' : `(min. ${API_CHALLENGE_MIN_SUMMARY_CHARS})`}
         </span>
         <span className="text-slate-400">
           {charCount >= 300
-            ? 'Excelente extensión'
-            : charCount >= 150
-              ? 'Buena extensión'
+            ? 'Excelente extension'
+            : charCount >= API_CHALLENGE_MIN_SUMMARY_CHARS
+              ? 'Buena extension'
               : ''}
         </span>
       </div>

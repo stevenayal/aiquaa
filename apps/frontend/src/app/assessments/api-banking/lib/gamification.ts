@@ -18,19 +18,20 @@ export const API_BANKING_GAMIFICATION_RULES: XpRuleDefinition[] = [
   {
     eventType: 'API_BANKING_COMPLETED',
     xpAmount: 70,
-    description: 'Completar el API Banking Challenge',
+    description: 'Completar el API Testing Challenge practico',
     dailyLimit: 3,
   },
   {
     eventType: 'API_BANKING_PASSED',
     xpAmount: 120,
-    description: 'Aprobar el API Banking Challenge (score >= 60)',
+    description: 'Aprobar el API Testing Challenge practico (score >= 60)',
     dailyLimit: 3,
   },
   {
     eventType: 'API_BANKING_HIGH_SCORE',
     xpAmount: 160,
-    description: 'Score sobresaliente en API Banking Challenge (>= 90)',
+    description:
+      'Score sobresaliente en API Testing Challenge practico (>= 90)',
     dailyLimit: 3,
   },
 ];

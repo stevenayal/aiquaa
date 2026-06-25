@@ -17,7 +17,7 @@ const EXAM_OPTIONS = [
   { value: 'git-practico', label: 'Git — Prueba práctica (GitHub)' },
   { value: 'performance', label: 'Rendimiento / Performance' },
   { value: 'api-testing-fundamentals', label: 'API Testing Fundamentals' },
-  { value: 'api-banking', label: 'API Banking — Challenge práctico' },
+  { value: 'api-banking', label: 'API Testing - Challenge practico' },
   { value: 'database-fundamentals', label: 'Bases de Datos — Fundamentos' },
   { value: 'database-practice', label: 'Bases de Datos — Práctica SQL' },
 ];

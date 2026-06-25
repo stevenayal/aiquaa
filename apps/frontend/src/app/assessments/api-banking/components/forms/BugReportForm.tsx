@@ -1,26 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { BugReportInput, PriorityLevel } from '../../types';
+import {
+  getApiChallengeTarget,
+  type ApiChallengeTargetId,
+} from '../../data/apiChallengeTargets';
 
 interface Props {
-  onSubmit: (data: BugReportInput) => Promise<{ error: string | null }>;
-  onCancel: () => void;
+  apiTarget: ApiChallengeTargetId;
+  onSubmit(_data: BugReportInput): Promise<{ error: string | null }>;
+  onCancel(): void;
 }
 
 const PRIORITIES: PriorityLevel[] = ['low', 'medium', 'high', 'critical'];
-
-const ENDPOINTS = [
-  'POST /api/challenge/auth/login',
-  'GET /api/challenge/users/me',
-  'GET /api/challenge/accounts',
-  'GET /api/challenge/accounts/{accountId}',
-  'POST /api/challenge/transfers',
-  'GET /api/challenge/transfers/{transferId}',
-  'GET /api/challenge/accounts/{accountId}/movements',
-  'Multiple endpoints',
-  'Otro',
-];
 
 const empty: BugReportInput = {
   title: '',
@@ -34,12 +27,23 @@ const empty: BugReportInput = {
   evidence: '',
 };
 
-export function BugReportForm({ onSubmit, onCancel }: Props) {
+export function BugReportForm({ apiTarget, onSubmit, onCancel }: Props) {
   const [form, setForm] = useState<BugReportInput>(empty);
   const [errors, setErrors] = useState<
     Partial<Record<keyof BugReportInput, string>>
   >({});
   const [submitting, setSubmitting] = useState(false);
+  const target = getApiChallengeTarget(apiTarget);
+  const endpointOptions = useMemo(
+    () => [
+      ...target.endpoints.map(
+        (ep) => `${ep.method} ${target.baseUrl}${ep.path}`
+      ),
+      'Multiple endpoints',
+      'Otro',
+    ],
+    [target]
+  );
 
   function validate(): boolean {
     const e: Partial<Record<keyof BugReportInput, string>> = {};
@@ -70,7 +74,8 @@ export function BugReportForm({ onSubmit, onCancel }: Props) {
     label: string,
     name: keyof BugReportInput,
     required?: boolean,
-    rows = 2
+    rows = 2,
+    placeholder?: string
   ) {
     return (
       <div className="space-y-1">
@@ -84,6 +89,7 @@ export function BugReportForm({ onSubmit, onCancel }: Props) {
               : 'border-slate-300 dark:border-slate-600'
           } focus:outline-none focus:ring-1 focus:ring-blue-500`}
           rows={rows}
+          placeholder={placeholder}
           value={form[name] as string}
           onChange={(e) => setForm((p) => ({ ...p, [name]: e.target.value }))}
         />
@@ -98,10 +104,16 @@ export function BugReportForm({ onSubmit, onCancel }: Props) {
       className="space-y-3 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700"
     >
       <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-        Nuevo bug report
+        Nuevo hallazgo
       </h3>
 
-      {textarea('Título del bug', 'title', true, 1)}
+      {textarea(
+        'Titulo del hallazgo',
+        'title',
+        true,
+        1,
+        'Ej: La busqueda sin resultados devuelve un error poco accionable'
+      )}
 
       <div className="space-y-1">
         <label className="block text-xs font-medium text-slate-600 dark:text-slate-400">
@@ -116,8 +128,8 @@ export function BugReportForm({ onSubmit, onCancel }: Props) {
           value={form.endpoint}
           onChange={(e) => setForm((p) => ({ ...p, endpoint: e.target.value }))}
         >
-          <option value="">Seleccioná un endpoint...</option>
-          {ENDPOINTS.map((ep) => (
+          <option value="">Selecciona un endpoint...</option>
+          {endpointOptions.map((ep) => (
             <option key={ep} value={ep}>
               {ep}
             </option>
@@ -128,11 +140,41 @@ export function BugReportForm({ onSubmit, onCancel }: Props) {
         )}
       </div>
 
-      {textarea('Descripción', 'description', false)}
-      {textarea('Pasos para reproducir', 'stepsToReproduce', true, 3)}
-      {textarea('Resultado actual', 'actualResult', true, 2)}
-      {textarea('Resultado esperado', 'expectedResult', true, 2)}
-      {textarea('Evidencia (captura, curl, etc.)', 'evidence', false)}
+      {textarea(
+        'Descripcion',
+        'description',
+        false,
+        2,
+        'Contexto del bug, riesgo, inconsistencia, limitacion o mejora testable.'
+      )}
+      {textarea(
+        'Pasos para reproducir',
+        'stepsToReproduce',
+        true,
+        3,
+        'Inclui URL exacta, parametros, headers si aplican y datos usados.'
+      )}
+      {textarea(
+        'Resultado actual',
+        'actualResult',
+        true,
+        2,
+        'Status code y fragmento relevante del body observado.'
+      )}
+      {textarea(
+        'Resultado esperado',
+        'expectedResult',
+        true,
+        2,
+        'Comportamiento esperado segun documentacion o criterio QA.'
+      )}
+      {textarea(
+        'Evidencia',
+        'evidence',
+        false,
+        2,
+        'curl, URL, captura, JSON parcial, timestamp o referencia replicable.'
+      )}
 
       <div className="grid grid-cols-2 gap-3">
         {(['severity', 'priority'] as const).map((field) => (
@@ -173,7 +215,7 @@ export function BugReportForm({ onSubmit, onCancel }: Props) {
           disabled={submitting}
           className="px-3 py-1.5 text-sm rounded bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
         >
-          {submitting ? 'Guardando...' : 'Reportar bug'}
+          {submitting ? 'Guardando...' : 'Guardar hallazgo'}
         </button>
       </div>
     </form>

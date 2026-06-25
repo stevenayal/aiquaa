@@ -9,9 +9,10 @@ import { BugReportsTab } from './tabs/BugReportsTab';
 import { SummaryTab } from './tabs/SummaryTab';
 import { SubmitTab } from './tabs/SubmitTab';
 import { useAttempt } from '../hooks/useAttempt';
+import { API_CHALLENGE_MIN_SUMMARY_CHARS } from '../data/apiChallengeTargets';
 
 const LEFT_TABS = ['Overview', 'API Docs'] as const;
-const RIGHT_TABS = ['Test Cases', 'Bug Reports', 'Resumen', 'Enviar'] as const;
+const RIGHT_TABS = ['Test Cases', 'Hallazgos', 'Resumen', 'Enviar'] as const;
 
 type LeftTab = (typeof LEFT_TABS)[number];
 type RightTab = (typeof RIGHT_TABS)[number];
@@ -27,7 +28,7 @@ export function ChallengeLayout() {
       <header className="flex items-center justify-between px-4 py-2 border-b border-slate-200 dark:border-slate-700 shrink-0">
         <div className="flex items-center gap-3">
           <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
-            QA API Challenge
+            API Testing Challenge
           </span>
           <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 font-medium">
             Semi Senior
@@ -73,8 +74,12 @@ export function ChallengeLayout() {
             ))}
           </div>
           <div className="flex-1 overflow-y-auto p-4">
-            {leftTab === 'Overview' && <OverviewTab />}
-            {leftTab === 'API Docs' && <ApiDocsTab />}
+            {leftTab === 'Overview' && (
+              <OverviewTab apiTarget={attempt.apiTarget} />
+            )}
+            {leftTab === 'API Docs' && (
+              <ApiDocsTab apiTarget={attempt.apiTarget} />
+            )}
           </div>
         </div>
 
@@ -97,7 +102,7 @@ export function ChallengeLayout() {
                     {attempt.testCases.length}
                   </span>
                 )}
-                {tab === 'Bug Reports' && attempt.bugReports.length > 0 && (
+                {tab === 'Hallazgos' && attempt.bugReports.length > 0 && (
                   <span className="ml-1 text-[10px] bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 rounded-full px-1">
                     {attempt.bugReports.length}
                   </span>
@@ -113,8 +118,9 @@ export function ChallengeLayout() {
                 onRemove={attempt.removeTestCase}
               />
             )}
-            {rightTab === 'Bug Reports' && (
+            {rightTab === 'Hallazgos' && (
               <BugReportsTab
+                apiTarget={attempt.apiTarget}
                 bugReports={attempt.bugReports}
                 onAdd={attempt.addBugReport}
                 onRemove={attempt.removeBugReport}
@@ -131,7 +137,10 @@ export function ChallengeLayout() {
                 attemptId={attempt.attemptId}
                 testCasesCount={attempt.testCases.length}
                 bugReportsCount={attempt.bugReports.length}
-                hasSummary={attempt.summary.trim().length >= 100}
+                hasSummary={
+                  attempt.summary.trim().length >=
+                  API_CHALLENGE_MIN_SUMMARY_CHARS
+                }
                 onSubmit={attempt.submit}
               />
             )}

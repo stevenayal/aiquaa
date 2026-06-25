@@ -2,12 +2,14 @@
 
 import { useState } from 'react';
 import type { BugReport, BugReportInput } from '../../types';
+import type { ApiChallengeTargetId } from '../../data/apiChallengeTargets';
 import { BugReportForm } from '../forms/BugReportForm';
 
 interface Props {
+  apiTarget: ApiChallengeTargetId;
   bugReports: BugReport[];
-  onAdd: (data: BugReportInput) => Promise<{ error: string | null }>;
-  onRemove: (id: number) => void;
+  onAdd(_data: BugReportInput): Promise<{ error: string | null }>;
+  onRemove(_id: number): void;
 }
 
 const SEVERITY_COLOR: Record<string, string> = {
@@ -18,14 +20,19 @@ const SEVERITY_COLOR: Record<string, string> = {
   low: 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400',
 };
 
-export function BugReportsTab({ bugReports, onAdd, onRemove }: Props) {
+export function BugReportsTab({
+  apiTarget,
+  bugReports,
+  onAdd,
+  onRemove,
+}: Props) {
   const [showForm, setShowForm] = useState(false);
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-          Bug Reports{' '}
+          Hallazgos{' '}
           <span className="text-slate-400">({bugReports.length})</span>
         </h2>
         {!showForm && (
@@ -33,13 +40,14 @@ export function BugReportsTab({ bugReports, onAdd, onRemove }: Props) {
             onClick={() => setShowForm(true)}
             className="text-xs px-2.5 py-1 rounded bg-red-600 text-white hover:bg-red-700"
           >
-            + Reportar bug
+            + Agregar hallazgo
           </button>
         )}
       </div>
 
       {showForm && (
         <BugReportForm
+          apiTarget={apiTarget}
           onSubmit={async (data) => {
             const result = await onAdd(data);
             if (!result.error) setShowForm(false);
@@ -51,7 +59,8 @@ export function BugReportsTab({ bugReports, onAdd, onRemove }: Props) {
 
       {bugReports.length === 0 ? (
         <p className="text-sm text-slate-400 py-4 text-center">
-          No hay bugs reportados aún. Encontrá y documentá al menos 2.
+          No hay hallazgos todavia. Documenta al menos 2 bugs, riesgos,
+          inconsistencias o mejoras testables.
         </p>
       ) : (
         <div className="space-y-2">
@@ -76,7 +85,7 @@ export function BugReportsTab({ bugReports, onAdd, onRemove }: Props) {
                   className="text-slate-400 hover:text-red-500 text-xs shrink-0"
                   title="Eliminar"
                 >
-                  ✕
+                  x
                 </button>
               </div>
               <p className="text-xs font-mono text-slate-500 dark:text-slate-400">

@@ -13,6 +13,20 @@ const VALID_TYPES = [
 ];
 const VALID_PRIORITIES = ['low', 'medium', 'high', 'critical'];
 
+function mapTestCase(row: any) {
+  return {
+    id: row.id,
+    attemptId: row.attempt_id,
+    title: row.title,
+    preconditions: row.preconditions,
+    steps: row.steps,
+    expectedResult: row.expected_result,
+    type: row.type,
+    priority: row.priority,
+    createdAt: row.created_at,
+  };
+}
+
 export async function GET(
   _req: NextRequest,
   { params }: { params: { attemptId: string } }
@@ -27,7 +41,7 @@ export async function GET(
   if (error)
     return NextResponse.json({ error: 'Failed to fetch' }, { status: 500 });
 
-  return NextResponse.json(data ?? []);
+  return NextResponse.json((data ?? []).map(mapTestCase));
 }
 
 export async function POST(
@@ -90,7 +104,7 @@ export async function POST(
   if (error)
     return NextResponse.json({ error: 'Failed to save' }, { status: 500 });
 
-  return NextResponse.json(data, { status: 201 });
+  return NextResponse.json((data ?? []).map(mapTestCase), { status: 201 });
 }
 
 export async function DELETE(

@@ -1,162 +1,82 @@
 import { EndpointCard } from '../EndpointCard';
+import {
+  getApiChallengeTarget,
+  type ApiChallengeTargetId,
+} from '../../data/apiChallengeTargets';
 
-const ENDPOINTS = [
-  {
-    method: 'POST',
-    path: '/api/challenge/auth/login',
-    summary: 'Autenticación de usuario. Devuelve un token JWT.',
-    authRequired: false,
-    params: [
-      {
-        name: 'email',
-        in: 'body' as const,
-        required: true,
-        example: 'user.a@aiquaa.test',
-      },
-      {
-        name: 'password',
-        in: 'body' as const,
-        required: true,
-        example: 'Test1234!',
-      },
-    ],
-    responses: [
-      { code: 200, description: 'Login exitoso — retorna { token, userId }' },
-      { code: 401, description: 'Credenciales inválidas' },
-    ],
-  },
-  {
-    method: 'GET',
-    path: '/api/challenge/users/me',
-    summary: 'Devuelve el perfil del usuario autenticado.',
-    params: [],
-    responses: [
-      { code: 200, description: '{ id, email, displayName }' },
-      { code: 401, description: 'Token inválido o ausente' },
-    ],
-  },
-  {
-    method: 'GET',
-    path: '/api/challenge/accounts',
-    summary: 'Lista las cuentas del usuario autenticado.',
-    params: [],
-    responses: [
-      {
-        code: 200,
-        description:
-          'Array de cuentas. Campo: availableBalance (según OpenAPI)',
-      },
-      { code: 401, description: 'No autenticado' },
-    ],
-  },
-  {
-    method: 'GET',
-    path: '/api/challenge/accounts/{accountId}',
-    summary: 'Detalle de una cuenta. Solo debe ser accesible por su dueño.',
-    params: [
-      {
-        name: 'accountId',
-        in: 'path' as const,
-        required: true,
-        example: 'acc_001',
-      },
-    ],
-    responses: [
-      { code: 200, description: 'Detalle de cuenta con availableBalance' },
-      { code: 401, description: 'No autenticado' },
-      { code: 403, description: 'La cuenta no pertenece al usuario' },
-      { code: 404, description: 'Cuenta no encontrada' },
-    ],
-  },
-  {
-    method: 'POST',
-    path: '/api/challenge/transfers',
-    summary:
-      'Crear una transferencia entre cuentas. Genera movimientos de débito y crédito.',
-    params: [
-      { name: 'fromAccountId', in: 'body' as const, required: true },
-      { name: 'toAccountId', in: 'body' as const, required: true },
-      {
-        name: 'amount',
-        in: 'body' as const,
-        required: true,
-        description: 'Monto positivo, mayor a 0',
-      },
-      { name: 'currency', in: 'body' as const, required: true, example: 'PYG' },
-      {
-        name: 'description',
-        in: 'body' as const,
-        description: 'Máx. 120 caracteres',
-      },
-      {
-        name: 'idempotencyKey',
-        in: 'body' as const,
-        description: 'Para evitar duplicados',
-      },
-    ],
-    responses: [
-      { code: 201, description: 'Transferencia creada' },
-      {
-        code: 400,
-        description: 'Monto inválido, moneda diferente, saldo insuficiente',
-      },
-      { code: 401, description: 'No autenticado' },
-      { code: 403, description: 'Cuenta origen no pertenece al usuario' },
-      { code: 404, description: 'Cuenta no encontrada' },
-      { code: 409, description: 'Conflicto de idempotency key' },
-    ],
-  },
-  {
-    method: 'GET',
-    path: '/api/challenge/transfers/{transferId}',
-    summary:
-      'Detalle de una transferencia. Solo accesible por el usuario dueño.',
-    params: [{ name: 'transferId', in: 'path' as const, required: true }],
-    responses: [
-      { code: 200, description: 'Detalle de transferencia' },
-      { code: 401, description: 'No autenticado' },
-      { code: 403, description: 'Transferencia no pertenece al usuario' },
-      { code: 404, description: 'No encontrada' },
-    ],
-  },
-  {
-    method: 'GET',
-    path: '/api/challenge/accounts/{accountId}/movements',
-    summary: 'Movimientos de una cuenta. Solo accesible por su dueño.',
-    params: [{ name: 'accountId', in: 'path' as const, required: true }],
-    responses: [
-      { code: 200, description: 'Array de movimientos (debit/credit)' },
-      { code: 401, description: 'No autenticado' },
-      { code: 403, description: 'Acceso denegado' },
-      { code: 404, description: 'Cuenta no encontrada' },
-    ],
-  },
-];
+interface Props {
+  apiTarget: ApiChallengeTargetId;
+}
 
-export function ApiDocsTab() {
+export function ApiDocsTab({ apiTarget }: Props) {
+  const target = getApiChallengeTarget(apiTarget);
+
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            Base URL:{' '}
+            <code className="font-mono bg-slate-100 dark:bg-slate-800 px-1 rounded">
+              {target.baseUrl}
+            </code>
+          </p>
+          <a
+            href={target.docsUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            Abrir documentacion oficial
+          </a>
+        </div>
         <p className="text-xs text-slate-500 dark:text-slate-400">
-          Base URL:{' '}
-          <code className="font-mono bg-slate-100 dark:bg-slate-800 px-1 rounded">
-            /api/challenge
-          </code>
+          {target.recommendedFor}
         </p>
-        <a
-          href="/api/challenge/openapi.json"
-          download="banking-api-openapi.json"
-          className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
-        >
-          ↓ Descargar OpenAPI
-        </a>
+        {target.apiKeyNote && (
+          <p className="rounded-md border border-blue-200 bg-blue-50 px-2 py-1.5 text-xs text-blue-700 dark:border-blue-800/50 dark:bg-blue-900/10 dark:text-blue-300">
+            {target.apiKeyNote}
+          </p>
+        )}
       </div>
 
-      <div className="space-y-2">
-        {ENDPOINTS.map((ep) => (
-          <EndpointCard key={`${ep.method}-${ep.path}`} {...ep} />
-        ))}
-      </div>
+      <section className="space-y-2">
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+          Endpoints sugeridos
+        </h2>
+        <div className="space-y-2">
+          {target.endpoints.map((ep) => (
+            <EndpointCard key={`${ep.method}-${ep.path}`} {...ep} />
+          ))}
+        </div>
+      </section>
+
+      <section className="space-y-2">
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+          Requests de referencia
+        </h2>
+        <div className="space-y-1">
+          {target.sampleRequests.map((request) => (
+            <code
+              key={request}
+              className="block rounded bg-slate-100 px-2 py-1.5 text-xs text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+            >
+              {request}
+            </code>
+          ))}
+        </div>
+      </section>
+
+      <section className="space-y-2">
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+          Como se evalua tu evidencia
+        </h2>
+        <ul className="list-disc list-inside space-y-1 text-xs text-slate-600 dark:text-slate-400">
+          {target.evaluationHints.map((hint) => (
+            <li key={hint}>{hint}</li>
+          ))}
+        </ul>
+      </section>
     </div>
   );
 }

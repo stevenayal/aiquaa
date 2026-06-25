@@ -1,10 +1,10 @@
 import type { TestCase, BugReport } from '../types';
-
-type ScoreCategory = 'apiValidation' | 'security' | 'bugReporting';
-
-// ---------------------------------------------------------------
-// Scoring engine — pure function, no side effects
-// ---------------------------------------------------------------
+import {
+  API_CHALLENGE_MIN_FINDINGS,
+  API_CHALLENGE_MIN_SUMMARY_CHARS,
+  API_CHALLENGE_MIN_TEST_CASES,
+} from '../data/apiChallengeTargets';
+import { API_CHALLENGE_EVALUATION_CRITERIA } from '../data/evaluationCriteria';
 
 export interface ScoreResult {
   testDesignScore: number;
@@ -19,169 +19,97 @@ export interface ScoreResult {
   bugTagsFound: string[];
 }
 
-interface BugDefinition {
-  keywords: string[];
-  maxPts: number;
-  category: ScoreCategory;
+const MAX_SCORES = {
+  testDesign: API_CHALLENGE_EVALUATION_CRITERIA[0].maxScore,
+  apiValidation: API_CHALLENGE_EVALUATION_CRITERIA[1].maxScore,
+  security: API_CHALLENGE_EVALUATION_CRITERIA[2].maxScore,
+  bugReporting: API_CHALLENGE_EVALUATION_CRITERIA[3].maxScore,
+  executiveSummary: API_CHALLENGE_EVALUATION_CRITERIA[4].maxScore,
+};
+
+export const RUBRIC_CATEGORIES = API_CHALLENGE_EVALUATION_CRITERIA.map(
+  (criterion) => ({
+    key: criterion.key,
+    label: criterion.label,
+    max: criterion.maxScore,
+  })
+);
+
+const HTTP_OR_REPRO_KEYWORDS = [
+  'get ',
+  'post ',
+  'http',
+  'https://',
+  'curl',
+  'status',
+  'codigo',
+  'body',
+  'json',
+  'query',
+  'param',
+  'header',
+];
+
+const CONTRACT_DATA_KEYWORDS = [
+  'schema',
+  'contrato',
+  'campo',
+  'tipo',
+  'required',
+  'obligatorio',
+  'status code',
+  'paginacion',
+  'pagination',
+  'filtro',
+  'filter',
+  'array',
+  'objeto',
+  'null',
+  '404',
+  '400',
+  'rate',
+  'fecha',
+];
+
+const SUMMARY_KEYWORDS = [
+  'cobertura',
+  'hallazgo',
+  'riesgo',
+  'recomendacion',
+  'evidencia',
+  'contrato',
+  'datos',
+  'status',
+  'api',
+  'limitacion',
+];
+
+function clamp(value: number, max: number): number {
+  return Math.min(Math.max(value, 0), max);
 }
 
-const BUG_DEFINITIONS: Record<string, BugDefinition> = {
-  'broken-authz-account': {
-    keywords: [
-      'acc_002',
-      'authorization',
-      'ownership',
-      'idor',
-      'autorización',
-      'cuenta ajena',
-      'otro usuario',
-    ],
-    maxPts: 5,
-    category: 'security',
-  },
-  'zero-amount': {
-    keywords: [
-      'monto 0',
-      'amount 0',
-      'zero',
-      'cero',
-      'amount zero',
-      'monto cero',
-    ],
-    maxPts: 3,
-    category: 'apiValidation',
-  },
-  'negative-amount': {
-    keywords: [
-      'negativo',
-      'negative',
-      'monto negativo',
-      'amount negative',
-      '-100',
-    ],
-    maxPts: 3,
-    category: 'apiValidation',
-  },
-  'wrong-status-code': {
-    keywords: [
-      '200',
-      '400',
-      'status code',
-      'código de estado',
-      'status incorrecto',
-      'devuelve 200',
-    ],
-    maxPts: 4,
-    category: 'apiValidation',
-  },
-  'insufficient-balance': {
-    keywords: [
-      'saldo insuficiente',
-      'insufficient balance',
-      'saldo',
-      'balance',
-      'fondos',
-    ],
-    maxPts: 4,
-    category: 'apiValidation',
-  },
-  'sensitive-data': {
-    keywords: [
-      'internalriskscore',
-      'risk score',
-      'riesgo',
-      'dato sensible',
-      'sensitive',
-      'campo interno',
-    ],
-    maxPts: 5,
-    category: 'security',
-  },
-  'transfer-ownership': {
-    keywords: [
-      'transfer',
-      'transferencia ajena',
-      'ownership',
-      'otro usuario',
-      'transferid',
-      'no es dueño',
-    ],
-    maxPts: 5,
-    category: 'security',
-  },
-  'openapi-mismatch': {
-    keywords: [
-      'availablebalance',
-      'balance',
-      'contrato',
-      'openapi',
-      'mismatch',
-      'inconsistencia',
-      'campo distinto',
-    ],
-    maxPts: 4,
-    category: 'apiValidation',
-  },
-  'long-description': {
-    keywords: [
-      '120',
-      'descripción larga',
-      'long description',
-      'caracteres',
-      'maxlength',
-      'max length',
-    ],
-    maxPts: 2,
-    category: 'apiValidation',
-  },
-  'expired-token': {
-    keywords: [
-      'expirado',
-      'expired',
-      'exp',
-      'token vencido',
-      'token expirado',
-      'acepta token',
-    ],
-    maxPts: 4,
-    category: 'security',
-  },
-  'missing-idempotency': {
-    keywords: [
-      'idempotency',
-      'idempotente',
-      'duplicado',
-      'duplicate',
-      'doble envío',
-      'idempotencykey',
-    ],
-    maxPts: 4,
-    category: 'apiValidation',
-  },
-  'ambiguous-errors': {
-    keywords: [
-      'mensaje ambiguo',
-      'error genérico',
-      'ambiguous',
-      'vago',
-      'mensaje vago',
-      'error message',
-    ],
-    maxPts: 2,
-    category: 'bugReporting',
-  },
-};
+function normalize(text: string | undefined | null): string {
+  return (text ?? '').toLowerCase();
+}
 
-const MAX_SCORES = {
-  testDesign: 25,
-  apiValidation: 25,
-  security: 20,
-  bugReporting: 20,
-  executiveSummary: 10,
-};
+function textHasAny(text: string, keywords: string[]): boolean {
+  const normalized = normalize(text);
+  return keywords.some((keyword) => normalized.includes(keyword));
+}
 
-function matchesBugKeywords(report: BugReport, keywords: string[]): boolean {
-  const text = [
+function joinedTestCaseText(testCase: TestCase): string {
+  return [
+    testCase.title,
+    testCase.preconditions ?? '',
+    testCase.steps,
+    testCase.expectedResult,
+    testCase.type,
+    testCase.priority,
+  ].join(' ');
+}
+
+function joinedReportText(report: BugReport): string {
+  return [
     report.title,
     report.description ?? '',
     report.stepsToReproduce,
@@ -189,69 +117,177 @@ function matchesBugKeywords(report: BugReport, keywords: string[]): boolean {
     report.expectedResult,
     report.endpoint,
     report.evidence ?? '',
-  ]
-    .join(' ')
-    .toLowerCase();
+    report.severity,
+    report.priority,
+  ].join(' ');
+}
 
-  return keywords.some((kw) => text.includes(kw.toLowerCase()));
+function completionRatio(items: number, target: number): number {
+  return target <= 0 ? 1 : clamp(items / target, 1);
 }
 
 function scoreTestDesign(testCases: TestCase[]): number {
   if (testCases.length === 0) return 0;
 
+  const quantity = completionRatio(
+    testCases.length,
+    API_CHALLENGE_MIN_TEST_CASES
+  );
   const distinctTypes = new Set(testCases.map((tc) => tc.type));
-  const typeVarietyScore = Math.min(distinctTypes.size * 5, 25);
+  const variety = completionRatio(distinctTypes.size, 5);
+  const complete = completionRatio(
+    testCases.filter(
+      (tc) =>
+        tc.title.trim().length >= 8 &&
+        tc.steps.trim().length >= 25 &&
+        tc.expectedResult.trim().length >= 20
+    ).length,
+    API_CHALLENGE_MIN_TEST_CASES
+  );
+  const reproducible = completionRatio(
+    testCases.filter((tc) =>
+      textHasAny(joinedTestCaseText(tc), HTTP_OR_REPRO_KEYWORDS)
+    ).length,
+    Math.max(3, Math.ceil(API_CHALLENGE_MIN_TEST_CASES / 2))
+  );
 
-  // Bonus points for complete test cases (all fields filled)
-  const completeCount = testCases.filter(
-    (tc) => tc.steps.trim().length > 0 && tc.expectedResult.trim().length > 0
-  ).length;
-  const completenessBonus = Math.min(completeCount * 0.5, 5);
+  return clamp(
+    quantity * 8 + variety * 8 + complete * 8 + reproducible * 6,
+    MAX_SCORES.testDesign
+  );
+}
 
-  return Math.min(typeVarietyScore + completenessBonus, MAX_SCORES.testDesign);
+function scoreExecutionEvidence(
+  testCases: TestCase[],
+  bugReports: BugReport[]
+): number {
+  if (testCases.length === 0 && bugReports.length === 0) return 0;
+
+  const testEvidence = completionRatio(
+    testCases.filter((tc) =>
+      textHasAny(joinedTestCaseText(tc), HTTP_OR_REPRO_KEYWORDS)
+    ).length,
+    API_CHALLENGE_MIN_TEST_CASES
+  );
+  const reportEvidence = completionRatio(
+    bugReports.filter(
+      (report) =>
+        textHasAny(joinedReportText(report), HTTP_OR_REPRO_KEYWORDS) &&
+        (report.evidence?.trim().length ?? 0) >= 10
+    ).length,
+    API_CHALLENGE_MIN_FINDINGS
+  );
+  const endpointCoverage = completionRatio(
+    new Set(
+      bugReports
+        .map((report) => report.endpoint.trim())
+        .filter((endpoint) => endpoint.length > 0)
+    ).size,
+    API_CHALLENGE_MIN_FINDINGS
+  );
+
+  return clamp(
+    testEvidence * 9 + reportEvidence * 11 + endpointCoverage * 5,
+    MAX_SCORES.apiValidation
+  );
+}
+
+function scoreContractAndData(
+  testCases: TestCase[],
+  bugReports: BugReport[]
+): number {
+  const allTexts = [
+    ...testCases.map(joinedTestCaseText),
+    ...bugReports.map(joinedReportText),
+  ];
+  if (allTexts.length === 0) return 0;
+
+  const contractCases = completionRatio(
+    testCases.filter(
+      (tc) =>
+        tc.type === 'contract' ||
+        tc.type === 'boundary' ||
+        textHasAny(joinedTestCaseText(tc), CONTRACT_DATA_KEYWORDS)
+    ).length,
+    3
+  );
+  const contractReports = completionRatio(
+    bugReports.filter((report) =>
+      textHasAny(joinedReportText(report), CONTRACT_DATA_KEYWORDS)
+    ).length,
+    API_CHALLENGE_MIN_FINDINGS
+  );
+  const keywordBreadth = completionRatio(
+    CONTRACT_DATA_KEYWORDS.filter((keyword) =>
+      allTexts.some((text) => normalize(text).includes(keyword))
+    ).length,
+    6
+  );
+
+  return clamp(
+    contractCases * 7 + contractReports * 7 + keywordBreadth * 6,
+    MAX_SCORES.security
+  );
 }
 
 function scoreBugReporting(bugReports: BugReport[]): number {
   if (bugReports.length === 0) return 0;
 
-  let score = 0;
-  for (const report of bugReports) {
-    if (
-      report.stepsToReproduce.trim() &&
-      report.actualResult.trim() &&
-      report.expectedResult.trim()
-    ) {
-      score += 2;
-    }
-    if (report.severity && report.priority) score += 1;
-    if (report.evidence?.trim()) score += 1;
-  }
+  const quantity = completionRatio(
+    bugReports.length,
+    API_CHALLENGE_MIN_FINDINGS
+  );
+  const complete = completionRatio(
+    bugReports.filter(
+      (report) =>
+        report.title.trim().length >= 8 &&
+        report.stepsToReproduce.trim().length >= 25 &&
+        report.actualResult.trim().length >= 15 &&
+        report.expectedResult.trim().length >= 15
+    ).length,
+    API_CHALLENGE_MIN_FINDINGS
+  );
+  const classified = completionRatio(
+    bugReports.filter((report) => report.severity && report.priority).length,
+    API_CHALLENGE_MIN_FINDINGS
+  );
+  const impact = completionRatio(
+    bugReports.filter((report) =>
+      textHasAny(joinedReportText(report), [
+        'impacto',
+        'riesgo',
+        'usuario',
+        'negocio',
+        'seguridad',
+        'limite',
+        'limitacion',
+        'mejora',
+      ])
+    ).length,
+    API_CHALLENGE_MIN_FINDINGS
+  );
 
-  return Math.min(score, MAX_SCORES.bugReporting);
+  return clamp(
+    quantity * 3 + complete * 6 + classified * 3 + impact * 3,
+    MAX_SCORES.bugReporting
+  );
 }
 
 function scoreExecutiveSummary(summary?: string): number {
-  if (!summary || summary.trim().length < 50) return 0;
+  const trimmed = summary?.trim() ?? '';
+  if (trimmed.length < 50) return 0;
 
-  const text = summary.toLowerCase();
-  const keywordHits = [
-    'bug',
-    'falla',
-    'vulnerabilidad',
-    'riesgo',
-    'autorización',
-    'token',
-    'contrato',
-    'seguridad',
-    'transferencia',
-    'saldo',
-    'recomendación',
-  ].filter((kw) => text.includes(kw)).length;
+  const lengthScore =
+    completionRatio(trimmed.length, API_CHALLENGE_MIN_SUMMARY_CHARS) * 4;
+  const keywordScore =
+    completionRatio(
+      SUMMARY_KEYWORDS.filter((keyword) => normalize(trimmed).includes(keyword))
+        .length,
+      5
+    ) * 4;
+  const structureScore = /riesgo|recomendacion|hallazgo/i.test(trimmed) ? 2 : 0;
 
-  if (summary.length >= 300 && keywordHits >= 3) return 10;
-  if (summary.length >= 150 && keywordHits >= 2) return 7;
-  if (summary.length >= 100) return 5;
-  return 2;
+  return clamp(lengthScore + keywordScore + structureScore, 10);
 }
 
 export function autoScore(
@@ -259,23 +295,9 @@ export function autoScore(
   bugReports: BugReport[],
   summary?: string
 ): ScoreResult {
-  const bugTagsFound: string[] = [];
-  let apiValidationScore = 0;
-  let securityScore = 0;
-
-  for (const [tag, def] of Object.entries(BUG_DEFINITIONS)) {
-    const matched = bugReports.some((r) => matchesBugKeywords(r, def.keywords));
-    if (matched) {
-      bugTagsFound.push(tag);
-      if (def.category === 'apiValidation') apiValidationScore += def.maxPts;
-      else if (def.category === 'security') securityScore += def.maxPts;
-    }
-  }
-
-  apiValidationScore = Math.min(apiValidationScore, MAX_SCORES.apiValidation);
-  securityScore = Math.min(securityScore, MAX_SCORES.security);
-
   const testDesignScore = scoreTestDesign(testCases);
+  const apiValidationScore = scoreExecutionEvidence(testCases, bugReports);
+  const securityScore = scoreContractAndData(testCases, bugReports);
   const bugReportingScore = scoreBugReporting(bugReports);
   const executiveSummaryScore = scoreExecutiveSummary(summary);
 
@@ -286,66 +308,88 @@ export function autoScore(
     bugReportingScore +
     executiveSummaryScore;
 
-  const bugsFound = bugTagsFound.length;
-  const bugsTotal = Object.keys(BUG_DEFINITIONS).length;
-
-  const feedback = buildFeedback(
-    totalScore,
-    bugsFound,
-    bugsTotal,
-    bugTagsFound
-  );
+  const bugsFound = Math.min(bugReports.length, API_CHALLENGE_MIN_FINDINGS);
+  const bugsTotal = API_CHALLENGE_MIN_FINDINGS;
+  const roundedTotal = Math.round(totalScore * 100) / 100;
 
   return {
-    testDesignScore,
-    apiValidationScore,
-    securityScore,
-    bugReportingScore,
-    executiveSummaryScore,
-    totalScore: Math.round(totalScore * 100) / 100,
+    testDesignScore: Math.round(testDesignScore * 100) / 100,
+    apiValidationScore: Math.round(apiValidationScore * 100) / 100,
+    securityScore: Math.round(securityScore * 100) / 100,
+    bugReportingScore: Math.round(bugReportingScore * 100) / 100,
+    executiveSummaryScore: Math.round(executiveSummaryScore * 100) / 100,
+    totalScore: roundedTotal,
     bugsFound,
     bugsTotal,
-    feedback,
-    bugTagsFound,
+    feedback: buildFeedback(roundedTotal, {
+      testCasesCount: testCases.length,
+      findingsCount: bugReports.length,
+      summaryLength: summary?.trim().length ?? 0,
+      testDesignScore,
+      apiValidationScore,
+      securityScore,
+      bugReportingScore,
+      executiveSummaryScore,
+    }),
+    bugTagsFound: [],
   };
 }
 
 function buildFeedback(
   total: number,
-  bugsFound: number,
-  bugsTotal: number,
-  tags: string[]
+  context: {
+    testCasesCount: number;
+    findingsCount: number;
+    summaryLength: number;
+    testDesignScore: number;
+    apiValidationScore: number;
+    securityScore: number;
+    bugReportingScore: number;
+    executiveSummaryScore: number;
+  }
 ): string {
   const parts: string[] = [];
 
   if (total >= 85) {
     parts.push(
-      'Excelente trabajo. Demostrás un nivel semi-senior sólido en API Testing.'
+      'Excelente trabajo: la entrega combina cobertura, evidencia y criterio QA replicable.'
     );
   } else if (total >= 60) {
-    parts.push('Buen desempeño. Encontraste los puntos más importantes.');
+    parts.push(
+      'Buen desempeno: la entrega es evaluable, con oportunidades de fortalecer evidencia o analisis.'
+    );
   } else {
     parts.push(
-      'Hay oportunidades de mejora. Revisá la sección de seguridad y contratos.'
+      'Hay oportunidades de mejora: prioriza requests reproducibles, cobertura variada y hallazgos mejor sustentados.'
     );
   }
 
-  parts.push(`Bugs encontrados: ${bugsFound}/${bugsTotal}.`);
-
-  const missedSecurity = [
-    'broken-authz-account',
-    'sensitive-data',
-    'transfer-ownership',
-    'expired-token',
-  ].filter((t) => !tags.includes(t));
-  if (missedSecurity.length > 0) {
-    parts.push(`Te faltaron bugs de seguridad: ${missedSecurity.join(', ')}.`);
-  }
-
-  const missedContract = ['openapi-mismatch'].filter((t) => !tags.includes(t));
-  if (missedContract.length > 0) {
+  if (context.testCasesCount < API_CHALLENGE_MIN_TEST_CASES) {
     parts.push(
-      'No detectaste la inconsistencia en el contrato OpenAPI (availableBalance vs balance).'
+      `Faltan casos de prueba: ${context.testCasesCount}/${API_CHALLENGE_MIN_TEST_CASES}.`
+    );
+  }
+  if (context.findingsCount < API_CHALLENGE_MIN_FINDINGS) {
+    parts.push(
+      `Faltan hallazgos: ${context.findingsCount}/${API_CHALLENGE_MIN_FINDINGS}.`
+    );
+  }
+  if (context.summaryLength < API_CHALLENGE_MIN_SUMMARY_CHARS) {
+    parts.push(
+      `El resumen ejecutivo debe llegar a ${API_CHALLENGE_MIN_SUMMARY_CHARS} caracteres.`
+    );
+  }
+  if (context.apiValidationScore < MAX_SCORES.apiValidation * 0.6) {
+    parts.push('Agrega mas evidencia: URL, status code, body y datos usados.');
+  }
+  if (context.securityScore < MAX_SCORES.security * 0.6) {
+    parts.push(
+      'Refuerza contrato y datos: schema, campos obligatorios, tipos, errores, filtros o paginacion.'
+    );
+  }
+  if (context.bugReportingScore < MAX_SCORES.bugReporting * 0.6) {
+    parts.push(
+      'Mejora los reportes con pasos claros, resultado actual, esperado, impacto y prioridad.'
     );
   }
 
@@ -358,4 +402,3 @@ export const RUBRIC_THRESHOLDS = {
 };
 
 export const SCORE_MAX = MAX_SCORES;
-export const ALL_BUG_TAGS = Object.keys(BUG_DEFINITIONS);

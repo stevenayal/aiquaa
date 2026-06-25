@@ -8,10 +8,16 @@ import type {
   BugReportInput,
 } from '../types';
 import { SESSION_KEYS } from '../types';
+import {
+  DEFAULT_API_TARGET_ID,
+  isApiChallengeTargetId,
+  type ApiChallengeTargetId,
+} from '../data/apiChallengeTargets';
 
 interface AttemptState {
   attemptId: number | null;
   candidateName: string;
+  apiTarget: ApiChallengeTargetId;
   startedAt: string | null;
   testCases: TestCase[];
   bugReports: BugReport[];
@@ -23,6 +29,7 @@ export function useAttempt() {
   const [state, setState] = useState<AttemptState>({
     attemptId: null,
     candidateName: '',
+    apiTarget: DEFAULT_API_TARGET_ID,
     startedAt: null,
     testCases: [],
     bugReports: [],
@@ -36,12 +43,17 @@ export function useAttempt() {
     const candidateName =
       sessionStorage.getItem(SESSION_KEYS.candidateName) ?? '';
     const startedAt = sessionStorage.getItem(SESSION_KEYS.startedAt);
+    const rawApiTarget = sessionStorage.getItem(SESSION_KEYS.apiTarget);
+    const apiTarget = isApiChallengeTargetId(rawApiTarget)
+      ? rawApiTarget
+      : DEFAULT_API_TARGET_ID;
 
     if (attemptId) {
       setState((prev) => ({
         ...prev,
         attemptId: Number(attemptId),
         candidateName,
+        apiTarget,
         startedAt,
       }));
 

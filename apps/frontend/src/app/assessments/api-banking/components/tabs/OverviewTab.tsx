@@ -1,15 +1,45 @@
-export function OverviewTab() {
+import {
+  API_CHALLENGE_MIN_FINDINGS,
+  API_CHALLENGE_MIN_SUMMARY_CHARS,
+  API_CHALLENGE_MIN_TEST_CASES,
+  getApiChallengeTarget,
+  type ApiChallengeTargetId,
+} from '../../data/apiChallengeTargets';
+import {
+  API_CHALLENGE_EVALUATION_CRITERIA,
+  API_CHALLENGE_TOTAL_SCORE,
+} from '../../data/evaluationCriteria';
+
+interface Props {
+  apiTarget: ApiChallengeTargetId;
+}
+
+export function OverviewTab({ apiTarget }: Props) {
+  const target = getApiChallengeTarget(apiTarget);
+
   return (
     <div className="space-y-5 text-sm text-slate-700 dark:text-slate-300">
       <section className="space-y-2">
         <h2 className="font-semibold text-slate-900 dark:text-white">
-          Contexto del negocio
+          Contexto de la prueba
         </h2>
         <p>
-          FinTech PY es un banco digital que procesa transferencias entre
-          cuentas en guaraníes (PYG). Tu rol es QA Engineer contratado para
-          auditar la API antes del lanzamiento a producción.
+          Tu rol es QA Engineer. Debes auditar una API publica, documentar una
+          estrategia de prueba reproducible y reportar hallazgos con evidencia.
         </p>
+        <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs dark:border-slate-700 dark:bg-slate-800/50">
+          <p className="font-semibold text-slate-800 dark:text-slate-200">
+            API elegida: {target.name}
+          </p>
+          <p className="mt-1 text-slate-500 dark:text-slate-400">
+            {target.description}
+          </p>
+          {target.apiKeyNote && (
+            <p className="mt-2 text-blue-700 dark:text-blue-300">
+              {target.apiKeyNote}
+            </p>
+          )}
+        </div>
       </section>
 
       <section className="space-y-2">
@@ -17,108 +47,98 @@ export function OverviewTab() {
           Instrucciones
         </h2>
         <ol className="list-decimal list-inside space-y-1 text-slate-600 dark:text-slate-400">
+          <li>Revisa la documentacion y los endpoints sugeridos.</li>
           <li>
-            Revisá la documentación de endpoints en la tab{' '}
-            <strong>API Docs</strong>.
+            Ejecuta requests reales con una herramienta como Postman, curl o
+            navegador.
           </li>
-          <li>Explorá la API usando las credenciales de prueba.</li>
           <li>
-            Diseñá casos de prueba positivos, negativos, de borde y de
-            seguridad.
+            Disena casos positivos, negativos, borde, contrato y seguridad
+            cuando aplique.
           </li>
-          <li>Identificá y documentá los bugs que encuentres.</li>
-          <li>Escribí un resumen ejecutivo con tus hallazgos.</li>
           <li>
-            Enviá tu trabajo usando el botón <strong>Finalizar</strong>.
+            Documenta hallazgos: bugs, riesgos, inconsistencias, limitaciones o
+            mejoras testables.
           </li>
+          <li>
+            Incluye evidencia reproducible: URL, status code, body relevante y
+            datos usados.
+          </li>
+          <li>Escribe un resumen ejecutivo y envia tu trabajo.</li>
         </ol>
       </section>
 
       <section className="space-y-2">
         <h2 className="font-semibold text-slate-900 dark:text-white">
-          Credenciales de prueba
-        </h2>
-        <div className="grid grid-cols-1 gap-3">
-          {[
-            {
-              user: 'Usuario A',
-              email: 'user.a@aiquaa.test',
-              pass: 'Test1234!',
-              id: 'usr_001',
-              account: 'acc_001',
-              balance: '₲ 5.000.000',
-            },
-            {
-              user: 'Usuario B',
-              email: 'user.b@aiquaa.test',
-              pass: 'Test1234!',
-              id: 'usr_002',
-              account: 'acc_002',
-              balance: '₲ 2.500.000',
-            },
-          ].map((u) => (
-            <div
-              key={u.id}
-              className="rounded-lg border border-slate-200 dark:border-slate-700 p-3 space-y-1 font-mono text-xs bg-slate-50 dark:bg-slate-800/50"
-            >
-              <p className="font-sans font-semibold text-slate-700 dark:text-slate-300 not-italic">
-                {u.user}
-              </p>
-              <p>
-                <span className="text-slate-400">email: </span>
-                {u.email}
-              </p>
-              <p>
-                <span className="text-slate-400">pass: </span>
-                {u.pass}
-              </p>
-              <p>
-                <span className="text-slate-400">userId:</span>
-                {u.id}
-              </p>
-              <p>
-                <span className="text-slate-400">cuenta:</span>
-                {u.account}
-              </p>
-              <p>
-                <span className="text-slate-400">saldo: </span>
-                {u.balance}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="space-y-2">
-        <h2 className="font-semibold text-slate-900 dark:text-white">
-          Entregables esperados
+          Tareas sugeridas
         </h2>
         <ul className="list-disc list-inside space-y-1 text-slate-600 dark:text-slate-400">
-          <li>Casos de prueba positivos, negativos, de borde y de seguridad</li>
-          <li>Bug reports con severidad, prioridad y pasos para reproducir</li>
-          <li>Resumen ejecutivo con hallazgos, riesgos y recomendaciones</li>
+          {target.tasks.map((task) => (
+            <li key={task}>{task}</li>
+          ))}
         </ul>
       </section>
 
       <section className="space-y-2">
         <h2 className="font-semibold text-slate-900 dark:text-white">
-          Distribución de puntaje
+          Entregables minimos
         </h2>
-        <div className="space-y-1">
-          {[
-            { label: 'Diseño de casos de prueba', pts: 25 },
-            { label: 'Validación API (status, body, contrato)', pts: 25 },
-            { label: 'Seguridad (JWT, permisos)', pts: 20 },
-            { label: 'Calidad del bug report', pts: 20 },
-            { label: 'Resumen ejecutivo', pts: 10 },
-          ].map((row) => (
-            <div key={row.label} className="flex justify-between text-xs">
-              <span className="text-slate-600 dark:text-slate-400">
-                {row.label}
-              </span>
-              <span className="font-semibold text-slate-700 dark:text-slate-300">
-                {row.pts} pts
-              </span>
+        <ul className="list-disc list-inside space-y-1 text-slate-600 dark:text-slate-400">
+          <li>{API_CHALLENGE_MIN_TEST_CASES} casos de prueba variados.</li>
+          <li>
+            {API_CHALLENGE_MIN_FINDINGS} hallazgos o reportes reproducibles.
+          </li>
+          <li>
+            Resumen ejecutivo de al menos {API_CHALLENGE_MIN_SUMMARY_CHARS}{' '}
+            caracteres.
+          </li>
+        </ul>
+      </section>
+
+      <section className="space-y-2">
+        <h2 className="font-semibold text-slate-900 dark:text-white">
+          Riesgos a observar
+        </h2>
+        <ul className="list-disc list-inside space-y-1 text-slate-600 dark:text-slate-400">
+          {target.risks.map((risk) => (
+            <li key={risk}>{risk}</li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="space-y-2">
+        <h2 className="font-semibold text-slate-900 dark:text-white">
+          Criterio de evaluacion
+        </h2>
+        <p className="text-xs text-slate-500 dark:text-slate-400">
+          Total: {API_CHALLENGE_TOTAL_SCORE} puntos. La correccion premia
+          criterio QA, claridad y reproducibilidad. No dependes de encontrar un
+          bug real en la API publica.
+        </p>
+        <div className="space-y-3">
+          {API_CHALLENGE_EVALUATION_CRITERIA.map((criterion) => (
+            <div
+              key={criterion.key}
+              className="rounded-lg border border-slate-200 p-3 dark:border-slate-700"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="font-semibold text-slate-800 dark:text-slate-200">
+                    {criterion.label}
+                  </p>
+                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                    {criterion.summary}
+                  </p>
+                </div>
+                <span className="shrink-0 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  {criterion.maxScore} pts
+                </span>
+              </div>
+              <ul className="mt-2 list-disc list-inside space-y-0.5 text-xs text-slate-600 dark:text-slate-400">
+                {criterion.checks.map((check) => (
+                  <li key={check}>{check}</li>
+                ))}
+              </ul>
             </div>
           ))}
         </div>

@@ -6,6 +6,24 @@ export const dynamic = 'force-dynamic';
 
 const VALID_PRIORITIES = ['low', 'medium', 'high', 'critical'];
 
+function mapBugReport(row: any) {
+  return {
+    id: row.id,
+    attemptId: row.attempt_id,
+    title: row.title,
+    description: row.description,
+    stepsToReproduce: row.steps_to_reproduce,
+    actualResult: row.actual_result,
+    expectedResult: row.expected_result,
+    severity: row.severity,
+    priority: row.priority,
+    endpoint: row.endpoint,
+    evidence: row.evidence,
+    bugTag: row.bug_tag,
+    createdAt: row.created_at,
+  };
+}
+
 export async function GET(
   _req: NextRequest,
   { params }: { params: { attemptId: string } }
@@ -19,7 +37,7 @@ export async function GET(
 
   if (error)
     return NextResponse.json({ error: 'Failed to fetch' }, { status: 500 });
-  return NextResponse.json(data ?? []);
+  return NextResponse.json((data ?? []).map(mapBugReport));
 }
 
 export async function POST(
@@ -89,7 +107,7 @@ export async function POST(
 
   if (error)
     return NextResponse.json({ error: 'Failed to save' }, { status: 500 });
-  return NextResponse.json(data, { status: 201 });
+  return NextResponse.json((data ?? []).map(mapBugReport), { status: 201 });
 }
 
 export async function DELETE(

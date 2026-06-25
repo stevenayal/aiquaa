@@ -109,7 +109,7 @@ const EXAM_LABELS: Record<string, string> = {
   'git-practico': 'Git — Prueba práctica',
   performance: 'Performance',
   'api-testing-fundamentals': 'API Testing Fundamentals',
-  'api-banking': 'API Banking Challenge',
+  'api-banking': 'API Testing Challenge',
   'database-fundamentals': 'Bases de Datos — Fundamentos',
   'database-practice': 'Bases de Datos — Práctica SQL',
 };

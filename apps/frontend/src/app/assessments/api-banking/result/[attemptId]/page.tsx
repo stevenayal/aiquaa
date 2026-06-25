@@ -1,6 +1,11 @@
 import Link from 'next/link';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { SCORE_MAX, ALL_BUG_TAGS, RUBRIC_THRESHOLDS } from '../../lib/scoring';
+import { RUBRIC_CATEGORIES, RUBRIC_THRESHOLDS } from '../../lib/scoring';
+import {
+  DEFAULT_API_TARGET_ID,
+  getApiChallengeTarget,
+} from '../../data/apiChallengeTargets';
+import { API_CHALLENGE_EVALUATION_CRITERIA } from '../../data/evaluationCriteria';
 
 interface Props {
   params: { attemptId: string };
@@ -24,30 +29,23 @@ export default async function ResultPage({ params }: Props) {
   if (isNaN(attemptId)) {
     return (
       <main className="min-h-screen flex items-center justify-center">
-        <p className="text-slate-500">Attempt no válido.</p>
+        <p className="text-slate-500">Attempt no valido.</p>
       </main>
     );
   }
 
   const supabase = createAdminClient();
-  const [attemptRes, scoreRes, bugsRes] = await Promise.all([
+  const [attemptRes, scoreRes] = await Promise.all([
     supabase.from('qac_attempts').select('*').eq('id', attemptId).single(),
     supabase
       .from('qac_scores')
       .select('*')
       .eq('attempt_id', attemptId)
       .single(),
-    supabase
-      .from('qac_bug_reports')
-      .select('bug_tag')
-      .eq('attempt_id', attemptId),
   ]);
 
   const attempt = attemptRes.data;
   const score = scoreRes.data;
-  const foundTags = (bugsRes.data ?? [])
-    .map((r: any) => r.bug_tag)
-    .filter(Boolean);
 
   if (!attempt || !score) {
     return (
@@ -56,7 +54,7 @@ export default async function ResultPage({ params }: Props) {
           <p className="text-slate-500 dark:text-slate-400">
             {!attempt
               ? 'Attempt no encontrado.'
-              : 'El challenge todavía no fue enviado.'}
+              : 'El challenge todavia no fue enviado.'}
           </p>
           <Link
             href="/assessments"
@@ -69,33 +67,13 @@ export default async function ResultPage({ params }: Props) {
     );
   }
 
-  const categories = [
-    {
-      label: 'Diseño de casos de prueba',
-      score: Number(score.test_design_score),
-      max: SCORE_MAX.testDesign,
-    },
-    {
-      label: 'Validación API / contrato',
-      score: Number(score.api_validation_score),
-      max: SCORE_MAX.apiValidation,
-    },
-    {
-      label: 'Seguridad',
-      score: Number(score.security_score),
-      max: SCORE_MAX.security,
-    },
-    {
-      label: 'Calidad del bug report',
-      score: Number(score.bug_reporting_score),
-      max: SCORE_MAX.bugReporting,
-    },
-    {
-      label: 'Resumen ejecutivo',
-      score: Number(score.executive_summary_score),
-      max: SCORE_MAX.executiveSummary,
-    },
-  ];
+  const target = getApiChallengeTarget(
+    attempt.api_target || DEFAULT_API_TARGET_ID
+  );
+  const categories = RUBRIC_CATEGORIES.map((category) => ({
+    ...category,
+    score: Number(score[category.key]),
+  }));
 
   const totalScore = Number(score.total_score);
   const passed = totalScore >= 60;
@@ -103,20 +81,18 @@ export default async function ResultPage({ params }: Props) {
   return (
     <main className="min-h-screen bg-slate-50 dark:bg-slate-950 py-12 px-4">
       <div className="max-w-2xl mx-auto space-y-6">
-        {/* Header */}
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="text-2xl">{passed ? '🎉' : '📋'}</span>
+            <span className="text-2xl">{passed ? 'OK' : 'QA'}</span>
             <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
               Resultado del challenge
             </h1>
           </div>
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            {attempt.candidate_name} · QA API Challenge - Banking Transactions
+            {attempt.candidate_name} - API Testing Challenge - {target.name}
           </p>
         </div>
 
-        {/* Score card */}
         <div
           className={`rounded-xl border p-6 text-center space-y-2 ${
             passed
@@ -131,14 +107,13 @@ export default async function ResultPage({ params }: Props) {
           <p
             className={`text-sm font-medium ${passed ? 'text-green-700 dark:text-green-400' : 'text-slate-500'}`}
           >
-            {passed ? '✓ Aprobado' : 'No aprobado (mín. 60)'}
+            {passed ? 'Aprobado' : 'No aprobado (min. 60)'}
           </p>
         </div>
 
-        {/* Category breakdown */}
         <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 space-y-4">
           <h2 className="font-semibold text-slate-800 dark:text-slate-200">
-            Desglose por categoría
+            Cobertura de evaluacion
           </h2>
           <div className="space-y-3">
             {categories.map((cat) => {
@@ -177,32 +152,25 @@ export default async function ResultPage({ params }: Props) {
           </div>
         </div>
 
-        {/* Bugs found */}
         <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 space-y-3">
           <h2 className="font-semibold text-slate-800 dark:text-slate-200">
-            Bugs encontrados: {score.bugs_found} / {score.bugs_total}
+            Rubrica aplicada
           </h2>
-          <div className="grid grid-cols-2 gap-1.5 text-xs">
-            {ALL_BUG_TAGS.map((tag) => {
-              const found = foundTags.includes(tag);
-              return (
-                <div
-                  key={tag}
-                  className={`flex items-center gap-1.5 px-2 py-1 rounded ${
-                    found
-                      ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400'
-                      : 'bg-slate-50 text-slate-400 dark:bg-slate-800/50'
-                  }`}
-                >
-                  <span>{found ? '✓' : '○'}</span>
-                  <span>{tag}</span>
-                </div>
-              );
-            })}
+          <div className="grid gap-3 text-xs text-slate-600 dark:text-slate-400">
+            {API_CHALLENGE_EVALUATION_CRITERIA.map((criterion) => (
+              <div
+                key={criterion.key}
+                className="rounded-lg border border-slate-200 p-3 dark:border-slate-700"
+              >
+                <p className="font-semibold text-slate-800 dark:text-slate-200">
+                  {criterion.label} ({criterion.maxScore} pts)
+                </p>
+                <p className="mt-1">{criterion.fullCredit}</p>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Feedback */}
         {score.feedback && (
           <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 space-y-2">
             <h2 className="font-semibold text-slate-800 dark:text-slate-200">

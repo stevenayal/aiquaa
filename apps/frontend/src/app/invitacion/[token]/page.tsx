@@ -8,7 +8,7 @@ const EXAM_LABELS: Record<string, string> = {
   git: 'Git — Control de versiones',
   performance: 'Performance Testing',
   'api-testing-fundamentals': 'API Testing Fundamentals',
-  'api-banking': 'API Banking Challenge',
+  'api-banking': 'API Testing Challenge',
   'database-fundamentals': 'Bases de Datos — Fundamentos',
   'database-practice': 'Bases de Datos — Práctica SQL',
 };
