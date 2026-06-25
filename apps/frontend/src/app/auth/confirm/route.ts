@@ -23,6 +23,8 @@ export async function GET(request: NextRequest) {
 
   const supabase = await createClient();
 
+  let failureCode = 'link_expired';
+
   if (code) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
@@ -38,7 +40,14 @@ export async function GET(request: NextRequest) {
       successUrl.searchParams.set('next', destination);
       return NextResponse.redirect(successUrl.toString());
     }
-    console.error('[auth/confirm] exchangeCodeForSession failed:', error?.message);
+    console.error(
+      '[auth/confirm] exchangeCodeForSession failed:',
+      error?.message
+    );
+    const msg = error?.message?.toLowerCase() ?? '';
+    if (msg.includes('code verifier') || msg.includes('pkce')) {
+      failureCode = 'pkce_error';
+    }
   }
 
   if (token_hash && type) {
@@ -47,7 +56,9 @@ export async function GET(request: NextRequest) {
       type: type as 'signup' | 'recovery' | 'invite' | 'magiclink' | 'email',
     });
     if (!error) {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       const audience = user?.user_metadata?.audience;
       const destination = next ?? getDefaultRedirect(audience);
 
@@ -64,11 +75,14 @@ export async function GET(request: NextRequest) {
   }
 
   if (!code && !token_hash) {
-    console.error('[auth/confirm] no code or token_hash in request. params:', Object.fromEntries(searchParams));
+    console.error(
+      '[auth/confirm] no code or token_hash in request. params:',
+      Object.fromEntries(searchParams)
+    );
   }
 
   const fallbackUrl = new URL(`${origin}/auth/confirm-result`);
-  fallbackUrl.searchParams.set('error', 'link_expired');
+  fallbackUrl.searchParams.set('error', failureCode);
   if (next) fallbackUrl.searchParams.set('next', next);
   return NextResponse.redirect(fallbackUrl.toString());
 }
