@@ -29,6 +29,7 @@ export interface ProcessCandidate {
   id: string;
   user_id: string;
   participant_name?: string;
+  participant_email?: string | null;
   exam_type: string;
   score: number;
   percentage: number;
@@ -235,16 +236,15 @@ export async function getProcessCandidatesAction(code: string) {
   if (procError || !process)
     return { error: 'Proceso no encontrado', data: null, process: null };
 
-  const { data, error } = await supabase
-    .from('exam_results')
-    .select(
-      'id, user_id, participant_name, exam_type, score, percentage, passed, time_spent, created_at'
-    )
-    .eq('process_code', code)
-    .order('percentage', { ascending: false });
+  const { data, error } = await fetchEmpresaResultsForProcessCodes(supabase, [
+    code,
+  ]);
 
-  if (error) return { error: error.message, data: null, process };
-  return { data, process };
+  if (error) return { error, data: null, process };
+  return {
+    data: data.sort((a, b) => b.percentage - a.percentage),
+    process,
+  };
 }
 
 export async function validateProcessCodeAction(code: string) {
@@ -307,6 +307,145 @@ function buildMonthlyBuckets(months = 6) {
   return buckets;
 }
 
+type EmpresaResultRow = {
+  id: string;
+  user_id: string | null;
+  participant_name: string | null;
+  participant_email: string | null;
+  exam_type: string;
+  score: number;
+  percentage: number;
+  passed: boolean;
+  time_spent: number;
+  created_at: string;
+  process_code: string;
+  section_scores?: unknown;
+  learning_objectives?: unknown;
+};
+
+function getAttemptProcessCode(metadata: unknown) {
+  if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) {
+    return '';
+  }
+
+  const value = (metadata as Record<string, unknown>).processCode;
+  return typeof value === 'string' ? value : '';
+}
+
+function getAttemptTimeSpentSeconds(row: {
+  started_at?: string | null;
+  submitted_at?: string | null;
+}) {
+  if (!row.started_at || !row.submitted_at) return 0;
+
+  const started = new Date(row.started_at).getTime();
+  const submitted = new Date(row.submitted_at).getTime();
+  if (!Number.isFinite(started) || !Number.isFinite(submitted)) return 0;
+
+  return Math.max(0, Math.round((submitted - started) / 1000));
+}
+
+const DATABASE_ASSESSMENT_SLUGS = [
+  'database-fundamentals',
+  'database-practice',
+];
+
+async function fetchAssessmentAttemptsForProcessCodes(
+  supabase: ReturnType<typeof createClient>,
+  processCodes: string[]
+): Promise<{ data: EmpresaResultRow[]; error: string | null }> {
+  if (processCodes.length === 0) return { data: [], error: null };
+
+  const { data: attempts, error } = await supabase
+    .from('assessment_attempts')
+    .select(
+      'id, user_id, total_score, percentage, passed, started_at, submitted_at, created_at, assessments!inner(slug), metadata'
+    )
+    .or(
+      processCodes.map((code) => `metadata->>processCode.eq.${code}`).join(',')
+    )
+    .in('assessments.slug', DATABASE_ASSESSMENT_SLUGS)
+    .eq('status', 'graded');
+
+  if (error) return { data: [], error: error.message };
+
+  const rows = attempts ?? [];
+  const userIds = [
+    ...new Set(rows.map((row: any) => row.user_id).filter(Boolean)),
+  ];
+  const profileMap: Record<
+    string,
+    { display_name: string | null; email: string | null }
+  > = {};
+
+  if (userIds.length > 0) {
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('id, display_name, email')
+      .in('id', userIds);
+
+    (profiles ?? []).forEach((profile: any) => {
+      profileMap[profile.id] = profile;
+    });
+  }
+
+  return {
+    data: rows.map((row: any) => {
+      const profile = profileMap[row.user_id] ?? null;
+      return {
+        id: row.id,
+        user_id: row.user_id ?? null,
+        participant_name:
+          profile?.display_name || profile?.email || 'Sin nombre',
+        participant_email: profile?.email ?? null,
+        exam_type: (row.assessments as any)?.slug ?? 'unknown',
+        score: Number(row.total_score ?? 0),
+        percentage: Number(row.percentage ?? 0),
+        passed: Boolean(row.passed),
+        time_spent: getAttemptTimeSpentSeconds(row),
+        created_at: row.submitted_at ?? row.created_at,
+        process_code: getAttemptProcessCode(row.metadata),
+        section_scores: null,
+        learning_objectives: null,
+      };
+    }),
+    error: null,
+  };
+}
+
+async function fetchEmpresaResultsForProcessCodes(
+  supabase: ReturnType<typeof createClient>,
+  processCodes: string[]
+): Promise<{ data: EmpresaResultRow[]; error: string | null }> {
+  if (processCodes.length === 0) return { data: [], error: null };
+
+  const [examResultsRes, assessmentAttemptsRes] = await Promise.all([
+    supabase
+      .from('exam_results')
+      .select(
+        'id, user_id, participant_name, participant_email, exam_type, score, percentage, passed, time_spent, created_at, process_code, section_scores, learning_objectives'
+      )
+      .in('process_code', processCodes),
+    fetchAssessmentAttemptsForProcessCodes(supabase, processCodes),
+  ]);
+
+  if (examResultsRes.error) {
+    return { data: [], error: examResultsRes.error.message };
+  }
+
+  if (assessmentAttemptsRes.error) {
+    return { data: [], error: assessmentAttemptsRes.error };
+  }
+
+  return {
+    data: [
+      ...((examResultsRes.data ?? []) as EmpresaResultRow[]),
+      ...assessmentAttemptsRes.data,
+    ],
+    error: null,
+  };
+}
+
 export async function getEmpresaDashboardStatsAction(): Promise<{
   data: EmpresaDashboardStats | null;
   error: string | null;
@@ -347,14 +486,6 @@ export async function getEmpresaDashboardStatsAction(): Promise<{
   let pendingProspects = 0;
   let pendingInvitaciones = 0;
 
-  const fetchExamResults =
-    processCodes.length > 0
-      ? supabase
-          .from('exam_results')
-          .select('process_code, passed, created_at, time_spent')
-          .in('process_code', processCodes)
-      : Promise.resolve({ data: [] as typeof results, error: null });
-
   const fetchPendingProspects =
     processIds.length > 0
       ? supabase
@@ -372,13 +503,20 @@ export async function getEmpresaDashboardStatsAction(): Promise<{
         .in('status', ['pendiente', 'vista'])
     : Promise.resolve({ count: 0, data: null, error: null });
 
-  const [examResp, prospectsResp, invitacionesResp] = await Promise.all([
-    fetchExamResults,
+  const [resultsResp, prospectsResp, invitacionesResp] = await Promise.all([
+    fetchEmpresaResultsForProcessCodes(supabase, processCodes),
     fetchPendingProspects,
     fetchPendingInvitaciones,
   ]);
 
-  results = (examResp.data as typeof results) ?? [];
+  if (resultsResp.error) return { error: resultsResp.error, data: null };
+
+  results = resultsResp.data.map((row) => ({
+    process_code: row.process_code,
+    passed: row.passed,
+    created_at: row.created_at,
+    time_spent: row.time_spent,
+  }));
   pendingProspects = prospectsResp.count ?? 0;
   pendingInvitaciones = invitacionesResp.count ?? 0;
 
@@ -528,76 +666,19 @@ export async function getEventStatsAction(groupId: string): Promise<{
     };
   }
 
-  // Fetch from exam_results (istqb, git, performance, api-testing-fundamentals, api-banking)
-  const [examResultsRes, assessmentAttemptsRes] = await Promise.all([
-    supabase
-      .from('exam_results')
-      .select(
-        'participant_name, participant_email, exam_type, percentage, passed, process_code'
-      )
-      .in('process_code', codes),
-    // database-fundamentals and database-practice live in assessment_attempts
-    supabase
-      .from('assessment_attempts')
-      .select(
-        'user_id, total_score, percentage, passed, created_at, assessments!inner(slug), metadata'
-      )
-      .or(codes.map((c) => `metadata->>processCode.eq.${c}`).join(','))
-      .eq('status', 'graded'),
-  ]);
+  const { data: rawResults, error: resultsError } =
+    await fetchEmpresaResultsForProcessCodes(supabase, codes);
 
-  if (examResultsRes.error)
-    return { error: examResultsRes.error.message, data: null };
+  if (resultsError) return { error: resultsError, data: null };
 
-  const examRows = examResultsRes.data ?? [];
-
-  // Resolve user_ids from assessment_attempts to names/emails
-  const attemptRows = assessmentAttemptsRes.data ?? [];
-  const userIds = [
-    ...new Set(attemptRows.map((r: any) => r.user_id).filter(Boolean)),
-  ];
-  const profileMap: Record<
-    string,
-    { display_name: string | null; email: string | null }
-  > = {};
-  if (userIds.length > 0) {
-    const { data: profileRows } = await supabase
-      .from('profiles')
-      .select('id, display_name, email')
-      .in('id', userIds);
-    (profileRows ?? []).forEach((p: any) => {
-      profileMap[p.id] = p;
-    });
-  }
-
-  // Normalise assessment_attempts into the same shape
-  const mappedAttempts: EventCandidate[] = attemptRows.map((r: any) => {
-    const profile = profileMap[r.user_id];
-    const processCode =
-      typeof r.metadata === 'object' && r.metadata !== null
-        ? ((r.metadata as Record<string, string>).processCode ?? '')
-        : '';
-    return {
-      name: profile?.display_name || profile?.email || 'Sin nombre',
-      email: profile?.email ?? null,
-      examType: (r.assessments as any)?.slug ?? 'unknown',
-      processCode,
-      percentage: r.percentage ?? 0,
-      passed: r.passed ?? false,
-    };
-  });
-
-  // Normalise exam_results
-  const mappedExams: EventCandidate[] = examRows.map((r) => ({
-    name: r.participant_name || r.participant_email || 'Sin nombre',
-    email: r.participant_email ?? null,
-    examType: r.exam_type,
-    processCode: r.process_code ?? '',
-    percentage: r.percentage ?? 0,
-    passed: r.passed ?? false,
+  const allRaw: EventCandidate[] = rawResults.map((row) => ({
+    name: row.participant_name || row.participant_email || 'Sin nombre',
+    email: row.participant_email ?? null,
+    examType: row.exam_type,
+    processCode: row.process_code ?? '',
+    percentage: row.percentage ?? 0,
+    passed: row.passed ?? false,
   }));
-
-  const allRaw = [...mappedExams, ...mappedAttempts];
 
   // Per-process stats (across both sources)
   const processStats: EventProcessStat[] = processes.map((p) => {

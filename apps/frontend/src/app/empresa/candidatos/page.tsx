@@ -51,12 +51,40 @@ type HiringProcess = {
 const EXAM_LABELS: Record<string, string> = {
   istqb: 'ISTQB CTFL',
   git: 'Git',
+  'git-practico': 'Git Práctica',
   performance: 'Performance',
   'api-testing-fundamentals': 'API Testing Fundamentals',
   'api-banking': 'API Testing Challenge',
   'database-fundamentals': 'Bases de Datos — Fundamentos',
   'database-practice': 'Bases de Datos — Práctica SQL',
 };
+
+const DATABASE_ASSESSMENT_SLUGS = [
+  'database-fundamentals',
+  'database-practice',
+];
+
+function getAttemptProcessCode(metadata: unknown) {
+  if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) {
+    return '';
+  }
+
+  const value = (metadata as Record<string, unknown>).processCode;
+  return typeof value === 'string' ? value : '';
+}
+
+function getAttemptTimeSpentSeconds(row: {
+  started_at?: string | null;
+  submitted_at?: string | null;
+}) {
+  if (!row.started_at || !row.submitted_at) return 0;
+
+  const started = new Date(row.started_at).getTime();
+  const submitted = new Date(row.submitted_at).getTime();
+  if (!Number.isFinite(started) || !Number.isFinite(submitted)) return 0;
+
+  return Math.max(0, Math.round((submitted - started) / 1000));
+}
 
 type SortKey = 'percentage' | 'created_at' | 'participant_name';
 type SortDir = 'asc' | 'desc';
@@ -96,18 +124,81 @@ export default function CandidatosPage() {
 
       let myResults: ExamResult[] = [];
       if (processCodes.length > 0) {
-        const { data: res } = await supabase
-          .from('exam_results')
-          .select(
-            'id, participant_name, participant_email, user_id, exam_type, score, percentage, passed, time_spent, created_at, process_code, section_scores, learning_objectives, profiles(display_name)'
-          )
-          .in('process_code', processCodes)
-          .order('created_at', { ascending: false });
+        const [examResultsRes, assessmentAttemptsRes] = await Promise.all([
+          supabase
+            .from('exam_results')
+            .select(
+              'id, participant_name, participant_email, user_id, exam_type, score, percentage, passed, time_spent, created_at, process_code, section_scores, learning_objectives, profiles(display_name)'
+            )
+            .in('process_code', processCodes),
+          supabase
+            .from('assessment_attempts')
+            .select(
+              'id, user_id, total_score, percentage, passed, started_at, submitted_at, created_at, assessments!inner(slug), metadata'
+            )
+            .or(
+              processCodes
+                .map((code) => `metadata->>processCode.eq.${code}`)
+                .join(',')
+            )
+            .in('assessments.slug', DATABASE_ASSESSMENT_SLUGS)
+            .eq('status', 'graded'),
+        ]);
+
         // Use current profile name when available; fall back to the snapshot stored at exam time
-        myResults = ((res ?? []) as ExamResult[]).map((r) => ({
-          ...r,
-          participant_name: r.profiles?.[0]?.display_name ?? r.participant_name,
-        }));
+        const examResults = ((examResultsRes.data ?? []) as ExamResult[]).map(
+          (r) => ({
+            ...r,
+            participant_name:
+              r.profiles?.[0]?.display_name ?? r.participant_name,
+          })
+        );
+
+        const attemptRows = assessmentAttemptsRes.data ?? [];
+        const userIds = [
+          ...new Set(attemptRows.map((r: any) => r.user_id).filter(Boolean)),
+        ];
+        const profileMap: Record<
+          string,
+          { display_name: string | null; email: string | null }
+        > = {};
+
+        if (userIds.length > 0) {
+          const { data: profileRows } = await supabase
+            .from('profiles')
+            .select('id, display_name, email')
+            .in('id', userIds);
+
+          (profileRows ?? []).forEach((profile: any) => {
+            profileMap[profile.id] = profile;
+          });
+        }
+
+        const assessmentResults: ExamResult[] = attemptRows.map((row: any) => {
+          const profile = profileMap[row.user_id] ?? null;
+          return {
+            id: row.id,
+            participant_name:
+              profile?.display_name || profile?.email || 'Sin nombre',
+            participant_email: profile?.email ?? null,
+            user_id: row.user_id ?? null,
+            exam_type: (row.assessments as any)?.slug ?? 'unknown',
+            score: Number(row.total_score ?? 0),
+            percentage: Number(row.percentage ?? 0),
+            passed: Boolean(row.passed),
+            time_spent: getAttemptTimeSpentSeconds(row),
+            created_at: row.submitted_at ?? row.created_at,
+            process_code: getAttemptProcessCode(row.metadata),
+            section_scores: null,
+            learning_objectives: null,
+            profiles: null,
+          };
+        });
+
+        myResults = [...examResults, ...assessmentResults].sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
       }
 
       setProcesses(procs ?? []);
