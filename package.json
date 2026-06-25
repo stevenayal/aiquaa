@@ -7,42 +7,27 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "pnpm -r build",
+    "build": "pnpm --filter @aiquaa/allpairs-core build && pnpm --filter @aiquaa/frontend build",
     "build:vercel": "pnpm --filter @aiquaa/allpairs-core build && pnpm --filter @aiquaa/frontend run build",
-    "build:backend": "pnpm --filter @aiquaa/backend build",
-    "start:prod": "pnpm --filter @aiquaa/backend start:prod",
-    "prisma:generate": "pnpm --filter @aiquaa/backend prisma:generate",
-    "dev": "concurrently -n FRONT,BACK -c auto \"pnpm --filter @aiquaa/frontend dev\" \"pnpm --filter @aiquaa/backend start:dev\"",
+    "dev": "pnpm dev:front",
     "dev:front": "pnpm --filter @aiquaa/frontend dev",
-    "dev:back": "pnpm --filter @aiquaa/backend start:dev",
-    "lint": "pnpm -r lint",
-    "verify": "pnpm -r lint && pnpm -r test:cov",
-    "test": "pnpm -r test",
-    "test:cov": "pnpm -r test:cov",
-    "test:watch": "pnpm -r test:watch",
-    "test:contract": "pnpm --filter @aiquaa/backend test:contract",
+    "lint": "pnpm --filter @aiquaa/frontend lint",
+    "verify": "pnpm lint && pnpm test:cov",
+    "test": "pnpm --filter @aiquaa/frontend test",
+    "test:cov": "pnpm --filter @aiquaa/frontend test:cov",
+    "test:watch": "pnpm --filter @aiquaa/frontend test:watch",
     "e2e": "pnpm --filter @aiquaa/frontend e2e",
     "e2e:report": "pnpm --filter @aiquaa/frontend e2e:report",
-    "perf:forum": "k6 run perf/k6/forum-smoke.js",
-    "test:email": "node scripts/run-tests-with-email.js all",
-    "test:email:unit": "node scripts/run-tests-with-email.js unit",
-    "test:email:e2e": "node scripts/run-tests-with-email.js e2e",
-    "test:email:contract": "node scripts/run-tests-with-email.js contract",
     "adr:new": "node tools/adr-new.mjs",
     "adr:list": "ls -1 docs/adr | sort",
     "prepare": "node -e \"try { require('child_process').execSync('husky', {stdio: 'ignore'}); } catch(e) {}\"",
     "commit": "git-cz",
     "lint-staged": "lint-staged",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "type-check": "pnpm --filter @aiquaa/frontend type-check && pnpm --filter @aiquaa/backend type-check",
-    "pr-check": "bash scripts/pr-check.sh"
+    "type-check": "pnpm --filter @aiquaa/frontend type-check"
   },
   "lint-staged": {
     "apps/frontend/**/*.{ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "apps/backend/**/*.ts": [
       "eslint --fix",
       "prettier --write"
     ],
@@ -68,11 +53,7 @@
       "next-auth": "4.24.11"
     },
     "onlyBuiltDependencies": [
-      "@nestjs/core",
-      "@nestjs/common",
-      "@nestjs/platform-express",
-      "esbuild",
-      "esbuild-register"
+      "esbuild"
     ],
     "security": {
       "minimumReleaseAge": "1440m"

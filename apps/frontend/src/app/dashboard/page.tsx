@@ -465,7 +465,7 @@ export default function DashboardPage() {
                 { href: '/labs', emoji: '🧪', label: 'Labs' },
                 { href: '/ranking', emoji: '🏆', label: 'Ranking' },
                 { href: '/perfil', emoji: '👤', label: 'Mi Perfil' },
-                { href: '/forum', emoji: '💬', label: 'Foro' },
+                { href: '/assessments', emoji: '🌐', label: 'Assessments' },
               ] as const
             ).map(({ href, emoji, label }) => (
               <Link
