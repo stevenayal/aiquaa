@@ -12,24 +12,47 @@ export async function updateProfileAction(formData: FormData) {
   const country = (formData.get('country') as string)?.trim();
   const githubProfile = (formData.get('github_profile') as string)?.trim();
   const istqbLevel = (formData.get('istqb_level') as string)?.trim();
+  const openToWork = formData.get('open_to_work') === 'true';
+  const talentVisibleToEmpresas =
+    formData.get('talent_visible_to_empresas') === 'true';
 
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
   if (userError || !user) return { error: 'No autenticado' };
 
   const { error } = await supabase.auth.updateUser({
-    data: { full_name: fullName, bio, username, role, country, github_profile: githubProfile, istqb_level: istqbLevel },
+    data: {
+      full_name: fullName,
+      bio,
+      username,
+      role,
+      country,
+      github_profile: githubProfile,
+      istqb_level: istqbLevel,
+      open_to_work: openToWork,
+      talent_visible_to_empresas: talentVisibleToEmpresas,
+    },
   });
 
   if (error) return { error: error.message };
 
   // Sync to profiles table
-  await supabase.from('profiles').upsert({
-    id: user.id,
-    display_name: fullName || username || null,
-    email: user.email,
-    role: role || null,
-    country: country || null,
-  }, { onConflict: 'id' });
+  await supabase.from('profiles').upsert(
+    {
+      id: user.id,
+      display_name: fullName || username || null,
+      email: user.email,
+      role: role || null,
+      country: country || null,
+      istqb_level: istqbLevel || null,
+      github_profile: githubProfile || null,
+      open_to_work: openToWork,
+      talent_visible_to_empresas: talentVisibleToEmpresas,
+    },
+    { onConflict: 'id' }
+  );
 
   revalidatePath('/perfil');
   return { success: true };
@@ -57,13 +80,18 @@ export async function changePasswordAction(formData: FormData) {
 export async function uploadAvatarAction(formData: FormData) {
   const supabase = createClient();
 
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
   if (userError || !user) return { error: 'No autenticado' };
 
   const file = formData.get('avatar') as File;
   if (!file || file.size === 0) return { error: 'Archivo requerido' };
-  if (file.size > 5 * 1024 * 1024) return { error: 'El archivo debe pesar menos de 5MB' };
-  if (!file.type.startsWith('image/')) return { error: 'Solo se permiten imágenes' };
+  if (file.size > 5 * 1024 * 1024)
+    return { error: 'El archivo debe pesar menos de 5MB' };
+  if (!file.type.startsWith('image/'))
+    return { error: 'Solo se permiten imágenes' };
 
   const ext = file.name.split('.').pop() || 'jpg';
   const path = `${user.id}/avatar.${ext}`;
@@ -74,9 +102,9 @@ export async function uploadAvatarAction(formData: FormData) {
 
   if (uploadError) return { error: uploadError.message };
 
-  const { data: { publicUrl } } = supabase.storage
-    .from('avatars')
-    .getPublicUrl(path);
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from('avatars').getPublicUrl(path);
 
   const avatarUrl = `${publicUrl}?t=${Date.now()}`;
 

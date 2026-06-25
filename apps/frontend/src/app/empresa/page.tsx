@@ -39,8 +39,8 @@ const BASE_LINKS = [
   {
     href: '/empresa/candidatos',
     emoji: '👥',
-    title: 'Candidatos evaluados',
-    description: 'Revisá los resultados de exámenes por proceso',
+    title: 'Candidatos y talento QA',
+    description: 'Revisá evaluados, directorio opt-in y shortlist',
   },
   {
     href: '/empresa/invitaciones',
