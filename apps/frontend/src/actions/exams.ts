@@ -84,6 +84,29 @@ export async function saveExamResultAction(payload: SaveExamResultPayload) {
   });
 
   if (error) return { error: error.message };
+
+  // Mark empresa_invitacion as completada when exam is submitted with a process code
+  if (payload.process_code && resolvedEmail) {
+    try {
+      const { data: process } = await supabase
+        .from('hiring_processes')
+        .select('id')
+        .eq('code', payload.process_code)
+        .maybeSingle();
+
+      if (process?.id) {
+        await supabase
+          .from('empresa_invitaciones')
+          .update({ status: 'completada', completed_at: new Date().toISOString() })
+          .eq('candidate_email', resolvedEmail)
+          .eq('process_id', process.id)
+          .in('status', ['pendiente', 'vista']);
+      }
+    } catch (invErr) {
+      console.warn('[empresa-invitaciones] update to completada failed', invErr);
+    }
+  }
+
   try {
     await syncRankingAchievementsForUser(user.id);
   } catch (achievementError) {
