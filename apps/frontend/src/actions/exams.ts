@@ -348,7 +348,7 @@ export async function getMyXpProfileAction() {
   const { data } = await supabase
     .from('user_xp')
     .select(
-      'total_xp, level, current_streak, longest_streak, last_activity_at, achievement_count'
+      'total_xp, level, current_streak, longest_streak, last_activity_at'
     )
     .eq('user_id', user.id)
     .maybeSingle();
@@ -368,7 +368,7 @@ export async function getMyXpProfileAction() {
       currentStreak: data.current_streak ?? 0,
       longestStreak: data.longest_streak ?? 0,
       lastActivityAt: data.last_activity_at ?? null,
-      achievementCount: data.achievement_count ?? 0,
+      achievementCount: 0,
       position: (count ?? 0) + 1,
     },
   };
