@@ -265,6 +265,37 @@ export default function CandidatosPage() {
           });
         }
 
+        // #205: section breakdown for assessment_attempts lives in
+        // assessment_scores (one row per section). Fetch and group by attempt
+        // so recruiters see per-area performance, not just the total score.
+        const attemptIds = attemptRows
+          .map((r: any) => r.id)
+          .filter(Boolean);
+        const sectionScoresByAttempt: Record<string, SectionScore[]> = {};
+        if (attemptIds.length > 0) {
+          const { data: scoreRows } = await supabase
+            .from('assessment_scores')
+            .select(
+              'attempt_id, score, max_score, assessment_sections!inner(title, order_index)'
+            )
+            .in('attempt_id', attemptIds);
+
+          (scoreRows ?? []).forEach((sr: any) => {
+            const section = (sr.assessment_sections as any)?.title;
+            const total = Number(sr.max_score ?? 0);
+            const correct = Number(sr.score ?? 0);
+            if (!section || total <= 0) return;
+            const list = sectionScoresByAttempt[sr.attempt_id] ?? [];
+            list.push({
+              section,
+              correct,
+              total,
+              percentage: Math.round((correct / total) * 100),
+            });
+            sectionScoresByAttempt[sr.attempt_id] = list;
+          });
+        }
+
         const assessmentResults: ExamResult[] = attemptRows.map((row: any) => {
           const profile = profileMap[row.user_id] ?? null;
           return {
@@ -280,7 +311,7 @@ export default function CandidatosPage() {
             time_spent: getAttemptTimeSpentSeconds(row),
             created_at: row.submitted_at ?? row.created_at,
             process_code: getAttemptProcessCode(row.metadata),
-            section_scores: null,
+            section_scores: sectionScoresByAttempt[row.id] ?? null,
             learning_objectives: null,
             profiles: null,
           };

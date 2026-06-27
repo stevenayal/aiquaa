@@ -345,15 +345,23 @@ export async function getMyXpProfileAction() {
   } = await supabase.auth.getUser();
   if (userError || !user) return { data: null };
 
+  // #195: user_xp has no achievement_count column (it is computed in the
+  // ranking_candidatos view via subquery). Selecting it from user_xp returns a
+  // 400 and blanks the dashboard/profile XP widget, so read base XP from
+  // user_xp and pull achievement_count from the view separately.
   const { data } = await supabase
     .from('user_xp')
-    .select(
-      'total_xp, level, current_streak, longest_streak, last_activity_at, achievement_count'
-    )
+    .select('total_xp, level, current_streak, longest_streak, last_activity_at')
     .eq('user_id', user.id)
     .maybeSingle();
 
   if (!data) return { data: null };
+
+  const { data: rankingRow } = await supabase
+    .from('ranking_candidatos')
+    .select('achievement_count')
+    .eq('user_id', user.id)
+    .maybeSingle();
 
   // Count users with more XP to get position
   const { count } = await supabase
@@ -368,7 +376,7 @@ export async function getMyXpProfileAction() {
       currentStreak: data.current_streak ?? 0,
       longestStreak: data.longest_streak ?? 0,
       lastActivityAt: data.last_activity_at ?? null,
-      achievementCount: data.achievement_count ?? 0,
+      achievementCount: rankingRow?.achievement_count ?? 0,
       position: (count ?? 0) + 1,
     },
   };
