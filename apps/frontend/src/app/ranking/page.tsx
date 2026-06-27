@@ -48,70 +48,89 @@ interface XpRankingResponse {
   totalPages: number;
 }
 
-const EXAM_TABS = [
+type ExamSlug =
+  | 'git'
+  | 'git-practico'
+  | 'istqb'
+  | 'performance'
+  | 'api-testing-fundamentals'
+  | 'api-banking'
+  | 'database-fundamentals'
+  | 'database-practice';
+
+const EXAM_SLUGS: ExamSlug[] = [
+  'git',
+  'git-practico',
+  'istqb',
+  'performance',
+  'api-testing-fundamentals',
+  'api-banking',
+  'database-fundamentals',
+  'database-practice',
+];
+
+interface Category {
+  key: string;
+  label: string;
+  emoji: string;
+  color: string;
+  /** Examen teórico (o único, para categorías sin par). */
+  teorico?: ExamSlug;
+  /** Examen práctico, si la categoría tiene par. */
+  practico?: ExamSlug;
+  /** Categoría especial (Comunidad: Bughunters + XP). */
+  special?: 'comunidad';
+}
+
+const CATEGORIES: Category[] = [
   {
-    key: 'reportes',
-    label: 'Bughunters',
-    emoji: '🐛',
-    color: 'from-rose-500 to-pink-600',
+    key: 'database',
+    label: 'Base de Datos',
+    emoji: '🗄️',
+    color: 'from-amber-500 to-yellow-600',
+    teorico: 'database-fundamentals',
+    practico: 'database-practice',
   },
   {
     key: 'git',
-    label: 'Examen GIT',
+    label: 'Git',
     emoji: '🌿',
     color: 'from-amber-500 to-orange-600',
+    teorico: 'git',
+    practico: 'git-practico',
   },
   {
-    key: 'git-practico',
-    label: 'Git Práctica',
-    emoji: '🐙',
-    color: 'from-slate-500 to-gray-700',
+    key: 'api',
+    label: 'API',
+    emoji: '🌐',
+    color: 'from-cyan-500 to-sky-600',
+    teorico: 'api-testing-fundamentals',
+    practico: 'api-banking',
   },
   {
     key: 'istqb',
-    label: 'ISTQB CTFL v4.0',
+    label: 'ISTQB',
     emoji: '📋',
     color: 'from-indigo-500 to-violet-600',
+    teorico: 'istqb',
   },
   {
     key: 'performance',
     label: 'Performance',
     emoji: '⚡',
     color: 'from-emerald-500 to-teal-600',
+    teorico: 'performance',
   },
   {
-    key: 'api-testing-fundamentals',
-    label: 'API Testing',
-    emoji: '🌐',
-    color: 'from-cyan-500 to-sky-600',
-  },
-  {
-    key: 'api-banking',
-    label: 'API Testing Practico',
-    emoji: '🌐',
-    color: 'from-blue-500 to-indigo-600',
-  },
-  {
-    key: 'database-fundamentals',
-    label: 'DB Fundamentos',
-    emoji: '🗄️',
-    color: 'from-amber-500 to-yellow-600',
-  },
-  {
-    key: 'database-practice',
-    label: 'DB Práctica',
-    emoji: '🧮',
-    color: 'from-lime-500 to-green-600',
-  },
-  {
-    key: 'xp',
-    label: 'XP Comunidad',
+    key: 'comunidad',
+    label: 'Comunidad',
     emoji: '🚀',
     color: 'from-purple-500 to-fuchsia-600',
+    special: 'comunidad',
   },
-] as const;
+];
 
-type TabKey = (typeof EXAM_TABS)[number]['key'];
+type CategoryKey = (typeof CATEGORIES)[number]['key'];
 
 const EXAM_TAB_URLS: Record<string, string> = {
   git: '/labs/git',
@@ -788,12 +807,199 @@ function ReportadoresTab({ isDarkMode }: { isDarkMode: boolean }) {
 
 // ── Página principal ──────────────────────────────────────────────────────────
 
+// ── Columna de leaderboard reutilizable (podio + tabla) ─────────────────────────
+
+function LeaderboardColumn({
+  examType,
+  title,
+  emoji,
+  entries,
+  loading,
+  isDarkMode,
+}: {
+  examType: ExamSlug;
+  title: string;
+  emoji: string;
+  entries: LeaderboardEntry[];
+  loading: boolean;
+  isDarkMode: boolean;
+}) {
+  const top3 = entries.slice(0, 3);
+  const rest = entries.slice(3);
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-center gap-2">
+        <span className="text-lg">{emoji}</span>
+        <h3
+          className={`text-sm font-bold uppercase tracking-wide ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}
+        >
+          {title}
+        </h3>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center py-16">
+          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-indigo-500" />
+        </div>
+      ) : entries.length === 0 ? (
+        <div
+          className={`text-center py-12 rounded-2xl ${isDarkMode ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-gray-200'}`}
+        >
+          <p className="text-5xl mb-3">📭</p>
+          <p
+            className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}
+          >
+            Aún no hay resultados
+          </p>
+          <p
+            className={`text-sm mt-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+          >
+            ¡Sé el primero en completar el examen y aparecer acá!
+          </p>
+          <a
+            href={EXAM_TAB_URLS[examType] ?? '/labs'}
+            className="inline-block mt-4 px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition-colors"
+          >
+            {emoji} Ir al examen
+          </a>
+        </div>
+      ) : (
+        <>
+          {/* Podio top 3 */}
+          {top3.length > 0 && (
+            <div
+              className={`rounded-2xl p-6 ${isDarkMode ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-gray-200 shadow-sm'}`}
+            >
+              <div className="flex items-end justify-center gap-4">
+                {[top3[1], top3[0], top3[2]].map((entry, i) => {
+                  if (!entry) return <div key={i} className="w-24" />;
+                  const podiumRank = i === 1 ? 0 : i === 0 ? 1 : 2;
+                  const heights = ['h-32', 'h-24', 'h-20'];
+                  return (
+                    <div
+                      key={entry.rank}
+                      className="flex flex-col items-center gap-2 flex-1"
+                    >
+                      <MiniAvatar
+                        name={entry.display_name}
+                        avatarUrl={entry.avatar_url}
+                      />
+                      <p
+                        className={`text-xs font-semibold text-center break-words w-full max-w-[96px] line-clamp-2 leading-tight ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}
+                      >
+                        {entry.display_name}
+                      </p>
+                      <p
+                        className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                      >
+                        {entry.best_score}/
+                        {entry.max_possible_score ?? entry.total_questions}
+                      </p>
+                      <div
+                        className={`w-full rounded-t-lg flex items-center justify-center text-2xl ${heights[podiumRank]} ${
+                          podiumRank === 0
+                            ? 'bg-gradient-to-t from-yellow-600 to-yellow-400'
+                            : podiumRank === 1
+                              ? 'bg-gradient-to-t from-slate-500 to-slate-400'
+                              : 'bg-gradient-to-t from-amber-800 to-amber-600'
+                        }`}
+                      >
+                        {MEDAL[podiumRank]}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Tabla del resto */}
+          {rest.length > 0 && (
+            <div
+              className={`rounded-2xl overflow-hidden ${isDarkMode ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-gray-200 shadow-sm'}`}
+            >
+              {rest.map((entry, i) => (
+                <div
+                  key={entry.rank}
+                  className={`flex items-center gap-4 px-5 py-3.5 ${
+                    i < rest.length - 1
+                      ? isDarkMode
+                        ? 'border-b border-slate-700'
+                        : 'border-b border-gray-100'
+                      : ''
+                  } ${isDarkMode ? 'hover:bg-slate-700/50' : 'hover:bg-gray-50'} transition-colors`}
+                >
+                  <span
+                    className={`w-6 text-center text-sm font-bold shrink-0 ${isDarkMode ? 'text-slate-400' : 'text-gray-400'}`}
+                  >
+                    {entry.rank}
+                  </span>
+                  <MiniAvatar
+                    name={entry.display_name}
+                    avatarUrl={entry.avatar_url}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p
+                      className={`text-sm font-semibold truncate ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}
+                    >
+                      {entry.display_name}
+                    </p>
+                    <p
+                      className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+                    >
+                      {entry.attempts} intento
+                      {entry.attempts !== 1 ? 's' : ''}
+                      {' · '}
+                      {new Date(entry.achieved_at).toLocaleDateString('es-PY', {
+                        day: '2-digit',
+                        month: 'short',
+                      })}
+                    </p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p
+                      className={`text-sm font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                    >
+                      {entry.best_score}/
+                      {entry.max_possible_score ?? entry.total_questions}
+                    </p>
+                    <p
+                      className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                    >
+                      {Number(entry.best_percentage).toFixed(0)}%
+                    </p>
+                  </div>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-semibold shrink-0 ${
+                      entry.passed
+                        ? isDarkMode
+                          ? 'bg-emerald-900/40 text-emerald-300'
+                          : 'bg-emerald-100 text-emerald-700'
+                        : isDarkMode
+                          ? 'bg-red-900/40 text-red-300'
+                          : 'bg-red-100 text-red-700'
+                    }`}
+                  >
+                    {entry.passed ? '✓' : '✗'}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
 export default function RankingPage() {
   const { isDarkMode } = useTheme();
   const { user } = useSupabaseAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<TabKey>('reportes');
+  const [activeCategory, setActiveCategory] =
+    useState<CategoryKey>('database');
   const [examData, setExamData] = useState<Record<string, LeaderboardEntry[]>>({
     git: [],
     'git-practico': [],
@@ -828,18 +1034,7 @@ export default function RankingPage() {
   }, [isWelcome, router]);
 
   useEffect(() => {
-    (
-      [
-        'git',
-        'git-practico',
-        'istqb',
-        'performance',
-        'api-testing-fundamentals',
-        'api-banking',
-        'database-fundamentals',
-        'database-practice',
-      ] as const
-    ).forEach((key) => {
+    EXAM_SLUGS.forEach((key) => {
       getLeaderboardAction(key, 20)
         .then((res) => {
           setExamData((prev) => ({
@@ -857,23 +1052,19 @@ export default function RankingPage() {
     });
   }, []);
 
-  const tab = EXAM_TABS.find((t) => t.key === activeTab)!;
-  const isReportes = activeTab === 'reportes';
-  const isXp = activeTab === 'xp';
-  const entries = isReportes || isXp ? [] : (examData[activeTab] ?? []);
-  const isLoading =
-    isReportes || isXp ? false : (examLoading[activeTab] ?? false);
-
-  const top3 = entries.slice(0, 3);
-  const rest = entries.slice(3);
+  const category = CATEGORIES.find((c) => c.key === activeCategory)!;
+  const isComunidad = category.special === 'comunidad';
+  const isPaired = Boolean(category.teorico && category.practico);
+  // URL de práctica para el CTA inferior (teórico primero, luego práctico).
+  const practiceSlug = category.teorico ?? category.practico;
 
   const firstName = user?.user_metadata?.full_name?.split(' ')[0] ?? 'por acá';
 
   function getSubtitle() {
-    if (isReportes)
-      return 'Personas que contribuyeron reportando bugs y mejoras';
-    if (isXp)
-      return 'Ranking de XP de la comunidad — ganás XP completando simuladores y generando casos de prueba';
+    if (isComunidad)
+      return 'Bughunters que reportan bugs y ranking de XP de la comunidad';
+    if (isPaired)
+      return 'Top teórico y práctico — modo examen. ¿Estás en el ranking?';
     return 'Top 20 mejores puntajes en modo examen. ¿Estás en el ranking?';
   }
 
@@ -881,7 +1072,7 @@ export default function RankingPage() {
     <div
       className={`min-h-screen py-10 px-4 ${isDarkMode ? 'bg-slate-900' : 'bg-gray-50'}`}
     >
-      <div className="max-w-3xl mx-auto space-y-8">
+      <div className="max-w-6xl mx-auto space-y-8">
         {/* Welcome banner */}
         {showWelcome && (
           <div
@@ -913,7 +1104,7 @@ export default function RankingPage() {
 
         {/* Header */}
         <div className="text-center space-y-2">
-          <div className="text-5xl">{isXp ? '🚀' : '🏆'}</div>
+          <div className="text-5xl">{isComunidad ? '🚀' : '🏆'}</div>
           <h1
             className={`text-3xl font-extrabold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
           >
@@ -932,32 +1123,32 @@ export default function RankingPage() {
           aria-label="Tipos de ranking"
           className={`flex rounded-xl p-1 gap-1 flex-wrap ${isDarkMode ? 'bg-slate-800' : 'bg-gray-200'}`}
         >
-          {EXAM_TABS.map((t) => (
+          {CATEGORIES.map((c) => (
             <button
-              key={t.key}
-              id={`ranking-tab-${t.key}`}
+              key={c.key}
+              id={`ranking-tab-${c.key}`}
               role="tab"
-              aria-selected={activeTab === t.key}
+              aria-selected={activeCategory === c.key}
               aria-controls="ranking-tabpanel"
-              onClick={() => setActiveTab(t.key)}
+              onClick={() => setActiveCategory(c.key)}
               onKeyDown={(e) => {
-                const keys = EXAM_TABS.map((tab) => tab.key);
-                const idx = keys.indexOf(t.key);
+                const keys = CATEGORIES.map((cat) => cat.key);
+                const idx = keys.indexOf(c.key);
                 if (e.key === 'ArrowRight') {
-                  setActiveTab(keys[(idx + 1) % keys.length]);
+                  setActiveCategory(keys[(idx + 1) % keys.length]);
                 } else if (e.key === 'ArrowLeft') {
-                  setActiveTab(keys[(idx - 1 + keys.length) % keys.length]);
+                  setActiveCategory(keys[(idx - 1 + keys.length) % keys.length]);
                 }
               }}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-sm font-semibold transition-all min-w-[100px] ${
-                activeTab === t.key
-                  ? `bg-gradient-to-r ${t.color} text-white shadow-md`
+                activeCategory === c.key
+                  ? `bg-gradient-to-r ${c.color} text-white shadow-md`
                   : isDarkMode
                     ? 'text-slate-400 hover:text-white'
                     : 'text-gray-500 hover:text-gray-800'
               }`}
             >
-              {t.emoji} {t.label}
+              {c.emoji} {c.label}
             </button>
           ))}
         </div>
@@ -966,162 +1157,69 @@ export default function RankingPage() {
         <div
           id="ranking-tabpanel"
           role="tabpanel"
-          aria-labelledby={`ranking-tab-${activeTab}`}
+          aria-labelledby={`ranking-tab-${activeCategory}`}
+          className="space-y-6"
         >
-          {isReportes ? (
-            <ReportadoresTab isDarkMode={isDarkMode} />
-          ) : isXp ? (
-            <XpComunidadTab isDarkMode={isDarkMode} />
-          ) : isLoading ? (
-            <div className="flex justify-center py-16">
-              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-indigo-500" />
-            </div>
-          ) : entries.length === 0 ? (
-            <div
-              className={`text-center py-16 rounded-2xl ${isDarkMode ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-gray-200'}`}
-            >
-              <p className="text-5xl mb-3">📭</p>
-              <p
-                className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}
-              >
-                Aún no hay resultados
-              </p>
-              <p
-                className={`text-sm mt-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-              >
-                ¡Sé el primero en completar el examen y aparecer acá!
-              </p>
-              <a
-                href={EXAM_TAB_URLS[activeTab] ?? '/labs'}
-                className="inline-block mt-4 px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition-colors"
-              >
-                {tab.emoji} Ir al examen
-              </a>
+          {isComunidad ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-center gap-2">
+                  <span className="text-lg">🐛</span>
+                  <h3
+                    className={`text-sm font-bold uppercase tracking-wide ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}
+                  >
+                    Bughunters
+                  </h3>
+                </div>
+                <ReportadoresTab isDarkMode={isDarkMode} />
+              </div>
+              <div className="space-y-4">
+                <div className="flex items-center justify-center gap-2">
+                  <span className="text-lg">🚀</span>
+                  <h3
+                    className={`text-sm font-bold uppercase tracking-wide ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}
+                  >
+                    XP Comunidad
+                  </h3>
+                </div>
+                <XpComunidadTab isDarkMode={isDarkMode} />
+              </div>
             </div>
           ) : (
             <>
-              {/* Podio top 3 */}
-              {top3.length > 0 && (
-                <div
-                  className={`rounded-2xl p-6 ${isDarkMode ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-gray-200 shadow-sm'}`}
-                >
-                  <div className="flex items-end justify-center gap-4">
-                    {[top3[1], top3[0], top3[2]].map((entry, i) => {
-                      if (!entry) return <div key={i} className="w-24" />;
-                      const podiumRank = i === 1 ? 0 : i === 0 ? 1 : 2;
-                      const heights = ['h-32', 'h-24', 'h-20'];
-                      return (
-                        <div
-                          key={entry.rank}
-                          className="flex flex-col items-center gap-2 flex-1"
-                        >
-                          <MiniAvatar
-                            name={entry.display_name}
-                            avatarUrl={entry.avatar_url}
-                          />
-                          <p
-                            className={`text-xs font-semibold text-center break-words w-full max-w-[96px] line-clamp-2 leading-tight ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}
-                          >
-                            {entry.display_name}
-                          </p>
-                          <p
-                            className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-                          >
-                            {entry.best_score}/
-                            {entry.max_possible_score ?? entry.total_questions}
-                          </p>
-                          <div
-                            className={`w-full rounded-t-lg flex items-center justify-center text-2xl ${heights[podiumRank]} ${
-                              podiumRank === 0
-                                ? 'bg-gradient-to-t from-yellow-600 to-yellow-400'
-                                : podiumRank === 1
-                                  ? 'bg-gradient-to-t from-slate-500 to-slate-400'
-                                  : 'bg-gradient-to-t from-amber-800 to-amber-600'
-                            }`}
-                          >
-                            {MEDAL[podiumRank]}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
+              {isPaired ? (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <LeaderboardColumn
+                    examType={category.teorico!}
+                    title="Top Teórico"
+                    emoji="📚"
+                    entries={examData[category.teorico!] ?? []}
+                    loading={examLoading[category.teorico!] ?? false}
+                    isDarkMode={isDarkMode}
+                  />
+                  <LeaderboardColumn
+                    examType={category.practico!}
+                    title="Top Práctico"
+                    emoji="🛠️"
+                    entries={examData[category.practico!] ?? []}
+                    loading={examLoading[category.practico!] ?? false}
+                    isDarkMode={isDarkMode}
+                  />
+                </div>
+              ) : (
+                <div className="max-w-xl mx-auto">
+                  <LeaderboardColumn
+                    examType={category.teorico!}
+                    title="Ranking"
+                    emoji={category.emoji}
+                    entries={examData[category.teorico!] ?? []}
+                    loading={examLoading[category.teorico!] ?? false}
+                    isDarkMode={isDarkMode}
+                  />
                 </div>
               )}
 
-              {/* Tabla del resto */}
-              {rest.length > 0 && (
-                <div
-                  className={`rounded-2xl overflow-hidden ${isDarkMode ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-gray-200 shadow-sm'}`}
-                >
-                  {rest.map((entry, i) => (
-                    <div
-                      key={entry.rank}
-                      className={`flex items-center gap-4 px-5 py-3.5 ${
-                        i < rest.length - 1
-                          ? isDarkMode
-                            ? 'border-b border-slate-700'
-                            : 'border-b border-gray-100'
-                          : ''
-                      } ${isDarkMode ? 'hover:bg-slate-700/50' : 'hover:bg-gray-50'} transition-colors`}
-                    >
-                      <span
-                        className={`w-6 text-center text-sm font-bold shrink-0 ${isDarkMode ? 'text-slate-400' : 'text-gray-400'}`}
-                      >
-                        {entry.rank}
-                      </span>
-                      <MiniAvatar
-                        name={entry.display_name}
-                        avatarUrl={entry.avatar_url}
-                      />
-                      <div className="flex-1 min-w-0">
-                        <p
-                          className={`text-sm font-semibold truncate ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}
-                        >
-                          {entry.display_name}
-                        </p>
-                        <p
-                          className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
-                        >
-                          {entry.attempts} intento
-                          {entry.attempts !== 1 ? 's' : ''}
-                          {' · '}
-                          {new Date(entry.achieved_at).toLocaleDateString(
-                            'es-PY',
-                            { day: '2-digit', month: 'short' }
-                          )}
-                        </p>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <p
-                          className={`text-sm font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
-                        >
-                          {entry.best_score}/
-                          {entry.max_possible_score ?? entry.total_questions}
-                        </p>
-                        <p
-                          className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-                        >
-                          {Number(entry.best_percentage).toFixed(0)}%
-                        </p>
-                      </div>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-semibold shrink-0 ${
-                          entry.passed
-                            ? isDarkMode
-                              ? 'bg-emerald-900/40 text-emerald-300'
-                              : 'bg-emerald-100 text-emerald-700'
-                            : isDarkMode
-                              ? 'bg-red-900/40 text-red-300'
-                              : 'bg-red-100 text-red-700'
-                        }`}
-                      >
-                        {entry.passed ? '✓' : '✗'}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-
+              {/* CTA practicar + nota */}
               <div
                 className={`rounded-2xl p-4 flex items-center justify-between gap-4 ${isDarkMode ? 'bg-amber-900/20 border border-amber-700/50' : 'bg-amber-50 border border-amber-200'}`}
               >
@@ -1139,7 +1237,9 @@ export default function RankingPage() {
                   </p>
                 </div>
                 <a
-                  href={EXAM_TAB_URLS[activeTab] ?? '/labs'}
+                  href={
+                    (practiceSlug && EXAM_TAB_URLS[practiceSlug]) ?? '/labs'
+                  }
                   className="shrink-0 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold rounded-lg transition-colors"
                 >
                   Practicar →
