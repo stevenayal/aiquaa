@@ -24,6 +24,7 @@ import {
   type FavoriteRow,
   type TalentCandidate,
 } from './candidateDirectory';
+import { createInvitacionAction } from '@/actions/empresa-invitaciones';
 
 type SectionScore = {
   section: string;
@@ -135,6 +136,10 @@ export default function CandidatosPage() {
   const [selectedCandidateIds, setSelectedCandidateIds] = useState<string[]>(
     []
   );
+  const [filterCountry, setFilterCountry] = useState<string>('all');
+  const [inviteEmail, setInviteEmail] = useState<string | null>(null);
+  const [inviteModalOpen, setInviteModalOpen] = useState(false);
+  const [inviteSending, setInviteSending] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -452,6 +457,8 @@ export default function CandidatosPage() {
     return talentCandidates.filter((candidate) => {
       const matchesLevel =
         filterIstqbLevel === 'all' || candidate.istqbLevel === filterIstqbLevel;
+      const matchesCountry =
+        filterCountry === 'all' || candidate.country === filterCountry;
       const matchesSearch =
         !q ||
         candidate.name.toLowerCase().includes(q) ||
@@ -464,9 +471,9 @@ export default function CandidatosPage() {
               .includes(q)
           : false);
 
-      return matchesLevel && matchesSearch;
+      return matchesLevel && matchesCountry && matchesSearch;
     });
-  }, [filterIstqbLevel, talentCandidates, search]);
+  }, [filterIstqbLevel, filterCountry, talentCandidates, search]);
 
   const favoriteCandidates = useMemo(
     () =>
@@ -695,6 +702,72 @@ export default function CandidatosPage() {
     });
   };
 
+  const availableCountries = useMemo(
+    () =>
+      [...new Set(talentCandidates.map((c) => c.country).filter(Boolean))].sort() as string[],
+    [talentCandidates]
+  );
+
+  const COUNTRY_LABELS: Record<string, string> = {
+    PY: '🇵🇾 Paraguay',
+    AR: '🇦🇷 Argentina',
+    BO: '🇧🇴 Bolivia',
+    BR: '🇧🇷 Brasil',
+    CL: '🇨🇱 Chile',
+    CO: '🇨🇴 Colombia',
+    EC: '🇪🇨 Ecuador',
+    MX: '🇲🇽 México',
+    PE: '🇵🇪 Perú',
+    UY: '🇺🇾 Uruguay',
+    VE: '🇻🇪 Venezuela',
+  };
+
+  const exportCSV = () => {
+    const rows = [
+      ['Nombre', 'Email', 'Examen', 'Puntaje', 'Estado', 'Código proceso', 'Fecha'],
+      ...filtered.map((r) => [
+        r.participant_name ?? '',
+        r.participant_email ?? '',
+        EXAM_LABELS[r.exam_type] ?? r.exam_type,
+        String(r.percentage),
+        r.passed ? 'Aprobado' : 'No aprobado',
+        r.process_code ?? '',
+        new Date(r.created_at).toLocaleDateString('es-PY'),
+      ]),
+    ];
+    const csv = rows
+      .map((row) =>
+        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',')
+      )
+      .join('\n');
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `candidatos-evaluados-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const openInviteModal = (email: string) => {
+    setInviteEmail(email);
+    setInviteModalOpen(true);
+  };
+
+  const sendInvite = async () => {
+    if (!inviteEmail) return;
+    setInviteSending(true);
+    const { error } = await createInvitacionAction({ candidate_email: inviteEmail });
+    setInviteSending(false);
+    setInviteModalOpen(false);
+    setInviteEmail(null);
+    if (error) {
+      setActionMessage(`Error al invitar: ${error}`);
+    } else {
+      setActionMessage(`Invitación enviada a ${inviteEmail}`);
+    }
+  };
+
   const passCount = filtered.filter((r) => r.passed).length;
   const avgScore = filtered.length
     ? Math.round(
@@ -875,6 +948,15 @@ export default function CandidatosPage() {
                           >
                             Contactar
                           </a>
+                        )}
+                        {candidate.email && (
+                          <button
+                            type="button"
+                            onClick={() => openInviteModal(candidate.email!)}
+                            className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
+                          >
+                            Invitar
+                          </button>
                         )}
                         <Link
                           href={`/talento/${candidate.userId}`}
@@ -1090,6 +1172,20 @@ export default function CandidatosPage() {
                 ))}
               </select>
             )}
+            {viewMode !== 'evaluados' && availableCountries.length > 0 && (
+              <select
+                value={filterCountry}
+                onChange={(e) => setFilterCountry(e.target.value)}
+                className={inputClass}
+              >
+                <option value="all">Todos los países</option>
+                {availableCountries.map((c) => (
+                  <option key={c} value={c}>
+                    {COUNTRY_LABELS[c] ?? c}
+                  </option>
+                ))}
+              </select>
+            )}
             <select
               value={filterPassed}
               onChange={(e) =>
@@ -1101,12 +1197,22 @@ export default function CandidatosPage() {
               <option value="passed">✓ Aprobados</option>
               <option value="failed">✗ No aprobados</option>
             </select>
+            {viewMode === 'evaluados' && filtered.length > 0 && (
+              <button
+                type="button"
+                onClick={exportCSV}
+                className={`px-3 py-2 rounded-lg text-sm font-medium border transition-colors ${isDarkMode ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+              >
+                📥 Exportar CSV
+              </button>
+            )}
           </div>
 
           {(search ||
             selectedCode !== 'all' ||
             filterExam !== 'all' ||
             filterIstqbLevel !== 'all' ||
+            filterCountry !== 'all' ||
             filterPassed !== 'all') && (
             <button
               onClick={() => {
@@ -1114,6 +1220,7 @@ export default function CandidatosPage() {
                 setSelectedCode('all');
                 setFilterExam('all');
                 setFilterIstqbLevel('all');
+                setFilterCountry('all');
                 setFilterPassed('all');
               }}
               className={`text-xs ${isDarkMode ? 'text-slate-400 hover:text-slate-200' : 'text-gray-400 hover:text-gray-600'} transition-colors`}
@@ -1693,6 +1800,46 @@ export default function CandidatosPage() {
           </Link>
         </div>
       </div>
+
+      {/* Invite modal */}
+      {inviteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div
+            className={`w-full max-w-sm rounded-2xl border p-6 space-y-4 shadow-xl ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}`}
+          >
+            <h3
+              className={`font-bold text-base ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+            >
+              Invitar a evaluación
+            </h3>
+            <p className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}>
+              Se enviará una invitación por email a{' '}
+              <span className="font-semibold">{inviteEmail}</span> con el link para
+              acceder a la evaluación.
+            </p>
+            <div className="flex gap-2 pt-1">
+              <button
+                type="button"
+                onClick={sendInvite}
+                disabled={inviteSending}
+                className="flex-1 py-2.5 rounded-lg text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition-colors disabled:opacity-50"
+              >
+                {inviteSending ? 'Enviando...' : 'Enviar invitación'}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setInviteModalOpen(false);
+                  setInviteEmail(null);
+                }}
+                className={`flex-1 py-2.5 rounded-lg text-sm font-semibold border transition-colors ${isDarkMode ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

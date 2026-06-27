@@ -24,6 +24,37 @@ const INDUSTRIES = [
   { value: 'otro', label: 'Otro' },
 ];
 
+const WORK_MODES = [
+  { value: 'remoto', label: '🌐 Remoto' },
+  { value: 'hibrido', label: '🏠 Híbrido' },
+  { value: 'presencial', label: '🏢 Presencial' },
+];
+
+const QA_TEAM_SIZES = [
+  { value: '1', label: '1 persona' },
+  { value: '2-5', label: '2–5 personas' },
+  { value: '5-20', label: '5–20 personas' },
+  { value: '20+', label: '20+ personas' },
+];
+
+const TECH_STACK_SUGGESTIONS = [
+  'Selenium',
+  'Cypress',
+  'Playwright',
+  'Jira',
+  'Postman',
+  'Git',
+  'Jenkins',
+  'GitHub Actions',
+  'TestRail',
+  'Appium',
+  'k6',
+  'JMeter',
+  'SQL',
+  'Python',
+  'Java',
+];
+
 const TEAM_SIZES = [
   { value: '1-10', label: '1–10 personas' },
   { value: '11-50', label: '11–50 personas' },
@@ -55,6 +86,7 @@ const PROFILE_FIELDS = [
   { key: 'industry', label: 'Industria', anchor: '#industria' },
   { key: 'country', label: 'País', anchor: '#pais' },
   { key: 'team_size', label: 'Tamaño del equipo', anchor: '#team-size' },
+  { key: 'work_mode', label: 'Modalidad de trabajo', anchor: '#work-mode' },
 ] as const;
 
 function completionScore(empresa: Empresa): number {
@@ -91,7 +123,13 @@ export default function EmpresaPerfilPage() {
     industry: '',
     country: 'PY',
     team_size: '',
+    work_mode: '',
+    benefits: '',
+    linkedin_url: '',
+    qa_team_size: '',
   });
+  const [techStack, setTechStack] = useState<string[]>([]);
+  const [techStackInput, setTechStackInput] = useState('');
 
   useEffect(() => {
     getMyEmpresaAction().then(({ data }) => {
@@ -106,7 +144,12 @@ export default function EmpresaPerfilPage() {
           industry: data.industry ?? '',
           country: data.country ?? 'PY',
           team_size: data.team_size ?? '',
+          work_mode: data.work_mode ?? '',
+          benefits: data.benefits ?? '',
+          linkedin_url: data.linkedin_url ?? '',
+          qa_team_size: data.qa_team_size ?? '',
         });
+        setTechStack(data.tech_stack ?? []);
       }
       setLoading(false);
     });
@@ -176,11 +219,13 @@ export default function EmpresaPerfilPage() {
       return;
     }
     startSaving(async () => {
-      const { error } = await updateEmpresaAction(form);
+      const { error } = await updateEmpresaAction({ ...form, tech_stack: techStack });
       if (error) {
         setAlert({ type: 'error', msg: error });
       } else {
-        setEmpresa((prev) => (prev ? { ...prev, ...form } : prev));
+        setEmpresa((prev) =>
+          prev ? { ...prev, ...form, tech_stack: techStack } : prev
+        );
         setAlert({ type: 'success', msg: 'Perfil guardado correctamente' });
       }
     });
@@ -517,6 +562,176 @@ export default function EmpresaPerfilPage() {
                 </button>
               ))}
             </div>
+          </div>
+        </div>
+
+        {/* Employer branding */}
+        <div className={`rounded-xl border p-6 space-y-5 ${card}`}>
+          <h2
+            className={`text-base font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+          >
+            Employer branding QA
+          </h2>
+
+          <div id="work-mode">
+            <label className={labelClass}>Modalidad de trabajo</label>
+            <div className="flex flex-wrap gap-2">
+              {WORK_MODES.map((wm) => (
+                <button
+                  key={wm.value}
+                  type="button"
+                  onClick={() =>
+                    setForm((f) => ({
+                      ...f,
+                      work_mode: f.work_mode === wm.value ? '' : wm.value,
+                    }))
+                  }
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
+                    form.work_mode === wm.value
+                      ? 'border-indigo-500 bg-indigo-600 text-white'
+                      : isDarkMode
+                        ? 'border-slate-600 text-slate-300 hover:border-indigo-400'
+                        : 'border-gray-300 text-gray-700 hover:border-indigo-400'
+                  }`}
+                >
+                  {wm.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className={labelClass}>Tamaño del equipo QA</label>
+            <div className="flex flex-wrap gap-2">
+              {QA_TEAM_SIZES.map((qs) => (
+                <button
+                  key={qs.value}
+                  type="button"
+                  onClick={() =>
+                    setForm((f) => ({
+                      ...f,
+                      qa_team_size: f.qa_team_size === qs.value ? '' : qs.value,
+                    }))
+                  }
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
+                    form.qa_team_size === qs.value
+                      ? 'border-indigo-500 bg-indigo-600 text-white'
+                      : isDarkMode
+                        ? 'border-slate-600 text-slate-300 hover:border-indigo-400'
+                        : 'border-gray-300 text-gray-700 hover:border-indigo-400'
+                  }`}
+                >
+                  {qs.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className={labelClass}>Stack tecnológico QA</label>
+            <div className="flex flex-wrap gap-1.5 mb-2">
+              {techStack.map((tool) => (
+                <span
+                  key={tool}
+                  className={`inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full ${
+                    isDarkMode
+                      ? 'bg-indigo-900/50 text-indigo-200'
+                      : 'bg-indigo-100 text-indigo-700'
+                  }`}
+                >
+                  {tool}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setTechStack((prev) => prev.filter((t) => t !== tool))
+                    }
+                    className="opacity-60 hover:opacity-100 leading-none"
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={techStackInput}
+                onChange={(e) => setTechStackInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (
+                    (e.key === 'Enter' || e.key === ',') &&
+                    techStackInput.trim()
+                  ) {
+                    e.preventDefault();
+                    const tool = techStackInput.trim();
+                    if (!techStack.includes(tool)) {
+                      setTechStack((prev) => [...prev, tool]);
+                    }
+                    setTechStackInput('');
+                  }
+                }}
+                placeholder="Ej: Selenium, Cypress, Jira..."
+                className={`${inputClass} flex-1`}
+                list="tech-suggestions"
+              />
+              <datalist id="tech-suggestions">
+                {TECH_STACK_SUGGESTIONS.filter(
+                  (s) => !techStack.includes(s)
+                ).map((s) => (
+                  <option key={s} value={s} />
+                ))}
+              </datalist>
+              <button
+                type="button"
+                onClick={() => {
+                  const tool = techStackInput.trim();
+                  if (tool && !techStack.includes(tool)) {
+                    setTechStack((prev) => [...prev, tool]);
+                  }
+                  setTechStackInput('');
+                }}
+                className="px-3 py-2 rounded-lg text-sm bg-indigo-600 text-white hover:bg-indigo-700 transition-colors"
+              >
+                +
+              </button>
+            </div>
+            <p
+              className={`text-xs mt-1 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+            >
+              Presioná Enter o coma para agregar. Seleccioná de las sugerencias o escribí cualquier herramienta.
+            </p>
+          </div>
+
+          <div>
+            <label className={labelClass}>Beneficios para el equipo QA</label>
+            <textarea
+              value={form.benefits}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, benefits: e.target.value }))
+              }
+              rows={3}
+              placeholder="Ej: Obra social, días de home office, capacitaciones pagas, certificaciones ISTQB..."
+              className={`${inputClass} resize-none`}
+              maxLength={500}
+            />
+            <p
+              className={`text-xs mt-1 text-right ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+            >
+              {form.benefits.length}/500
+            </p>
+          </div>
+
+          <div>
+            <label className={labelClass}>LinkedIn de la empresa</label>
+            <input
+              type="url"
+              value={form.linkedin_url}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, linkedin_url: e.target.value }))
+              }
+              placeholder="https://linkedin.com/company/mi-empresa"
+              className={inputClass}
+            />
           </div>
         </div>
 
