@@ -2,6 +2,26 @@
 
 import { createClient } from '@/lib/supabase/server';
 
+// #197 / #204 / #177: extension point for candidate invitation emails.
+// Email sending stays OFF until EMAIL_SENDING_ENABLED is set; until then this
+// is a no-op that reports "not sent" so the invitation is still persisted with
+// an accurate email_sent=false. Do NOT connect Resend here yet.
+const EMAIL_SENDING_ENABLED = process.env.EMAIL_SENDING_ENABLED === 'true';
+
+async function sendInvitacionEmail(_data: {
+  candidate_email: string;
+  candidate_name: string | null;
+  message: string | null;
+  token: string;
+  process_id: string | null;
+}): Promise<{ sent: boolean; error?: string }> {
+  if (!EMAIL_SENDING_ENABLED) {
+    return { sent: false };
+  }
+  // TODO(#197): wire Resend / backend mailer here and return { sent: true }.
+  return { sent: false, error: 'Email sending not configured' };
+}
+
 export interface EmpresaInvitacion {
   id: string;
   empresa_id: string;
@@ -15,6 +35,8 @@ export interface EmpresaInvitacion {
   sent_at: string;
   viewed_at: string | null;
   completed_at: string | null;
+  email_sent: boolean;
+  email_error: string | null;
   created_at: string;
   hiring_processes?: { position_name: string; code: string } | null;
   profiles?: { display_name: string } | null;
@@ -104,7 +126,31 @@ export async function createInvitacionAction(payload: {
 
   if (error) return { data: null, error: error.message };
 
-  return { data: data as EmpresaInvitacion, error: null };
+  // #197/#204: attempt to notify the candidate. No-op while email sending is
+  // disabled — the invitation is already persisted with email_sent=false.
+  const invitacion = data as EmpresaInvitacion;
+  const emailResult = await sendInvitacionEmail({
+    candidate_email: invitacion.candidate_email,
+    candidate_name: invitacion.candidate_name,
+    message: invitacion.message,
+    token: invitacion.token,
+    process_id: invitacion.process_id,
+  });
+
+  if (emailResult.sent || emailResult.error) {
+    const { data: updated } = await supabase
+      .from('empresa_invitaciones')
+      .update({
+        email_sent: emailResult.sent,
+        email_error: emailResult.error ?? null,
+      })
+      .eq('id', invitacion.id)
+      .select('*, hiring_processes(position_name, code)')
+      .single();
+    if (updated) return { data: updated as EmpresaInvitacion, error: null };
+  }
+
+  return { data: invitacion, error: null };
 }
 
 export async function cancelInvitacionAction(invitacionId: string): Promise<{
