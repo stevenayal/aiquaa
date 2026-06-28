@@ -422,19 +422,6 @@ export default function EmpresaDashboardPage() {
           </div>
         )}
 
-        <div className="text-center">
-          <p
-            className={`text-sm ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
-          >
-            ¿Querés explorar la plataforma?{' '}
-            <Link
-              href="/labs"
-              className={`underline transition-colors ${isDarkMode ? 'text-indigo-400 hover:text-indigo-300' : 'text-indigo-600 hover:text-indigo-500'}`}
-            >
-              Ver Labs
-            </Link>
-          </p>
-        </div>
       </div>
     </div>
   );
