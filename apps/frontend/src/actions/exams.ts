@@ -6,6 +6,7 @@ import {
   getRankingAchievementsForUser,
   syncRankingAchievementsForUser,
 } from '@/lib/ranking-achievements';
+import { checkAndAwardAchievements } from '@/lib/gamification/check-achievements';
 
 interface SaveExamResultPayload {
   exam_type:
@@ -115,6 +116,13 @@ export async function saveExamResultAction(payload: SaveExamResultPayload) {
       achievementError
     );
   }
+
+  try {
+    await checkAndAwardAchievements(user.id);
+  } catch (err) {
+    console.warn('[achievements] check after exam failed', err);
+  }
+
   return { success: true };
 }
 
