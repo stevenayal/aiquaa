@@ -1,0 +1,17 @@
+-- SEC: empresa_invitaciones_public_token_select granted USING(true) SELECT to
+-- anon+authenticated (introduced by the empresas_branding_views migration on
+-- 2026-06-27, shipped ahead of PR #209's application code merge). It allowed
+-- reading the ENTIRE table (candidate email/name/message/token, across every
+-- company) with no filter at all via the PostgREST API. The sibling policy
+-- empresa_invitaciones_public_token_read already exists and correctly scopes
+-- anon/authenticated reads to rows with a non-null token in
+-- ('pendiente','vista') status, which is what the /invitacion/[token] page
+-- actually relies on.
+--
+-- Follow-up (not done here to keep this fix minimal/safe): extend
+-- empresa_invitaciones_public_token_read's status filter to also include
+-- 'completada'/'rechazada' so the token page can render those terminal
+-- states without falling back to notFound(). No live rows are affected
+-- today (table currently empty), so this is a non-urgent UX follow-up, not
+-- a security concern.
+DROP POLICY IF EXISTS "empresa_invitaciones_public_token_select" ON public.empresa_invitaciones;
