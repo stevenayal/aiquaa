@@ -12,6 +12,7 @@ import type { EmpresaMemberRole, Empresa } from '@/actions/empresa-admin';
 import {
   getEmpresaDashboardStatsAction,
   type EmpresaDashboardStats,
+  type InvitacionesFunnel,
 } from '@/actions/employer';
 import {
   Bar,
@@ -102,6 +103,62 @@ function StatCard({
     </div>
   );
   return href ? <Link href={href}>{inner}</Link> : inner;
+}
+
+function FunnelWidget({
+  funnel,
+  isDarkMode,
+}: {
+  funnel: InvitacionesFunnel;
+  isDarkMode: boolean;
+}) {
+  const steps = [
+    { label: 'Enviadas', value: funnel.total, color: 'text-indigo-500' },
+    { label: 'Vistas', value: funnel.vistas, color: 'text-amber-500' },
+    { label: 'Completadas', value: funnel.completadas, color: 'text-emerald-500' },
+  ];
+  return (
+    <div
+      className={`rounded-xl border p-4 ${isDarkMode ? 'bg-dark-secondary border-dark-secondary' : 'bg-white border-gray-200'}`}
+    >
+      <p
+        className={`text-sm font-semibold mb-3 ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}
+      >
+        Funnel de invitaciones
+      </p>
+      <div className="flex items-center gap-1">
+        {steps.map((step, i) => (
+          <div key={step.label} className="flex items-center gap-1 flex-1">
+            <div className="flex-1">
+              <p className={`text-xl font-bold ${step.color}`}>{step.value}</p>
+              <p
+                className={`text-xs mt-0.5 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+              >
+                {step.label}
+              </p>
+            </div>
+            {i < steps.length - 1 && (
+              <span
+                className={`text-lg ${isDarkMode ? 'text-slate-600' : 'text-gray-300'}`}
+              >
+                →
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
+      {funnel.total > 0 && (
+        <p
+          className={`text-xs mt-3 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+        >
+          Tasa de respuesta:{' '}
+          <span className="font-semibold text-emerald-500">
+            {funnel.tasaRespuesta}%
+          </span>
+        </p>
+      )}
+    </div>
+  );
 }
 
 function SkeletonCard({ isDarkMode }: { isDarkMode: boolean }) {
@@ -264,6 +321,12 @@ export default function EmpresaDashboardPage() {
                 }
                 href="/empresa/invitaciones"
               />
+              <StatCard
+                label="Visitas al perfil"
+                value={stats?.profileViews ?? 0}
+                color={stats?.profileViews ? 'text-purple-500' : 'text-slate-400'}
+                isDarkMode={isDarkMode}
+              />
             </>
           )}
         </div>
@@ -364,6 +427,13 @@ export default function EmpresaDashboardPage() {
             </Link>
           ))}
         </div>
+
+        {/* Invitaciones funnel */}
+        {stats && stats.invitacionesFunnel.total > 0 && (
+          <div className="mb-8">
+            <FunnelWidget funnel={stats.invitacionesFunnel} isDarkMode={isDarkMode} />
+          </div>
+        )}
 
         {/* Charts — only when there's data */}
         {stats && (stats.totalProcesses > 0 || stats.totalCandidates > 0) && (

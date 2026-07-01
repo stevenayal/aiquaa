@@ -1,26 +1,12 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { sendEmail } from '@/lib/resend';
 
-// #197 / #204 / #177: extension point for candidate invitation emails.
-// Email sending stays OFF until EMAIL_SENDING_ENABLED is set; until then this
-// is a no-op that reports "not sent" so the invitation is still persisted with
-// an accurate email_sent=false. Do NOT connect Resend here yet.
+// Email sending is gated by EMAIL_SENDING_ENABLED so it can be turned on per
+// environment without code changes. Set to 'true' in Vercel env vars when Resend
+// is configured (RESEND_API_KEY + RESEND_FROM_EMAIL).
 const EMAIL_SENDING_ENABLED = process.env.EMAIL_SENDING_ENABLED === 'true';
-
-async function sendInvitacionEmail(_data: {
-  candidate_email: string;
-  candidate_name: string | null;
-  message: string | null;
-  token: string;
-  process_id: string | null;
-}): Promise<{ sent: boolean; error?: string }> {
-  if (!EMAIL_SENDING_ENABLED) {
-    return { sent: false };
-  }
-  // TODO(#197): wire Resend / backend mailer here and return { sent: true }.
-  return { sent: false, error: 'Email sending not configured' };
-}
 
 export interface EmpresaInvitacion {
   id: string;
@@ -126,31 +112,65 @@ export async function createInvitacionAction(payload: {
 
   if (error) return { data: null, error: error.message };
 
-  // #197/#204: attempt to notify the candidate. No-op while email sending is
-  // disabled — the invitation is already persisted with email_sent=false.
-  const invitacion = data as EmpresaInvitacion;
-  const emailResult = await sendInvitacionEmail({
-    candidate_email: invitacion.candidate_email,
-    candidate_name: invitacion.candidate_name,
-    message: invitacion.message,
-    token: invitacion.token,
-    process_id: invitacion.process_id,
-  });
+  const inv = data as EmpresaInvitacion;
 
-  if (emailResult.sent || emailResult.error) {
+  // Send email when EMAIL_SENDING_ENABLED=true; track result in DB.
+  if (EMAIL_SENDING_ENABLED && inv.token) {
+    const { data: empresaRow } = await supabase
+      .from('empresas')
+      .select('razon_social, nombre_comercial')
+      .eq('id', inv.empresa_id)
+      .single();
+
+    const empresaNombre =
+      empresaRow?.nombre_comercial || empresaRow?.razon_social || 'Una empresa';
+
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://aiquaa.com';
+    const link = `${siteUrl}/invitaciones/${inv.token}`;
+    const candidateName = inv.candidate_name ?? inv.candidate_email;
+
+    const subject = `${empresaNombre} te invita a rendir una evaluación técnica QA`;
+    const html = `
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8" /></head>
+<body style="font-family:sans-serif;background:#f9fafb;padding:24px">
+  <div style="max-width:480px;margin:0 auto;background:#fff;border-radius:12px;padding:32px;border:1px solid #e5e7eb">
+    <h2 style="margin:0 0 8px;font-size:20px;color:#111827">Hola, ${candidateName}</h2>
+    <p style="color:#374151;font-size:14px;line-height:1.6;margin:0 0 16px">
+      <strong>${empresaNombre}</strong> te invita a rendir una evaluación técnica QA en AIQUAA.
+    </p>
+    ${inv.message ? `<blockquote style="border-left:3px solid #6366f1;margin:0 0 16px;padding:8px 16px;color:#4b5563;font-size:13px">${inv.message}</blockquote>` : ''}
+    <a href="${link}" style="display:inline-block;background:#4f46e5;color:#fff;text-decoration:none;font-size:14px;font-weight:600;padding:12px 24px;border-radius:8px;margin-bottom:16px">
+      Ver mi invitación →
+    </a>
+    <p style="color:#9ca3af;font-size:12px;margin:0">
+      O copiá este enlace: ${link}
+    </p>
+    <hr style="border:none;border-top:1px solid #f3f4f6;margin:24px 0" />
+    <p style="color:#9ca3af;font-size:11px;margin:0">
+      AIQUAA — Plataforma de evaluación técnica QA para LATAM
+    </p>
+  </div>
+</body>
+</html>`;
+
+    const { error: emailErr } = await sendEmail(inv.candidate_email, subject, html);
+
     const { data: updated } = await supabase
       .from('empresa_invitaciones')
       .update({
-        email_sent: emailResult.sent,
-        email_error: emailResult.error ?? null,
+        email_sent: !emailErr,
+        email_error: emailErr ?? null,
       })
-      .eq('id', invitacion.id)
+      .eq('id', inv.id)
       .select('*, hiring_processes(position_name, code)')
       .single();
+
     if (updated) return { data: updated as EmpresaInvitacion, error: null };
   }
 
-  return { data: invitacion, error: null };
+  return { data: inv, error: null };
 }
 
 export async function cancelInvitacionAction(invitacionId: string): Promise<{

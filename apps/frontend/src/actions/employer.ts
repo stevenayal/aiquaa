@@ -39,6 +39,13 @@ export interface ProcessCandidate {
   profiles?: { display_name?: string; email?: string };
 }
 
+export interface InvitacionesFunnel {
+  total: number;
+  vistas: number;
+  completadas: number;
+  tasaRespuesta: number;
+}
+
 export interface EmpresaDashboardStats {
   totalProcesses: number;
   activeProcesses: number;
@@ -49,6 +56,8 @@ export interface EmpresaDashboardStats {
   avgTimeSpentMinutes: number | null;
   pendingProspects: number;
   pendingInvitaciones: number;
+  profileViews: number;
+  invitacionesFunnel: InvitacionesFunnel;
   monthlyProcesses: Array<{ month: string; value: number }>;
   monthlyCandidates: Array<{ month: string; value: number }>;
 }
@@ -503,11 +512,29 @@ export async function getEmpresaDashboardStatsAction(): Promise<{
         .in('status', ['pendiente', 'vista'])
     : Promise.resolve({ count: 0, data: null, error: null });
 
-  const [resultsResp, prospectsResp, invitacionesResp] = await Promise.all([
-    fetchEmpresaResultsForProcessCodes(supabase, processCodes),
-    fetchPendingProspects,
-    fetchPendingInvitaciones,
-  ]);
+  const fetchInvitacionesFunnel = empresaId
+    ? supabase
+        .from('empresa_invitaciones')
+        .select('status, viewed_at, completed_at')
+        .eq('empresa_id', empresaId)
+    : Promise.resolve({ data: [], error: null });
+
+  const fetchProfileViews = empresaId
+    ? supabase
+        .from('empresas')
+        .select('profile_views')
+        .eq('id', empresaId)
+        .single()
+    : Promise.resolve({ data: null, error: null });
+
+  const [resultsResp, prospectsResp, invitacionesResp, funnelResp, profileViewsResp] =
+    await Promise.all([
+      fetchEmpresaResultsForProcessCodes(supabase, processCodes),
+      fetchPendingProspects,
+      fetchPendingInvitaciones,
+      fetchInvitacionesFunnel,
+      fetchProfileViews,
+    ]);
 
   if (resultsResp.error) return { error: resultsResp.error, data: null };
 
@@ -519,6 +546,30 @@ export async function getEmpresaDashboardStatsAction(): Promise<{
   }));
   pendingProspects = prospectsResp.count ?? 0;
   pendingInvitaciones = invitacionesResp.count ?? 0;
+
+  const funnelRows = (funnelResp.data ?? []) as Array<{
+    status: string;
+    viewed_at: string | null;
+    completed_at: string | null;
+  }>;
+  const funnelTotal = funnelRows.length;
+  const funnelVistas = funnelRows.filter(
+    (r) => r.viewed_at || r.status === 'vista' || r.status === 'completada'
+  ).length;
+  const funnelCompletadas = funnelRows.filter(
+    (r) => r.status === 'completada'
+  ).length;
+  const invitacionesFunnel: InvitacionesFunnel = {
+    total: funnelTotal,
+    vistas: funnelVistas,
+    completadas: funnelCompletadas,
+    tasaRespuesta:
+      funnelTotal > 0 ? Math.round((funnelCompletadas / funnelTotal) * 100) : 0,
+  };
+
+  const profileViews =
+    (profileViewsResp.data as { profile_views?: number } | null)
+      ?.profile_views ?? 0;
 
   const monthlyProcessesBuckets = buildMonthlyBuckets(6);
   const monthlyCandidatesBuckets = buildMonthlyBuckets(6);
@@ -568,6 +619,8 @@ export async function getEmpresaDashboardStatsAction(): Promise<{
       avgTimeSpentMinutes,
       pendingProspects,
       pendingInvitaciones,
+      profileViews,
+      invitacionesFunnel,
       monthlyProcesses: monthlyProcessesBuckets.map(({ month, value }) => ({
         month,
         value,

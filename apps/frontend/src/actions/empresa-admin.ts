@@ -17,6 +17,12 @@ export interface Empresa {
   industry: string | null;
   country: string | null;
   team_size: string | null;
+  work_mode: string | null;
+  tech_stack: string[] | null;
+  benefits: string | null;
+  linkedin_url: string | null;
+  qa_team_size: string | null;
+  profile_views: number;
   created_at: string;
   updated_at: string;
 }
@@ -297,6 +303,11 @@ export async function updateEmpresaAction(data: {
   industry?: string;
   country?: string;
   team_size?: string;
+  work_mode?: string;
+  tech_stack?: string[];
+  benefits?: string;
+  linkedin_url?: string;
+  qa_team_size?: string;
 }) {
   const supabase = await createClient();
   const {

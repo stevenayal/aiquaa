@@ -52,6 +52,9 @@ export default async function PublicEmpresaPage({ params }: Props) {
 
   if (error || !empresa) notFound();
 
+  // Increment profile view counter (fire-and-forget — non-blocking)
+  supabase.rpc('increment_empresa_profile_views', { p_empresa_id: id }).then(() => {});
+
   // Active processes (public info only)
   const { data: processes } = await supabase
     .from('hiring_processes')
@@ -126,6 +129,65 @@ export default async function PublicEmpresaPage({ params }: Props) {
                 {empresa.description}
               </p>
             )}
+
+            {/* Employer branding extras */}
+            <div className="mt-4 space-y-3">
+              {empresa.work_mode && (
+                <div className="flex items-start gap-2">
+                  <span className="text-sm">
+                    {empresa.work_mode === 'remoto'
+                      ? '🌐'
+                      : empresa.work_mode === 'hibrido'
+                        ? '🏠'
+                        : '🏢'}
+                  </span>
+                  <p className="text-sm text-gray-700 dark:text-slate-300 capitalize">
+                    {empresa.work_mode === 'remoto'
+                      ? 'Trabajo remoto'
+                      : empresa.work_mode === 'hibrido'
+                        ? 'Trabajo híbrido'
+                        : 'Presencial'}
+                  </p>
+                </div>
+              )}
+              {(empresa.tech_stack ?? []).length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-slate-500 mb-1.5">
+                    Stack QA
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {(empresa.tech_stack as string[]).map((tool) => (
+                      <span
+                        key={tool}
+                        className="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-200"
+                      >
+                        {tool}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {empresa.benefits && (
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-slate-500 mb-1">
+                    Beneficios
+                  </p>
+                  <p className="text-sm text-gray-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">
+                    {empresa.benefits}
+                  </p>
+                </div>
+              )}
+              {empresa.linkedin_url && (
+                <a
+                  href={empresa.linkedin_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  <span>🔗</span> LinkedIn de la empresa ↗
+                </a>
+              )}
+            </div>
           </div>
         </div>
 
