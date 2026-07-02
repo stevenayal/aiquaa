@@ -158,3 +158,11 @@ Dado que **ninguna empresa ha creado nunca una invitación** (0 filas en `empres
 1. Resolver los dos bugs bloqueantes (membresía de CLT, migración de talento QA) — deberían ser lo primero, fuera incluso del formato de bloques de 60 minutos si es necesario antes.
 2. Sesión de prueba en vivo con credenciales reales de empresa (crear una cuenta de prueba dedicada) para validar los flujos de edición de perfil, invitación y dashboard que en este ciclo solo se pudieron revisar por código.
 3. Entrevista corta con el contacto de CLT para entender si llegaron a intentar usar la plataforma y en qué paso se frenaron — esto es más valioso que seguir puliendo UX sin ese dato.
+
+### Referencia a tickets de un ciclo anterior (2026-06-27)
+
+Ya existía un ciclo previo de este mismo módulo (`docs/qa`, commit `e62cce2`) que abrió 3 issues en GitHub. Estado verificado en este ciclo:
+
+- **#206** ("agregar campos de employer branding — stack, modalidad, beneficios, LinkedIn") — **sigue abierto en GitHub, pero ya está implementado en código** (migración `20260627_000000_empresas_branding_views.sql` + formulario de `/empresa/perfil`). Falta solo cerrarlo.
+- **#205** ("section_scores descartado en la UI") — cerrado como completado; no encontramos evidencia en contra en este ciclo.
+- **#204** ("invitaciones no envían email al candidato") — cerrado como _not_planned/duplicate_ el 2026-06-27, presumiblemente porque se agregó la ruta `/invitaciones/[token]` y el flag `EMAIL_SENDING_ENABLED`. Sin embargo, el dato real de producción de este ciclo (**0 invitaciones creadas, jamás**) muestra que el problema de fondo — un candidato invitado no se entera — sigue sin poder observarse en la práctica porque nadie ha llegado a usar el flujo. Vale la pena reabrirlo o crear uno nuevo enfocado en adopción/descubribilidad en vez de solo el envío técnico del email.
