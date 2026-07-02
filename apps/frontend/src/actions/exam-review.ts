@@ -13,6 +13,15 @@ type ReviewData = {
   adjustedScore: number | null;
 };
 
+type BugImageEvidence = {
+  id: string;
+  fileName: string;
+  base64Data: string;
+  mimeType: string;
+  size: number;
+  uploadedAt: string;
+};
+
 export type ExamDetail = {
   id: string;
   participant_name: string | null;
@@ -40,6 +49,7 @@ export type ExamDetail = {
       severity: 'Critical' | 'High' | 'Medium' | 'Low';
       category: string;
       evidence: string;
+      images?: BugImageEvidence[];
       foundAt: string;
     }>;
     exploredSections: string[];

@@ -457,6 +457,36 @@ export default function EvaluarPage() {
                           </div>
                         )}
 
+                        {bug.images && bug.images.length > 0 && (
+                          <div>
+                            <p className={labelClass}>
+                              Imágenes evidencia ({bug.images.length})
+                            </p>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-2">
+                              {bug.images.map((image) => (
+                                <a
+                                  key={image.id}
+                                  href={image.base64Data}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="block rounded-lg overflow-hidden border border-slate-600/40"
+                                >
+                                  <img
+                                    src={image.base64Data}
+                                    alt={image.fileName}
+                                    className="w-full h-32 object-cover"
+                                  />
+                                  <p
+                                    className={`text-xs px-1.5 py-1 truncate ${isDarkMode ? 'bg-slate-800 text-slate-400' : 'bg-gray-100 text-gray-600'}`}
+                                  >
+                                    {image.fileName}
+                                  </p>
+                                </a>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
                         <div>
                           <label
                             className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}
