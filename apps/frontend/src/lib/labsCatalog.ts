@@ -92,6 +92,17 @@ export const toolCategories: LabCategory[] = [
         featured: true,
         implementedDate: 'Jun 2026',
       },
+      {
+        id: 'infrastructure-fundamentals',
+        name: 'Infraestructura — Fundamentos',
+        description:
+          'Prueba técnica teórica sobre contenedores Docker, conceptos de Kubernetes y arquitectura de clúster: control plane, nodos y pods',
+        icon: '🐳',
+        color: 'from-blue-500 to-indigo-600',
+        href: '/assessments/infrastructure-fundamentals',
+        featured: true,
+        implementedDate: 'Jul 2026',
+      },
     ],
   },
   {

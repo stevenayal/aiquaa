@@ -59,6 +59,12 @@ const EXAM_OPTIONS = [
     description:
       'Predicción de resultados, detección de bugs en queries y escritura de SQL — auto-corregido, 100 pts',
   },
+  {
+    id: 'infrastructure-fundamentals',
+    label: 'Infraestructura — Fundamentos (Examen teórico)',
+    description:
+      'Contenedores Docker, conceptos de Kubernetes y arquitectura de clúster — auto-corregido, 3 niveles',
+  },
 ];
 
 function generateCode(positionName: string): string {

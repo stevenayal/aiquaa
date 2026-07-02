@@ -25,6 +25,15 @@ import {
   buildDatabasePracticeGamificationEvents,
 } from '../database-practice/lib/gamification';
 import { ensureDatabasePracticeSeeded } from '../database-practice/lib/seed';
+import {
+  INFRASTRUCTURE_FUNDAMENTALS_SEED_VERSION,
+  INFRASTRUCTURE_FUNDAMENTALS_SLUG,
+} from '../infrastructure-fundamentals/data/assessment-definition';
+import {
+  INFRASTRUCTURE_FUNDAMENTALS_GAMIFICATION_RULES,
+  buildInfrastructureFundamentalsGamificationEvents,
+} from '../infrastructure-fundamentals/lib/gamification';
+import { ensureInfrastructureFundamentalsSeeded } from '../infrastructure-fundamentals/lib/seed';
 import type {
   AssessmentGamificationEvent,
   AssessmentGamificationRule,
@@ -33,7 +42,8 @@ import type {
 export type AssessmentExamType =
   | 'api-testing-fundamentals'
   | 'database-fundamentals'
-  | 'database-practice';
+  | 'database-practice'
+  | 'infrastructure-fundamentals';
 
 export interface AssessmentGamificationEventInput {
   attemptId: string;
@@ -85,5 +95,14 @@ export const ASSESSMENT_REGISTRY: Record<string, AssessmentRegistryEntry> = {
     gamificationSource: 'DATABASE_PRACTICE',
     gamificationRules: DATABASE_PRACTICE_GAMIFICATION_RULES,
     buildGamificationEvents: buildDatabasePracticeGamificationEvents,
+  },
+  [INFRASTRUCTURE_FUNDAMENTALS_SLUG]: {
+    slug: INFRASTRUCTURE_FUNDAMENTALS_SLUG,
+    seedVersion: INFRASTRUCTURE_FUNDAMENTALS_SEED_VERSION,
+    ensureSeeded: ensureInfrastructureFundamentalsSeeded,
+    examType: 'infrastructure-fundamentals',
+    gamificationSource: 'INFRASTRUCTURE_FUNDAMENTALS',
+    gamificationRules: INFRASTRUCTURE_FUNDAMENTALS_GAMIFICATION_RULES,
+    buildGamificationEvents: buildInfrastructureFundamentalsGamificationEvents,
   },
 };

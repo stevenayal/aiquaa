@@ -68,11 +68,13 @@ const EXAM_LABELS: Record<string, string> = {
   'api-banking': 'API Testing Challenge',
   'database-fundamentals': 'Bases de Datos — Fundamentos',
   'database-practice': 'Bases de Datos — Práctica SQL',
+  'infrastructure-fundamentals': 'Infraestructura — Fundamentos',
 };
 
 const DATABASE_ASSESSMENT_SLUGS = [
   'database-fundamentals',
   'database-practice',
+  'infrastructure-fundamentals',
 ];
 
 const ISTQB_LEVEL_LABELS: Record<string, string> = {
@@ -273,9 +275,7 @@ export default function CandidatosPage() {
         // #205: section breakdown for assessment_attempts lives in
         // assessment_scores (one row per section). Fetch and group by attempt
         // so recruiters see per-area performance, not just the total score.
-        const attemptIds = attemptRows
-          .map((r: any) => r.id)
-          .filter(Boolean);
+        const attemptIds = attemptRows.map((r: any) => r.id).filter(Boolean);
         const sectionScoresByAttempt: Record<string, SectionScore[]> = {};
         if (attemptIds.length > 0) {
           const { data: scoreRows } = await supabase
@@ -704,7 +704,9 @@ export default function CandidatosPage() {
 
   const availableCountries = useMemo(
     () =>
-      [...new Set(talentCandidates.map((c) => c.country).filter(Boolean))].sort() as string[],
+      [
+        ...new Set(talentCandidates.map((c) => c.country).filter(Boolean)),
+      ].sort() as string[],
     [talentCandidates]
   );
 
@@ -724,7 +726,15 @@ export default function CandidatosPage() {
 
   const exportCSV = () => {
     const rows = [
-      ['Nombre', 'Email', 'Examen', 'Puntaje', 'Estado', 'Código proceso', 'Fecha'],
+      [
+        'Nombre',
+        'Email',
+        'Examen',
+        'Puntaje',
+        'Estado',
+        'Código proceso',
+        'Fecha',
+      ],
       ...filtered.map((r) => [
         r.participant_name ?? '',
         r.participant_email ?? '',
@@ -757,7 +767,9 @@ export default function CandidatosPage() {
   const sendInvite = async () => {
     if (!inviteEmail) return;
     setInviteSending(true);
-    const { error } = await createInvitacionAction({ candidate_email: inviteEmail });
+    const { error } = await createInvitacionAction({
+      candidate_email: inviteEmail,
+    });
     setInviteSending(false);
     setInviteModalOpen(false);
     setInviteEmail(null);
@@ -1812,10 +1824,12 @@ export default function CandidatosPage() {
             >
               Invitar a evaluación
             </h3>
-            <p className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}>
+            <p
+              className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}
+            >
               Se enviará una invitación por email a{' '}
-              <span className="font-semibold">{inviteEmail}</span> con el link para
-              acceder a la evaluación.
+              <span className="font-semibold">{inviteEmail}</span> con el link
+              para acceder a la evaluación.
             </p>
             <div className="flex gap-2 pt-1">
               <button

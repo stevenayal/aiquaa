@@ -11,7 +11,8 @@ export type ExamType =
   | 'api-testing-fundamentals'
   | 'api-banking'
   | 'database-fundamentals'
-  | 'database-practice';
+  | 'database-practice'
+  | 'infrastructure-fundamentals';
 
 export interface ExamMeta {
   emoji: string;
@@ -57,6 +58,11 @@ export const EXAM_META: Record<ExamType, ExamMeta> = {
     label: 'Bases de Datos — Práctica SQL',
     href: '/assessments/database-practice',
   },
+  'infrastructure-fundamentals': {
+    emoji: '🐳',
+    label: 'Infraestructura — Fundamentos',
+    href: '/assessments/infrastructure-fundamentals',
+  },
 };
 
 export const EXAM_TYPES = Object.keys(EXAM_META) as ExamType[];
@@ -68,6 +74,7 @@ export const POINTS_BASED_TYPES = new Set<ExamType>([
   'api-banking',
   'database-fundamentals',
   'database-practice',
+  'infrastructure-fundamentals',
 ]);
 
 export interface ExamScoreFields {

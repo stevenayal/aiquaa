@@ -36,7 +36,8 @@ interface ExamResultRow {
     | 'api-testing-fundamentals'
     | 'api-banking'
     | 'database-fundamentals'
-    | 'database-practice';
+    | 'database-practice'
+    | 'infrastructure-fundamentals';
   exam_mode: 'exam' | 'training';
   score: number;
   total_questions: number;

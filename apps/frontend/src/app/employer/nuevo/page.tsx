@@ -20,6 +20,10 @@ const EXAM_OPTIONS = [
   { value: 'api-banking', label: 'API Testing - Challenge practico' },
   { value: 'database-fundamentals', label: 'Bases de Datos — Fundamentos' },
   { value: 'database-practice', label: 'Bases de Datos — Práctica SQL' },
+  {
+    value: 'infrastructure-fundamentals',
+    label: 'Infraestructura — Fundamentos',
+  },
 ];
 
 export default function NuevoProcesoPage() {

@@ -354,9 +354,10 @@ function getAttemptTimeSpentSeconds(row: {
   return Math.max(0, Math.round((submitted - started) / 1000));
 }
 
-const DATABASE_ASSESSMENT_SLUGS = [
+const PROCESS_ASSESSMENT_SLUGS = [
   'database-fundamentals',
   'database-practice',
+  'infrastructure-fundamentals',
 ];
 
 async function fetchAssessmentAttemptsForProcessCodes(
@@ -373,7 +374,7 @@ async function fetchAssessmentAttemptsForProcessCodes(
     .or(
       processCodes.map((code) => `metadata->>processCode.eq.${code}`).join(',')
     )
-    .in('assessments.slug', DATABASE_ASSESSMENT_SLUGS)
+    .in('assessments.slug', PROCESS_ASSESSMENT_SLUGS)
     .eq('status', 'graded');
 
   if (error) return { data: [], error: error.message };
@@ -527,14 +528,19 @@ export async function getEmpresaDashboardStatsAction(): Promise<{
         .single()
     : Promise.resolve({ data: null, error: null });
 
-  const [resultsResp, prospectsResp, invitacionesResp, funnelResp, profileViewsResp] =
-    await Promise.all([
-      fetchEmpresaResultsForProcessCodes(supabase, processCodes),
-      fetchPendingProspects,
-      fetchPendingInvitaciones,
-      fetchInvitacionesFunnel,
-      fetchProfileViews,
-    ]);
+  const [
+    resultsResp,
+    prospectsResp,
+    invitacionesResp,
+    funnelResp,
+    profileViewsResp,
+  ] = await Promise.all([
+    fetchEmpresaResultsForProcessCodes(supabase, processCodes),
+    fetchPendingProspects,
+    fetchPendingInvitaciones,
+    fetchInvitacionesFunnel,
+    fetchProfileViews,
+  ]);
 
   if (resultsResp.error) return { error: resultsResp.error, data: null };
 
