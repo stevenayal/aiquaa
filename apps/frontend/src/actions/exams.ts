@@ -205,7 +205,7 @@ export async function getExamResultsAction(opts?: {
   let query = supabase
     .from('exam_results')
     .select(
-      'id, exam_type, exam_mode, score, total_questions, max_possible_score, passing_score, passed, percentage, time_spent, model, language, created_at',
+      'id, exam_type, exam_mode, score, total_questions, max_possible_score, passing_score, passed, percentage, time_spent, model, language, process_code, created_at',
       { count: 'exact' }
     )
     .eq('user_id', user.id);
@@ -220,6 +220,84 @@ export async function getExamResultsAction(opts?: {
 
   if (error) return { error: error.message, data: null, total: 0 };
   return { data, total: count ?? 0 };
+}
+
+export async function assignProcessCodeToExamAction(
+  examResultId: string,
+  processCode: string
+) {
+  const supabase = createClient();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+  if (userError || !user) return { error: 'No autenticado' };
+
+  // Validate the process code exists and is active
+  const { data: process, error: procError } = await supabase
+    .from('hiring_processes')
+    .select('code, company_name, position_name, status, expires_at')
+    .ilike('code', processCode.trim())
+    .eq('status', 'active')
+    .single();
+
+  if (procError || !process) {
+    return { error: 'Código de proceso no encontrado o inactivo' };
+  }
+
+  if (process.expires_at && new Date(process.expires_at) < new Date()) {
+    return { error: 'El código de proceso ha expirado' };
+  }
+
+  // Verify the exam result belongs to the current user
+  const { data: examRow, error: examError } = await supabase
+    .from('exam_results')
+    .select('id, user_id, participant_email, process_code')
+    .eq('id', examResultId)
+    .eq('user_id', user.id)
+    .single();
+
+  if (examError || !examRow) {
+    return { error: 'Examen no encontrado o no te pertenece' };
+  }
+
+  if (examRow.process_code) {
+    return { error: 'Este examen ya tiene un código de proceso asignado' };
+  }
+
+  // Update the exam result with the process code
+  const { error: updateError } = await supabase
+    .from('exam_results')
+    .update({ process_code: process.code })
+    .eq('id', examResultId)
+    .eq('user_id', user.id);
+
+  if (updateError) return { error: updateError.message };
+
+  // Mark empresa_invitacion as completada if applicable
+  const resolvedEmail = examRow.participant_email?.trim() || user.email?.trim();
+  if (resolvedEmail) {
+    try {
+      await supabase
+        .from('empresa_invitaciones')
+        .update({
+          status: 'completada',
+          completed_at: new Date().toISOString(),
+        })
+        .eq('candidate_email', resolvedEmail)
+        .in('status', ['pendiente', 'vista']);
+    } catch {
+      // Non-critical
+    }
+  }
+
+  return {
+    success: true,
+    process: {
+      company_name: process.company_name,
+      position_name: process.position_name,
+    },
+  };
 }
 
 type LearningObjectiveRow = {

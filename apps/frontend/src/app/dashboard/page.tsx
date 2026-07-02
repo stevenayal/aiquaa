@@ -18,6 +18,7 @@ interface ExamResult {
   passed: boolean;
   percentage: number;
   time_spent: number | null;
+  process_code?: string | null;
   created_at: string;
 }
 
@@ -425,9 +426,22 @@ export default function DashboardPage() {
                         className={`text-xs mt-0.5 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
                       >
                         {result.exam_mode === 'exam'
-                          ? 'Modo Examen'
-                          : 'Entrenamiento'}{' '}
-                        · {date}
+                          ? 'Examen'
+                          : 'Entrenamiento'}
+                        {' · '}
+                        <span
+                          className={
+                            result.process_code
+                              ? isDarkMode
+                                ? 'text-amber-400'
+                                : 'text-amber-600'
+                              : ''
+                          }
+                        >
+                          {result.process_code ? '📋 Oficial' : '✏️ Práctica'}
+                        </span>
+                        {' · '}
+                        {date}
                       </p>
                     </div>
                     <div className="text-right shrink-0">
