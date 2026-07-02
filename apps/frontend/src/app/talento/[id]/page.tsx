@@ -38,8 +38,48 @@ function getSafeExternalUrl(value: string | null | undefined) {
   }
 }
 
+function ProfileUnavailable() {
+  return (
+    <main className="min-h-screen bg-gray-50 px-4 py-12">
+      <div className="mx-auto max-w-2xl rounded-xl border border-gray-200 bg-white p-8 text-center">
+        <h1 className="text-2xl font-bold text-gray-900">
+          Perfil no disponible
+        </h1>
+        <p className="mt-2 text-sm text-gray-600">
+          Este candidato todavía no activó su visibilidad para empresas.
+        </p>
+        <Link
+          href="/empresa/candidatos"
+          className="mt-6 inline-flex rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+        >
+          Volver a candidatos
+        </Link>
+      </div>
+    </main>
+  );
+}
+
 export default async function TalentProfilePage({ params }: PageProps) {
   const supabase = createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return <ProfileUnavailable />;
+  }
+
+  const { data: caller } = await supabase
+    .from('profiles')
+    .select('audience')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  if (caller?.audience !== 'empresa') {
+    return <ProfileUnavailable />;
+  }
+
   const { data: profile } = await supabase
     .from('profiles')
     .select(
@@ -50,24 +90,7 @@ export default async function TalentProfilePage({ params }: PageProps) {
     .maybeSingle();
 
   if (!profile?.talent_visible_to_empresas) {
-    return (
-      <main className="min-h-screen bg-gray-50 px-4 py-12">
-        <div className="mx-auto max-w-2xl rounded-xl border border-gray-200 bg-white p-8 text-center">
-          <h1 className="text-2xl font-bold text-gray-900">
-            Perfil no disponible
-          </h1>
-          <p className="mt-2 text-sm text-gray-600">
-            Este candidato todavía no activó su visibilidad para empresas.
-          </p>
-          <Link
-            href="/empresa/candidatos"
-            className="mt-6 inline-flex rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
-          >
-            Volver a candidatos
-          </Link>
-        </div>
-      </main>
-    );
+    return <ProfileUnavailable />;
   }
 
   const { data: results } = await supabase
