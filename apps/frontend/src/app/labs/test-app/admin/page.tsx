@@ -15,10 +15,6 @@ import { seedData } from '../lib/seedData';
 import { clearAllData, resetSession } from '../lib/storage';
 import { clearAuditLog } from '../lib/auditLog';
 
-// SECURITY: No hardcoded fallback — if NEXT_PUBLIC_ADMIN_KEY is not set,
-// the admin page remains inaccessible. Set this env var in Vercel dashboard.
-const ADMIN_KEY = process.env.NEXT_PUBLIC_ADMIN_KEY || '';
-
 export default function AdminPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -28,15 +24,43 @@ export default function AdminPage() {
   const { showToast, ToastComponent } = useToast();
 
   useEffect(() => {
-    const key = searchParams?.get('key');
-    // Empty ADMIN_KEY means admin is disabled — reject even empty-string match
-    if (ADMIN_KEY && key === ADMIN_KEY) {
+    const onAuthorized = () => {
       setAuthorized(true);
       const currentId = getCandidateId() || 'default';
       setCandId(currentId);
       refreshBugs();
+    };
+
+    const key = searchParams?.get('key');
+    if (key) {
+      // Verify server-side, then strip the key from the URL/history.
+      fetch('/api/labs/test-app/admin/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.authorized) {
+            onAuthorized();
+            router.replace('/labs/test-app/admin');
+          } else {
+            setAuthorized(false);
+          }
+        })
+        .catch(() => setAuthorized(false));
     } else {
-      setAuthorized(false);
+      // No key in URL — check for an existing verified session cookie.
+      fetch('/api/labs/test-app/admin/verify')
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.authorized) {
+            onAuthorized();
+          } else {
+            setAuthorized(false);
+          }
+        })
+        .catch(() => setAuthorized(false));
     }
   }, [searchParams]);
 

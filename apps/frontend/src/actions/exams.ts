@@ -154,18 +154,19 @@ export async function getXpRankingAction(page = 1, limit = 20) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // ranking_candidatos view excludes audience='empresa' at DB level
-  // and includes achievement_count via subquery in the view
-  const { data, error, count } = await supabase
-    .from('ranking_candidatos')
-    .select(
-      'user_id, total_xp, level, current_streak, last_activity_at, display_name, avatar_url, achievement_count, main_badge',
-      { count: 'exact' }
-    )
-    .order('total_xp', { ascending: false })
-    .range(offset, offset + limit - 1);
+  // get_xp_ranking is a SECURITY DEFINER RPC (mirrors get_leaderboard):
+  // ranking_candidatos is a security_invoker view, and profiles RLS only
+  // allows a user to read their own row, so querying the view directly as
+  // `authenticated` silently drops every other candidate's row. The RPC
+  // exposes only the ranking-safe columns without loosening profiles RLS.
+  const { data, error } = await supabase.rpc('get_xp_ranking', {
+    p_limit: limit,
+    p_offset: offset,
+  });
 
   if (error) return { error: error.message, data: null, total: 0 };
+
+  const total = data?.[0]?.total_count ?? 0;
 
   const entries = (data ?? []).map((row: any, i: number) => ({
     position: offset + i + 1,
@@ -182,9 +183,9 @@ export async function getXpRankingAction(page = 1, limit = 20) {
 
   return {
     data: entries,
-    total: count ?? 0,
+    total,
     page,
-    totalPages: Math.ceil((count ?? 0) / limit),
+    totalPages: Math.ceil(total / limit),
   };
 }
 
