@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { buildTalentDirectory, buildFavoriteMap } from '../candidateDirectory';
+import {
+  buildFavoriteMap,
+  buildTalentDirectory,
+  filterTalentCandidates,
+} from '../candidateDirectory';
 
 const results = [
   {
@@ -45,6 +49,8 @@ describe('candidate talent directory', () => {
           email: 'ana@example.com',
           role: 'QA Automation',
           country: 'PY',
+          disponibilidad: 'activo',
+          qa_skills: ['Selenium', 'API Testing'],
           open_to_work: true,
           talent_visible_to_empresas: true,
         },
@@ -67,8 +73,10 @@ describe('candidate talent directory', () => {
       bestExamType: 'performance',
       passedAssessments: 2,
       totalAssessments: 2,
-      openToWork: true,
+      disponibilidad: 'activo',
+      qaSkills: ['Selenium', 'API Testing'],
     });
+    expect('email' in directory[0]).toBe(false);
   });
 
   it('attaches favorite state by candidate id', () => {
@@ -97,5 +105,42 @@ describe('candidate talent directory', () => {
     expect(map.get('candidate-1')?.id).toBe('fav-1');
     expect(directory[0].favoriteId).toBe('fav-1');
     expect(directory[0].favoriteNotes).toBe('Buen perfil API');
+  });
+
+  it('filters by availability, country, ISTQB level and skills', () => {
+    const directory = buildTalentDirectory(
+      results,
+      [
+        {
+          id: 'candidate-1',
+          display_name: 'Ana Testing',
+          country: 'PY',
+          istqb_level: 'ctfl',
+          disponibilidad: 'activo',
+          qa_skills: ['Selenium', 'Postman'],
+          talent_visible_to_empresas: true,
+        },
+        {
+          id: 'candidate-2',
+          display_name: 'Bruno Testing',
+          country: 'UY',
+          istqb_level: 'expert',
+          disponibilidad: 'pasivo',
+          qa_skills: ['JMeter'],
+          talent_visible_to_empresas: true,
+        },
+      ],
+      []
+    );
+
+    const filtered = filterTalentCandidates(directory, {
+      availability: 'activo',
+      country: 'PY',
+      istqbLevel: 'ctfl',
+      skills: ['Postman'],
+    });
+
+    expect(filtered).toHaveLength(1);
+    expect(filtered[0].userId).toBe('candidate-1');
   });
 });
