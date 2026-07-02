@@ -12,10 +12,12 @@
 
 -- ── a) user_xp: allow authenticated users to read their own row ──────────────
 
+DROP POLICY IF EXISTS "user_xp_select_own" ON public.user_xp;
 CREATE POLICY "user_xp_select_own" ON public.user_xp
   FOR SELECT TO authenticated
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "user_xp_select_service_role" ON public.user_xp;
 CREATE POLICY "user_xp_select_service_role" ON public.user_xp
   FOR SELECT TO service_role
   USING (true);
