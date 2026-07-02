@@ -149,42 +149,40 @@ export async function getLeaderboardAction(
 
 export async function getXpRankingAction(page = 1, limit = 20) {
   const supabase = createClient();
-  const offset = (page - 1) * limit;
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // ranking_candidatos view excludes audience='empresa' at DB level
-  // and includes achievement_count via subquery in the view
-  const { data, error, count } = await supabase
-    .from('ranking_candidatos')
-    .select(
-      'user_id, total_xp, level, current_streak, last_activity_at, display_name, avatar_url, achievement_count, main_badge',
-      { count: 'exact' }
-    )
-    .order('total_xp', { ascending: false })
-    .range(offset, offset + limit - 1);
+  // Uses SECURITY DEFINER RPC to bypass RLS on user_xp and profiles
+  const { data, error } = await supabase.rpc('get_xp_ranking', {
+    p_page: page,
+    p_limit: limit,
+  });
 
   if (error) return { error: error.message, data: null, total: 0 };
 
-  const entries = (data ?? []).map((row: any, i: number) => ({
+  const rows = (data ?? []) as any[];
+  const total = rows.length > 0 ? Number(rows[0].total_count) : 0;
+  const offset = (page - 1) * limit;
+
+  const entries = rows.map((row: any, i: number) => ({
     position: offset + i + 1,
     displayName: row.display_name ?? 'Anónimo',
     avatarUrl: row.avatar_url ?? null,
-    totalXp: row.total_xp,
-    level: row.level,
-    currentStreak: row.current_streak,
-    achievementCount: row.achievement_count ?? 0,
-    lastActivityAt: row.last_activity_at,
+    totalXp: Number(row.total_xp ?? 0),
+    level: row.level ?? 1,
+    currentStreak: row.current_streak ?? 0,
+    achievementCount: Number(row.achievement_count ?? 0),
+    lastActivityAt: row.last_activity_at ?? null,
     mainBadge: row.main_badge ?? null,
     isCurrentUser: Boolean(user?.id && row.user_id === user.id),
   }));
 
   return {
     data: entries,
-    total: count ?? 0,
+    total,
     page,
-    totalPages: Math.ceil((count ?? 0) / limit),
+    totalPages: Math.ceil(total / limit),
   };
 }
 
