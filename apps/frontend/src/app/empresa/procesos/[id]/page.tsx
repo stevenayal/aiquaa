@@ -871,6 +871,18 @@ export default function ProcesoDetailPage() {
                         >
                           {mins(r.time_spent)}
                         </span>
+                        {r.exam_type === 'test-app' && (
+                          <Link
+                            href={`/empresa/evaluar/${r.id}`}
+                            className={`text-xs px-2 py-1 rounded-lg font-semibold transition-colors shrink-0 ${
+                              isDarkMode
+                                ? 'bg-amber-900/40 text-amber-200 hover:bg-amber-900/60'
+                                : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                            }`}
+                          >
+                            Revisar
+                          </Link>
+                        )}
                       </div>
                     ))}
                 </div>
@@ -890,6 +902,7 @@ export default function ProcesoDetailPage() {
                           'Puntaje',
                           'Tiempo',
                           'Fecha',
+                          '',
                         ].map((h) => (
                           <th
                             key={h}
@@ -966,6 +979,20 @@ export default function ProcesoDetailPage() {
                             className={`px-5 py-3 text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
                           >
                             {new Date(r.created_at).toLocaleDateString('es-PY')}
+                          </td>
+                          <td className="px-5 py-3">
+                            {r.exam_type === 'test-app' && (
+                              <Link
+                                href={`/empresa/evaluar/${r.id}`}
+                                className={`text-xs px-2.5 py-1 rounded-lg font-semibold transition-colors ${
+                                  isDarkMode
+                                    ? 'bg-amber-900/40 text-amber-200 hover:bg-amber-900/60'
+                                    : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                                }`}
+                              >
+                                Revisar
+                              </Link>
+                            )}
                           </td>
                         </tr>
                       ))}
