@@ -1488,6 +1488,18 @@ export default function CandidatosPage() {
                                       Contactar
                                     </a>
                                   )}
+                                  {r.exam_type === 'test-app' && (
+                                    <Link
+                                      href={`/empresa/evaluar/${r.id}`}
+                                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors ${
+                                        isDarkMode
+                                          ? 'bg-amber-900/40 text-amber-200 hover:bg-amber-900/60'
+                                          : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                                      }`}
+                                    >
+                                      Revisar
+                                    </Link>
+                                  )}
                                   <Link
                                     href={`/talento/${r.user_id}`}
                                     className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition-colors ${isDarkMode ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
