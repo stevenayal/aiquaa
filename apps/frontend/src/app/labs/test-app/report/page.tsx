@@ -3,7 +3,6 @@
 export const dynamic = 'force-dynamic';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { getExamUserDefaults } from '@/lib/exam-user-defaults';
@@ -33,11 +32,13 @@ import { saveExamResultAction } from '@/actions/exams';
 export default function TechnicalReportPage() {
   const { isDarkMode } = useTheme();
   const { user, isLoading } = useSupabaseAuth();
-  const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && !user) router.push('/login');
-  }, [user, isLoading, router]);
+    if (!isLoading && !user) {
+      // Don't redirect — allow test-app-only users to fill the report form.
+      // Saving to DB will require Supabase auth, but PDF/JSON export works offline.
+    }
+  }, [user, isLoading]);
 
   // Candidate Info — pre-filled from session, github editable
   const [candidateInfo, setCandidateInfo] = useState<CandidateInfo>({
@@ -469,7 +470,7 @@ export default function TechnicalReportPage() {
     }
   };
 
-  if (isLoading || !user) {
+  if (isLoading) {
     return (
       <div
         className={`min-h-screen ${isDarkMode ? 'bg-slate-900' : 'bg-gray-50'} flex items-center justify-center`}
@@ -1185,25 +1186,41 @@ export default function TechnicalReportPage() {
           </div>
 
           <div className="flex flex-wrap gap-4">
-            <button
-              onClick={handleSaveToDb}
-              disabled={isSaving || savedOk}
-              className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-                savedOk
-                  ? isDarkMode
-                    ? 'bg-green-900/50 text-green-300 cursor-not-allowed'
-                    : 'bg-green-100 text-green-700 cursor-not-allowed'
-                  : isSaving
-                    ? 'bg-indigo-400 text-white cursor-wait'
-                    : 'bg-indigo-600 hover:bg-indigo-700 text-white'
-              }`}
-            >
-              {isSaving
-                ? 'Guardando...'
-                : savedOk
-                  ? '✓ Guardado'
-                  : '💾 Guardar resultado'}
-            </button>
+            {!user ? (
+              <div className="flex items-center gap-3">
+                <a
+                  href="/login"
+                  className="px-6 py-3 rounded-lg font-medium bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
+                >
+                  🔑 Iniciar sesión para guardar
+                </a>
+                <span
+                  className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                >
+                  (Podés generar PDF y JSON sin sesión)
+                </span>
+              </div>
+            ) : (
+              <button
+                onClick={handleSaveToDb}
+                disabled={isSaving || savedOk}
+                className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                  savedOk
+                    ? isDarkMode
+                      ? 'bg-green-900/50 text-green-300 cursor-not-allowed'
+                      : 'bg-green-100 text-green-700 cursor-not-allowed'
+                    : isSaving
+                      ? 'bg-indigo-400 text-white cursor-wait'
+                      : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                }`}
+              >
+                {isSaving
+                  ? 'Guardando...'
+                  : savedOk
+                    ? '✓ Guardado'
+                    : '💾 Guardar resultado'}
+              </button>
+            )}
             <button
               onClick={handleGeneratePDF}
               className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
