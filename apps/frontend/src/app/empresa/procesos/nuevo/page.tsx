@@ -65,6 +65,12 @@ const EXAM_OPTIONS = [
     description:
       'Contenedores Docker, conceptos de Kubernetes y arquitectura de clúster — auto-corregido, 3 niveles',
   },
+  {
+    id: 'test-app',
+    label: 'Test App — Exploratory Testing & Bug Hunt',
+    description:
+      'Aplicación con bugs intencionales para evaluación práctica de exploratory testing — 30 min, corrección manual por evaluador',
+  },
 ];
 
 function generateCode(positionName: string): string {
