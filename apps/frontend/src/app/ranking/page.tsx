@@ -277,7 +277,7 @@ function XpComunidadTab({ isDarkMode }: { isDarkMode: boolean }) {
     setLoading(true);
     getXpRankingAction(page, 20)
       .then((res) => {
-        if (res.error || !res.data) {
+        if ('error' in res || !res.data) {
           setData(null);
           return;
         }

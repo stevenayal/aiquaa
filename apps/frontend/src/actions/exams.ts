@@ -147,7 +147,36 @@ export async function getLeaderboardAction(
   return { data };
 }
 
-export async function getXpRankingAction(page = 1, limit = 20) {
+type XpRankingEntry = {
+  position: number;
+  displayName: string;
+  avatarUrl: string | null;
+  totalXp: number;
+  level: number;
+  currentStreak: number;
+  achievementCount: number;
+  lastActivityAt: string | null;
+  mainBadge: string | null;
+  isCurrentUser: boolean;
+};
+
+type XpRankingActionSuccess = {
+  data: XpRankingEntry[];
+  total: number;
+  page: number;
+  totalPages: number;
+};
+
+type XpRankingActionError = {
+  error: string;
+  data: null;
+  total: number;
+};
+
+export async function getXpRankingAction(
+  page = 1,
+  limit = 20
+): Promise<XpRankingActionSuccess | XpRankingActionError> {
   const supabase = createClient();
   const offset = (page - 1) * limit;
   const {
