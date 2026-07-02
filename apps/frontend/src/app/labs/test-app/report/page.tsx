@@ -9,7 +9,6 @@ import { getExamUserDefaults } from '@/lib/exam-user-defaults';
 import { getCurrentUser } from '../lib/storage';
 import { getCandidateId, setCandidateId } from '../lib/prng';
 import type {
-  TechnicalReport,
   BugReport,
   CandidateInfo,
   TestSession,
@@ -17,8 +16,6 @@ import type {
 } from './types';
 import {
   calculateScore,
-  generatePDF,
-  exportToJSON,
   fileToBase64,
   validateImageFile,
   formatFileSize,
@@ -321,51 +318,6 @@ export default function TechnicalReportPage() {
         prev.filter((bug: BugReport) => bug.id !== bugId)
       );
     }
-  };
-
-  const handleGeneratePDF = async () => {
-    if (
-      !candidateInfo.fullName ||
-      !candidateInfo.email ||
-      !candidateInfo.candidateId
-    ) {
-      alert('Por favor, completa la información del candidato');
-      return;
-    }
-
-    const report: TechnicalReport = {
-      candidateInfo,
-      testSession,
-      bugsFound: bugs,
-      auditLog,
-      score: calculateScore({
-        candidateInfo,
-        testSession,
-        bugsFound: bugs,
-        auditLog,
-        score: {} as any,
-      }),
-    };
-
-    await generatePDF(report);
-  };
-
-  const handleExportJSON = () => {
-    const report: TechnicalReport = {
-      candidateInfo,
-      testSession,
-      bugsFound: bugs,
-      auditLog,
-      score: calculateScore({
-        candidateInfo,
-        testSession,
-        bugsFound: bugs,
-        auditLog,
-        score: {} as any,
-      }),
-    };
-
-    exportToJSON(report);
   };
 
   const handleClearCache = () => {
@@ -1157,7 +1109,7 @@ export default function TechnicalReportPage() {
           <h2
             className={`text-2xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
           >
-            📄 Generar Informe
+            📝 Entregar Examen
           </h2>
 
           {/* Process code input */}
@@ -1192,19 +1144,14 @@ export default function TechnicalReportPage() {
                   href="/login"
                   className="px-6 py-3 rounded-lg font-medium bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
                 >
-                  🔑 Iniciar sesión para guardar
+                  🔑 Iniciar sesión para entregar
                 </a>
-                <span
-                  className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-                >
-                  (Podés generar PDF y JSON sin sesión)
-                </span>
               </div>
             ) : (
               <button
                 onClick={handleSaveToDb}
                 disabled={isSaving || savedOk}
-                className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                className={`px-8 py-3 rounded-lg font-medium text-lg transition-colors ${
                   savedOk
                     ? isDarkMode
                       ? 'bg-green-900/50 text-green-300 cursor-not-allowed'
@@ -1215,24 +1162,12 @@ export default function TechnicalReportPage() {
                 }`}
               >
                 {isSaving
-                  ? 'Guardando...'
+                  ? 'Entregando...'
                   : savedOk
-                    ? '✓ Guardado'
-                    : '💾 Guardar resultado'}
+                    ? '✓ Examen Entregado'
+                    : '📤 Entregar Examen'}
               </button>
             )}
-            <button
-              onClick={handleGeneratePDF}
-              className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
-            >
-              📄 Generar PDF
-            </button>
-            <button
-              onClick={handleExportJSON}
-              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
-            >
-              💾 Exportar JSON
-            </button>
             <a
               href="/labs/test-app"
               className={`px-6 py-3 rounded-lg font-medium transition-colors ${
@@ -1263,7 +1198,7 @@ export default function TechnicalReportPage() {
               <p
                 className={`text-sm ${isDarkMode ? 'text-green-300' : 'text-green-800'}`}
               >
-                ✅ Resultado guardado. El employer puede ver tu informe en el
+                ✅ Examen entregado. El employer puede ver tu resultado en el
                 dashboard del proceso.
               </p>
             </div>
