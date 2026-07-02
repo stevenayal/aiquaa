@@ -22,6 +22,11 @@ import {
   formatExamScore,
   type ExamType,
 } from '@/lib/exams';
+import {
+  AVAILABILITY_LABELS,
+  QA_SKILL_OPTIONS,
+  type CandidateAvailability,
+} from '@/app/empresa/candidatos/candidateDirectory';
 
 const EXAM_PAGE_SIZE = 20;
 
@@ -120,7 +125,8 @@ export default function PerfilPage() {
     country: '',
     github_profile: '',
     istqb_level: '',
-    open_to_work: false,
+    disponibilidad: 'no_disponible' as CandidateAvailability,
+    qa_skills: [] as string[],
     talent_visible_to_empresas: false,
   });
   const [initialized, setInitialized] = useState(false);
@@ -144,7 +150,12 @@ export default function PerfilPage() {
         country: user.user_metadata?.country || '',
         github_profile: user.user_metadata?.github_profile || '',
         istqb_level: user.user_metadata?.istqb_level || '',
-        open_to_work: Boolean(user.user_metadata?.open_to_work),
+        disponibilidad:
+          user.user_metadata?.disponibilidad ||
+          (user.user_metadata?.open_to_work ? 'activo' : 'no_disponible'),
+        qa_skills: Array.isArray(user.user_metadata?.qa_skills)
+          ? user.user_metadata.qa_skills
+          : [],
         talent_visible_to_empresas: Boolean(
           user.user_metadata?.talent_visible_to_empresas
         ),
@@ -278,7 +289,9 @@ export default function PerfilPage() {
     fd.set('country', formData.country);
     fd.set('github_profile', formData.github_profile);
     fd.set('istqb_level', formData.istqb_level);
-    fd.set('open_to_work', String(formData.open_to_work));
+    fd.set('disponibilidad', formData.disponibilidad);
+    fd.set('qa_skills', JSON.stringify(formData.qa_skills));
+    fd.set('open_to_work', String(formData.disponibilidad === 'activo'));
     fd.set(
       'talent_visible_to_empresas',
       String(formData.talent_visible_to_empresas)
@@ -632,24 +645,58 @@ export default function PerfilPage() {
                     Mostrar mi perfil en el directorio de talento para empresas
                   </span>
                 </label>
-                <label className="flex gap-3 items-start text-sm">
-                  <input
-                    type="checkbox"
-                    checked={formData.open_to_work}
+                <div>
+                  <label className={labelClass}>Disponibilidad</label>
+                  <select
+                    value={formData.disponibilidad}
                     onChange={(e) =>
                       setFormData((p) => ({
                         ...p,
-                        open_to_work: e.target.checked,
+                        disponibilidad: e.target.value as CandidateAvailability,
                       }))
                     }
-                    className="mt-1 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                  />
-                  <span
-                    className={isDarkMode ? 'text-slate-300' : 'text-gray-700'}
+                    className={inputClass}
                   >
-                    Estoy disponible para ser contactado por oportunidades QA
-                  </span>
-                </label>
+                    {Object.entries(AVAILABILITY_LABELS).map(
+                      ([value, label]) => (
+                        <option key={value} value={value}>
+                          {label}
+                        </option>
+                      )
+                    )}
+                  </select>
+                </div>
+                <div>
+                  <p className={labelClass}>Skills QA</p>
+                  <div className="flex flex-wrap gap-2">
+                    {QA_SKILL_OPTIONS.map((skill) => {
+                      const selected = formData.qa_skills.includes(skill);
+                      return (
+                        <button
+                          key={skill}
+                          type="button"
+                          onClick={() =>
+                            setFormData((p) => ({
+                              ...p,
+                              qa_skills: selected
+                                ? p.qa_skills.filter((item) => item !== skill)
+                                : [...p.qa_skills, skill],
+                            }))
+                          }
+                          className={`rounded-full border px-3 py-1 text-xs font-semibold transition-colors ${
+                            selected
+                              ? 'border-indigo-600 bg-indigo-600 text-white'
+                              : isDarkMode
+                                ? 'border-slate-600 text-slate-300 hover:bg-slate-700'
+                                : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                          }`}
+                        >
+                          {skill}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
               <label className={labelClass}>Tu rol en QA</label>
               <div className="grid grid-cols-2 gap-2">

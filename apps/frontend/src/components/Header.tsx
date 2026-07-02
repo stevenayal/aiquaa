@@ -23,7 +23,8 @@ const navLinks = [
 const empresaNavLinks = [
   { href: '/empresa', label: 'Panel', emoji: '🏢' },
   { href: '/empresa/procesos', label: 'Mis procesos', emoji: '📂' },
-  { href: '/empresa/candidatos', label: 'Candidatos', emoji: '👥' },
+  { href: '/empresa/buscar-candidatos', label: 'Buscar talento', emoji: '👥' },
+  { href: '/empresa/candidatos', label: 'Evaluados', emoji: '📊' },
   { href: '/empresa/admin/usuarios', label: 'Usuarios', emoji: '👤' },
   { href: '/ranking', label: 'Tops', emoji: '🏆' },
   { href: '/labs', label: 'Herramientas', emoji: '🧪' },

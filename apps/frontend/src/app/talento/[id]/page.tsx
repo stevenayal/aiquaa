@@ -83,7 +83,7 @@ export default async function TalentProfilePage({ params }: PageProps) {
   const { data: profile } = await supabase
     .from('profiles')
     .select(
-      'id, display_name, email, role, country, istqb_level, github_profile, open_to_work, talent_visible_to_empresas'
+      'id, display_name, role, country, istqb_level, github_profile, disponibilidad, talent_visible_to_empresas'
     )
     .eq('id', params.id)
     .eq('audience', 'candidato')
@@ -122,7 +122,7 @@ export default async function TalentProfilePage({ params }: PageProps) {
                 Talento QA AIQUAA
               </p>
               <h1 className="mt-1 text-3xl font-bold text-gray-900">
-                {profile.display_name || profile.email || 'Candidato QA'}
+                {profile.display_name || 'Candidato QA'}
               </h1>
               <p className="mt-2 text-sm text-gray-600">
                 {[profile.role, profile.country].filter(Boolean).join(' · ') ||
@@ -135,9 +135,6 @@ export default async function TalentProfilePage({ params }: PageProps) {
                     profile.istqb_level}
                 </p>
               )}
-              {profile.email && (
-                <p className="mt-1 text-sm text-gray-500">{profile.email}</p>
-              )}
               {githubUrl && (
                 <a
                   href={githubUrl}
@@ -149,7 +146,7 @@ export default async function TalentProfilePage({ params }: PageProps) {
                 </a>
               )}
             </div>
-            {profile.open_to_work && (
+            {profile.disponibilidad === 'activo' && (
               <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
                 Disponible para contacto
               </span>

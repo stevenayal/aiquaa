@@ -200,7 +200,7 @@ export default function CandidatosPage() {
         const { data: profiles } = await supabase
           .from('profiles')
           .select(
-            'id, display_name, email, role, country, istqb_level, github_profile, open_to_work, talent_visible_to_empresas'
+            'id, display_name, role, country, istqb_level, github_profile, qa_skills, disponibilidad, talent_visible_to_empresas'
           )
           .in('id', talentUserIds)
           .eq('audience', 'candidato')
@@ -427,12 +427,13 @@ export default function CandidatosPage() {
       return {
         userId,
         name: best.participant_name || best.participant_email || 'Sin nombre',
-        email: best.participant_email,
+        contactEmail: best.participant_email,
         role: null,
         country: null,
         istqbLevel: null,
         githubProfile: null,
-        openToWork: false,
+        qaSkills: [],
+        disponibilidad: 'no_disponible',
         visibleToEmpresas: false,
         bestScore: Number(best.percentage ?? 0),
         bestExamType: best.exam_type,
@@ -462,7 +463,7 @@ export default function CandidatosPage() {
       const matchesSearch =
         !q ||
         candidate.name.toLowerCase().includes(q) ||
-        (candidate.email?.toLowerCase().includes(q) ?? false) ||
+        (candidate.contactEmail?.toLowerCase().includes(q) ?? false) ||
         (candidate.role?.toLowerCase().includes(q) ?? false) ||
         (candidate.country?.toLowerCase().includes(q) ?? false) ||
         (candidate.istqbLevel
@@ -880,7 +881,7 @@ export default function CandidatosPage() {
                             >
                               {candidate.name}
                             </Link>
-                            {candidate.openToWork && (
+                            {candidate.disponibilidad === 'activo' && (
                               <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
                                 Disponible
                               </span>
@@ -901,11 +902,11 @@ export default function CandidatosPage() {
                               ? ` · ${ISTQB_LEVEL_LABELS[candidate.istqbLevel] ?? candidate.istqbLevel}`
                               : ''}
                           </p>
-                          {candidate.email && (
+                          {candidate.contactEmail && (
                             <p
                               className={`text-xs mt-0.5 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
                             >
-                              {candidate.email}
+                              {candidate.contactEmail}
                             </p>
                           )}
                         </div>
@@ -953,18 +954,20 @@ export default function CandidatosPage() {
                         >
                           {isFavorite ? 'Quitar' : 'Guardar'}
                         </button>
-                        {candidate.email && (
+                        {candidate.contactEmail && (
                           <a
-                            href={`mailto:${candidate.email}`}
+                            href={`mailto:${candidate.contactEmail}`}
                             className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${isDarkMode ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
                           >
                             Contactar
                           </a>
                         )}
-                        {candidate.email && (
+                        {candidate.contactEmail && (
                           <button
                             type="button"
-                            onClick={() => openInviteModal(candidate.email!)}
+                            onClick={() =>
+                              openInviteModal(candidate.contactEmail!)
+                            }
                             className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
                           >
                             Invitar
