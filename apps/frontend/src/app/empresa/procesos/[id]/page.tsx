@@ -108,6 +108,7 @@ const EXAM_LABELS: Record<string, string> = {
   git: 'Git',
   'git-practico': 'Git — Prueba práctica',
   performance: 'Performance',
+  'test-app': 'Test App — Bug Hunt',
   'api-testing-fundamentals': 'API Testing Fundamentals',
   'api-banking': 'API Testing Challenge',
   'database-fundamentals': 'Bases de Datos — Fundamentos',
