@@ -385,7 +385,6 @@ export default function TechnicalReportPage() {
       user?.email ||
       '';
     const participantEmail = candidateInfo.email || user?.email || '';
-    const bugsWithoutImages = bugs.map(({ images: _images, ...rest }) => rest);
     const { error } = await saveExamResultAction({
       exam_type: 'test-app',
       exam_mode: 'exam',
@@ -403,7 +402,7 @@ export default function TechnicalReportPage() {
       github_profile: candidateInfo.githubProfile || undefined,
       process_code: processCode.trim().toUpperCase() || undefined,
       metadata: {
-        bugs: bugsWithoutImages,
+        bugs,
         exploredSections: testSession.exploredSections,
         bugCount: bugs.length,
         severityCounts: {
