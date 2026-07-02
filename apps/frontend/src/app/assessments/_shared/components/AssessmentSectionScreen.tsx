@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useTransition } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import {
@@ -46,7 +46,7 @@ export default function AssessmentSectionScreen({
   const [savingMessage, setSavingMessage] = useState('Autosave activo');
   const [error, setError] = useState('');
   const [submitError, setSubmitError] = useState('');
-  const [isPending, startTransition] = useTransition();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const saveTimers = useRef<Record<string, number>>({});
 
   useEffect(() => {
@@ -56,6 +56,7 @@ export default function AssessmentSectionScreen({
     }
 
     let cancelled = false;
+    const timers = saveTimers.current;
 
     async function loadSection() {
       if (!attemptId) return;
@@ -91,9 +92,7 @@ export default function AssessmentSectionScreen({
 
     return () => {
       cancelled = true;
-      Object.values(saveTimers.current).forEach((timer) =>
-        window.clearTimeout(timer)
-      );
+      Object.values(timers).forEach((timer) => window.clearTimeout(timer));
     };
   }, [attemptId, basePath, router, sectionSlug]);
 
@@ -146,30 +145,33 @@ export default function AssessmentSectionScreen({
     if (!attemptId || !payload) return;
 
     setSubmitError('');
-    startTransition(async () => {
-      try {
-        const { nextSectionSlug } = await submitAssessmentSectionAction({
-          attemptId,
-          sectionSlug: payload.section.slug,
-        });
+    setIsSubmitting(true);
 
-        if (nextSectionSlug) {
-          router.push(
-            `${basePath}/section/${nextSectionSlug}?attempt=${attemptId}`
-          );
-          return;
-        }
+    try {
+      const { nextSectionSlug } = await submitAssessmentSectionAction({
+        attemptId,
+        sectionSlug: payload.section.slug,
+      });
 
-        await finalizeAssessmentAttemptAction(attemptId);
-        router.replace(`${basePath}/result?attempt=${attemptId}`);
-      } catch (submitSectionError) {
-        setSubmitError(
-          submitSectionError instanceof Error
-            ? submitSectionError.message
-            : 'No se pudo enviar la sección.'
+      if (nextSectionSlug) {
+        setIsSubmitting(false);
+        router.push(
+          `${basePath}/section/${nextSectionSlug}?attempt=${attemptId}`
         );
+        return;
       }
-    });
+
+      await finalizeAssessmentAttemptAction(attemptId);
+      setIsSubmitting(false);
+      router.replace(`${basePath}/result?attempt=${attemptId}`);
+    } catch (submitSectionError) {
+      setIsSubmitting(false);
+      setSubmitError(
+        submitSectionError instanceof Error
+          ? submitSectionError.message
+          : 'No se pudo enviar la sección.'
+      );
+    }
   }
 
   if (loading || !payload) {
@@ -451,7 +453,7 @@ export default function AssessmentSectionScreen({
                 ? 'Finalizar assessment'
                 : 'Enviar nivel y continuar'
             }
-            isSubmitting={isPending}
+            isSubmitting={isSubmitting}
             onSubmit={() => void handleSubmitSection()}
           />
         </div>

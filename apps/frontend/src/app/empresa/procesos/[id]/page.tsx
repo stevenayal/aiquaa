@@ -32,13 +32,18 @@ type ExamResult = {
   id: string;
   participant_name: string | null;
   participant_email: string | null;
+  user_id?: string | null;
   exam_type: string;
   score: number;
   percentage: number;
   passed: boolean;
   time_spent: number;
   created_at: string;
+  profiles?: { display_name: string | null; email: string | null }[] | null;
 };
+
+// eslint-disable-next-line no-unused-vars
+type OnProspectAdded = (prospect: Prospect) => void;
 
 const STATUS_LABELS: Record<
   string,
@@ -75,6 +80,10 @@ function getEffectiveStatus(process: HiringProcess): string {
     return 'expired';
   }
   return process.status;
+}
+
+function getResultDisplayName(result: ExamResult) {
+  return result.participant_name || result.participant_email || '—';
 }
 
 const PROSPECT_STATUS_CONFIG: Record<
@@ -134,7 +143,7 @@ function AddProspectModal({
   processId: string;
   isDarkMode: boolean;
   onClose: () => void;
-  onAdded: (_p: Prospect) => void;
+  onAdded: OnProspectAdded;
 }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -401,7 +410,7 @@ export default function ProcesoDetailPage() {
         supabase
           .from('exam_results')
           .select(
-            'id, participant_name, participant_email, exam_type, score, percentage, passed, time_spent, created_at'
+            'id, user_id, participant_name, participant_email, exam_type, score, percentage, passed, time_spent, created_at, profiles(display_name, email)'
           )
           .eq('process_code', proc.code)
           .order('percentage', { ascending: false }),
@@ -435,9 +444,22 @@ export default function ProcesoDetailPage() {
         });
       }
 
+      const examResults = ((res ?? []) as ExamResult[]).map((r) => ({
+        ...r,
+        participant_name:
+          r.profiles?.[0]?.display_name ??
+          r.participant_name ??
+          r.participant_email,
+        participant_email:
+          r.profiles?.[0]?.email ?? r.participant_email ?? null,
+      }));
+
       const mappedAttempts: ExamResult[] = attemptRows.map((r: any) => ({
         id: r.id,
-        participant_name: profileMap[r.user_id]?.display_name ?? null,
+        participant_name:
+          profileMap[r.user_id]?.display_name ??
+          profileMap[r.user_id]?.email ??
+          null,
         participant_email: profileMap[r.user_id]?.email ?? null,
         exam_type: r.assessments?.slug ?? 'unknown',
         score: r.total_score ?? 0,
@@ -454,7 +476,7 @@ export default function ProcesoDetailPage() {
         created_at: r.created_at,
       }));
 
-      setResults([...(res ?? []), ...mappedAttempts]);
+      setResults([...examResults, ...mappedAttempts]);
       setProspects(prsp ?? []);
       setLoading(false);
     };
@@ -844,7 +866,7 @@ export default function ProcesoDetailPage() {
                           <p
                             className={`text-sm font-medium truncate ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
                           >
-                            {r.participant_name || '—'}
+                            {getResultDisplayName(r)}
                           </p>
                           <p
                             className={`text-xs truncate ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
@@ -932,7 +954,7 @@ export default function ProcesoDetailPage() {
                             <div
                               className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
                             >
-                              {r.participant_name || '—'}
+                              {getResultDisplayName(r)}
                             </div>
                             {r.participant_email && (
                               <div
