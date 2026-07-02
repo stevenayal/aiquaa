@@ -2,10 +2,11 @@ import Link from 'next/link';
 import { apiTestingFundamentalsDefinition } from './api-testing-fundamentals/data/assessment-definition';
 import { databaseFundamentalsDefinition } from './database-fundamentals/data/assessment-definition';
 import { databasePracticeDefinition } from './database-practice/data/assessment-definition';
+import { infrastructureFundamentalsDefinition } from './infrastructure-fundamentals/data/assessment-definition';
 
 export default function AssessmentsIndexPage() {
   const overview = apiTestingFundamentalsDefinition;
-  const databaseAssessments = [
+  const assessmentCards = [
     {
       definition: databaseFundamentalsDefinition,
       badge: 'Examen teórico · Auto-corregido',
@@ -19,6 +20,13 @@ export default function AssessmentsIndexPage() {
       badgeColor: 'text-emerald-300',
       accentColor: 'text-emerald-200',
       buttonClass: 'bg-emerald-500 hover:bg-emerald-400',
+    },
+    {
+      definition: infrastructureFundamentalsDefinition,
+      badge: 'Examen teórico · Auto-corregido',
+      badgeColor: 'text-amber-300',
+      accentColor: 'text-sky-200',
+      buttonClass: 'bg-sky-500 hover:bg-sky-400',
     },
   ];
 
@@ -93,8 +101,8 @@ export default function AssessmentsIndexPage() {
             </div>
           </div>
 
-          {/* Database Fundamentals + Database Practice */}
-          {databaseAssessments.map((card) => (
+          {/* Database Fundamentals + Database Practice + Infrastructure Fundamentals */}
+          {assessmentCards.map((card) => (
             <div
               key={card.definition.slug}
               className="rounded-3xl border border-slate-800 bg-slate-900/80 p-8 shadow-2xl shadow-cyan-950/20"

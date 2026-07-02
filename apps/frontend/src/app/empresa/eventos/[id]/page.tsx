@@ -29,6 +29,7 @@ const EXAM_LABELS: Record<string, string> = {
   'api-banking': 'API Testing Practico',
   'database-fundamentals': 'BD Fundamentos',
   'database-practice': 'BD Práctica SQL',
+  'infrastructure-fundamentals': 'Infraestructura',
 };
 
 function getEffectiveStatus(

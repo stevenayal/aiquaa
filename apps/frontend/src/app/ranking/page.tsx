@@ -56,7 +56,8 @@ type ExamSlug =
   | 'api-testing-fundamentals'
   | 'api-banking'
   | 'database-fundamentals'
-  | 'database-practice';
+  | 'database-practice'
+  | 'infrastructure-fundamentals';
 
 const EXAM_SLUGS: ExamSlug[] = [
   'git',
@@ -67,6 +68,7 @@ const EXAM_SLUGS: ExamSlug[] = [
   'api-banking',
   'database-fundamentals',
   'database-practice',
+  'infrastructure-fundamentals',
 ];
 
 interface Category {
@@ -122,6 +124,13 @@ const CATEGORIES: Category[] = [
     teorico: 'performance',
   },
   {
+    key: 'infraestructura',
+    label: 'Infraestructura',
+    emoji: '🐳',
+    color: 'from-blue-500 to-indigo-600',
+    teorico: 'infrastructure-fundamentals',
+  },
+  {
     key: 'comunidad',
     label: 'Comunidad',
     emoji: '🚀',
@@ -141,6 +150,7 @@ const EXAM_TAB_URLS: Record<string, string> = {
   'api-banking': '/assessments/api-banking',
   'database-fundamentals': '/assessments/database-fundamentals',
   'database-practice': '/assessments/database-practice',
+  'infrastructure-fundamentals': '/assessments/infrastructure-fundamentals',
 };
 
 const MEDAL = ['🥇', '🥈', '🥉'];
@@ -998,8 +1008,7 @@ export default function RankingPage() {
   const { user } = useSupabaseAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [activeCategory, setActiveCategory] =
-    useState<CategoryKey>('database');
+  const [activeCategory, setActiveCategory] = useState<CategoryKey>('database');
   const [examData, setExamData] = useState<Record<string, LeaderboardEntry[]>>({
     git: [],
     'git-practico': [],
@@ -1009,6 +1018,7 @@ export default function RankingPage() {
     'api-banking': [],
     'database-fundamentals': [],
     'database-practice': [],
+    'infrastructure-fundamentals': [],
   });
   const [examLoading, setExamLoading] = useState<Record<string, boolean>>({
     git: true,
@@ -1019,6 +1029,7 @@ export default function RankingPage() {
     'api-banking': true,
     'database-fundamentals': true,
     'database-practice': true,
+    'infrastructure-fundamentals': true,
   });
   const [showWelcome, setShowWelcome] = useState(false);
 
@@ -1137,7 +1148,9 @@ export default function RankingPage() {
                 if (e.key === 'ArrowRight') {
                   setActiveCategory(keys[(idx + 1) % keys.length]);
                 } else if (e.key === 'ArrowLeft') {
-                  setActiveCategory(keys[(idx - 1 + keys.length) % keys.length]);
+                  setActiveCategory(
+                    keys[(idx - 1 + keys.length) % keys.length]
+                  );
                 }
               }}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-sm font-semibold transition-all min-w-[100px] ${

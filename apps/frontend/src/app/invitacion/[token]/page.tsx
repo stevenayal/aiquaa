@@ -11,6 +11,7 @@ const EXAM_LABELS: Record<string, string> = {
   'api-banking': 'API Testing Challenge',
   'database-fundamentals': 'Bases de Datos — Fundamentos',
   'database-practice': 'Bases de Datos — Práctica SQL',
+  'infrastructure-fundamentals': 'Infraestructura — Fundamentos',
 };
 
 const EXAM_URLS: Record<string, string> = {
@@ -21,6 +22,8 @@ const EXAM_URLS: Record<string, string> = {
   'api-banking': '/assessments/api-banking/start',
   'database-fundamentals': '/assessments/database-fundamentals/start',
   'database-practice': '/assessments/database-practice/start',
+  'infrastructure-fundamentals':
+    '/assessments/infrastructure-fundamentals/start',
 };
 
 function examHref(examType: string, code: string) {

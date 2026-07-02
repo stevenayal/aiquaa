@@ -10,6 +10,7 @@ const EXAM_LABELS: Record<string, string> = {
   'api-banking': 'API Testing Challenge',
   'database-fundamentals': 'Bases de Datos — Fundamentos',
   'database-practice': 'Bases de Datos — Práctica SQL',
+  'infrastructure-fundamentals': 'Infraestructura — Fundamentos',
 };
 
 const ISTQB_LEVEL_LABELS: Record<string, string> = {

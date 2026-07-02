@@ -80,6 +80,7 @@ export default function DashboardPage() {
     'api-banking',
     'database-fundamentals',
     'database-practice',
+    'infrastructure-fundamentals',
   ];
   const recommended = allTypes.find((t) => !passedTypes.has(t)) ?? null;
   const allPassed = allTypes.every((t) => passedTypes.has(t));

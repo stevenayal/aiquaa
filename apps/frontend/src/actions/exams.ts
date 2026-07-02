@@ -17,7 +17,8 @@ interface SaveExamResultPayload {
     | 'api-testing-fundamentals'
     | 'api-banking'
     | 'database-fundamentals'
-    | 'database-practice';
+    | 'database-practice'
+    | 'infrastructure-fundamentals';
   exam_mode: 'exam' | 'training';
   participant_name?: string;
   participant_email?: string;
@@ -97,13 +98,19 @@ export async function saveExamResultAction(payload: SaveExamResultPayload) {
       if (process?.id) {
         await supabase
           .from('empresa_invitaciones')
-          .update({ status: 'completada', completed_at: new Date().toISOString() })
+          .update({
+            status: 'completada',
+            completed_at: new Date().toISOString(),
+          })
           .eq('candidate_email', resolvedEmail)
           .eq('process_id', process.id)
           .in('status', ['pendiente', 'vista']);
       }
     } catch (invErr) {
-      console.warn('[empresa-invitaciones] update to completada failed', invErr);
+      console.warn(
+        '[empresa-invitaciones] update to completada failed',
+        invErr
+      );
     }
   }
 
@@ -127,7 +134,8 @@ export async function getLeaderboardAction(
     | 'api-testing-fundamentals'
     | 'api-banking'
     | 'database-fundamentals'
-    | 'database-practice',
+    | 'database-practice'
+    | 'infrastructure-fundamentals',
   limit = 20
 ) {
   const supabase = createClient();
