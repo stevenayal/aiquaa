@@ -1,14 +1,18 @@
 export type CandidateProfile = {
   id: string;
   display_name: string | null;
-  email: string | null;
+  email?: string | null;
   role?: string | null;
   country?: string | null;
   istqb_level?: string | null;
   github_profile?: string | null;
+  qa_skills?: string[] | null;
+  disponibilidad?: CandidateAvailability | null;
   open_to_work?: boolean | null;
   talent_visible_to_empresas?: boolean | null;
 };
+
+export type CandidateAvailability = 'activo' | 'pasivo' | 'no_disponible';
 
 export type CandidateResult = {
   id: string;
@@ -31,12 +35,13 @@ export type FavoriteRow = {
 export type TalentCandidate = {
   userId: string;
   name: string;
-  email: string | null;
+  contactEmail?: string | null;
   role: string | null;
   country: string | null;
   istqbLevel: string | null;
   githubProfile: string | null;
-  openToWork: boolean;
+  qaSkills: string[];
+  disponibilidad: CandidateAvailability;
   visibleToEmpresas: boolean;
   bestScore: number;
   bestExamType: string;
@@ -46,6 +51,34 @@ export type TalentCandidate = {
   favoriteId: string | null;
   favoriteCreatedAt: string | null;
   favoriteNotes: string | null;
+};
+
+export type TalentCandidateFilters = {
+  search?: string;
+  istqbLevel?: string;
+  country?: string;
+  availability?: CandidateAvailability | 'all';
+  skills?: string[];
+};
+
+export const QA_SKILL_OPTIONS = [
+  'Selenium',
+  'Cypress',
+  'Playwright',
+  'Postman',
+  'k6',
+  'JMeter',
+  'SQL',
+  'API Testing',
+  'Exploratory Testing',
+  'Git',
+  'CI/CD',
+];
+
+export const AVAILABILITY_LABELS: Record<CandidateAvailability, string> = {
+  activo: 'Activo',
+  pasivo: 'Pasivo',
+  no_disponible: 'No disponible',
 };
 
 export function getCandidateKey(result: CandidateResult) {
@@ -91,18 +124,15 @@ export function buildTalentDirectory(
 
       return {
         userId,
-        name:
-          profile.display_name ||
-          best.participant_name ||
-          profile.email ||
-          best.participant_email ||
-          'Sin nombre',
-        email: profile.email ?? best.participant_email ?? null,
+        name: profile.display_name || best.participant_name || 'Sin nombre',
         role: profile.role ?? null,
         country: profile.country ?? null,
         istqbLevel: profile.istqb_level ?? null,
         githubProfile: profile.github_profile ?? null,
-        openToWork: Boolean(profile.open_to_work),
+        qaSkills: profile.qa_skills ?? [],
+        disponibilidad:
+          profile.disponibilidad ??
+          (profile.open_to_work ? 'activo' : 'no_disponible'),
         visibleToEmpresas: Boolean(profile.talent_visible_to_empresas),
         bestScore: Number(best.percentage ?? 0),
         bestExamType: best.exam_type,
@@ -122,8 +152,19 @@ export function buildTalentDirectory(
       } satisfies TalentCandidate;
     })
     .sort((a, b) => {
-      if (Number(b.openToWork) !== Number(a.openToWork)) {
-        return Number(b.openToWork) - Number(a.openToWork);
+      const availabilityRank: Record<CandidateAvailability, number> = {
+        activo: 0,
+        pasivo: 1,
+        no_disponible: 2,
+      };
+      if (
+        availabilityRank[a.disponibilidad] !==
+        availabilityRank[b.disponibilidad]
+      ) {
+        return (
+          availabilityRank[a.disponibilidad] -
+          availabilityRank[b.disponibilidad]
+        );
       }
       if (b.bestScore !== a.bestScore) return b.bestScore - a.bestScore;
       return (
@@ -131,4 +172,45 @@ export function buildTalentDirectory(
         new Date(a.lastActivityAt).getTime()
       );
     });
+}
+
+export function filterTalentCandidates(
+  candidates: TalentCandidate[],
+  filters: TalentCandidateFilters
+) {
+  const query = filters.search?.trim().toLowerCase();
+  const skills = filters.skills?.filter(Boolean) ?? [];
+
+  return candidates.filter((candidate) => {
+    const matchesSearch =
+      !query ||
+      candidate.name.toLowerCase().includes(query) ||
+      (candidate.role?.toLowerCase().includes(query) ?? false) ||
+      (candidate.country?.toLowerCase().includes(query) ?? false) ||
+      (candidate.istqbLevel?.toLowerCase().includes(query) ?? false) ||
+      candidate.qaSkills.some((skill) => skill.toLowerCase().includes(query));
+    const matchesLevel =
+      !filters.istqbLevel ||
+      filters.istqbLevel === 'all' ||
+      candidate.istqbLevel === filters.istqbLevel;
+    const matchesCountry =
+      !filters.country ||
+      filters.country === 'all' ||
+      candidate.country === filters.country;
+    const matchesAvailability =
+      !filters.availability ||
+      filters.availability === 'all' ||
+      candidate.disponibilidad === filters.availability;
+    const matchesSkills =
+      skills.length === 0 ||
+      skills.some((skill) => candidate.qaSkills.includes(skill));
+
+    return (
+      matchesSearch &&
+      matchesLevel &&
+      matchesCountry &&
+      matchesAvailability &&
+      matchesSkills
+    );
+  });
 }

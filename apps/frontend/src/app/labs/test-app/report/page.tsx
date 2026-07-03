@@ -3,14 +3,12 @@
 export const dynamic = 'force-dynamic';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { getExamUserDefaults } from '@/lib/exam-user-defaults';
 import { getCurrentUser } from '../lib/storage';
 import { getCandidateId, setCandidateId } from '../lib/prng';
 import type {
-  TechnicalReport,
   BugReport,
   CandidateInfo,
   TestSession,
@@ -18,8 +16,6 @@ import type {
 } from './types';
 import {
   calculateScore,
-  generatePDF,
-  exportToJSON,
   fileToBase64,
   validateImageFile,
   formatFileSize,
@@ -33,11 +29,13 @@ import { saveExamResultAction } from '@/actions/exams';
 export default function TechnicalReportPage() {
   const { isDarkMode } = useTheme();
   const { user, isLoading } = useSupabaseAuth();
-  const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && !user) router.push('/login');
-  }, [user, isLoading, router]);
+    if (!isLoading && !user) {
+      // Don't redirect — allow test-app-only users to fill the report form.
+      // Saving to DB will require Supabase auth, but PDF/JSON export works offline.
+    }
+  }, [user, isLoading]);
 
   // Candidate Info — pre-filled from session, github editable
   const [candidateInfo, setCandidateInfo] = useState<CandidateInfo>({
@@ -322,51 +320,6 @@ export default function TechnicalReportPage() {
     }
   };
 
-  const handleGeneratePDF = async () => {
-    if (
-      !candidateInfo.fullName ||
-      !candidateInfo.email ||
-      !candidateInfo.candidateId
-    ) {
-      alert('Por favor, completa la información del candidato');
-      return;
-    }
-
-    const report: TechnicalReport = {
-      candidateInfo,
-      testSession,
-      bugsFound: bugs,
-      auditLog,
-      score: calculateScore({
-        candidateInfo,
-        testSession,
-        bugsFound: bugs,
-        auditLog,
-        score: {} as any,
-      }),
-    };
-
-    await generatePDF(report);
-  };
-
-  const handleExportJSON = () => {
-    const report: TechnicalReport = {
-      candidateInfo,
-      testSession,
-      bugsFound: bugs,
-      auditLog,
-      score: calculateScore({
-        candidateInfo,
-        testSession,
-        bugsFound: bugs,
-        auditLog,
-        score: {} as any,
-      }),
-    };
-
-    exportToJSON(report);
-  };
-
   const handleClearCache = () => {
     if (
       confirm(
@@ -432,7 +385,6 @@ export default function TechnicalReportPage() {
       user?.email ||
       '';
     const participantEmail = candidateInfo.email || user?.email || '';
-    const bugsWithoutImages = bugs.map(({ images: _images, ...rest }) => rest);
     const { error } = await saveExamResultAction({
       exam_type: 'test-app',
       exam_mode: 'exam',
@@ -450,7 +402,7 @@ export default function TechnicalReportPage() {
       github_profile: candidateInfo.githubProfile || undefined,
       process_code: processCode.trim().toUpperCase() || undefined,
       metadata: {
-        bugs: bugsWithoutImages,
+        bugs,
         exploredSections: testSession.exploredSections,
         bugCount: bugs.length,
         severityCounts: {
@@ -469,7 +421,7 @@ export default function TechnicalReportPage() {
     }
   };
 
-  if (isLoading || !user) {
+  if (isLoading) {
     return (
       <div
         className={`min-h-screen ${isDarkMode ? 'bg-slate-900' : 'bg-gray-50'} flex items-center justify-center`}
@@ -1156,7 +1108,7 @@ export default function TechnicalReportPage() {
           <h2
             className={`text-2xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
           >
-            📄 Generar Informe
+            📝 Entregar Examen
           </h2>
 
           {/* Process code input */}
@@ -1185,37 +1137,36 @@ export default function TechnicalReportPage() {
           </div>
 
           <div className="flex flex-wrap gap-4">
-            <button
-              onClick={handleSaveToDb}
-              disabled={isSaving || savedOk}
-              className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-                savedOk
-                  ? isDarkMode
-                    ? 'bg-green-900/50 text-green-300 cursor-not-allowed'
-                    : 'bg-green-100 text-green-700 cursor-not-allowed'
-                  : isSaving
-                    ? 'bg-indigo-400 text-white cursor-wait'
-                    : 'bg-indigo-600 hover:bg-indigo-700 text-white'
-              }`}
-            >
-              {isSaving
-                ? 'Guardando...'
-                : savedOk
-                  ? '✓ Guardado'
-                  : '💾 Guardar resultado'}
-            </button>
-            <button
-              onClick={handleGeneratePDF}
-              className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
-            >
-              📄 Generar PDF
-            </button>
-            <button
-              onClick={handleExportJSON}
-              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
-            >
-              💾 Exportar JSON
-            </button>
+            {!user ? (
+              <div className="flex items-center gap-3">
+                <a
+                  href="/login"
+                  className="px-6 py-3 rounded-lg font-medium bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
+                >
+                  🔑 Iniciar sesión para entregar
+                </a>
+              </div>
+            ) : (
+              <button
+                onClick={handleSaveToDb}
+                disabled={isSaving || savedOk}
+                className={`px-8 py-3 rounded-lg font-medium text-lg transition-colors ${
+                  savedOk
+                    ? isDarkMode
+                      ? 'bg-green-900/50 text-green-300 cursor-not-allowed'
+                      : 'bg-green-100 text-green-700 cursor-not-allowed'
+                    : isSaving
+                      ? 'bg-indigo-400 text-white cursor-wait'
+                      : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                }`}
+              >
+                {isSaving
+                  ? 'Entregando...'
+                  : savedOk
+                    ? '✓ Examen Entregado'
+                    : '📤 Entregar Examen'}
+              </button>
+            )}
             <a
               href="/labs/test-app"
               className={`px-6 py-3 rounded-lg font-medium transition-colors ${
@@ -1246,7 +1197,7 @@ export default function TechnicalReportPage() {
               <p
                 className={`text-sm ${isDarkMode ? 'text-green-300' : 'text-green-800'}`}
               >
-                ✅ Resultado guardado. El employer puede ver tu informe en el
+                ✅ Examen entregado. El employer puede ver tu resultado en el
                 dashboard del proceso.
               </p>
             </div>

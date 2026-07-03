@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-const PROTECTED_ROUTES = ['/perfil', '/dashboard', '/empresa'];
+const PROTECTED_ROUTES = ['/perfil', '/dashboard', '/empresa', '/talento'];
 const AUTH_ROUTES = ['/login', '/register'];
 const PUBLIC_PATHS = ['/empresa/registro'];
 const SUPABASE_AUTH_COOKIE_PATTERN = /^sb-.+-auth-token(?:\.\d+)?$/;
@@ -138,6 +138,7 @@ export const config = {
     '/dashboard/:path*',
     '/empresa',
     '/empresa/:path*',
+    '/talento/:path*',
     '/login',
     '/register',
   ],

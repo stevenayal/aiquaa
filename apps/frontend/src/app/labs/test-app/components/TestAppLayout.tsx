@@ -15,7 +15,10 @@ interface TestAppLayoutProps {
   requireAuth?: boolean;
 }
 
-export default function TestAppLayout({ children, requireAuth = false }: TestAppLayoutProps) {
+export default function TestAppLayout({
+  children,
+  requireAuth = false,
+}: TestAppLayoutProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeBugCount, setActiveBugCount] = useState(0);
@@ -71,7 +74,10 @@ export default function TestAppLayout({ children, requireAuth = false }: TestApp
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <div>
-              <Link href="/labs/test-app" className="text-2xl font-bold text-amber-600">
+              <Link
+                href="/labs/test-app"
+                className="text-2xl font-bold text-amber-600"
+              >
                 AIQUAA Test App
               </Link>
               <div className="flex items-center gap-2 mt-1">
@@ -128,6 +134,16 @@ export default function TestAppLayout({ children, requireAuth = false }: TestApp
                     Soporte
                   </Link>
                   <Link
+                    href="/labs/test-app/report"
+                    className={`text-sm font-semibold px-3 py-1.5 rounded-lg transition-colors ${
+                      isActive('/labs/test-app/report')
+                        ? 'bg-amber-600 text-white'
+                        : 'bg-red-50 text-red-700 hover:bg-red-100 border border-red-200'
+                    }`}
+                  >
+                    🐛 Reportar Bugs
+                  </Link>
+                  <Link
                     href="/labs/test-app/profile"
                     className={`text-sm font-medium ${
                       isActive('/labs/test-app/profile')
@@ -176,7 +192,16 @@ export default function TestAppLayout({ children, requireAuth = false }: TestApp
           <div className="flex justify-between items-center text-sm text-gray-600">
             <p>AIQUAA Test App — Solo para evaluación</p>
             <div className="flex space-x-4">
-              <Link href="/labs/test-app/evidence" className="hover:text-amber-600">
+              <Link
+                href="/labs/test-app/report"
+                className="hover:text-amber-600 font-semibold"
+              >
+                🐛 Reportar Bugs
+              </Link>
+              <Link
+                href="/labs/test-app/evidence"
+                className="hover:text-amber-600"
+              >
                 Evidencias
               </Link>
             </div>

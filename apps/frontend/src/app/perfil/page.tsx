@@ -13,6 +13,7 @@ import {
   getExamResultsAction,
   getMyRankingAchievementsAction,
   getMyXpProfileAction,
+  assignProcessCodeToExamAction,
 } from '@/actions/exams';
 import Avatar from '@/components/ui/Avatar';
 import { xpForLevel, PY_TIMEZONE } from '@/lib/xp';
@@ -22,6 +23,11 @@ import {
   formatExamScore,
   type ExamType,
 } from '@/lib/exams';
+import {
+  AVAILABILITY_LABELS,
+  QA_SKILL_OPTIONS,
+  type CandidateAvailability,
+} from '@/app/empresa/candidatos/candidateDirectory';
 
 const EXAM_PAGE_SIZE = 20;
 
@@ -48,6 +54,8 @@ interface ExamResultRow {
   time_spent: number;
   model?: string;
   language?: string;
+  process_code?: string | null;
+  review_status?: string | null;
   created_at: string;
 }
 
@@ -105,7 +113,17 @@ export default function PerfilPage() {
   const [examResultsLoading, setExamResultsLoading] = useState(true);
   const [examTotal, setExamTotal] = useState(0);
   const [examFilter, setExamFilter] = useState<ExamType | 'all'>('all');
+  const [examCodeFilter, setExamCodeFilter] = useState<
+    'all' | 'official' | 'practice'
+  >('all');
   const [examLoadingMore, setExamLoadingMore] = useState(false);
+  const [assigningTo, setAssigningTo] = useState<string | null>(null);
+  const [codeInput, setCodeInput] = useState('');
+  const [assigningLoading, setAssigningLoading] = useState(false);
+  const [assignFeedback, setAssignFeedback] = useState<{
+    type: 'success' | 'error';
+    msg: string;
+  } | null>(null);
   const [rankingAchievements, setRankingAchievements] = useState<
     RankingAchievementRow[]
   >([]);
@@ -120,7 +138,8 @@ export default function PerfilPage() {
     country: '',
     github_profile: '',
     istqb_level: '',
-    open_to_work: false,
+    disponibilidad: 'no_disponible' as CandidateAvailability,
+    qa_skills: [] as string[],
     talent_visible_to_empresas: false,
   });
   const [initialized, setInitialized] = useState(false);
@@ -144,7 +163,12 @@ export default function PerfilPage() {
         country: user.user_metadata?.country || '',
         github_profile: user.user_metadata?.github_profile || '',
         istqb_level: user.user_metadata?.istqb_level || '',
-        open_to_work: Boolean(user.user_metadata?.open_to_work),
+        disponibilidad:
+          user.user_metadata?.disponibilidad ||
+          (user.user_metadata?.open_to_work ? 'activo' : 'no_disponible'),
+        qa_skills: Array.isArray(user.user_metadata?.qa_skills)
+          ? user.user_metadata.qa_skills
+          : [],
         talent_visible_to_empresas: Boolean(
           user.user_metadata?.talent_visible_to_empresas
         ),
@@ -182,6 +206,34 @@ export default function PerfilPage() {
       setExamTotal(total ?? 0);
       setExamLoadingMore(false);
     });
+  };
+
+  const handleAssignCode = async (examResultId: string) => {
+    const code = codeInput.trim();
+    if (!code) return;
+    setAssigningLoading(true);
+    setAssignFeedback(null);
+    const result = await assignProcessCodeToExamAction(examResultId, code);
+    setAssigningLoading(false);
+    if (result.error) {
+      setAssignFeedback({ type: 'error', msg: result.error });
+    } else {
+      setAssignFeedback({
+        type: 'success',
+        msg: result.process
+          ? `Vinculado a ${result.process.company_name} — ${result.process.position_name}`
+          : 'Código asignado correctamente',
+      });
+      // Update the local state so the badge changes immediately
+      // (usa el código normalizado que devolvió el servidor, no el texto tipeado)
+      const confirmedCode = result.process_code ?? code;
+      setExamResults((prev) =>
+        prev.map((r) =>
+          r.id === examResultId ? { ...r, process_code: confirmedCode } : r
+        )
+      );
+      setAssigningTo(null);
+    }
   };
 
   useEffect(() => {
@@ -278,7 +330,9 @@ export default function PerfilPage() {
     fd.set('country', formData.country);
     fd.set('github_profile', formData.github_profile);
     fd.set('istqb_level', formData.istqb_level);
-    fd.set('open_to_work', String(formData.open_to_work));
+    fd.set('disponibilidad', formData.disponibilidad);
+    fd.set('qa_skills', JSON.stringify(formData.qa_skills));
+    fd.set('open_to_work', String(formData.disponibilidad === 'activo'));
     fd.set(
       'talent_visible_to_empresas',
       String(formData.talent_visible_to_empresas)
@@ -632,24 +686,58 @@ export default function PerfilPage() {
                     Mostrar mi perfil en el directorio de talento para empresas
                   </span>
                 </label>
-                <label className="flex gap-3 items-start text-sm">
-                  <input
-                    type="checkbox"
-                    checked={formData.open_to_work}
+                <div>
+                  <label className={labelClass}>Disponibilidad</label>
+                  <select
+                    value={formData.disponibilidad}
                     onChange={(e) =>
                       setFormData((p) => ({
                         ...p,
-                        open_to_work: e.target.checked,
+                        disponibilidad: e.target.value as CandidateAvailability,
                       }))
                     }
-                    className="mt-1 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                  />
-                  <span
-                    className={isDarkMode ? 'text-slate-300' : 'text-gray-700'}
+                    className={inputClass}
                   >
-                    Estoy disponible para ser contactado por oportunidades QA
-                  </span>
-                </label>
+                    {Object.entries(AVAILABILITY_LABELS).map(
+                      ([value, label]) => (
+                        <option key={value} value={value}>
+                          {label}
+                        </option>
+                      )
+                    )}
+                  </select>
+                </div>
+                <div>
+                  <p className={labelClass}>Skills QA</p>
+                  <div className="flex flex-wrap gap-2">
+                    {QA_SKILL_OPTIONS.map((skill) => {
+                      const selected = formData.qa_skills.includes(skill);
+                      return (
+                        <button
+                          key={skill}
+                          type="button"
+                          onClick={() =>
+                            setFormData((p) => ({
+                              ...p,
+                              qa_skills: selected
+                                ? p.qa_skills.filter((item) => item !== skill)
+                                : [...p.qa_skills, skill],
+                            }))
+                          }
+                          className={`rounded-full border px-3 py-1 text-xs font-semibold transition-colors ${
+                            selected
+                              ? 'border-indigo-600 bg-indigo-600 text-white'
+                              : isDarkMode
+                                ? 'border-slate-600 text-slate-300 hover:bg-slate-700'
+                                : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                          }`}
+                        >
+                          {skill}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
               <label className={labelClass}>Tu rol en QA</label>
               <div className="grid grid-cols-2 gap-2">
@@ -1021,7 +1109,7 @@ export default function PerfilPage() {
 
           {/* Filtro por tipo de examen */}
           {(examResults.length > 0 || examFilter !== 'all') && (
-            <div className="flex flex-wrap gap-2 mb-4">
+            <div className="flex flex-wrap gap-2 mb-3">
               {(['all', ...EXAM_TYPES] as const).map((t) => {
                 const selected = examFilter === t;
                 const label = t === 'all' ? '🗂️ Todos' : EXAM_META[t].emoji;
@@ -1051,128 +1139,320 @@ export default function PerfilPage() {
             </div>
           )}
 
-          {examResultsLoading ? (
-            <div className="flex justify-center py-6">
-              <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-indigo-500" />
-            </div>
-          ) : examResults.length === 0 ? (
-            <div
-              className={`text-center py-8 rounded-lg ${isDarkMode ? 'bg-slate-700/40' : 'bg-gray-50'}`}
-            >
-              <p className="text-3xl mb-2">📝</p>
-              <p
-                className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-              >
-                {examFilter === 'all'
-                  ? 'Todavía no rendiste ningún examen.'
-                  : 'No tenés intentos de este tipo de examen todavía.'}
-              </p>
-              <div className="flex justify-center gap-x-3 gap-y-2 mt-4 flex-wrap">
-                {EXAM_TYPES.map((t) => (
-                  <a
-                    key={t}
-                    href={EXAM_META[t].href}
-                    className="text-xs text-indigo-400 hover:underline"
-                  >
-                    {EXAM_META[t].emoji} {EXAM_META[t].label}
-                  </a>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <>
-              <div className="space-y-3">
-                {examResults.map((r) => (
-                  <div
-                    key={r.id}
-                    className={`flex items-center justify-between px-4 py-3 rounded-lg ${isDarkMode ? 'bg-slate-700/50' : 'bg-gray-50'}`}
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <span className="text-lg shrink-0">
-                        {EXAM_META[r.exam_type]?.emoji ?? '📋'}
-                      </span>
-                      <div className="min-w-0">
-                        <p
-                          className={`text-sm font-medium ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}
-                        >
-                          {EXAM_META[r.exam_type]?.label ?? r.exam_type}
-                          {r.exam_type === 'istqb' && r.model
-                            ? ` · Modelo ${r.model}`
-                            : ''}
-                          {' · '}
-                          <span
-                            className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-                          >
-                            {r.exam_mode === 'exam'
-                              ? 'Examen'
-                              : 'Entrenamiento'}
-                          </span>
-                        </p>
-                        <p
-                          className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
-                        >
-                          {new Date(r.created_at).toLocaleDateString('es-PY', {
-                            day: '2-digit',
-                            month: 'short',
-                            year: 'numeric',
-                            timeZone: PY_TIMEZONE,
-                          })}
-                          {' · '}
-                          {formatTime(r.time_spent)}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 shrink-0">
-                      <div className="text-right">
-                        <p
-                          className={`text-sm font-bold ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}
-                        >
-                          {formatExamScore(r)}
-                        </p>
-                        <p
-                          className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
-                        >
-                          {r.percentage.toFixed(0)}%
-                        </p>
-                      </div>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                          r.passed
-                            ? isDarkMode
-                              ? 'bg-emerald-900/40 text-emerald-300'
-                              : 'bg-emerald-100 text-emerald-700'
-                            : isDarkMode
-                              ? 'bg-red-900/40 text-red-300'
-                              : 'bg-red-100 text-red-700'
-                        }`}
-                      >
-                        {r.passed ? '✓ Aprobado' : '✗ No aprobado'}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {examResults.length < examTotal && (
-                <div className="flex justify-center mt-4">
+          {/* Filtro por categoría (oficial / práctica) */}
+          {examResults.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {[
+                { value: 'all' as const, label: '📋 Todos', desc: 'Todos' },
+                {
+                  value: 'official' as const,
+                  label: '📋 Oficiales',
+                  desc: 'Vinculados a un proceso',
+                },
+                {
+                  value: 'practice' as const,
+                  label: '✏️ Práctica',
+                  desc: 'Sin vínculo a proceso',
+                },
+              ].map((opt) => {
+                const selected = examCodeFilter === opt.value;
+                return (
                   <button
+                    key={opt.value}
                     type="button"
-                    onClick={loadMoreExams}
-                    disabled={examLoadingMore}
-                    className={`px-4 py-2 text-xs font-semibold rounded-lg border transition-colors disabled:opacity-50 ${
-                      isDarkMode
-                        ? 'border-slate-600 text-slate-300 hover:bg-slate-700'
-                        : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                    onClick={() => setExamCodeFilter(opt.value)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                      selected
+                        ? 'border-indigo-500 bg-indigo-600 text-white'
+                        : isDarkMode
+                          ? 'border-slate-600 bg-slate-700 text-slate-300 hover:border-indigo-400'
+                          : 'border-gray-300 bg-white text-gray-700 hover:border-indigo-400'
                     }`}
+                    title={opt.desc}
                   >
-                    {examLoadingMore
-                      ? 'Cargando...'
-                      : `Ver más (${examTotal - examResults.length})`}
+                    {opt.label}
                   </button>
-                </div>
-              )}
-            </>
+                );
+              })}
+            </div>
           )}
+
+          {/* Assign code feedback */}
+          {assignFeedback && (
+            <div
+              className={`mb-4 px-4 py-3 rounded-lg text-sm font-medium flex items-center justify-between ${
+                assignFeedback.type === 'success'
+                  ? isDarkMode
+                    ? 'bg-emerald-900/40 text-emerald-300 border border-emerald-700'
+                    : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                  : isDarkMode
+                    ? 'bg-red-900/40 text-red-300 border border-red-700'
+                    : 'bg-red-50 text-red-700 border border-red-200'
+              }`}
+            >
+              <span>
+                {assignFeedback.type === 'success' ? '✅' : '❌'}{' '}
+                {assignFeedback.msg}
+              </span>
+              <button
+                onClick={() => setAssignFeedback(null)}
+                className="ml-4 opacity-60 hover:opacity-100"
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
+          {(() => {
+            const filteredResults = examResults.filter((r) => {
+              if (examCodeFilter === 'official') return r.process_code != null;
+              if (examCodeFilter === 'practice') return r.process_code == null;
+              return true;
+            });
+
+            return examResultsLoading ? (
+              <div className="flex justify-center py-6">
+                <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-indigo-500" />
+              </div>
+            ) : filteredResults.length === 0 ? (
+              <div
+                className={`text-center py-8 rounded-lg ${isDarkMode ? 'bg-slate-700/40' : 'bg-gray-50'}`}
+              >
+                <p className="text-3xl mb-2">📝</p>
+                <p
+                  className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                >
+                  {examCodeFilter !== 'all'
+                    ? examCodeFilter === 'official'
+                      ? 'No tenés exámenes oficiales vinculados a un código de proceso.'
+                      : 'No tenés exámenes de práctica sin código asignado.'
+                    : examFilter === 'all'
+                      ? 'Todavía no rendiste ningún examen.'
+                      : 'No tenés intentos de este tipo de examen todavía.'}
+                </p>
+                {examFilter === 'all' && examCodeFilter === 'all' && (
+                  <div className="flex justify-center gap-x-3 gap-y-2 mt-4 flex-wrap">
+                    {EXAM_TYPES.map((t) => (
+                      <a
+                        key={t}
+                        href={EXAM_META[t].href}
+                        className="text-xs text-indigo-400 hover:underline"
+                      >
+                        {EXAM_META[t].emoji} {EXAM_META[t].label}
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <div className="space-y-3">
+                  {filteredResults.map((r) => (
+                    <div
+                      key={r.id}
+                      className={`px-4 py-3 rounded-lg ${isDarkMode ? 'bg-slate-700/50' : 'bg-gray-50'}`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <span className="text-lg shrink-0">
+                            {EXAM_META[r.exam_type]?.emoji ?? '📋'}
+                          </span>
+                          <div className="min-w-0">
+                            <p
+                              className={`text-sm font-medium ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}
+                            >
+                              {EXAM_META[r.exam_type]?.label ?? r.exam_type}
+                              {r.exam_type === 'istqb' && r.model
+                                ? ` · Modelo ${r.model}`
+                                : ''}
+                            </p>
+                            <p
+                              className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+                            >
+                              {new Date(r.created_at).toLocaleDateString(
+                                'es-PY',
+                                {
+                                  day: '2-digit',
+                                  month: 'short',
+                                  year: 'numeric',
+                                  timeZone: PY_TIMEZONE,
+                                }
+                              )}
+                              {' · '}
+                              {formatTime(r.time_spent)}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3 shrink-0">
+                          <div className="text-right">
+                            <p
+                              className={`text-sm font-bold ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}
+                            >
+                              {formatExamScore(r)}
+                            </p>
+                            <p
+                              className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+                            >
+                              {r.percentage.toFixed(0)}%
+                            </p>
+                          </div>
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                              r.passed
+                                ? isDarkMode
+                                  ? 'bg-emerald-900/40 text-emerald-300'
+                                  : 'bg-emerald-100 text-emerald-700'
+                                : isDarkMode
+                                  ? 'bg-red-900/40 text-red-300'
+                                  : 'bg-red-100 text-red-700'
+                            }`}
+                          >
+                            {r.passed ? '✓ Aprobado' : '✗ No aprobado'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Badges row */}
+                      <div className="flex flex-wrap items-center gap-2 mt-2">
+                        {/* Mode badge */}
+                        <span
+                          className={`px-2 py-0.5 rounded text-[11px] font-medium ${
+                            r.exam_mode === 'exam'
+                              ? isDarkMode
+                                ? 'bg-indigo-900/40 text-indigo-300'
+                                : 'bg-indigo-100 text-indigo-700'
+                              : isDarkMode
+                                ? 'bg-slate-600 text-slate-200'
+                                : 'bg-gray-200 text-gray-700'
+                          }`}
+                        >
+                          {r.exam_mode === 'exam' ? 'Examen' : 'Entrenamiento'}
+                        </span>
+
+                        {/* Official / Practice badge */}
+                        <span
+                          className={`px-2 py-0.5 rounded text-[11px] font-medium ${
+                            r.process_code
+                              ? isDarkMode
+                                ? 'bg-amber-900/40 text-amber-300'
+                                : 'bg-amber-100 text-amber-700'
+                              : isDarkMode
+                                ? 'bg-slate-600 text-slate-300'
+                                : 'bg-gray-200 text-gray-600'
+                          }`}
+                        >
+                          {r.process_code
+                            ? `📋 Oficial · ${r.process_code}`
+                            : `✏️ Práctica`}
+                        </span>
+
+                        {/* Pending manual correction badge (heuristic auto-score) */}
+                        {r.review_status === 'pending_correction' && (
+                          <span
+                            className={`px-2 py-0.5 rounded text-[11px] font-medium ${
+                              isDarkMode
+                                ? 'bg-amber-900/40 text-amber-300'
+                                : 'bg-amber-100 text-amber-700'
+                            }`}
+                            title="El puntaje automático todavía no fue confirmado por un evaluador"
+                          >
+                            ⏳ Pendiente de corrección
+                          </span>
+                        )}
+
+                        {/* Assign code button (only for practice exams) */}
+                        {!r.process_code && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setAssigningTo(r.id);
+                              setCodeInput('');
+                              setAssignFeedback(null);
+                            }}
+                            className="text-[11px] text-indigo-500 hover:text-indigo-400 hover:underline font-medium"
+                          >
+                            🔗 Asignar código
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Inline assign-code input */}
+                      {assigningTo === r.id && (
+                        <div className="mt-3 flex items-center gap-2">
+                          <input
+                            type="text"
+                            value={codeInput}
+                            onChange={(e) => setCodeInput(e.target.value)}
+                            placeholder="Ingresá el código del proceso"
+                            className={`flex-1 px-3 py-1.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                              isDarkMode
+                                ? 'bg-slate-700 border-slate-600 text-slate-100 placeholder-slate-400'
+                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                            }`}
+                            autoFocus
+                            disabled={assigningLoading}
+                            onKeyDown={(e) => {
+                              if (
+                                e.key === 'Enter' &&
+                                codeInput.trim() &&
+                                !assigningLoading
+                              ) {
+                                handleAssignCode(r.id);
+                              }
+                              if (e.key === 'Escape') {
+                                setAssigningTo(null);
+                              }
+                            }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleAssignCode(r.id)}
+                            disabled={!codeInput.trim() || assigningLoading}
+                            className="px-3 py-1.5 text-xs font-medium rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {assigningLoading ? 'Asignando...' : 'Confirmar'}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setAssigningTo(null);
+                              setAssignFeedback(null);
+                            }}
+                            className={`px-2 py-1.5 text-xs rounded-lg border transition-colors ${
+                              isDarkMode
+                                ? 'border-slate-600 text-slate-300 hover:bg-slate-700'
+                                : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                            }`}
+                          >
+                            Cancelar
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {examResults.length < examTotal && examCodeFilter === 'all' && (
+                  <div className="flex justify-center mt-4">
+                    <button
+                      type="button"
+                      onClick={loadMoreExams}
+                      disabled={examLoadingMore}
+                      className={`px-4 py-2 text-xs font-semibold rounded-lg border transition-colors disabled:opacity-50 ${
+                        isDarkMode
+                          ? 'border-slate-600 text-slate-300 hover:bg-slate-700'
+                          : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      {examLoadingMore
+                        ? 'Cargando...'
+                        : `Ver más (${examTotal - examResults.length})`}
+                    </button>
+                  </div>
+                )}
+              </>
+            );
+          })()}
         </div>
       </div>
     </div>

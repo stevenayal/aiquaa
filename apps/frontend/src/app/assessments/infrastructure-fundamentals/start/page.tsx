@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useTransition } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { startAssessmentAttemptAction } from '@/actions/assessments';
@@ -12,7 +12,7 @@ export default function StartInfrastructureFundamentalsPage() {
   const { isDarkMode } = useTheme();
   const [processCode, setProcessCode] = useState('');
   const [error, setError] = useState('');
-  const [isPending, startTransition] = useTransition();
+  const [isStarting, setIsStarting] = useState(false);
 
   // Pre-fill desde ?code= (links de invitaciones/procesos de empresa)
   useEffect(() => {
@@ -20,38 +20,42 @@ export default function StartInfrastructureFundamentalsPage() {
     if (codeParam) setProcessCode(codeParam);
   }, []);
 
-  function handleStart() {
+  async function handleStart() {
     setError('');
-    startTransition(async () => {
-      try {
-        const result = await startAssessmentAttemptAction({
-          slug: INFRASTRUCTURE_FUNDAMENTALS_SLUG,
-          processCode,
-        });
+    setIsStarting(true);
 
-        if ('error' in result) {
-          setError(result.error);
-          return;
-        }
+    try {
+      const result = await startAssessmentAttemptAction({
+        slug: INFRASTRUCTURE_FUNDAMENTALS_SLUG,
+        processCode,
+      });
 
-        const { attempt, sectionSlug } = result;
-
-        if (!sectionSlug) {
-          setError('No se encontró la primera sección del assessment.');
-          return;
-        }
-
-        router.push(
-          `/assessments/infrastructure-fundamentals/section/${sectionSlug}?attempt=${attempt.id}`
-        );
-      } catch (startError) {
-        setError(
-          startError instanceof Error
-            ? startError.message
-            : 'No se pudo iniciar el assessment.'
-        );
+      if ('error' in result) {
+        setIsStarting(false);
+        setError(result.error);
+        return;
       }
-    });
+
+      const { attempt, sectionSlug } = result;
+
+      if (!sectionSlug) {
+        setIsStarting(false);
+        setError('No se encontró la primera sección del assessment.');
+        return;
+      }
+
+      setIsStarting(false);
+      router.push(
+        `/assessments/infrastructure-fundamentals/section/${sectionSlug}?attempt=${attempt.id}`
+      );
+    } catch (startError) {
+      setIsStarting(false);
+      setError(
+        startError instanceof Error
+          ? startError.message
+          : 'No se pudo iniciar el assessment.'
+      );
+    }
   }
 
   return (
@@ -112,10 +116,10 @@ export default function StartInfrastructureFundamentalsPage() {
           <button
             type="button"
             onClick={handleStart}
-            disabled={isPending}
+            disabled={isStarting}
             className="inline-flex items-center justify-center rounded-2xl bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {isPending ? 'Preparando intento...' : 'Iniciar o reanudar'}
+            {isStarting ? 'Preparando intento...' : 'Iniciar o reanudar'}
           </button>
           <button
             type="button"

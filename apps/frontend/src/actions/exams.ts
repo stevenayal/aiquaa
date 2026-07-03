@@ -55,6 +55,11 @@ interface SaveExamResultPayload {
   metadata?: object;
 }
 
+// Exámenes cuyo score automático es heurístico (conteo/keywords, no validación
+// real del contenido) y por eso arrancan marcados como pendientes de
+// corrección manual hasta que un evaluador los revise.
+const NEEDS_MANUAL_CORRECTION_EXAM_TYPES = new Set(['test-app']);
+
 export async function saveExamResultAction(payload: SaveExamResultPayload) {
   const supabase = createClient();
   const {
@@ -77,22 +82,47 @@ export async function saveExamResultAction(payload: SaveExamResultPayload) {
 
   const resolvedEmail = payload.participant_email?.trim() || user.email || null;
 
+  // hiring_processes.code is stored with mixed case; match case-insensitively
+  // and use the canonical stored value so it satisfies exam_results'
+  // FK to hiring_processes(code) regardless of how the candidate typed it.
+  const rawProcessCode = payload.process_code?.trim() || undefined;
+  let resolvedProcessCode: string | undefined;
+  if (rawProcessCode) {
+    const { data: process } = await supabase
+      .from('hiring_processes')
+      .select('code')
+      .ilike('code', rawProcessCode)
+      .maybeSingle();
+
+    if (!process) {
+      return {
+        error:
+          'El código de proceso ingresado no existe o ya no está vigente. Verificá el código con la empresa antes de enviar el examen.',
+      };
+    }
+    resolvedProcessCode = process.code;
+  }
+
   const { error } = await supabase.from('exam_results').insert({
     user_id: user.id,
     ...payload,
+    process_code: resolvedProcessCode,
     participant_name: resolvedName,
     participant_email: resolvedEmail,
+    review_status: NEEDS_MANUAL_CORRECTION_EXAM_TYPES.has(payload.exam_type)
+      ? 'pending_correction'
+      : undefined,
   });
 
   if (error) return { error: error.message };
 
   // Mark empresa_invitacion as completada when exam is submitted with a process code
-  if (payload.process_code && resolvedEmail) {
+  if (resolvedProcessCode && resolvedEmail) {
     try {
       const { data: process } = await supabase
         .from('hiring_processes')
         .select('id')
-        .eq('code', payload.process_code)
+        .eq('code', resolvedProcessCode)
         .maybeSingle();
 
       if (process?.id) {
@@ -149,36 +179,31 @@ export async function getLeaderboardAction(
 
 export async function getXpRankingAction(page = 1, limit = 20) {
   const supabase = createClient();
-  const offset = (page - 1) * limit;
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // get_xp_ranking is a SECURITY DEFINER RPC (mirrors get_leaderboard):
-  // ranking_candidatos is a security_invoker view, and profiles RLS only
-  // allows a user to read their own row, so querying the view directly as
-  // `authenticated` silently drops every other candidate's row. The RPC
-  // exposes only the ranking-safe columns without loosening profiles RLS.
+  // Uses SECURITY DEFINER RPC to bypass RLS on user_xp and profiles
   const { data, error } = await supabase.rpc('get_xp_ranking', {
+    p_page: page,
     p_limit: limit,
-    p_offset: offset,
   });
 
-  if (error) {
-    return { error: error.message, data: null, total: 0, page, totalPages: 0 };
-  }
+  if (error) return { error: error.message, data: null, total: 0 };
 
-  const total: number = data?.[0]?.total_count ?? 0;
+  const rows = (data ?? []) as any[];
+  const total = rows.length > 0 ? Number(rows[0].total_count) : 0;
+  const offset = (page - 1) * limit;
 
-  const entries = (data ?? []).map((row: any, i: number) => ({
+  const entries = rows.map((row: any, i: number) => ({
     position: offset + i + 1,
     displayName: row.display_name ?? 'Anónimo',
     avatarUrl: row.avatar_url ?? null,
-    totalXp: row.total_xp,
-    level: row.level,
-    currentStreak: row.current_streak,
-    achievementCount: row.achievement_count ?? 0,
-    lastActivityAt: row.last_activity_at,
+    totalXp: Number(row.total_xp ?? 0),
+    level: row.level ?? 1,
+    currentStreak: row.current_streak ?? 0,
+    achievementCount: Number(row.achievement_count ?? 0),
+    lastActivityAt: row.last_activity_at ?? null,
     mainBadge: row.main_badge ?? null,
     isCurrentUser: Boolean(user?.id && row.user_id === user.id),
   }));
@@ -210,7 +235,7 @@ export async function getExamResultsAction(opts?: {
   let query = supabase
     .from('exam_results')
     .select(
-      'id, exam_type, exam_mode, score, total_questions, max_possible_score, passing_score, passed, percentage, time_spent, model, language, created_at',
+      'id, exam_type, exam_mode, score, total_questions, max_possible_score, passing_score, passed, percentage, time_spent, model, language, process_code, review_status, created_at',
       { count: 'exact' }
     )
     .eq('user_id', user.id);
@@ -225,6 +250,86 @@ export async function getExamResultsAction(opts?: {
 
   if (error) return { error: error.message, data: null, total: 0 };
   return { data, total: count ?? 0 };
+}
+
+export async function assignProcessCodeToExamAction(
+  examResultId: string,
+  processCode: string
+) {
+  const supabase = createClient();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+  if (userError || !user) return { error: 'No autenticado' };
+
+  // Validate the process code exists and is active
+  const { data: process, error: procError } = await supabase
+    .from('hiring_processes')
+    .select('id, code, company_name, position_name, status, expires_at')
+    .ilike('code', processCode.trim())
+    .eq('status', 'active')
+    .single();
+
+  if (procError || !process) {
+    return { error: 'Código de proceso no encontrado o inactivo' };
+  }
+
+  if (process.expires_at && new Date(process.expires_at) < new Date()) {
+    return { error: 'El código de proceso ha expirado' };
+  }
+
+  // Verify the exam result belongs to the current user
+  const { data: examRow, error: examError } = await supabase
+    .from('exam_results')
+    .select('id, user_id, participant_email, process_code')
+    .eq('id', examResultId)
+    .eq('user_id', user.id)
+    .single();
+
+  if (examError || !examRow) {
+    return { error: 'Examen no encontrado o no te pertenece' };
+  }
+
+  if (examRow.process_code) {
+    return { error: 'Este examen ya tiene un código de proceso asignado' };
+  }
+
+  // Update the exam result with the process code
+  const { error: updateError } = await supabase
+    .from('exam_results')
+    .update({ process_code: process.code })
+    .eq('id', examResultId)
+    .eq('user_id', user.id);
+
+  if (updateError) return { error: updateError.message };
+
+  // Mark empresa_invitacion as completada if applicable
+  const resolvedEmail = examRow.participant_email?.trim() || user.email?.trim();
+  if (resolvedEmail) {
+    try {
+      await supabase
+        .from('empresa_invitaciones')
+        .update({
+          status: 'completada',
+          completed_at: new Date().toISOString(),
+        })
+        .eq('candidate_email', resolvedEmail)
+        .eq('process_id', process.id)
+        .in('status', ['pendiente', 'vista']);
+    } catch {
+      // Non-critical
+    }
+  }
+
+  return {
+    success: true,
+    process_code: process.code,
+    process: {
+      company_name: process.company_name,
+      position_name: process.position_name,
+    },
+  };
 }
 
 type LearningObjectiveRow = {

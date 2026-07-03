@@ -12,7 +12,24 @@ export async function updateProfileAction(formData: FormData) {
   const country = (formData.get('country') as string)?.trim();
   const githubProfile = (formData.get('github_profile') as string)?.trim();
   const istqbLevel = (formData.get('istqb_level') as string)?.trim();
-  const openToWork = formData.get('open_to_work') === 'true';
+  const disponibilidadRaw = (formData.get('disponibilidad') as string)?.trim();
+  const disponibilidad = (
+    ['activo', 'pasivo', 'no_disponible'].includes(disponibilidadRaw)
+      ? disponibilidadRaw
+      : 'no_disponible'
+  ) as 'activo' | 'pasivo' | 'no_disponible';
+  const qaSkillsRaw = (formData.get('qa_skills') as string)?.trim();
+  const qaSkills = (() => {
+    try {
+      const parsed = JSON.parse(qaSkillsRaw || '[]');
+      return Array.isArray(parsed)
+        ? parsed.filter((item): item is string => typeof item === 'string')
+        : [];
+    } catch {
+      return [];
+    }
+  })();
+  const openToWork = disponibilidad === 'activo';
   const talentVisibleToEmpresas =
     formData.get('talent_visible_to_empresas') === 'true';
 
@@ -31,6 +48,8 @@ export async function updateProfileAction(formData: FormData) {
       country,
       github_profile: githubProfile,
       istqb_level: istqbLevel,
+      disponibilidad,
+      qa_skills: qaSkills,
       open_to_work: openToWork,
       talent_visible_to_empresas: talentVisibleToEmpresas,
     },
@@ -48,6 +67,8 @@ export async function updateProfileAction(formData: FormData) {
       country: country || null,
       istqb_level: istqbLevel || null,
       github_profile: githubProfile || null,
+      disponibilidad,
+      qa_skills: qaSkills,
       open_to_work: openToWork,
       talent_visible_to_empresas: talentVisibleToEmpresas,
     },

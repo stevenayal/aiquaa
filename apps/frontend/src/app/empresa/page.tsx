@@ -38,10 +38,16 @@ const BASE_LINKS = [
     description: 'Gestioná tus procesos activos y cerrados',
   },
   {
-    href: '/empresa/candidatos',
+    href: '/empresa/buscar-candidatos',
     emoji: '👥',
-    title: 'Candidatos y talento QA',
-    description: 'Revisá evaluados, directorio opt-in y shortlist',
+    title: 'Buscar talento QA',
+    description: 'Explorá el pool opt-in por skills y disponibilidad',
+  },
+  {
+    href: '/empresa/candidatos',
+    emoji: '📊',
+    title: 'Candidatos evaluados',
+    description: 'Revisá resultados, compará perfiles y shortlist',
   },
   {
     href: '/empresa/invitaciones',
@@ -115,7 +121,11 @@ function FunnelWidget({
   const steps = [
     { label: 'Enviadas', value: funnel.total, color: 'text-indigo-500' },
     { label: 'Vistas', value: funnel.vistas, color: 'text-amber-500' },
-    { label: 'Completadas', value: funnel.completadas, color: 'text-emerald-500' },
+    {
+      label: 'Completadas',
+      value: funnel.completadas,
+      color: 'text-emerald-500',
+    },
   ];
   return (
     <div
@@ -324,7 +334,9 @@ export default function EmpresaDashboardPage() {
               <StatCard
                 label="Visitas al perfil"
                 value={stats?.profileViews ?? 0}
-                color={stats?.profileViews ? 'text-purple-500' : 'text-slate-400'}
+                color={
+                  stats?.profileViews ? 'text-purple-500' : 'text-slate-400'
+                }
                 isDarkMode={isDarkMode}
               />
             </>
@@ -431,7 +443,10 @@ export default function EmpresaDashboardPage() {
         {/* Invitaciones funnel */}
         {stats && stats.invitacionesFunnel.total > 0 && (
           <div className="mb-8">
-            <FunnelWidget funnel={stats.invitacionesFunnel} isDarkMode={isDarkMode} />
+            <FunnelWidget
+              funnel={stats.invitacionesFunnel}
+              isDarkMode={isDarkMode}
+            />
           </div>
         )}
 
