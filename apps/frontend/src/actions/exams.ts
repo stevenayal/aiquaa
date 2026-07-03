@@ -77,7 +77,7 @@ export async function saveExamResultAction(payload: SaveExamResultPayload) {
 
   const resolvedEmail = payload.participant_email?.trim() || user.email || null;
 
-  let resolvedProcessCode = payload.process_code?.trim() || undefined;
+  const resolvedProcessCode = payload.process_code?.trim() || undefined;
   if (resolvedProcessCode) {
     const { data: process } = await supabase
       .from('hiring_processes')
