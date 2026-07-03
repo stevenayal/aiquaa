@@ -77,9 +77,26 @@ export async function saveExamResultAction(payload: SaveExamResultPayload) {
 
   const resolvedEmail = payload.participant_email?.trim() || user.email || null;
 
+  let resolvedProcessCode = payload.process_code?.trim() || undefined;
+  if (resolvedProcessCode) {
+    const { data: process } = await supabase
+      .from('hiring_processes')
+      .select('code')
+      .eq('code', resolvedProcessCode)
+      .maybeSingle();
+
+    if (!process) {
+      return {
+        error:
+          'El código de proceso ingresado no existe o ya no está vigente. Verificá el código con la empresa antes de enviar el examen.',
+      };
+    }
+  }
+
   const { error } = await supabase.from('exam_results').insert({
     user_id: user.id,
     ...payload,
+    process_code: resolvedProcessCode,
     participant_name: resolvedName,
     participant_email: resolvedEmail,
   });
@@ -87,12 +104,12 @@ export async function saveExamResultAction(payload: SaveExamResultPayload) {
   if (error) return { error: error.message };
 
   // Mark empresa_invitacion as completada when exam is submitted with a process code
-  if (payload.process_code && resolvedEmail) {
+  if (resolvedProcessCode && resolvedEmail) {
     try {
       const { data: process } = await supabase
         .from('hiring_processes')
         .select('id')
-        .eq('code', payload.process_code)
+        .eq('code', resolvedProcessCode)
         .maybeSingle();
 
       if (process?.id) {
