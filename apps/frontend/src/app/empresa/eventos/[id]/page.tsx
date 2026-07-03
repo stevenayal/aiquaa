@@ -289,8 +289,6 @@ export default function EventoDetailPage() {
     tasa: e.passRate,
   }));
 
-  const examCount = byExamType.length;
-
   const tooltipStyle = isDarkMode
     ? {
         backgroundColor: '#1e293b',
@@ -374,7 +372,7 @@ export default function EventoDetailPage() {
           />
           <StatCard
             label="Tipos de examen"
-            value={examCount}
+            value={totalExamTypes}
             isDarkMode={isDarkMode}
           />
         </div>
