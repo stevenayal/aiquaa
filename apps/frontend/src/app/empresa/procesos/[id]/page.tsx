@@ -86,6 +86,14 @@ function getResultDisplayName(result: ExamResult) {
   return result.participant_name || result.participant_email || '—';
 }
 
+// A candidate can show up as multiple rows (one per exam rendered). Group by
+// user_id when available, falling back to email/name for legacy rows without one.
+function getCandidateKey(result: ExamResult) {
+  return (
+    result.user_id || result.participant_email?.toLowerCase() || result.participant_name || result.id
+  );
+}
+
 const PROSPECT_STATUS_CONFIG: Record<
   ProspectStatus,
   { label: string; color: string; darkColor: string }
@@ -551,6 +559,26 @@ export default function ProcesoDetailPage() {
       )
     : null;
 
+  const uniqueCandidateCount = new Set(results.map(getCandidateKey)).size;
+
+  const requiredExamCount = process?.exam_types.length ?? 0;
+  const completionByCandidate = new Map<string, number>();
+  if (requiredExamCount > 0) {
+    const doneByCandidate = new Map<string, Set<string>>();
+    for (const r of results) {
+      const key = getCandidateKey(r);
+      const done = doneByCandidate.get(key) ?? new Set<string>();
+      done.add(r.exam_type);
+      doneByCandidate.set(key, done);
+    }
+    doneByCandidate.forEach((done, key) => {
+      completionByCandidate.set(
+        key,
+        Math.round((done.size / requiredExamCount) * 100)
+      );
+    });
+  }
+
   const mins = (s: number) => `${Math.floor(s / 60)}m ${s % 60}s`;
 
   const card = isDarkMode
@@ -709,7 +737,10 @@ export default function ProcesoDetailPage() {
                 .map((e) => EXAM_LABELS[e] ?? e)
                 .join(', '),
             },
-            { label: 'Postulantes', value: results.length.toString() },
+            {
+              label: 'Postulantes',
+              value: uniqueCandidateCount.toString(),
+            },
             { label: 'Prospectos', value: prospects.length.toString() },
             {
               label: 'Tasa aprobación',
@@ -743,7 +774,7 @@ export default function ProcesoDetailPage() {
                 }`}
               >
                 {tab === 'postulantes'
-                  ? `Postulantes (${results.length})`
+                  ? `Postulantes (${uniqueCandidateCount})`
                   : `Prospectos (${prospects.length})`}
               </button>
             ))}
@@ -925,6 +956,7 @@ export default function ProcesoDetailPage() {
                           'Candidato',
                           'Examen',
                           'Puntaje',
+                          '% Completado',
                           'Tiempo',
                           'Fecha',
                           '',
@@ -994,6 +1026,31 @@ export default function ProcesoDetailPage() {
                                 {r.passed ? '✓' : '✗'}
                               </span>
                             </div>
+                          </td>
+                          <td className="px-5 py-3">
+                            {(() => {
+                              const pct =
+                                completionByCandidate.get(
+                                  getCandidateKey(r)
+                                ) ?? 0;
+                              return (
+                                <div className="flex items-center gap-2 w-28">
+                                  <div
+                                    className={`h-1.5 flex-1 rounded-full overflow-hidden ${isDarkMode ? 'bg-slate-700' : 'bg-gray-200'}`}
+                                  >
+                                    <div
+                                      className={`h-full rounded-full ${pct >= 100 ? 'bg-green-500' : 'bg-indigo-500'}`}
+                                      style={{ width: `${pct}%` }}
+                                    />
+                                  </div>
+                                  <span
+                                    className={`text-xs shrink-0 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                                  >
+                                    {pct}%
+                                  </span>
+                                </div>
+                              );
+                            })()}
                           </td>
                           <td
                             className={`px-5 py-3 text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
