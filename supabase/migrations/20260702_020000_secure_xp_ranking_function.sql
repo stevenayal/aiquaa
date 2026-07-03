@@ -13,6 +13,12 @@
 -- email/phone/company_name/empresa_id and other profiles columns remain
 -- inaccessible to other users.
 
+-- Drop first: an earlier, incompatible draft of this function (different
+-- column order/types, p_page-based pagination) may already exist in some
+-- environments and CREATE OR REPLACE cannot change a function's return
+-- row type/order in place.
+DROP FUNCTION IF EXISTS public.get_xp_ranking(integer, integer);
+
 CREATE OR REPLACE FUNCTION public.get_xp_ranking(
   p_limit  integer DEFAULT 20,
   p_offset integer DEFAULT 0

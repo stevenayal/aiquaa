@@ -164,9 +164,11 @@ export async function getXpRankingAction(page = 1, limit = 20) {
     p_offset: offset,
   });
 
-  if (error) return { error: error.message, data: null, total: 0 };
+  if (error) {
+    return { error: error.message, data: null, total: 0, page, totalPages: 0 };
+  }
 
-  const total = data?.[0]?.total_count ?? 0;
+  const total: number = data?.[0]?.total_count ?? 0;
 
   const entries = (data ?? []).map((row: any, i: number) => ({
     position: offset + i + 1,
