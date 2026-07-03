@@ -447,11 +447,45 @@ async function fetchEmpresaResultsForProcessCodes(
     return { data: [], error: assessmentAttemptsRes.error };
   }
 
+  const examResults = (examResultsRes.data ?? []) as EmpresaResultRow[];
+
+  // Some exam_results rows have user_id set but never got participant_name/
+  // participant_email filled in at submission time (e.g. OAuth sign-ins).
+  // Unlike assessment_attempts, these never fall back to the profile — backfill
+  // them here so they don't show up as "Sin nombre" despite having an account.
+  const missingNameUserIds = [
+    ...new Set(
+      examResults
+        .filter((r) => !r.participant_name && !r.participant_email && r.user_id)
+        .map((r) => r.user_id as string)
+    ),
+  ];
+
+  if (missingNameUserIds.length > 0) {
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('id, display_name, email')
+      .in('id', missingNameUserIds);
+
+    const profileMap: Record<
+      string,
+      { display_name: string | null; email: string | null }
+    > = {};
+    (profiles ?? []).forEach((p: any) => {
+      profileMap[p.id] = p;
+    });
+
+    for (const r of examResults) {
+      if (r.participant_name || r.participant_email || !r.user_id) continue;
+      const profile = profileMap[r.user_id];
+      if (!profile) continue;
+      r.participant_name = profile.display_name || profile.email;
+      r.participant_email = profile.email ?? null;
+    }
+  }
+
   return {
-    data: [
-      ...((examResultsRes.data ?? []) as EmpresaResultRow[]),
-      ...assessmentAttemptsRes.data,
-    ],
+    data: [...examResults, ...assessmentAttemptsRes.data],
     error: null,
   };
 }

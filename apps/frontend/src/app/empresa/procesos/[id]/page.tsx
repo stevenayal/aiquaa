@@ -425,10 +425,19 @@ export default function ProcesoDetailPage() {
         getProspectsForProcessAction(proc.id),
       ]);
 
-      // profiles has no FK from assessment_attempts — fetch separately
+      // profiles has no FK from assessment_attempts — fetch separately.
+      // Some exam_results rows also have user_id but never got
+      // participant_name/email filled in at submission time (e.g. OAuth
+      // sign-ins), so include those in the same profile lookup.
       const attemptRows = assessmentRes.data ?? [];
+      const examResultsRaw = (res ?? []) as ExamResult[];
       const userIds = [
-        ...new Set(attemptRows.map((r: any) => r.user_id).filter(Boolean)),
+        ...new Set([
+          ...attemptRows.map((r: any) => r.user_id).filter(Boolean),
+          ...examResultsRaw
+            .filter((r) => !r.participant_name && !r.participant_email && r.user_id)
+            .map((r) => r.user_id as string),
+        ]),
       ];
       const profileMap: Record<
         string,
@@ -444,10 +453,17 @@ export default function ProcesoDetailPage() {
         });
       }
 
-      const examResults = ((res ?? []) as ExamResult[]).map((r) => ({
+      const examResults = examResultsRaw.map((r) => ({
         ...r,
-        participant_name: r.participant_name ?? r.participant_email,
-        participant_email: r.participant_email ?? null,
+        participant_name:
+          r.participant_name ??
+          r.participant_email ??
+          (r.user_id ? profileMap[r.user_id]?.display_name : null) ??
+          (r.user_id ? profileMap[r.user_id]?.email : null),
+        participant_email:
+          r.participant_email ??
+          (r.user_id ? profileMap[r.user_id]?.email : null) ??
+          null,
       }));
 
       const mappedAttempts: ExamResult[] = attemptRows.map((r: any) => ({
