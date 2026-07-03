@@ -15,6 +15,10 @@ import {
   getMyXpProfileAction,
   assignProcessCodeToExamAction,
 } from '@/actions/exams';
+import {
+  getMyEventProgressAction,
+  type MyEventProgress,
+} from '@/actions/candidate-events';
 import Avatar from '@/components/ui/Avatar';
 import { xpForLevel, PY_TIMEZONE } from '@/lib/xp';
 import {
@@ -129,6 +133,8 @@ export default function PerfilPage() {
   >([]);
   const [rankingAchievementsLoading, setRankingAchievementsLoading] =
     useState(true);
+  const [eventProgress, setEventProgress] = useState<MyEventProgress[]>([]);
+  const [eventProgressLoading, setEventProgressLoading] = useState(true);
 
   const [formData, setFormData] = useState({
     full_name: '',
@@ -251,6 +257,14 @@ export default function PerfilPage() {
         setRankingAchievements((data as RankingAchievementRow[]) || []);
       })
       .finally(() => setRankingAchievementsLoading(false));
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+    setEventProgressLoading(true);
+    getMyEventProgressAction()
+      .then(({ data }) => setEventProgress(data ?? []))
+      .finally(() => setEventProgressLoading(false));
   }, [user]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1096,6 +1110,109 @@ export default function PerfilPage() {
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* Event progress */}
+        {!eventProgressLoading && eventProgress.length > 0 && (
+          <div className={`${card} rounded-xl p-6 space-y-5`}>
+            <h2
+              className={`text-base font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+            >
+              🗂️ Mi progreso en eventos
+            </h2>
+            {eventProgress.map((ev) => (
+              <div
+                key={ev.groupId}
+                className={`rounded-xl border p-4 ${isDarkMode ? 'border-slate-700 bg-slate-800/40' : 'border-gray-200 bg-gray-50'}`}
+              >
+                <div className="flex items-center justify-between gap-3 flex-wrap mb-2">
+                  <p
+                    className={`font-semibold text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                  >
+                    {ev.eventName}
+                  </p>
+                  <span
+                    className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                      ev.completionRate >= 100
+                        ? isDarkMode
+                          ? 'bg-green-900/40 text-green-300'
+                          : 'bg-green-100 text-green-700'
+                        : isDarkMode
+                          ? 'bg-indigo-900/40 text-indigo-300'
+                          : 'bg-indigo-100 text-indigo-700'
+                    }`}
+                  >
+                    {ev.completedCount}/{ev.totalExamTypes} pruebas ·{' '}
+                    {ev.completionRate}%
+                  </span>
+                </div>
+                <div
+                  className={`h-2 rounded-full overflow-hidden mb-3 ${isDarkMode ? 'bg-slate-700' : 'bg-gray-200'}`}
+                >
+                  <div
+                    className={`h-full rounded-full ${ev.completionRate >= 100 ? 'bg-green-500' : 'bg-indigo-500'}`}
+                    style={{ width: `${ev.completionRate}%` }}
+                  />
+                </div>
+
+                {ev.results.length > 0 && (
+                  <div className="mb-3">
+                    <p
+                      className={`text-xs font-semibold uppercase tracking-wide mb-1.5 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                    >
+                      Ya entregaste
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {ev.results.map((r) => (
+                        <span
+                          key={r.examType}
+                          className={`text-xs px-2 py-0.5 rounded font-medium ${
+                            r.passed
+                              ? isDarkMode
+                                ? 'bg-green-900/40 text-green-300'
+                                : 'bg-green-100 text-green-700'
+                              : isDarkMode
+                                ? 'bg-red-900/40 text-red-300'
+                                : 'bg-red-100 text-red-600'
+                          }`}
+                        >
+                          {EXAM_META[r.examType as ExamType]?.label ??
+                            r.examType}{' '}
+                          {r.percentage}%
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {ev.missingExamTypes.length === 0 ? (
+                  <p
+                    className={`text-xs font-medium ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}
+                  >
+                    ✓ Completaste todas las pruebas de este evento
+                  </p>
+                ) : (
+                  <div>
+                    <p
+                      className={`text-xs font-semibold uppercase tracking-wide mb-1.5 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                    >
+                      Te falta rendir
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {ev.missingExamTypes.map((examType) => (
+                        <span
+                          key={examType}
+                          className={`text-xs px-2 py-0.5 rounded font-medium ${isDarkMode ? 'bg-slate-700 text-slate-300' : 'bg-gray-200 text-gray-600'}`}
+                        >
+                          {EXAM_META[examType as ExamType]?.label ?? examType}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         )}
 
