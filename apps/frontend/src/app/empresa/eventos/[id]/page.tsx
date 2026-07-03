@@ -172,6 +172,50 @@ export default function EventoDetailPage() {
     URL.revokeObjectURL(url);
   };
 
+  const exportParticipantsCSV = () => {
+    if (!stats) return;
+    const rows = [
+      [
+        'Participante',
+        'Email',
+        'Pruebas completadas',
+        'Total pruebas del evento',
+        '% Completado',
+        'Resultados por prueba',
+        'Promedio',
+        'Mejor puntaje',
+        'Aprobados',
+      ],
+      ...stats.participants.map((p) => [
+        p.name,
+        p.email ?? '',
+        String(p.completedCount),
+        String(stats.totalExamTypes),
+        `${p.completionRate}%`,
+        p.results
+          .map((r) => `${EXAM_LABELS[r.examType] ?? r.examType}: ${r.percentage}%${r.passed ? ' (aprobado)' : ''}`)
+          .join(' | '),
+        `${p.avgScore}%`,
+        `${p.bestScore}%`,
+        `${p.passedCount}/${p.completedCount}`,
+      ]),
+    ];
+    const csv = rows
+      .map((row) =>
+        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',')
+      )
+      .join('\n');
+    const blob = new Blob(['﻿' + csv], {
+      type: 'text/csv;charset=utf-8;',
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `evento-${stats.group.name.toLowerCase().replace(/\s+/g, '-')}-participantes-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const cardClass = `rounded-xl border ${
     isDarkMode
       ? 'bg-dark-secondary border-slate-700'
@@ -543,6 +587,13 @@ export default function EventoDetailPage() {
                       </button>
                     ))}
                   </div>
+                  <button
+                    type="button"
+                    onClick={exportParticipantsCSV}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${isDarkMode ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+                  >
+                    📥 Exportar CSV
+                  </button>
                 </div>
               </div>
               <div className="overflow-x-auto">
