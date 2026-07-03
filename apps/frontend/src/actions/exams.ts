@@ -258,7 +258,7 @@ export async function assignProcessCodeToExamAction(
   // Validate the process code exists and is active
   const { data: process, error: procError } = await supabase
     .from('hiring_processes')
-    .select('code, company_name, position_name, status, expires_at')
+    .select('id, code, company_name, position_name, status, expires_at')
     .ilike('code', processCode.trim())
     .eq('status', 'active')
     .single();
@@ -307,6 +307,7 @@ export async function assignProcessCodeToExamAction(
           completed_at: new Date().toISOString(),
         })
         .eq('candidate_email', resolvedEmail)
+        .eq('process_id', process.id)
         .in('status', ['pendiente', 'vista']);
     } catch {
       // Non-critical
@@ -315,6 +316,7 @@ export async function assignProcessCodeToExamAction(
 
   return {
     success: true,
+    process_code: process.code,
     process: {
       company_name: process.company_name,
       position_name: process.position_name,

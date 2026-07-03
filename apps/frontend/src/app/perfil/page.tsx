@@ -224,9 +224,11 @@ export default function PerfilPage() {
           : 'Código asignado correctamente',
       });
       // Update the local state so the badge changes immediately
+      // (usa el código normalizado que devolvió el servidor, no el texto tipeado)
+      const confirmedCode = result.process_code ?? code;
       setExamResults((prev) =>
         prev.map((r) =>
-          r.id === examResultId ? { ...r, process_code: code } : r
+          r.id === examResultId ? { ...r, process_code: confirmedCode } : r
         )
       );
       setAssigningTo(null);
@@ -1338,7 +1340,9 @@ export default function PerfilPage() {
                                 : 'bg-gray-200 text-gray-600'
                           }`}
                         >
-                          {r.process_code ? `📋 Oficial` : `✏️ Práctica`}
+                          {r.process_code
+                            ? `📋 Oficial · ${r.process_code}`
+                            : `✏️ Práctica`}
                         </span>
 
                         {/* Assign code button (only for practice exams) */}
