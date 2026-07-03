@@ -272,11 +272,12 @@ apps/frontend/src/app/labs/test-app/
 
 ## ⚙️ Variables de Entorno
 
-Si usas Next.js con build estático, configura:
+Configura la clave del panel admin (server-only, se verifica en
+`/api/labs/test-app/admin/verify` y nunca se incluye en el bundle del cliente):
 
 ```env
 # .env.local
-NEXT_PUBLIC_ADMIN_KEY=aiquaa-test-admin-2024
+ADMIN_KEY=aiquaa-test-admin-2024
 ```
 
 ---

@@ -37,7 +37,8 @@ const REVIEW_STATUS_LABELS: Record<string, { text: string; color: string }> = {
 
 const EXAM_LABEL = '🧪 Test App — Bug Hunt';
 
-const IMAGE_URL_PATTERN = /^https?:\/\/\S+\.(png|jpe?g|gif|webp|avif|svg)(\?\S*)?$/i;
+const IMAGE_URL_PATTERN =
+  /^https?:\/\/\S+\.(png|jpe?g|gif|webp|avif|svg)(\?\S*)?$/i;
 
 function isImageUrl(value: string): boolean {
   return IMAGE_URL_PATTERN.test(value.trim());
