@@ -314,10 +314,10 @@ export default function EvaluarPage() {
                   : 'bg-amber-50 border border-amber-200 text-amber-700'
               }`}
             >
-              ⏳ El puntaje "Auto" se calcula por cantidad de bugs y heurísticas
-              de texto, no valida que cada bug sea real ni evita duplicados.
-              Revisá los bugs de abajo y confirmá o ajustá el puntaje antes de
-              finalizar la revisión.
+              ⏳ El puntaje &quot;Auto&quot; se calcula por cantidad de bugs y
+              heurísticas de texto, no valida que cada bug sea real ni evita
+              duplicados. Revisá los bugs de abajo y confirmá o ajustá el
+              puntaje antes de finalizar la revisión.
             </div>
           )}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
