@@ -1,6 +1,12 @@
 -- ============================================================
 -- EMP-001: B2B candidate sourcing without exposing candidate email
 -- ============================================================
+-- NOTE: this migration was never actually applied to prod (missing from
+-- supabase_migrations.schema_migrations), which is why /empresa/buscar-candidatos
+-- failed with "Could not find the function public.get_empresa_candidate_sourcing".
+-- The original version also referenced profiles.full_name and profiles.country,
+-- neither of which exists in this schema (country is added below; full_name
+-- was dropped from the name fallback). Fixed in place since it had never run.
 
 DO $$
 BEGIN
@@ -11,7 +17,8 @@ END $$;
 
 ALTER TABLE public.profiles
   ADD COLUMN IF NOT EXISTS disponibilidad candidate_availability NOT NULL DEFAULT 'no_disponible',
-  ADD COLUMN IF NOT EXISTS qa_skills TEXT[] NOT NULL DEFAULT '{}'::TEXT[];
+  ADD COLUMN IF NOT EXISTS qa_skills TEXT[] NOT NULL DEFAULT '{}'::TEXT[],
+  ADD COLUMN IF NOT EXISTS country TEXT DEFAULT 'PY';
 
 UPDATE public.profiles
 SET disponibilidad = CASE
@@ -69,7 +76,7 @@ AS $function$
   visible_profiles AS (
     SELECT
       p.id,
-      COALESCE(NULLIF(TRIM(p.display_name), ''), NULLIF(TRIM(p.full_name), ''), 'Candidato QA') AS name,
+      COALESCE(NULLIF(TRIM(p.display_name), ''), 'Candidato QA') AS name,
       p.role,
       p.country,
       p.istqb_level,
