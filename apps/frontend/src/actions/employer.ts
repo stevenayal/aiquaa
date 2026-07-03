@@ -711,6 +711,11 @@ export interface EventParticipantResult {
   passed: boolean;
 }
 
+/** Below this % of the event's required exams completed, a participant is
+ * marked "no aprobado" at the macro (evento) level regardless of individual
+ * exam scores. */
+const MACRO_COMPLETION_THRESHOLD = 60;
+
 export interface EventParticipant {
   key: string;
   userId: string | null;
@@ -723,6 +728,8 @@ export interface EventParticipant {
   passedCount: number;
   avgScore: number;
   bestScore: number;
+  /** completionRate >= MACRO_COMPLETION_THRESHOLD */
+  macroApproved: boolean;
 }
 
 export interface EventStats {
@@ -920,6 +927,10 @@ export async function getEventStatsAction(groupId: string): Promise<{
         (a, b) => b.percentage - a.percentage
       );
       const scores = results.map((x) => x.percentage);
+      const completionRate =
+        totalExamTypes > 0
+          ? Math.round((results.length / totalExamTypes) * 100)
+          : 0;
       return {
         key,
         userId: info.userId,
@@ -927,16 +938,14 @@ export async function getEventStatsAction(groupId: string): Promise<{
         email: info.email,
         results,
         completedCount: results.length,
-        completionRate:
-          totalExamTypes > 0
-            ? Math.round((results.length / totalExamTypes) * 100)
-            : 0,
+        completionRate,
         passedCount: results.filter((x) => x.passed).length,
         avgScore:
           scores.length > 0
             ? Math.round(scores.reduce((sum, s) => sum + s, 0) / scores.length)
             : 0,
         bestScore: scores.length > 0 ? Math.max(...scores) : 0,
+        macroApproved: completionRate >= MACRO_COMPLETION_THRESHOLD,
       };
     })
     .sort((a, b) => b.completedCount - a.completedCount || b.avgScore - a.avgScore);

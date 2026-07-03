@@ -184,7 +184,8 @@ export default function EventoDetailPage() {
         'Resultados por prueba',
         'Promedio',
         'Mejor puntaje',
-        'Aprobados',
+        'Pruebas aprobadas',
+        'Estado (macro)',
       ],
       ...stats.participants.map((p) => [
         p.name,
@@ -198,6 +199,7 @@ export default function EventoDetailPage() {
         `${p.avgScore}%`,
         `${p.bestScore}%`,
         `${p.passedCount}/${p.completedCount}`,
+        p.macroApproved ? 'Aprobado' : 'No aprobado',
       ]),
     ];
     const csv = rows
@@ -271,7 +273,7 @@ export default function EventoDetailPage() {
     completedCount: p.completedCount,
     totalExamTypes,
     avgScore: p.avgScore,
-    anyPassed: p.passedCount > 0,
+    macroApproved: p.macroApproved,
   }));
 
   const examChartData = byExamType.map((e) => ({
@@ -298,8 +300,8 @@ export default function EventoDetailPage() {
       (p.email ?? '').toLowerCase().includes(searchCand.toLowerCase());
     const matchPass =
       filterPassed === 'all' ||
-      (filterPassed === 'passed' && p.passedCount > 0) ||
-      (filterPassed === 'failed' && p.passedCount === 0);
+      (filterPassed === 'passed' && p.macroApproved) ||
+      (filterPassed === 'failed' && !p.macroApproved);
     return matchSearch && matchPass;
   });
 
@@ -453,7 +455,7 @@ export default function EventoDetailPage() {
                         {topChartData.map((entry, i) => (
                           <Cell
                             key={i}
-                            fill={entry.anyPassed ? '#22c55e' : '#ef4444'}
+                            fill={entry.macroApproved ? '#22c55e' : '#ef4444'}
                             fillOpacity={0.85}
                           />
                         ))}
@@ -464,8 +466,8 @@ export default function EventoDetailPage() {
                 <p
                   className={`text-xs mt-2 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
                 >
-                  Ordenado por pruebas completadas · 🟢 Aprobó al menos una ·
-                  🔴 Ninguna aprobada
+                  Ordenado por pruebas completadas · 🟢 Aprobado (macro, ≥60%
+                  completado) · 🔴 No aprobado (macro)
                 </p>
               </div>
 
@@ -707,19 +709,30 @@ export default function EventoDetailPage() {
                             </span>
                           </td>
                           <td className="px-4 py-3 text-center">
-                            <span
-                              className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                                p.passedCount > 0
-                                  ? isDarkMode
-                                    ? 'bg-green-900/40 text-green-300'
-                                    : 'bg-green-100 text-green-700'
-                                  : isDarkMode
-                                    ? 'bg-red-900/40 text-red-300'
-                                    : 'bg-red-100 text-red-600'
-                              }`}
-                            >
-                              {p.passedCount}/{p.completedCount} aprobados
-                            </span>
+                            <div className="flex flex-col items-center gap-1">
+                              <span
+                                className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                                  p.macroApproved
+                                    ? isDarkMode
+                                      ? 'bg-green-900/40 text-green-300'
+                                      : 'bg-green-100 text-green-700'
+                                    : isDarkMode
+                                      ? 'bg-red-900/40 text-red-300'
+                                      : 'bg-red-100 text-red-600'
+                                }`}
+                                title="Aprobado/no aprobado a nivel macro: requiere haber completado al menos 60% de las pruebas técnicas del evento"
+                              >
+                                {p.macroApproved
+                                  ? 'Aprobado (macro)'
+                                  : 'No aprobado (macro)'}
+                              </span>
+                              <span
+                                className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+                              >
+                                {p.passedCount}/{p.completedCount} pruebas
+                                aprobadas
+                              </span>
+                            </div>
                           </td>
                         </tr>
                       ))
