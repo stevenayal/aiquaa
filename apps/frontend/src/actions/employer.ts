@@ -960,12 +960,16 @@ export async function getEventStatsAction(groupId: string): Promise<{
     })
     .sort((a, b) => b.completedCount - a.completedCount || b.avgScore - a.avgScore);
 
-  const totalCandidates = allCandidates.length;
-  const totalPassed = allCandidates.filter((r) => r.passed).length;
+  // Totals reflect the same macro-level criteria as the participants table
+  // (60% of the event's required exams completed), not each person's single
+  // best-scoring exam — otherwise someone who aced 1/10 exams counted as
+  // "aprobado" here while showing "No aprobado (macro)" below.
+  const totalCandidates = participants.length;
+  const totalPassed = participants.filter((p) => p.macroApproved).length;
   const avgScore =
     totalCandidates > 0
       ? Math.round(
-          allCandidates.reduce((sum, r) => sum + r.percentage, 0) /
+          participants.reduce((sum, p) => sum + p.avgScore, 0) /
             totalCandidates
         )
       : null;
