@@ -97,32 +97,49 @@ export async function getMyEventProgressAction(): Promise<{
 
   const processCodes = [...new Set(myResults.map((r) => r.processCode))];
 
-  const { data: myProcesses, error: procError } = await supabase
+  // First find which events (groups) the candidate touched at all, from just
+  // the processes behind their own results.
+  const { data: touchedProcesses, error: touchedError } = await supabase
     .from('hiring_processes')
-    .select('code, group_id, exam_types')
+    .select('code, group_id')
     .in('code', processCodes)
     .not('group_id', 'is', null);
 
-  if (procError) return { error: procError.message, data: null };
+  if (touchedError) return { error: touchedError.message, data: null };
 
-  const processRows = myProcesses ?? [];
-  const groupIds = [...new Set(processRows.map((p) => p.group_id as string))];
+  const groupIds = [
+    ...new Set(
+      (touchedProcesses ?? []).map((p) => p.group_id as string)
+    ),
+  ];
   if (groupIds.length === 0) return { data: [], error: null };
 
-  const { data: groups, error: groupsError } = await supabase
-    .from('hiring_process_groups')
-    .select('id, name')
-    .in('id', groupIds);
+  // Now fetch every process belonging to those events (not just the ones the
+  // candidate happened to attempt) — the "required" set has to be the whole
+  // event, otherwise a candidate who rendered 1/10 exams sees "1/1 · 100%".
+  const [{ data: allEventProcesses, error: procError }, groupsRes] =
+    await Promise.all([
+      supabase
+        .from('hiring_processes')
+        .select('code, group_id, exam_types')
+        .in('group_id', groupIds),
+      supabase
+        .from('hiring_process_groups')
+        .select('id, name')
+        .in('id', groupIds),
+    ]);
 
-  if (groupsError) return { error: groupsError.message, data: null };
+  if (procError) return { error: procError.message, data: null };
+  if (groupsRes.error) return { error: groupsRes.error.message, data: null };
 
+  const processRows = allEventProcesses ?? [];
   const groupNameById = new Map(
-    (groups ?? []).map((g: any) => [g.id, g.name as string])
+    (groupsRes.data ?? []).map((g: any) => [g.id, g.name as string])
   );
 
-  // For every event, union the exam_types of all its processes the candidate
-  // has visibility into (required set), then intersect with their own results
-  // limited to that event's processes.
+  // For every event, union the exam_types of all its processes (required
+  // set), then intersect with the candidate's own results limited to that
+  // event's processes.
   const examTypesByGroup = new Map<string, Set<string>>();
   const processCodesByGroup = new Map<string, Set<string>>();
   for (const p of processRows) {
