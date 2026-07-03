@@ -77,12 +77,16 @@ export async function saveExamResultAction(payload: SaveExamResultPayload) {
 
   const resolvedEmail = payload.participant_email?.trim() || user.email || null;
 
-  const resolvedProcessCode = payload.process_code?.trim() || undefined;
-  if (resolvedProcessCode) {
+  // hiring_processes.code is stored with mixed case; match case-insensitively
+  // and use the canonical stored value so it satisfies exam_results'
+  // FK to hiring_processes(code) regardless of how the candidate typed it.
+  const rawProcessCode = payload.process_code?.trim() || undefined;
+  let resolvedProcessCode: string | undefined;
+  if (rawProcessCode) {
     const { data: process } = await supabase
       .from('hiring_processes')
       .select('code')
-      .eq('code', resolvedProcessCode)
+      .ilike('code', rawProcessCode)
       .maybeSingle();
 
     if (!process) {
@@ -91,6 +95,7 @@ export async function saveExamResultAction(payload: SaveExamResultPayload) {
           'El código de proceso ingresado no existe o ya no está vigente. Verificá el código con la empresa antes de enviar el examen.',
       };
     }
+    resolvedProcessCode = process.code;
   }
 
   const { error } = await supabase.from('exam_results').insert({
