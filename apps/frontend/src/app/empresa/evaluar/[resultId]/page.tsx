@@ -33,6 +33,49 @@ const REVIEW_STATUS_LABELS: Record<string, { text: string; color: string }> = {
 
 const EXAM_LABEL = '🧪 Test App — Bug Hunt';
 
+const IMAGE_URL_PATTERN = /^https?:\/\/\S+\.(png|jpe?g|gif|webp|avif|svg)(\?\S*)?$/i;
+
+function isImageUrl(value: string): boolean {
+  return IMAGE_URL_PATTERN.test(value.trim());
+}
+
+function EvidencePreview({
+  evidence,
+  isDarkMode,
+}: {
+  evidence: string;
+  isDarkMode: boolean;
+}) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const trimmed = evidence.trim();
+
+  if (!imageFailed && isImageUrl(trimmed)) {
+    return (
+      <a
+        href={trimmed}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-2 block w-fit max-w-xs rounded-lg overflow-hidden border border-slate-600/40"
+      >
+        <img
+          src={trimmed}
+          alt="Evidencia"
+          className="max-h-48 w-auto object-contain"
+          onError={() => setImageFailed(true)}
+        />
+      </a>
+    );
+  }
+
+  return (
+    <p
+      className={`text-sm mt-1 break-all ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}
+    >
+      {trimmed}
+    </p>
+  );
+}
+
 export default function EvaluarPage() {
   const { isDarkMode } = useTheme();
   const { user, isLoading: authLoading } = useSupabaseAuth();
@@ -449,11 +492,10 @@ export default function EvaluarPage() {
                         {bug.evidence && (
                           <div>
                             <p className={labelClass}>Evidencia</p>
-                            <p
-                              className={`text-sm mt-1 ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}
-                            >
-                              {bug.evidence}
-                            </p>
+                            <EvidencePreview
+                              evidence={bug.evidence}
+                              isDarkMode={isDarkMode}
+                            />
                           </div>
                         )}
 
