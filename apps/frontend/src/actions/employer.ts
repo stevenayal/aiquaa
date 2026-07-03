@@ -730,6 +730,8 @@ export interface EventParticipant {
   bestScore: number;
   /** completionRate >= MACRO_COMPLETION_THRESHOLD */
   macroApproved: boolean;
+  /** Exam types required by the event this participant hasn't attempted yet. */
+  missingExamTypes: string[];
 }
 
 export interface EventStats {
@@ -742,6 +744,8 @@ export interface EventStats {
   participants: EventParticipant[];
   /** Distinct exam types required across all processes in this event. */
   totalExamTypes: number;
+  /** The exam type slugs behind totalExamTypes, for computing what's missing. */
+  requiredExamTypes: string[];
   totals: {
     candidates: number;
     passed: number;
@@ -789,6 +793,7 @@ export async function getEventStatsAction(groupId: string): Promise<{
         byExamType: [],
         participants: [],
         totalExamTypes: 0,
+        requiredExamTypes: [],
         totals: { candidates: 0, passed: 0, passRate: 0, avgScore: null },
       },
       error: null,
@@ -931,6 +936,10 @@ export async function getEventStatsAction(groupId: string): Promise<{
         totalExamTypes > 0
           ? Math.round((results.length / totalExamTypes) * 100)
           : 0;
+      const doneExamTypes = new Set(results.map((x) => x.examType));
+      const missingExamTypes = Array.from(examTypesInEvent).filter(
+        (examType) => !doneExamTypes.has(examType)
+      );
       return {
         key,
         userId: info.userId,
@@ -946,6 +955,7 @@ export async function getEventStatsAction(groupId: string): Promise<{
             : 0,
         bestScore: scores.length > 0 ? Math.max(...scores) : 0,
         macroApproved: completionRate >= MACRO_COMPLETION_THRESHOLD,
+        missingExamTypes,
       };
     })
     .sort((a, b) => b.completedCount - a.completedCount || b.avgScore - a.avgScore);
@@ -968,6 +978,7 @@ export async function getEventStatsAction(groupId: string): Promise<{
       byExamType,
       participants,
       totalExamTypes,
+      requiredExamTypes: Array.from(examTypesInEvent),
       totals: {
         candidates: totalCandidates,
         passed: totalPassed,

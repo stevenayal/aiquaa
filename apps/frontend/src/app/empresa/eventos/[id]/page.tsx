@@ -182,6 +182,7 @@ export default function EventoDetailPage() {
         'Total pruebas del evento',
         '% Completado',
         'Resultados por prueba',
+        'Pruebas faltantes',
         'Promedio',
         'Mejor puntaje',
         'Pruebas aprobadas',
@@ -196,6 +197,11 @@ export default function EventoDetailPage() {
         p.results
           .map((r) => `${EXAM_LABELS[r.examType] ?? r.examType}: ${r.percentage}%${r.passed ? ' (aprobado)' : ''}`)
           .join(' | '),
+        p.missingExamTypes.length === 0
+          ? 'Ninguna'
+          : p.missingExamTypes
+              .map((examType) => EXAM_LABELS[examType] ?? examType)
+              .join(' | '),
         `${p.avgScore}%`,
         `${p.bestScore}%`,
         `${p.passedCount}/${p.completedCount}`,
@@ -616,6 +622,9 @@ export default function EventoDetailPage() {
                       <th className="px-4 py-3 text-left">
                         Resultados por prueba
                       </th>
+                      <th className="px-4 py-3 text-left">
+                        Pruebas faltantes
+                      </th>
                       <th className="px-4 py-3 text-center">Promedio</th>
                       <th className="px-4 py-3 text-center">Estado</th>
                     </tr>
@@ -626,7 +635,7 @@ export default function EventoDetailPage() {
                     {filteredParticipants.length === 0 ? (
                       <tr>
                         <td
-                          colSpan={6}
+                          colSpan={7}
                           className={`px-5 py-8 text-center text-sm ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
                         >
                           Sin resultados para este filtro
@@ -700,6 +709,26 @@ export default function EventoDetailPage() {
                                 </span>
                               ))}
                             </div>
+                          </td>
+                          <td className="px-4 py-3">
+                            {p.missingExamTypes.length === 0 ? (
+                              <span
+                                className={`text-xs ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}
+                              >
+                                ✓ Completo
+                              </span>
+                            ) : (
+                              <div className="flex flex-wrap gap-1.5 max-w-xs">
+                                {p.missingExamTypes.map((examType) => (
+                                  <span
+                                    key={examType}
+                                    className={`text-xs px-1.5 py-0.5 rounded font-medium ${isDarkMode ? 'bg-slate-700 text-slate-400' : 'bg-gray-100 text-gray-500'}`}
+                                  >
+                                    {EXAM_LABELS[examType] ?? examType}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
                           </td>
                           <td className="px-4 py-3 text-center">
                             <span
