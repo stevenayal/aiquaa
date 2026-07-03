@@ -55,6 +55,11 @@ interface SaveExamResultPayload {
   metadata?: object;
 }
 
+// Exámenes cuyo score automático es heurístico (conteo/keywords, no validación
+// real del contenido) y por eso arrancan marcados como pendientes de
+// corrección manual hasta que un evaluador los revise.
+const NEEDS_MANUAL_CORRECTION_EXAM_TYPES = new Set(['test-app']);
+
 export async function saveExamResultAction(payload: SaveExamResultPayload) {
   const supabase = createClient();
   const {
@@ -104,6 +109,9 @@ export async function saveExamResultAction(payload: SaveExamResultPayload) {
     process_code: resolvedProcessCode,
     participant_name: resolvedName,
     participant_email: resolvedEmail,
+    review_status: NEEDS_MANUAL_CORRECTION_EXAM_TYPES.has(payload.exam_type)
+      ? 'pending_correction'
+      : undefined,
   });
 
   if (error) return { error: error.message };
@@ -227,7 +235,7 @@ export async function getExamResultsAction(opts?: {
   let query = supabase
     .from('exam_results')
     .select(
-      'id, exam_type, exam_mode, score, total_questions, max_possible_score, passing_score, passed, percentage, time_spent, model, language, process_code, created_at',
+      'id, exam_type, exam_mode, score, total_questions, max_possible_score, passing_score, passed, percentage, time_spent, model, language, process_code, review_status, created_at',
       { count: 'exact' }
     )
     .eq('user_id', user.id);

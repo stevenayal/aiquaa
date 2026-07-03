@@ -55,6 +55,7 @@ interface ExamResultRow {
   model?: string;
   language?: string;
   process_code?: string | null;
+  review_status?: string | null;
   created_at: string;
 }
 
@@ -1344,6 +1345,20 @@ export default function PerfilPage() {
                             ? `📋 Oficial · ${r.process_code}`
                             : `✏️ Práctica`}
                         </span>
+
+                        {/* Pending manual correction badge (heuristic auto-score) */}
+                        {r.review_status === 'pending_correction' && (
+                          <span
+                            className={`px-2 py-0.5 rounded text-[11px] font-medium ${
+                              isDarkMode
+                                ? 'bg-amber-900/40 text-amber-300'
+                                : 'bg-amber-100 text-amber-700'
+                            }`}
+                            title="El puntaje automático todavía no fue confirmado por un evaluador"
+                          >
+                            ⏳ Pendiente de corrección
+                          </span>
+                        )}
 
                         {/* Assign code button (only for practice exams) */}
                         {!r.process_code && (

@@ -39,6 +39,7 @@ type ExamResult = {
   passed: boolean;
   time_spent: number;
   created_at: string;
+  review_status?: string | null;
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -409,7 +410,7 @@ export default function ProcesoDetailPage() {
         supabase
           .from('exam_results')
           .select(
-            'id, user_id, participant_name, participant_email, exam_type, score, percentage, passed, time_spent, created_at'
+            'id, user_id, participant_name, participant_email, exam_type, score, percentage, passed, time_spent, created_at, review_status'
           )
           .eq('process_code', proc.code)
           .order('percentage', { ascending: false }),
@@ -893,12 +894,18 @@ export default function ProcesoDetailPage() {
                           <Link
                             href={`/empresa/evaluar/${r.id}`}
                             className={`text-xs px-2 py-1 rounded-lg font-semibold transition-colors shrink-0 ${
-                              isDarkMode
-                                ? 'bg-amber-900/40 text-amber-200 hover:bg-amber-900/60'
-                                : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                              r.review_status === 'reviewed'
+                                ? isDarkMode
+                                  ? 'bg-emerald-900/40 text-emerald-300 hover:bg-emerald-900/60'
+                                  : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+                                : isDarkMode
+                                  ? 'bg-amber-900/40 text-amber-200 hover:bg-amber-900/60'
+                                  : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
                             }`}
                           >
-                            Revisar
+                            {r.review_status === 'reviewed'
+                              ? '✅ Revisado'
+                              : '⏳ Revisar'}
                           </Link>
                         )}
                       </div>
@@ -1003,12 +1010,18 @@ export default function ProcesoDetailPage() {
                               <Link
                                 href={`/empresa/evaluar/${r.id}`}
                                 className={`text-xs px-2.5 py-1 rounded-lg font-semibold transition-colors ${
-                                  isDarkMode
-                                    ? 'bg-amber-900/40 text-amber-200 hover:bg-amber-900/60'
-                                    : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                                  r.review_status === 'reviewed'
+                                    ? isDarkMode
+                                      ? 'bg-emerald-900/40 text-emerald-300 hover:bg-emerald-900/60'
+                                      : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+                                    : isDarkMode
+                                      ? 'bg-amber-900/40 text-amber-200 hover:bg-amber-900/60'
+                                      : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
                                 }`}
                               >
-                                Revisar
+                                {r.review_status === 'reviewed'
+                                  ? '✅ Revisado'
+                                  : '⏳ Revisar'}
                               </Link>
                             )}
                           </td>

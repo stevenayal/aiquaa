@@ -27,8 +27,12 @@ const SEVERITY_COLORS: Record<Severity, { bg: string; text: string }> = {
 
 const REVIEW_STATUS_LABELS: Record<string, { text: string; color: string }> = {
   pending: { text: 'Pendiente', color: 'bg-gray-100 text-gray-600' },
+  pending_correction: {
+    text: '⏳ Pendiente de corrección',
+    color: 'bg-amber-100 text-amber-700',
+  },
   in_review: { text: 'En revisión', color: 'bg-blue-100 text-blue-700' },
-  reviewed: { text: 'Revisado', color: 'bg-green-100 text-green-700' },
+  reviewed: { text: '✅ Revisado', color: 'bg-green-100 text-green-700' },
 };
 
 const EXAM_LABEL = '🧪 Test App — Bug Hunt';
@@ -162,10 +166,21 @@ export default function EvaluarPage() {
     setSaving(true);
     setSaveError(null);
 
+    const passingScore = exam?.passing_score ?? Math.round(maxPoints * 0.6);
+    const finalScore =
+      status === 'reviewed'
+        ? {
+            score: effectiveScore,
+            percentage: effectivePercentage,
+            passed: effectiveScore >= passingScore,
+          }
+        : undefined;
+
     const { error } = await saveExamReviewAction(
       resultId,
       { bugs: bugReviews, overallNotes, adjustedScore },
-      status
+      status,
+      finalScore
     );
 
     setSaving(false);
@@ -291,6 +306,20 @@ export default function EvaluarPage() {
           >
             Puntuación
           </h2>
+          {exam?.review_status === 'pending_correction' && (
+            <div
+              className={`mb-4 px-4 py-3 rounded-lg text-sm ${
+                isDarkMode
+                  ? 'bg-amber-900/30 border border-amber-700 text-amber-300'
+                  : 'bg-amber-50 border border-amber-200 text-amber-700'
+              }`}
+            >
+              ⏳ El puntaje &quot;Auto&quot; se calcula por cantidad de bugs y
+              heurísticas de texto, no valida que cada bug sea real ni evita
+              duplicados. Revisá los bugs de abajo y confirmá o ajustá el
+              puntaje antes de finalizar la revisión.
+            </div>
+          )}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <div
               className={`text-center p-3 rounded-lg ${isDarkMode ? 'bg-slate-700' : 'bg-gray-100'}`}

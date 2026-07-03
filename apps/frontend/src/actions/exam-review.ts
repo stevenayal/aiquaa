@@ -30,6 +30,7 @@ export type ExamDetail = {
   exam_type: string;
   score: number;
   total_questions: number;
+  passing_score: number | null;
   percentage: number;
   passed: boolean;
   time_spent: number;
@@ -78,7 +79,7 @@ export async function getExamDetailAction(
     .from('exam_results')
     .select(
       `id, participant_name, participant_email, user_id, exam_type,
-       score, total_questions, percentage, passed, time_spent,
+       score, total_questions, passing_score, percentage, passed, time_spent,
        created_at, process_code, review_status, reviewed_at, reviewed_by,
        metadata, review_data`
     )
@@ -94,7 +95,8 @@ export async function getExamDetailAction(
 export async function saveExamReviewAction(
   resultId: string,
   reviewData: ReviewData,
-  status: 'in_review' | 'reviewed'
+  status: 'in_review' | 'reviewed',
+  finalScore?: { score: number; percentage: number; passed: boolean }
 ): Promise<{ error: string | null }> {
   const supabase = createClient();
   const {
@@ -111,6 +113,14 @@ export async function saveExamReviewAction(
 
   if (status === 'reviewed') {
     updateData.reviewed_at = new Date().toISOString();
+    // El score automático es heurístico (ver saveExamResultAction); al
+    // finalizar la revisión, el puntaje corregido por el evaluador pasa a
+    // ser el oficial en vez de quedar solo dentro de review_data.
+    if (finalScore) {
+      updateData.score = finalScore.score;
+      updateData.percentage = finalScore.percentage;
+      updateData.passed = finalScore.passed;
+    }
   }
 
   const { error } = await supabase

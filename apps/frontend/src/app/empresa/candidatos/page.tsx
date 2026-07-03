@@ -47,6 +47,7 @@ type ExamResult = {
   process_code: string | null;
   section_scores: SectionScore[] | null;
   learning_objectives: unknown | null;
+  review_status?: string | null;
 };
 
 type ViewMode = 'evaluados' | 'talento' | 'favoritos';
@@ -226,7 +227,7 @@ export default function CandidatosPage() {
           supabase
             .from('exam_results')
             .select(
-              'id, participant_name, participant_email, user_id, exam_type, score, percentage, passed, time_spent, created_at, process_code, section_scores, learning_objectives'
+              'id, participant_name, participant_email, user_id, exam_type, score, percentage, passed, time_spent, created_at, process_code, section_scores, learning_objectives, review_status'
             )
             .in('process_code', processCodes),
           supabase
@@ -1485,12 +1486,18 @@ export default function CandidatosPage() {
                                     <Link
                                       href={`/empresa/evaluar/${r.id}`}
                                       className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors ${
-                                        isDarkMode
-                                          ? 'bg-amber-900/40 text-amber-200 hover:bg-amber-900/60'
-                                          : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                                        r.review_status === 'reviewed'
+                                          ? isDarkMode
+                                            ? 'bg-emerald-900/40 text-emerald-300 hover:bg-emerald-900/60'
+                                            : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+                                          : isDarkMode
+                                            ? 'bg-amber-900/40 text-amber-200 hover:bg-amber-900/60'
+                                            : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
                                       }`}
                                     >
-                                      Revisar
+                                      {r.review_status === 'reviewed'
+                                        ? '✅ Revisado'
+                                        : '⏳ Revisar'}
                                     </Link>
                                   )}
                                   <Link
