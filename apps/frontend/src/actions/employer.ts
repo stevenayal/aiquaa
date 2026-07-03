@@ -646,6 +646,7 @@ export interface EventProcessStat {
   position_name: string;
   status: 'draft' | 'active' | 'closed';
   expires_at: string | null;
+  examCount: number;
   candidateCount: number;
   passedCount: number;
   passRate: number;
@@ -653,6 +654,7 @@ export interface EventProcessStat {
 }
 
 export interface EventCandidate {
+  userId: string | null;
   name: string;
   email: string | null;
   examType: string;
@@ -704,7 +706,7 @@ export async function getEventStatsAction(groupId: string): Promise<{
 
   const { data: procs, error: procsError } = await supabase
     .from('hiring_processes')
-    .select('id, code, position_name, status, expires_at')
+    .select('id, code, position_name, status, expires_at, exam_types')
     .eq('group_id', groupId)
     .order('created_at', { ascending: true });
 
@@ -731,6 +733,7 @@ export async function getEventStatsAction(groupId: string): Promise<{
   if (resultsError) return { error: resultsError, data: null };
 
   const allRaw: EventCandidate[] = rawResults.map((row) => ({
+    userId: row.user_id ?? null,
     name: row.participant_name || row.participant_email || 'Sin nombre',
     email: row.participant_email ?? null,
     examType: row.exam_type,
@@ -739,10 +742,18 @@ export async function getEventStatsAction(groupId: string): Promise<{
     passed: row.passed ?? false,
   }));
 
-  // Per-process stats (across both sources)
+  const candidateKey = (r: EventCandidate) =>
+    r.userId || (r.email || r.name || '').toLowerCase().trim();
+
+  // Per-process stats (across both sources). candidateCount counts unique
+  // people, not exam attempts — a candidate who rendered 8 exams in this
+  // process still counts once.
   const processStats: EventProcessStat[] = processes.map((p) => {
     const rows = allRaw.filter((r) => r.processCode === p.code);
-    const passed = rows.filter((r) => r.passed).length;
+    const uniqueCandidates = new Set(rows.map(candidateKey));
+    const passedCandidates = new Set(
+      rows.filter((r) => r.passed).map(candidateKey)
+    );
     const scores = rows.map((r) => r.percentage);
     return {
       id: p.id,
@@ -750,9 +761,13 @@ export async function getEventStatsAction(groupId: string): Promise<{
       position_name: p.position_name,
       status: p.status,
       expires_at: p.expires_at,
-      candidateCount: rows.length,
-      passedCount: passed,
-      passRate: rows.length > 0 ? Math.round((passed / rows.length) * 100) : 0,
+      examCount: p.exam_types?.length ?? 0,
+      candidateCount: uniqueCandidates.size,
+      passedCount: passedCandidates.size,
+      passRate:
+        uniqueCandidates.size > 0
+          ? Math.round((passedCandidates.size / uniqueCandidates.size) * 100)
+          : 0,
       topScore: scores.length > 0 ? Math.max(...scores) : null,
     };
   });

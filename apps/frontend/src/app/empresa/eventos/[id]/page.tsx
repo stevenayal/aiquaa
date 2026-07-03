@@ -132,6 +132,46 @@ export default function EventoDetailPage() {
     });
   }, [groupId]);
 
+  const exportProcessesCSV = () => {
+    if (!stats) return;
+    const rows = [
+      [
+        'Proceso',
+        'Código',
+        'Pruebas técnicas',
+        'Candidatos',
+        'Aprobados',
+        'Tasa aprobación',
+        'Top score',
+        'Estado',
+      ],
+      ...stats.processes.map((p) => [
+        p.position_name,
+        p.code,
+        String(p.examCount),
+        String(p.candidateCount),
+        String(p.passedCount),
+        p.candidateCount > 0 ? `${p.passRate}%` : '',
+        p.topScore !== null ? `${p.topScore}%` : '',
+        STATUS_BADGE[getEffectiveStatus(p)]?.text ?? p.status,
+      ]),
+    ];
+    const csv = rows
+      .map((row) =>
+        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',')
+      )
+      .join('\n');
+    const blob = new Blob(['﻿' + csv], {
+      type: 'text/csv;charset=utf-8;',
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `evento-${stats.group.name.toLowerCase().replace(/\s+/g, '-')}-procesos-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const cardClass = `rounded-xl border ${
     isDarkMode
       ? 'bg-dark-secondary border-slate-700'
@@ -615,13 +655,20 @@ export default function EventoDetailPage() {
             {/* Processes table */}
             <div className={`${cardClass} overflow-hidden`}>
               <div
-                className={`px-5 py-4 border-b ${isDarkMode ? 'border-slate-700' : 'border-gray-100'}`}
+                className={`px-5 py-4 border-b flex items-center justify-between gap-4 ${isDarkMode ? 'border-slate-700' : 'border-gray-100'}`}
               >
                 <p
                   className={`text-sm font-semibold ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}
                 >
                   Procesos del evento
                 </p>
+                <button
+                  type="button"
+                  onClick={exportProcessesCSV}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${isDarkMode ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+                >
+                  📥 Exportar CSV
+                </button>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
@@ -635,6 +682,9 @@ export default function EventoDetailPage() {
                     >
                       <th className="px-5 py-3 text-left">Proceso</th>
                       <th className="px-4 py-3 text-left">Código</th>
+                      <th className="px-4 py-3 text-center">
+                        Pruebas técnicas
+                      </th>
                       <th className="px-4 py-3 text-center">Candidatos</th>
                       <th className="px-4 py-3 text-center">Aprobados</th>
                       <th className="px-4 py-3 text-center">Tasa</th>
@@ -675,6 +725,11 @@ export default function EventoDetailPage() {
                             >
                               {p.code}
                             </span>
+                          </td>
+                          <td
+                            className={`px-4 py-3 text-center ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}
+                          >
+                            {p.examCount}
                           </td>
                           <td
                             className={`px-4 py-3 text-center ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}
