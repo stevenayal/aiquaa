@@ -670,12 +670,37 @@ export interface EventExamTypeStat {
   passRate: number;
 }
 
+export interface EventParticipantResult {
+  examType: string;
+  processCode: string;
+  percentage: number;
+  passed: boolean;
+}
+
+export interface EventParticipant {
+  key: string;
+  userId: string | null;
+  name: string;
+  email: string | null;
+  /** One entry per distinct exam type attempted (best attempt kept). */
+  results: EventParticipantResult[];
+  completedCount: number;
+  completionRate: number;
+  passedCount: number;
+  avgScore: number;
+  bestScore: number;
+}
+
 export interface EventStats {
   group: ProcessGroup;
   processes: EventProcessStat[];
   /** All candidates sorted by percentage DESC (use .slice(0,10) for chart) */
   allCandidates: EventCandidate[];
   byExamType: EventExamTypeStat[];
+  /** One entry per unique participant, with their per-exam results. */
+  participants: EventParticipant[];
+  /** Distinct exam types required across all processes in this event. */
+  totalExamTypes: number;
   totals: {
     candidates: number;
     passed: number;
@@ -721,6 +746,8 @@ export async function getEventStatsAction(groupId: string): Promise<{
         processes: [],
         allCandidates: [],
         byExamType: [],
+        participants: [],
+        totalExamTypes: 0,
         totals: { candidates: 0, passed: 0, passRate: 0, avgScore: null },
       },
       error: null,
@@ -805,6 +832,81 @@ export async function getEventStatsAction(groupId: string): Promise<{
     })
   );
 
+  // Distinct exam types required across all processes in this event —
+  // the denominator for each participant's "% completado".
+  const examTypesInEvent = new Set(
+    processes.flatMap((p) => p.exam_types ?? [])
+  );
+  const totalExamTypes = examTypesInEvent.size;
+
+  // Per-participant breakdown: every distinct exam type they attempted
+  // (best score kept per type) plus a completion rate against the event's
+  // required exams. Lets recruiters see "3/8 pruebas — 92%, 84%, 65%..."
+  // instead of a single collapsed best-score row.
+  const resultsByCandidate = new Map<string, EventParticipantResult[]>();
+  const infoByCandidate = new Map<
+    string,
+    { userId: string | null; name: string; email: string | null }
+  >();
+  for (const r of allRaw) {
+    const key = candidateKey(r);
+    if (!key) continue;
+    if (!infoByCandidate.has(key)) {
+      infoByCandidate.set(key, {
+        userId: r.userId,
+        name: r.name,
+        email: r.email,
+      });
+    }
+    const list = resultsByCandidate.get(key) ?? [];
+    const existingIdx = list.findIndex((x) => x.examType === r.examType);
+    if (existingIdx === -1) {
+      list.push({
+        examType: r.examType,
+        processCode: r.processCode,
+        percentage: r.percentage,
+        passed: r.passed,
+      });
+    } else if (r.percentage > list[existingIdx].percentage) {
+      list[existingIdx] = {
+        examType: r.examType,
+        processCode: r.processCode,
+        percentage: r.percentage,
+        passed: r.passed,
+      };
+    }
+    resultsByCandidate.set(key, list);
+  }
+
+  const participants: EventParticipant[] = Array.from(
+    infoByCandidate.entries()
+  )
+    .map(([key, info]) => {
+      const results = (resultsByCandidate.get(key) ?? []).sort(
+        (a, b) => b.percentage - a.percentage
+      );
+      const scores = results.map((x) => x.percentage);
+      return {
+        key,
+        userId: info.userId,
+        name: info.name,
+        email: info.email,
+        results,
+        completedCount: results.length,
+        completionRate:
+          totalExamTypes > 0
+            ? Math.round((results.length / totalExamTypes) * 100)
+            : 0,
+        passedCount: results.filter((x) => x.passed).length,
+        avgScore:
+          scores.length > 0
+            ? Math.round(scores.reduce((sum, s) => sum + s, 0) / scores.length)
+            : 0,
+        bestScore: scores.length > 0 ? Math.max(...scores) : 0,
+      };
+    })
+    .sort((a, b) => b.completedCount - a.completedCount || b.avgScore - a.avgScore);
+
   const totalCandidates = allCandidates.length;
   const totalPassed = allCandidates.filter((r) => r.passed).length;
   const avgScore =
@@ -821,6 +923,8 @@ export async function getEventStatsAction(groupId: string): Promise<{
       processes: processStats,
       allCandidates,
       byExamType,
+      participants,
+      totalExamTypes,
       totals: {
         candidates: totalCandidates,
         passed: totalPassed,
