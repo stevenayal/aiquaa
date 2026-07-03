@@ -210,22 +210,24 @@ export default function EventoDetailPage() {
   const {
     group,
     processes,
-    allCandidates,
     byExamType,
     participants,
     totalExamTypes,
     totals,
   } = stats;
 
-  const top10 = allCandidates.slice(0, 10);
+  // participants is already sorted by completedCount desc, then avgScore desc
+  // — ranking priorizes quienes completaron más pruebas técnicas del evento.
+  const top10 = participants.slice(0, 10);
 
-  const topChartData = top10.map((c) => ({
-    name: c.name.length > 22 ? c.name.slice(0, 22) + '…' : c.name,
-    fullName: c.name,
-    puntaje: c.percentage,
-    examType: EXAM_LABELS[c.examType] ?? c.examType,
-    processCode: c.processCode,
-    passed: c.passed,
+  const topChartData = top10.map((p) => ({
+    name: p.name.length > 22 ? p.name.slice(0, 22) + '…' : p.name,
+    fullName: p.name,
+    puntaje: p.completionRate,
+    completedCount: p.completedCount,
+    totalExamTypes,
+    avgScore: p.avgScore,
+    anyPassed: p.passedCount > 0,
   }));
 
   const examChartData = byExamType.map((e) => ({
@@ -346,7 +348,9 @@ export default function EventoDetailPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Top 10 participants */}
               <div className={`${cardClass} p-5`}>
-                <p className={headingClass}>Top 10 participantes</p>
+                <p className={headingClass}>
+                  Top 10 participantes — más pruebas completadas
+                </p>
                 {topChartData.length === 0 ? (
                   <p
                     className={`text-sm ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
@@ -385,11 +389,16 @@ export default function EventoDetailPage() {
                       />
                       <Tooltip
                         contentStyle={tooltipStyle}
-                        formatter={(value: number) => [`${value}%`, 'Puntaje']}
+                        formatter={(_value: number, _name: string, item: any) => {
+                          const d = item?.payload;
+                          return [
+                            `${d?.completedCount ?? 0}/${d?.totalExamTypes ?? 0} pruebas · promedio ${d?.avgScore ?? 0}%`,
+                            'Completado',
+                          ];
+                        }}
                         labelFormatter={(_, payload) => {
                           const d = payload?.[0]?.payload;
-                          if (!d) return '';
-                          return `${d.fullName} — ${d.examType} (${d.processCode})`;
+                          return d?.fullName ?? '';
                         }}
                       />
                       <Bar
@@ -400,7 +409,7 @@ export default function EventoDetailPage() {
                         {topChartData.map((entry, i) => (
                           <Cell
                             key={i}
-                            fill={entry.passed ? '#22c55e' : '#ef4444'}
+                            fill={entry.anyPassed ? '#22c55e' : '#ef4444'}
                             fillOpacity={0.85}
                           />
                         ))}
@@ -411,7 +420,8 @@ export default function EventoDetailPage() {
                 <p
                   className={`text-xs mt-2 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
                 >
-                  🟢 Aprobado · 🔴 No aprobado
+                  Ordenado por pruebas completadas · 🟢 Aprobó al menos una ·
+                  🔴 Ninguna aprobada
                 </p>
               </div>
 
