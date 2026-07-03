@@ -410,7 +410,7 @@ export default function ProcesoDetailPage() {
         supabase
           .from('exam_results')
           .select(
-            'id, user_id, participant_name, participant_email, exam_type, score, percentage, passed, time_spent, created_at, profiles(display_name, email)'
+            'id, user_id, participant_name, participant_email, exam_type, score, percentage, passed, time_spent, created_at'
           )
           .eq('process_code', proc.code)
           .order('percentage', { ascending: false }),
@@ -425,11 +425,15 @@ export default function ProcesoDetailPage() {
         getProspectsForProcessAction(proc.id),
       ]);
 
-      // profiles has no FK from assessment_attempts — fetch separately
+      // Fetch profiles for all user_ids from both sources (no FK available for nested join)
+      const examResultRows = (res ?? []) as ExamResult[];
       const attemptRows = assessmentRes.data ?? [];
       const userIds = [
-        ...new Set(attemptRows.map((r: any) => r.user_id).filter(Boolean)),
-      ];
+        ...new Set([
+          ...examResultRows.map((r) => r.user_id).filter(Boolean),
+          ...attemptRows.map((r: any) => r.user_id).filter(Boolean),
+        ]),
+      ] as string[];
       const profileMap: Record<
         string,
         { display_name: string | null; email: string | null }
@@ -444,14 +448,16 @@ export default function ProcesoDetailPage() {
         });
       }
 
-      const examResults = ((res ?? []) as ExamResult[]).map((r) => ({
+      const examResults = examResultRows.map((r) => ({
         ...r,
         participant_name:
-          r.profiles?.[0]?.display_name ??
+          (r.user_id ? profileMap[r.user_id]?.display_name : null) ??
           r.participant_name ??
           r.participant_email,
         participant_email:
-          r.profiles?.[0]?.email ?? r.participant_email ?? null,
+          (r.user_id ? profileMap[r.user_id]?.email : null) ??
+          r.participant_email ??
+          null,
       }));
 
       const mappedAttempts: ExamResult[] = attemptRows.map((r: any) => ({
