@@ -207,7 +207,15 @@ export default function EventoDetailPage() {
     );
   }
 
-  const { group, processes, allCandidates, byExamType, totals } = stats;
+  const {
+    group,
+    processes,
+    allCandidates,
+    byExamType,
+    participants,
+    totalExamTypes,
+    totals,
+  } = stats;
 
   const top10 = allCandidates.slice(0, 10);
 
@@ -237,15 +245,15 @@ export default function EventoDetailPage() {
       }
     : { backgroundColor: '#fff', border: '1px solid #e2e8f0' };
 
-  const filteredCandidates = allCandidates.filter((c) => {
+  const filteredParticipants = participants.filter((p) => {
     const matchSearch =
       !searchCand ||
-      c.name.toLowerCase().includes(searchCand.toLowerCase()) ||
-      (c.email ?? '').toLowerCase().includes(searchCand.toLowerCase());
+      p.name.toLowerCase().includes(searchCand.toLowerCase()) ||
+      (p.email ?? '').toLowerCase().includes(searchCand.toLowerCase());
     const matchPass =
       filterPassed === 'all' ||
-      (filterPassed === 'passed' && c.passed) ||
-      (filterPassed === 'failed' && !c.passed);
+      (filterPassed === 'passed' && p.passedCount > 0) ||
+      (filterPassed === 'failed' && p.passedCount === 0);
     return matchSearch && matchPass;
   });
 
@@ -485,7 +493,7 @@ export default function EventoDetailPage() {
                   <span
                     className={`font-normal text-xs ml-1 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
                   >
-                    ({filteredCandidates.length} de {allCandidates.length})
+                    ({filteredParticipants.length} de {participants.length})
                   </span>
                 </p>
                 <div className="flex items-center gap-2 flex-wrap">
@@ -539,16 +547,20 @@ export default function EventoDetailPage() {
                     >
                       <th className="px-4 py-3 text-center w-10">#</th>
                       <th className="px-5 py-3 text-left">Participante</th>
-                      <th className="px-4 py-3 text-left">Examen</th>
-                      <th className="px-4 py-3 text-left">Proceso</th>
-                      <th className="px-4 py-3 text-center">Puntaje</th>
+                      <th className="px-4 py-3 text-center">
+                        % Completado
+                      </th>
+                      <th className="px-4 py-3 text-left">
+                        Resultados por prueba
+                      </th>
+                      <th className="px-4 py-3 text-center">Promedio</th>
                       <th className="px-4 py-3 text-center">Estado</th>
                     </tr>
                   </thead>
                   <tbody
                     className={`divide-y ${isDarkMode ? 'divide-slate-700/50' : 'divide-gray-100'}`}
                   >
-                    {filteredCandidates.length === 0 ? (
+                    {filteredParticipants.length === 0 ? (
                       <tr>
                         <td
                           colSpan={6}
@@ -558,94 +570,98 @@ export default function EventoDetailPage() {
                         </td>
                       </tr>
                     ) : (
-                      filteredCandidates.map((c, i) => {
-                        const globalRank =
-                          allCandidates.findIndex(
-                            (x) =>
-                              x.name === c.name &&
-                              x.processCode === c.processCode
-                          ) + 1;
-                        return (
-                          <tr
-                            key={i}
-                            className={`transition-colors ${
-                              isDarkMode
-                                ? 'hover:bg-slate-800/30'
-                                : 'hover:bg-gray-50'
-                            }`}
+                      filteredParticipants.map((p, i) => (
+                        <tr
+                          key={p.key}
+                          className={`transition-colors ${
+                            isDarkMode
+                              ? 'hover:bg-slate-800/30'
+                              : 'hover:bg-gray-50'
+                          }`}
+                        >
+                          <td
+                            className={`px-4 py-3 text-center text-xs font-mono ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
                           >
-                            <td
-                              className={`px-4 py-3 text-center text-xs font-mono ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+                            {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}
+                          </td>
+                          <td className="px-5 py-3">
+                            <p
+                              className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
                             >
-                              {globalRank === 1
-                                ? '🥇'
-                                : globalRank === 2
-                                  ? '🥈'
-                                  : globalRank === 3
-                                    ? '🥉'
-                                    : globalRank}
-                            </td>
-                            <td className="px-5 py-3">
+                              {p.name}
+                            </p>
+                            {p.email && p.email !== p.name && (
                               <p
-                                className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                                className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
                               >
-                                {c.name}
+                                {p.email}
                               </p>
-                              {c.email && c.email !== c.name && (
-                                <p
-                                  className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
-                                >
-                                  {c.email}
-                                </p>
-                              )}
-                            </td>
-                            <td
-                              className={`px-4 py-3 text-sm ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}
-                            >
-                              {EXAM_LABELS[c.examType] ?? c.examType}
-                            </td>
-                            <td className="px-4 py-3">
-                              <span
-                                className={`font-mono text-xs px-2 py-0.5 rounded ${isDarkMode ? 'bg-slate-700 text-slate-300' : 'bg-gray-100 text-gray-600'}`}
+                            )}
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <div className="flex flex-col items-center gap-1">
+                              <div
+                                className={`h-1.5 w-20 rounded-full overflow-hidden ${isDarkMode ? 'bg-slate-700' : 'bg-gray-200'}`}
                               >
-                                {c.processCode}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3 text-center">
-                              <div className="flex items-center justify-center gap-2">
                                 <div
-                                  className={`h-1.5 w-16 rounded-full overflow-hidden ${isDarkMode ? 'bg-slate-700' : 'bg-gray-200'}`}
-                                >
-                                  <div
-                                    className={`h-full rounded-full ${c.passed ? 'bg-green-500' : 'bg-red-500'}`}
-                                    style={{ width: `${c.percentage}%` }}
-                                  />
-                                </div>
-                                <span
-                                  className={`text-xs font-semibold w-10 text-right ${isDarkMode ? 'text-slate-200' : 'text-gray-700'}`}
-                                >
-                                  {c.percentage}%
-                                </span>
+                                  className={`h-full rounded-full ${p.completionRate >= 100 ? 'bg-green-500' : 'bg-indigo-500'}`}
+                                  style={{ width: `${p.completionRate}%` }}
+                                />
                               </div>
-                            </td>
-                            <td className="px-4 py-3 text-center">
                               <span
-                                className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                                  c.passed
-                                    ? isDarkMode
-                                      ? 'bg-green-900/40 text-green-300'
-                                      : 'bg-green-100 text-green-700'
-                                    : isDarkMode
-                                      ? 'bg-red-900/40 text-red-300'
-                                      : 'bg-red-100 text-red-600'
-                                }`}
+                                className={`text-xs font-semibold ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}
                               >
-                                {c.passed ? 'Aprobado' : 'No aprobado'}
+                                {p.completedCount}/{totalExamTypes} ·{' '}
+                                {p.completionRate}%
                               </span>
-                            </td>
-                          </tr>
-                        );
-                      })
+                            </div>
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="flex flex-wrap gap-1.5 max-w-xs">
+                              {p.results.map((r) => (
+                                <span
+                                  key={r.examType}
+                                  title={r.processCode}
+                                  className={`text-xs px-1.5 py-0.5 rounded font-medium ${
+                                    r.passed
+                                      ? isDarkMode
+                                        ? 'bg-green-900/40 text-green-300'
+                                        : 'bg-green-100 text-green-700'
+                                      : isDarkMode
+                                        ? 'bg-red-900/40 text-red-300'
+                                        : 'bg-red-100 text-red-600'
+                                  }`}
+                                >
+                                  {EXAM_LABELS[r.examType] ?? r.examType}{' '}
+                                  {r.percentage}%
+                                </span>
+                              ))}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <span
+                              className={`text-sm font-semibold ${isDarkMode ? 'text-slate-200' : 'text-gray-700'}`}
+                            >
+                              {p.avgScore}%
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <span
+                              className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                                p.passedCount > 0
+                                  ? isDarkMode
+                                    ? 'bg-green-900/40 text-green-300'
+                                    : 'bg-green-100 text-green-700'
+                                  : isDarkMode
+                                    ? 'bg-red-900/40 text-red-300'
+                                    : 'bg-red-100 text-red-600'
+                              }`}
+                            >
+                              {p.passedCount}/{p.completedCount} aprobados
+                            </span>
+                          </td>
+                        </tr>
+                      ))
                     )}
                   </tbody>
                 </table>
