@@ -39,7 +39,6 @@ type ExamResult = {
   passed: boolean;
   time_spent: number;
   created_at: string;
-  profiles?: { display_name: string | null; email: string | null }[] | null;
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -410,7 +409,7 @@ export default function ProcesoDetailPage() {
         supabase
           .from('exam_results')
           .select(
-            'id, user_id, participant_name, participant_email, exam_type, score, percentage, passed, time_spent, created_at, profiles(display_name, email)'
+            'id, user_id, participant_name, participant_email, exam_type, score, percentage, passed, time_spent, created_at'
           )
           .eq('process_code', proc.code)
           .order('percentage', { ascending: false }),
@@ -446,12 +445,8 @@ export default function ProcesoDetailPage() {
 
       const examResults = ((res ?? []) as ExamResult[]).map((r) => ({
         ...r,
-        participant_name:
-          r.profiles?.[0]?.display_name ??
-          r.participant_name ??
-          r.participant_email,
-        participant_email:
-          r.profiles?.[0]?.email ?? r.participant_email ?? null,
+        participant_name: r.participant_name ?? r.participant_email,
+        participant_email: r.participant_email ?? null,
       }));
 
       const mappedAttempts: ExamResult[] = attemptRows.map((r: any) => ({

@@ -47,7 +47,6 @@ type ExamResult = {
   process_code: string | null;
   section_scores: SectionScore[] | null;
   learning_objectives: unknown | null;
-  profiles?: { display_name: string | null }[] | null;
 };
 
 type ViewMode = 'evaluados' | 'talento' | 'favoritos';
@@ -227,7 +226,7 @@ export default function CandidatosPage() {
           supabase
             .from('exam_results')
             .select(
-              'id, participant_name, participant_email, user_id, exam_type, score, percentage, passed, time_spent, created_at, process_code, section_scores, learning_objectives, profiles(display_name)'
+              'id, participant_name, participant_email, user_id, exam_type, score, percentage, passed, time_spent, created_at, process_code, section_scores, learning_objectives'
             )
             .in('process_code', processCodes),
           supabase
@@ -244,14 +243,7 @@ export default function CandidatosPage() {
             .eq('status', 'graded'),
         ]);
 
-        // Use current profile name when available; fall back to the snapshot stored at exam time
-        const examResults = ((examResultsRes.data ?? []) as ExamResult[]).map(
-          (r) => ({
-            ...r,
-            participant_name:
-              r.profiles?.[0]?.display_name ?? r.participant_name,
-          })
-        );
+        const examResults = (examResultsRes.data ?? []) as ExamResult[];
 
         const attemptRows = assessmentAttemptsRes.data ?? [];
         const userIds = [
