@@ -1,0 +1,19 @@
+import { Suspense } from 'react';
+import AssessmentResultClient from '../../_shared/components/AssessmentResultClient';
+
+export default function ApiDeveloperFundamentalsResultPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-slate-950">
+          <div className="h-10 w-10 animate-spin rounded-full border-t-2 border-cyan-400" />
+        </div>
+      }
+    >
+      <AssessmentResultClient
+        startHref="/assessments/api-developer-fundamentals/start"
+        fallbackRecommendation="Repasá los principios REST (Client–Server, Stateless, Cacheable, Uniform Interface), el diseño de recursos con URIs y la especificación OpenAPI."
+      />
+    </Suspense>
+  );
+}

@@ -1,4 +1,13 @@
 import {
+  API_DEVELOPER_FUNDAMENTALS_SEED_VERSION,
+  API_DEVELOPER_FUNDAMENTALS_SLUG,
+} from '../api-developer-fundamentals/data/assessment-definition';
+import {
+  API_DEVELOPER_FUNDAMENTALS_GAMIFICATION_RULES,
+  buildApiDeveloperFundamentalsGamificationEvents,
+} from '../api-developer-fundamentals/lib/gamification';
+import { ensureApiDeveloperFundamentalsSeeded } from '../api-developer-fundamentals/lib/seed';
+import {
   API_TESTING_FUNDAMENTALS_SLUG,
   API_TESTING_SEED_VERSION,
 } from '../api-testing-fundamentals/data/assessment-definition';
@@ -40,6 +49,7 @@ import type {
 } from './lib/gamification';
 
 export type AssessmentExamType =
+  | 'api-developer-fundamentals'
   | 'api-testing-fundamentals'
   | 'database-fundamentals'
   | 'database-practice'
@@ -69,6 +79,15 @@ export interface AssessmentRegistryEntry {
 export const DEFAULT_ASSESSMENT_SLUG = API_TESTING_FUNDAMENTALS_SLUG;
 
 export const ASSESSMENT_REGISTRY: Record<string, AssessmentRegistryEntry> = {
+  [API_DEVELOPER_FUNDAMENTALS_SLUG]: {
+    slug: API_DEVELOPER_FUNDAMENTALS_SLUG,
+    seedVersion: API_DEVELOPER_FUNDAMENTALS_SEED_VERSION,
+    ensureSeeded: ensureApiDeveloperFundamentalsSeeded,
+    examType: 'api-developer-fundamentals',
+    gamificationSource: 'API_DEVELOPER_FUNDAMENTALS',
+    gamificationRules: API_DEVELOPER_FUNDAMENTALS_GAMIFICATION_RULES,
+    buildGamificationEvents: buildApiDeveloperFundamentalsGamificationEvents,
+  },
   [API_TESTING_FUNDAMENTALS_SLUG]: {
     slug: API_TESTING_FUNDAMENTALS_SLUG,
     seedVersion: API_TESTING_SEED_VERSION,

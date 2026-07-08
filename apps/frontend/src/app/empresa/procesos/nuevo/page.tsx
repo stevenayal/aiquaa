@@ -60,6 +60,12 @@ const EXAM_OPTIONS = [
       'Predicción de resultados, detección de bugs en queries y escritura de SQL — auto-corregido, 100 pts',
   },
   {
+    id: 'api-developer-fundamentals',
+    label: 'APIs para Desarrolladores — Fundamentos (Examen teórico)',
+    description:
+      'Fundamentos REST: principios, recursos y URIs, OpenAPI, params y verbos HTTP — auto-corregido, 100 pts',
+  },
+  {
     id: 'infrastructure-fundamentals',
     label: 'Infraestructura — Fundamentos (Examen teórico)',
     description:

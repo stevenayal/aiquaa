@@ -24,6 +24,10 @@ const EXAM_OPTIONS = [
     value: 'infrastructure-fundamentals',
     label: 'Infraestructura — Fundamentos',
   },
+  {
+    value: 'api-developer-fundamentals',
+    label: 'APIs para Desarrolladores — Fundamentos',
+  },
 ];
 
 export default function NuevoProcesoPage() {

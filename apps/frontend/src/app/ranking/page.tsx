@@ -57,7 +57,8 @@ type ExamSlug =
   | 'api-banking'
   | 'database-fundamentals'
   | 'database-practice'
-  | 'infrastructure-fundamentals';
+  | 'infrastructure-fundamentals'
+  | 'api-developer-fundamentals';
 
 const EXAM_SLUGS: ExamSlug[] = [
   'git',
@@ -69,6 +70,7 @@ const EXAM_SLUGS: ExamSlug[] = [
   'database-fundamentals',
   'database-practice',
   'infrastructure-fundamentals',
+  'api-developer-fundamentals',
 ];
 
 interface Category {
@@ -131,6 +133,13 @@ const CATEGORIES: Category[] = [
     teorico: 'infrastructure-fundamentals',
   },
   {
+    key: 'desarrollo',
+    label: 'Desarrollo',
+    emoji: '💻',
+    color: 'from-indigo-500 to-violet-600',
+    teorico: 'api-developer-fundamentals',
+  },
+  {
     key: 'comunidad',
     label: 'Comunidad',
     emoji: '🚀',
@@ -151,6 +160,7 @@ const EXAM_TAB_URLS: Record<string, string> = {
   'database-fundamentals': '/assessments/database-fundamentals',
   'database-practice': '/assessments/database-practice',
   'infrastructure-fundamentals': '/assessments/infrastructure-fundamentals',
+  'api-developer-fundamentals': '/assessments/api-developer-fundamentals',
 };
 
 const MEDAL = ['🥇', '🥈', '🥉'];
@@ -1019,6 +1029,7 @@ export default function RankingPage() {
     'database-fundamentals': [],
     'database-practice': [],
     'infrastructure-fundamentals': [],
+    'api-developer-fundamentals': [],
   });
   const [examLoading, setExamLoading] = useState<Record<string, boolean>>({
     git: true,
@@ -1030,6 +1041,7 @@ export default function RankingPage() {
     'database-fundamentals': true,
     'database-practice': true,
     'infrastructure-fundamentals': true,
+    'api-developer-fundamentals': true,
   });
   const [showWelcome, setShowWelcome] = useState(false);
 

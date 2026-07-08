@@ -18,7 +18,8 @@ interface SaveExamResultPayload {
     | 'api-banking'
     | 'database-fundamentals'
     | 'database-practice'
-    | 'infrastructure-fundamentals';
+    | 'infrastructure-fundamentals'
+    | 'api-developer-fundamentals';
   exam_mode: 'exam' | 'training';
   participant_name?: string;
   participant_email?: string;
@@ -165,7 +166,8 @@ export async function getLeaderboardAction(
     | 'api-banking'
     | 'database-fundamentals'
     | 'database-practice'
-    | 'infrastructure-fundamentals',
+    | 'infrastructure-fundamentals'
+    | 'api-developer-fundamentals',
   limit = 20
 ) {
   const supabase = createClient();

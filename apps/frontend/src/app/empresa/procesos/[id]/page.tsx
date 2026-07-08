@@ -123,6 +123,7 @@ const EXAM_LABELS: Record<string, string> = {
   'database-fundamentals': 'Bases de Datos — Fundamentos',
   'database-practice': 'Bases de Datos — Práctica SQL',
   'infrastructure-fundamentals': 'Infraestructura — Fundamentos',
+  'api-developer-fundamentals': 'APIs para Desarrolladores — Fundamentos',
 };
 
 const SOURCES = [
@@ -435,7 +436,9 @@ export default function ProcesoDetailPage() {
         ...new Set([
           ...attemptRows.map((r: any) => r.user_id).filter(Boolean),
           ...examResultsRaw
-            .filter((r) => !r.participant_name && !r.participant_email && r.user_id)
+            .filter(
+              (r) => !r.participant_name && !r.participant_email && r.user_id
+            )
             .map((r) => r.user_id as string),
         ]),
       ];
