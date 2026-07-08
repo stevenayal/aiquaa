@@ -21,7 +21,6 @@
   },
   "dependencies": {
     "@aiquaa/allpairs-core": "workspace:*",
-    "@aiquaa/shared": "workspace:*",
     "@axe-core/playwright": "^4.8.0",
     "@fontsource/sora": "^5.2.6",
     "@hookform/resolvers": "^5.2.2",

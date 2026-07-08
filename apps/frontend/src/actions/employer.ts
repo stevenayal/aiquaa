@@ -362,6 +362,7 @@ const PROCESS_ASSESSMENT_SLUGS = [
   'database-fundamentals',
   'database-practice',
   'infrastructure-fundamentals',
+  'api-developer-fundamentals',
 ];
 
 async function fetchAssessmentAttemptsForProcessCodes(

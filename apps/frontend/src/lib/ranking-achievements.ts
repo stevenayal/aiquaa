@@ -47,12 +47,14 @@ const RANKED_EXAM_TYPES: ExamType[] = [
   'database-fundamentals',
   'database-practice',
   'infrastructure-fundamentals',
+  'api-developer-fundamentals',
 ];
 
 const ASSESSMENT_RANKING_TYPES = new Set<ExamType>([
   'database-fundamentals',
   'database-practice',
   'infrastructure-fundamentals',
+  'api-developer-fundamentals',
 ]);
 
 function isMissingAchievementsTableError(error: { code?: string } | null) {

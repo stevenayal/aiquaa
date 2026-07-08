@@ -136,6 +136,25 @@ export const toolCategories: LabCategory[] = [
     ],
   },
   {
+    id: 'desarrollo',
+    name: '💻 Desarrollo',
+    description:
+      'Pruebas técnicas para desarrolladores: evaluá fundamentos y criterio de diseño',
+    tools: [
+      {
+        id: 'api-developer-fundamentals',
+        name: 'APIs para Desarrolladores — Fundamentos',
+        description:
+          'Prueba técnica de fundamentos REST: principios de arquitectura, recursos y URIs, OpenAPI, request/response, params y verbos HTTP — auto-corregido, 100 pts',
+        icon: '🔌',
+        color: 'from-indigo-500 to-violet-600',
+        href: '/assessments/api-developer-fundamentals',
+        featured: true,
+        implementedDate: 'Jul 2026',
+      },
+    ],
+  },
+  {
     id: 'evaluacion',
     name: '🐛 Testing & Evaluación',
     description: 'Aplicaciones para practicar y evaluar habilidades de testing',

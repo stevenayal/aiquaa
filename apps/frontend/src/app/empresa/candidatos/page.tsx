@@ -70,12 +70,14 @@ const EXAM_LABELS: Record<string, string> = {
   'database-fundamentals': 'Bases de Datos — Fundamentos',
   'database-practice': 'Bases de Datos — Práctica SQL',
   'infrastructure-fundamentals': 'Infraestructura — Fundamentos',
+  'api-developer-fundamentals': 'APIs para Desarrolladores — Fundamentos',
 };
 
 const DATABASE_ASSESSMENT_SLUGS = [
   'database-fundamentals',
   'database-practice',
   'infrastructure-fundamentals',
+  'api-developer-fundamentals',
 ];
 
 const ISTQB_LEVEL_LABELS: Record<string, string> = {

@@ -30,6 +30,7 @@ const EXAM_LABELS: Record<string, string> = {
   'database-fundamentals': 'BD Fundamentos',
   'database-practice': 'BD Práctica SQL',
   'infrastructure-fundamentals': 'Infraestructura',
+  'api-developer-fundamentals': 'APIs Desarrollador',
 };
 
 function getEffectiveStatus(
@@ -195,7 +196,10 @@ export default function EventoDetailPage() {
         String(stats.totalExamTypes),
         `${p.completionRate}%`,
         p.results
-          .map((r) => `${EXAM_LABELS[r.examType] ?? r.examType}: ${r.percentage}%${r.passed ? ' (aprobado)' : ''}`)
+          .map(
+            (r) =>
+              `${EXAM_LABELS[r.examType] ?? r.examType}: ${r.percentage}%${r.passed ? ' (aprobado)' : ''}`
+          )
           .join(' | '),
         p.missingExamTypes.length === 0
           ? 'Ninguna'
@@ -259,14 +263,8 @@ export default function EventoDetailPage() {
     );
   }
 
-  const {
-    group,
-    processes,
-    byExamType,
-    participants,
-    totalExamTypes,
-    totals,
-  } = stats;
+  const { group, processes, byExamType, participants, totalExamTypes, totals } =
+    stats;
 
   // participants is already sorted by completedCount desc, then avgScore desc
   // — ranking priorizes quienes completaron más pruebas técnicas del evento.
@@ -439,7 +437,11 @@ export default function EventoDetailPage() {
                       />
                       <Tooltip
                         contentStyle={tooltipStyle}
-                        formatter={(_value: number, _name: string, item: any) => {
+                        formatter={(
+                          _value: number,
+                          _name: string,
+                          item: any
+                        ) => {
                           const d = item?.payload;
                           return [
                             `${d?.completedCount ?? 0}/${d?.totalExamTypes ?? 0} pruebas · promedio ${d?.avgScore ?? 0}%`,
@@ -614,15 +616,11 @@ export default function EventoDetailPage() {
                     >
                       <th className="px-4 py-3 text-center w-10">#</th>
                       <th className="px-5 py-3 text-left">Participante</th>
-                      <th className="px-4 py-3 text-center">
-                        % Completado
-                      </th>
+                      <th className="px-4 py-3 text-center">% Completado</th>
                       <th className="px-4 py-3 text-left">
                         Resultados por prueba
                       </th>
-                      <th className="px-4 py-3 text-left">
-                        Pruebas faltantes
-                      </th>
+                      <th className="px-4 py-3 text-left">Pruebas faltantes</th>
                       <th className="px-4 py-3 text-center">Promedio</th>
                       <th className="px-4 py-3 text-center">Estado</th>
                     </tr>
@@ -652,7 +650,13 @@ export default function EventoDetailPage() {
                           <td
                             className={`px-4 py-3 text-center text-xs font-mono ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
                           >
-                            {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}
+                            {i === 0
+                              ? '🥇'
+                              : i === 1
+                                ? '🥈'
+                                : i === 2
+                                  ? '🥉'
+                                  : i + 1}
                           </td>
                           <td className="px-5 py-3">
                             <p

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { apiDeveloperFundamentalsDefinition } from './api-developer-fundamentals/data/assessment-definition';
 import { apiTestingFundamentalsDefinition } from './api-testing-fundamentals/data/assessment-definition';
 import { databaseFundamentalsDefinition } from './database-fundamentals/data/assessment-definition';
 import { databasePracticeDefinition } from './database-practice/data/assessment-definition';
@@ -27,6 +28,13 @@ export default function AssessmentsIndexPage() {
       badgeColor: 'text-amber-300',
       accentColor: 'text-sky-200',
       buttonClass: 'bg-sky-500 hover:bg-sky-400',
+    },
+    {
+      definition: apiDeveloperFundamentalsDefinition,
+      badge: 'Examen teórico · Auto-corregido · Desarrollo',
+      badgeColor: 'text-amber-300',
+      accentColor: 'text-indigo-200',
+      buttonClass: 'bg-indigo-500 hover:bg-indigo-400',
     },
   ];
 

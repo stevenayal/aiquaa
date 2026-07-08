@@ -12,6 +12,7 @@ const EXAM_LABELS: Record<string, string> = {
   'database-fundamentals': 'Bases de Datos — Fundamentos',
   'database-practice': 'Bases de Datos — Práctica SQL',
   'infrastructure-fundamentals': 'Infraestructura — Fundamentos',
+  'api-developer-fundamentals': 'APIs para Desarrolladores — Fundamentos',
 };
 
 const EXAM_URLS: Record<string, string> = {
@@ -24,6 +25,7 @@ const EXAM_URLS: Record<string, string> = {
   'database-practice': '/assessments/database-practice/start',
   'infrastructure-fundamentals':
     '/assessments/infrastructure-fundamentals/start',
+  'api-developer-fundamentals': '/assessments/api-developer-fundamentals/start',
 };
 
 function examHref(examType: string, code: string) {

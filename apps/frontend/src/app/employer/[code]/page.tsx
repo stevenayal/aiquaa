@@ -21,6 +21,7 @@ const EXAM_LABELS: Record<string, string> = {
   'database-fundamentals': 'Bases de Datos — Fundamentos',
   'database-practice': 'Bases de Datos — Práctica SQL',
   'infrastructure-fundamentals': 'Infraestructura — Fundamentos',
+  'api-developer-fundamentals': 'APIs para Desarrolladores — Fundamentos',
 };
 
 function formatTime(seconds: number) {
