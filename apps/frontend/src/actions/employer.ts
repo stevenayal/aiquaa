@@ -50,8 +50,9 @@ export interface EmpresaDashboardStats {
   totalProcesses: number;
   activeProcesses: number;
   closedProcesses: number;
-  totalCandidates: number;
-  passedCandidates: number;
+  uniqueCandidates: number;
+  totalEvaluations: number;
+  passedEvaluations: number;
   passRate: number;
   avgTimeSpentMinutes: number | null;
   pendingProspects: number;
@@ -525,8 +526,9 @@ export async function getEmpresaDashboardStatsAction(): Promise<{
         totalProcesses: 0,
         activeProcesses: 0,
         closedProcesses: 0,
-        totalCandidates: 0,
-        passedCandidates: 0,
+        uniqueCandidates: 0,
+        totalEvaluations: 0,
+        passedEvaluations: 0,
         passRate: 0,
         avgTimeSpentMinutes: null,
         pendingProspects: 0,
@@ -560,6 +562,9 @@ export async function getEmpresaDashboardStatsAction(): Promise<{
   const processCodes = (processes ?? []).map((p) => p.code);
 
   let results: Array<{
+    id: string;
+    user_id: string | null;
+    participant_email: string | null;
     process_code: string;
     passed: boolean;
     created_at: string;
@@ -617,6 +622,9 @@ export async function getEmpresaDashboardStatsAction(): Promise<{
   if (resultsResp.error) return { error: resultsResp.error, data: null };
 
   results = resultsResp.data.map((row) => ({
+    id: row.id,
+    user_id: row.user_id,
+    participant_email: row.participant_email,
     process_code: row.process_code,
     passed: row.passed,
     created_at: row.created_at,
@@ -668,13 +676,16 @@ export async function getEmpresaDashboardStatsAction(): Promise<{
     if (idx !== undefined) monthlyCandidatesBuckets[idx].value += 1;
   });
 
-  const totalCandidates = results.length;
-  const passedCandidates = results.filter((r) => r.passed).length;
+  const totalEvaluations = results.length;
+  const passedEvaluations = results.filter((r) => r.passed).length;
+  const uniqueCandidates = new Set(
+    results.map((r) => r.user_id || r.participant_email || r.id)
+  ).size;
   const avgTimeSpentMinutes =
-    totalCandidates > 0
+    totalEvaluations > 0
       ? Math.round(
           results.reduce((acc, r) => acc + (r.time_spent ?? 0), 0) /
-            totalCandidates /
+            totalEvaluations /
             60
         )
       : null;
@@ -688,11 +699,12 @@ export async function getEmpresaDashboardStatsAction(): Promise<{
       closedProcesses:
         processes?.filter((processItem) => processItem.status === 'closed')
           .length ?? 0,
-      totalCandidates,
-      passedCandidates,
+      uniqueCandidates,
+      totalEvaluations,
+      passedEvaluations,
       passRate:
-        totalCandidates > 0
-          ? Math.round((passedCandidates / totalCandidates) * 100)
+        totalEvaluations > 0
+          ? Math.round((passedEvaluations / totalEvaluations) * 100)
           : 0,
       avgTimeSpentMinutes,
       pendingProspects,

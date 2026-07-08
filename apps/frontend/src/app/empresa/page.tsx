@@ -253,7 +253,7 @@ export default function EmpresaDashboardPage() {
         {/* Stats grid — always visible */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {statsLoading ? (
-            Array.from({ length: 8 }).map((_, i) => (
+            Array.from({ length: 10 }).map((_, i) => (
               <SkeletonCard key={i} isDarkMode={isDarkMode} />
             ))
           ) : (
@@ -267,14 +267,21 @@ export default function EmpresaDashboardPage() {
               />
               <StatCard
                 label="Candidatos evaluados"
-                value={stats?.totalCandidates ?? 0}
+                value={stats?.uniqueCandidates ?? 0}
                 color="text-indigo-500"
                 isDarkMode={isDarkMode}
                 href="/empresa/candidatos"
               />
               <StatCard
+                label="Evaluaciones realizadas"
+                value={stats?.totalEvaluations ?? 0}
+                color="text-purple-500"
+                isDarkMode={isDarkMode}
+                href="/empresa/candidatos"
+              />
+              <StatCard
                 label="Tasa de aprobación"
-                value={stats?.totalCandidates ? `${stats.passRate}%` : '—'}
+                value={stats?.totalEvaluations ? `${stats.passRate}%` : '—'}
                 color="text-emerald-500"
                 isDarkMode={isDarkMode}
               />
@@ -451,7 +458,7 @@ export default function EmpresaDashboardPage() {
         )}
 
         {/* Charts — only when there's data */}
-        {stats && (stats.totalProcesses > 0 || stats.totalCandidates > 0) && (
+        {stats && (stats.totalProcesses > 0 || stats.totalEvaluations > 0) && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
             <div
               className={`rounded-xl border p-4 ${isDarkMode ? 'bg-dark-secondary border-dark-secondary' : 'bg-white border-gray-200'}`}
