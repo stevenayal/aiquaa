@@ -511,9 +511,43 @@ export async function getEmpresaDashboardStatsAction(): Promise<{
 
   const empresaId = membership?.empresa_id;
 
+  if (!empresaId) {
+    const emptyBuckets = buildMonthlyBuckets(6).map(({ month, value }) => ({
+      month,
+      value,
+    }));
+    return {
+      data: {
+        totalProcesses: 0,
+        activeProcesses: 0,
+        closedProcesses: 0,
+        totalCandidates: 0,
+        passedCandidates: 0,
+        passRate: 0,
+        avgTimeSpentMinutes: null,
+        pendingProspects: 0,
+        pendingInvitaciones: 0,
+        profileViews: 0,
+        invitacionesFunnel: {
+          total: 0,
+          vistas: 0,
+          completadas: 0,
+          tasaRespuesta: 0,
+        },
+        monthlyProcesses: emptyBuckets,
+        monthlyCandidates: emptyBuckets,
+      },
+      error: null,
+    };
+  }
+
+  // Scope strictly to this empresa — RLS also allows rows where
+  // created_by = auth.uid() regardless of empresa, which would otherwise
+  // leak processes/candidates from other companies into these stats.
   const { data: processes, error: processError } = await supabase
     .from('hiring_processes')
     .select('id, code, status, created_at')
+    .eq('empresa_id', empresaId)
     .order('created_at', { ascending: false });
 
   if (processError) return { error: processError.message, data: null };
@@ -924,9 +958,7 @@ export async function getEventStatsAction(groupId: string): Promise<{
     resultsByCandidate.set(key, list);
   }
 
-  const participants: EventParticipant[] = Array.from(
-    infoByCandidate.entries()
-  )
+  const participants: EventParticipant[] = Array.from(infoByCandidate.entries())
     .map(([key, info]) => {
       const results = (resultsByCandidate.get(key) ?? []).sort(
         (a, b) => b.percentage - a.percentage
@@ -958,7 +990,9 @@ export async function getEventStatsAction(groupId: string): Promise<{
         missingExamTypes,
       };
     })
-    .sort((a, b) => b.completedCount - a.completedCount || b.avgScore - a.avgScore);
+    .sort(
+      (a, b) => b.completedCount - a.completedCount || b.avgScore - a.avgScore
+    );
 
   // Totals reflect the same macro-level criteria as the participants table
   // (60% of the event's required exams completed), not each person's single
@@ -969,8 +1003,7 @@ export async function getEventStatsAction(groupId: string): Promise<{
   const avgScore =
     totalCandidates > 0
       ? Math.round(
-          participants.reduce((sum, p) => sum + p.avgScore, 0) /
-            totalCandidates
+          participants.reduce((sum, p) => sum + p.avgScore, 0) / totalCandidates
         )
       : null;
 
