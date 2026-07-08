@@ -3,7 +3,11 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { getCurrentUser, setCurrentUser } from '../lib/storage';
+import {
+  getCurrentUser,
+  setCurrentUser,
+  ensureSessionStartedAt,
+} from '../lib/storage';
 import { initializeApp, needsInitialization } from '../lib/seedData';
 import { logLogout } from '../lib/auditLog';
 import { getCandidateId } from '../lib/prng';
@@ -26,6 +30,10 @@ export default function TestAppLayout({
   const router = useRouter();
 
   useEffect(() => {
+    // Mark real session start (only once per browser tab session) so
+    // exam duration can be measured instead of self-reported.
+    ensureSessionStartedAt();
+
     // Initialize app if needed
     if (needsInitialization()) {
       initializeApp();

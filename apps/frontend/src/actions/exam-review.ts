@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server';
 type BugReviewItem = {
   approved: boolean;
   evaluatorNotes: string;
+  qualityScore: number; // 1-5, calidad del reporte de este bug (no solo aprobado/rechazado)
 };
 
 type ReviewData = {

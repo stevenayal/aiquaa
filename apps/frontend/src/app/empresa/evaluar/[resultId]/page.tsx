@@ -15,8 +15,16 @@ type Severity = 'Critical' | 'High' | 'Medium' | 'Low';
 
 type BugReviewMap = Record<
   string,
-  { approved: boolean; evaluatorNotes: string }
+  { approved: boolean; evaluatorNotes: string; qualityScore: number }
 >;
+
+const QUALITY_LABELS: Record<number, string> = {
+  1: 'Muy pobre',
+  2: 'Pobre',
+  3: 'Aceptable',
+  4: 'Buena',
+  5: 'Excelente',
+};
 
 const SEVERITY_COLORS: Record<Severity, { bg: string; text: string }> = {
   Critical: { bg: 'bg-red-100', text: 'text-red-800' },
@@ -127,6 +135,7 @@ export default function EvaluarPage() {
         initialReviews[bug.id] = {
           approved: saved?.approved ?? true,
           evaluatorNotes: saved?.evaluatorNotes ?? '',
+          qualityScore: saved?.qualityScore ?? 3,
         };
       });
       setBugReviews(initialReviews);
@@ -147,7 +156,28 @@ export default function EvaluarPage() {
     (r) => !r.approved
   ).length;
 
-  const effectiveScore = adjustedScore != null ? adjustedScore : autoScore;
+  // Calidad no es solo aprobado/rechazado: cada bug aprobado pesa según su
+  // qualityScore (1-5). Un bug aprobado pero mal documentado (pasos vagos,
+  // sin evidencia) ya no vale lo mismo que uno bien reportado.
+  const qualityRatio =
+    bugs.length > 0
+      ? Object.values(bugReviews).reduce(
+          (sum, r) => sum + (r.approved ? r.qualityScore : 0),
+          0
+        ) /
+        (5 * bugs.length)
+      : 0;
+  const approvedQualityScores = bugs
+    .map((bug) => bugReviews[bug.id])
+    .filter((r) => r?.approved);
+  const avgQuality =
+    approvedQualityScores.length > 0
+      ? approvedQualityScores.reduce((sum, r) => sum + r.qualityScore, 0) /
+        approvedQualityScores.length
+      : 0;
+  const computedScore = Math.round(autoScore * qualityRatio);
+
+  const effectiveScore = adjustedScore != null ? adjustedScore : computedScore;
   const maxPoints = exam?.total_questions ?? 30;
   const effectivePercentage = maxPoints
     ? Math.round((effectiveScore / maxPoints) * 100)
@@ -155,7 +185,11 @@ export default function EvaluarPage() {
 
   const updateBugReview = (
     bugId: string,
-    updates: Partial<{ approved: boolean; evaluatorNotes: string }>
+    updates: Partial<{
+      approved: boolean;
+      evaluatorNotes: string;
+      qualityScore: number;
+    }>
   ) => {
     setBugReviews((prev) => ({
       ...prev,
@@ -321,7 +355,7 @@ export default function EvaluarPage() {
               puntaje antes de finalizar la revisión.
             </div>
           )}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
             <div
               className={`text-center p-3 rounded-lg ${isDarkMode ? 'bg-slate-700' : 'bg-gray-100'}`}
             >
@@ -349,6 +383,16 @@ export default function EvaluarPage() {
               </p>
             </div>
             <div
+              className={`text-center p-3 rounded-lg ${isDarkMode ? 'bg-slate-700' : 'bg-gray-100'}`}
+            >
+              <p className={labelClass}>Calidad prom.</p>
+              <p
+                className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+              >
+                {avgQuality > 0 ? avgQuality.toFixed(1) : '—'}/5
+              </p>
+            </div>
+            <div
               className={`text-center p-3 rounded-lg ${isDarkMode ? 'bg-amber-900/30' : 'bg-amber-100'}`}
             >
               <p className={labelClass}>Efectivo</p>
@@ -371,6 +415,13 @@ export default function EvaluarPage() {
               </p>
             </div>
           </div>
+          <p
+            className={`text-xs mt-3 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+          >
+            &quot;Efectivo&quot; = Auto × calidad promedio ponderada por bug
+            (bugs rechazados cuentan como calidad 0). Ajustá manualmente abajo
+            si no estás de acuerdo.
+          </p>
         </div>
 
         {/* Bugs List */}
@@ -439,7 +490,7 @@ export default function EvaluarPage() {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3 shrink-0">
+                      <div className="flex items-center gap-3 shrink-0 flex-wrap justify-end">
                         <label
                           className={`flex items-center gap-1.5 text-sm cursor-pointer select-none ${
                             review?.approved
@@ -461,6 +512,33 @@ export default function EvaluarPage() {
                           />
                           Aprobado
                         </label>
+                        {review?.approved && (
+                          <div
+                            className="flex items-center gap-1"
+                            onClick={(e) => e.stopPropagation()}
+                            title={QUALITY_LABELS[review?.qualityScore ?? 3]}
+                          >
+                            {[1, 2, 3, 4, 5].map((n) => (
+                              <button
+                                key={n}
+                                type="button"
+                                onClick={() =>
+                                  updateBugReview(bug.id, { qualityScore: n })
+                                }
+                                aria-label={`Calidad ${n}/5`}
+                                className={`text-lg leading-none transition-colors ${
+                                  n <= (review?.qualityScore ?? 3)
+                                    ? 'text-amber-400'
+                                    : isDarkMode
+                                      ? 'text-slate-600'
+                                      : 'text-gray-300'
+                                }`}
+                              >
+                                ★
+                              </button>
+                            ))}
+                          </div>
+                        )}
                         <button
                           onClick={() =>
                             setExpandedBugId(isExpanded ? null : bug.id)
@@ -631,7 +709,7 @@ export default function EvaluarPage() {
                     const v = e.target.value;
                     setAdjustedScore(v === '' ? null : parseInt(v, 10));
                   }}
-                  placeholder={`Auto: ${autoScore}`}
+                  placeholder={`Sugerido: ${computedScore}`}
                   className={inputClass}
                 />
               </div>

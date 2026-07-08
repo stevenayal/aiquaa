@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { getExamUserDefaults } from '@/lib/exam-user-defaults';
-import { getCurrentUser } from '../lib/storage';
+import { getCurrentUser, getSessionStartedAt } from '../lib/storage';
 import { getCandidateId, setCandidateId } from '../lib/prng';
 import type {
   BugReport,
@@ -68,6 +68,35 @@ export default function TechnicalReportPage() {
     duration: 30,
     exploredSections: [],
   });
+
+  // Real elapsed time since the candidate's session actually started
+  // (sessionStorage timestamp set on first page load, not editable).
+  // Replaces the old self-reported "duración" field, which every
+  // candidate could set to whatever they wanted.
+  const [realElapsedMinutes, setRealElapsedMinutes] = useState(0);
+  useEffect(() => {
+    const updateElapsed = () => {
+      const start = getSessionStartedAt();
+      if (start) {
+        setRealElapsedMinutes(
+          Math.max(0, Math.round((Date.now() - start.getTime()) / 60000))
+        );
+      }
+    };
+    updateElapsed();
+    const interval = setInterval(updateElapsed, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Keep testSession.duration (used by PDF/JSON export) in sync with the
+  // real measured time instead of the old manually-typed value.
+  useEffect(() => {
+    setTestSession((prev) =>
+      prev.duration === realElapsedMinutes
+        ? prev
+        : { ...prev, duration: realElapsedMinutes }
+    );
+  }, [realElapsedMinutes]);
 
   // Bugs
   const [bugs, setBugs] = useState<BugReport[]>([]);
@@ -385,6 +414,10 @@ export default function TechnicalReportPage() {
       user?.email ||
       '';
     const participantEmail = candidateInfo.email || user?.email || '';
+    const sessionStart = getSessionStartedAt();
+    const timeSpentSeconds = sessionStart
+      ? Math.max(60, Math.round((Date.now() - sessionStart.getTime()) / 1000))
+      : testSession.duration * 60; // fallback if session start was never recorded
     const { error } = await saveExamResultAction({
       exam_type: 'test-app',
       exam_mode: 'exam',
@@ -398,7 +431,7 @@ export default function TechnicalReportPage() {
       passing_score: Math.round(score.maxPoints * 0.6),
       passed: score.percentage >= 60,
       percentage: score.percentage,
-      time_spent: testSession.duration * 60,
+      time_spent: timeSpentSeconds,
       github_profile: candidateInfo.githubProfile || undefined,
       process_code: processCode.trim().toUpperCase() || undefined,
       metadata: {
@@ -630,23 +663,19 @@ export default function TechnicalReportPage() {
               <label
                 className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
               >
-                Duración (minutos)
+                Duración real (minutos, automático)
               </label>
               <input
                 type="number"
-                value={testSession.duration}
-                onChange={(e) =>
-                  setTestSession((prev) => ({
-                    ...prev,
-                    duration: parseInt(e.target.value) || 0,
-                  }))
-                }
-                className={`w-full px-4 py-2 rounded-lg border ${
+                value={realElapsedMinutes}
+                readOnly
+                disabled
+                title="Calculado automáticamente desde que se abrió la prueba. No editable."
+                className={`w-full px-4 py-2 rounded-lg border cursor-not-allowed ${
                   isDarkMode
-                    ? 'bg-slate-700 border-slate-600 text-white'
-                    : 'bg-white border-gray-300 text-gray-900'
-                } focus:outline-none focus:ring-2 focus:ring-amber-500`}
-                placeholder="30"
+                    ? 'bg-slate-800 border-slate-600 text-slate-400'
+                    : 'bg-gray-100 border-gray-300 text-gray-500'
+                }`}
               />
             </div>
             <div>

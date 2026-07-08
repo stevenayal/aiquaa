@@ -16,6 +16,7 @@ const KEYS = {
   TICKETS: 'test-app:tickets',
   CURRENT_USER: 'test-app:current-user',
   SESSION: 'test-app:session',
+  SESSION_STARTED_AT: 'test-app:session-started-at',
 } as const;
 
 // Generic storage helpers
@@ -115,7 +116,11 @@ export function saveCart(items: CartItem[]): void {
   saveToStorage(KEYS.CART, allCarts);
 }
 
-export function addToCart(productId: string, quantity: number, price: number): void {
+export function addToCart(
+  productId: string,
+  quantity: number,
+  price: number
+): void {
   const cart = getCart();
   const existingIndex = cart.findIndex((item) => item.productId === productId);
 
@@ -191,6 +196,22 @@ export function getUserTickets(userId: string): SupportTicket[] {
   return tickets.filter((t) => t.userId === userId);
 }
 
+// Real session start (sessionStorage, not editable by candidate).
+// Used to compute actual elapsed time instead of the self-reported
+// "duración" field, which anyone could type any value into.
+export function ensureSessionStartedAt(): void {
+  if (typeof window === 'undefined') return;
+  if (!sessionStorage.getItem(KEYS.SESSION_STARTED_AT)) {
+    sessionStorage.setItem(KEYS.SESSION_STARTED_AT, new Date().toISOString());
+  }
+}
+
+export function getSessionStartedAt(): Date | null {
+  if (typeof window === 'undefined') return null;
+  const raw = sessionStorage.getItem(KEYS.SESSION_STARTED_AT);
+  return raw ? new Date(raw) : null;
+}
+
 // Candidate Session
 export function getCandidateSession(): CandidateSession | null {
   return getFromStorage<CandidateSession>(KEYS.SESSION);
@@ -213,7 +234,13 @@ export function clearAllData(): void {
 export function resetSession(): void {
   if (typeof window === 'undefined') return;
 
-  [KEYS.CART, KEYS.ORDERS, KEYS.TICKETS, KEYS.CURRENT_USER, KEYS.SESSION].forEach((key) => {
+  [
+    KEYS.CART,
+    KEYS.ORDERS,
+    KEYS.TICKETS,
+    KEYS.CURRENT_USER,
+    KEYS.SESSION,
+  ].forEach((key) => {
     localStorage.removeItem(key);
   });
 }
