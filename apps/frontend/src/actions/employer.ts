@@ -183,11 +183,15 @@ export async function createHiringProcessAction(payload: {
 
   const code = generateCode(payload.company_name);
 
-  // Attach empresa_id so all empresa members can access this process
-  const { data: profile } = await supabase
-    .from('profiles')
+  // Attach empresa_id so all empresa members can access this process.
+  // Sourced from empresa_miembros (same source the dashboard stats use),
+  // not profiles.empresa_id, which can drift out of sync with actual
+  // active membership.
+  const { data: membership } = await supabase
+    .from('empresa_miembros')
     .select('empresa_id')
-    .eq('id', user.id)
+    .eq('user_id', user.id)
+    .eq('status', 'active')
     .single();
 
   const { group_id, ...rest } = payload;
@@ -198,7 +202,7 @@ export async function createHiringProcessAction(payload: {
       code,
       created_by: user.id,
       status: 'active',
-      ...(profile?.empresa_id ? { empresa_id: profile.empresa_id } : {}),
+      ...(membership?.empresa_id ? { empresa_id: membership.empresa_id } : {}),
       ...(group_id ? { group_id } : {}),
     })
     .select()
