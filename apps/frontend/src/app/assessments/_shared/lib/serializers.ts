@@ -64,6 +64,25 @@ export function mapQuestion(row: Record<string, unknown>): AssessmentQuestion {
   };
 }
 
+/**
+ * Strips answer-key fields from a mapped question before it is sent to the
+ * client while a candidate is actively answering. mapQuestion() keeps these
+ * fields because it also backs server-only scoring paths (loadSectionBundle /
+ * submitAssessmentSectionAction in actions/assessments.ts) that need the
+ * full row — only the client-facing return value should go through this.
+ */
+export function stripAnswerKey(
+  question: AssessmentQuestion
+): AssessmentQuestion {
+  return {
+    ...question,
+    correct_answer: null,
+    expected_keywords: [],
+    scoring_rules: {},
+    rubric: {},
+  };
+}
+
 export function mapAttempt(row: Record<string, unknown>): AssessmentAttempt {
   return {
     id: String(row.id),

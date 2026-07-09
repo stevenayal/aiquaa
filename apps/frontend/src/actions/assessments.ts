@@ -23,6 +23,7 @@ import {
   mapQuestion,
   mapSection,
   mapSectionScore,
+  stripAnswerKey,
 } from '@/app/assessments/_shared/lib/serializers';
 import type {
   AssessmentFeedback,
@@ -335,7 +336,7 @@ export async function getAssessmentSectionAction(
   return {
     attempt: bundle.attempt,
     section: bundle.section,
-    questions: bundle.questions,
+    questions: bundle.questions.map(stripAnswerKey),
     answers: bundle.answers,
     scores: bundle.scores,
     sections: bundle.sections,
