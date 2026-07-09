@@ -14,6 +14,33 @@ import {
 } from '@/actions/empresa-pruebas';
 import type { EmpresaScoreResult } from '@/actions/lib/empresa-scoring';
 
+// Default "passed" threshold for the ranking bar color when the prueba has
+// no explicit passing score — matches the platform-wide 60% convention.
+const RANKING_PASS_THRESHOLD = 60;
+
+function getIntentoTimeSpentSeconds(intento: EmpresaIntentoSummary): number {
+  if (!intento.started_at || !intento.submitted_at) return 0;
+  const started = new Date(intento.started_at).getTime();
+  const submitted = new Date(intento.submitted_at).getTime();
+  return Math.max(0, Math.round((submitted - started) / 1000));
+}
+
+function mins(seconds: number) {
+  return `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
+}
+
+function getPercentage(intento: EmpresaIntentoSummary): number | null {
+  return intento.score !== null && intento.max_score
+    ? Math.round((intento.score / intento.max_score) * 100)
+    : null;
+}
+
+function getDisplayName(intento: EmpresaIntentoSummary) {
+  return (
+    intento.candidate_name || intento.candidate_email || 'Candidato sin nombre'
+  );
+}
+
 export default function ResultadosPage() {
   const { isDarkMode } = useTheme();
   const params = useParams<{ pruebaId: string }>();
@@ -25,6 +52,9 @@ export default function ResultadosPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'recientes' | 'ranking'>(
+    'recientes'
+  );
 
   useEffect(() => {
     setLoading(true);
@@ -44,23 +74,51 @@ export default function ResultadosPage() {
   const cardClass = `rounded-xl border p-5 ${isDarkMode ? 'bg-dark-secondary border-slate-700' : 'bg-white border-gray-200'}`;
   const preguntasById = new Map(preguntas.map((p) => [p.id, p]));
 
+  const ranking = [...intentos]
+    .filter((i) => i.submitted_at && i.max_score)
+    .sort((a, b) => (getPercentage(b) ?? 0) - (getPercentage(a) ?? 0));
+
   return (
     <div
       className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-dark-bg' : 'bg-gray-50'}`}
     >
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="mb-6">
-          <Link
-            href={`/empresa/pruebas/${pruebaId}`}
-            className={`text-sm ${isDarkMode ? 'text-indigo-400' : 'text-indigo-600'} hover:underline`}
-          >
-            ← {prueba?.title ?? 'Prueba'}
-          </Link>
-          <h1
-            className={`text-2xl font-bold mt-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
-          >
-            Resultados
-          </h1>
+        <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <Link
+              href={`/empresa/pruebas/${pruebaId}`}
+              className={`text-sm ${isDarkMode ? 'text-indigo-400' : 'text-indigo-600'} hover:underline`}
+            >
+              ← {prueba?.title ?? 'Prueba'}
+            </Link>
+            <h1
+              className={`text-2xl font-bold mt-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+            >
+              Resultados
+            </h1>
+          </div>
+
+          {intentos.length > 0 && (
+            <div
+              className={`flex rounded-lg border overflow-hidden shrink-0 ${isDarkMode ? 'border-slate-600' : 'border-gray-300'}`}
+            >
+              {(['recientes', 'ranking'] as const).map((mode) => (
+                <button
+                  key={mode}
+                  onClick={() => setViewMode(mode)}
+                  className={`px-3 py-2 text-xs font-medium transition-colors ${
+                    viewMode === mode
+                      ? 'bg-indigo-600 text-white'
+                      : isDarkMode
+                        ? 'text-slate-300 hover:bg-slate-700'
+                        : 'text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  {mode === 'recientes' ? '☰ Recientes' : '📊 Ranking'}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {error && (
@@ -81,6 +139,84 @@ export default function ResultadosPage() {
               Todavía nadie rindió esta prueba.
             </p>
           </div>
+        ) : viewMode === 'ranking' ? (
+          <div className={cardClass}>
+            {ranking.length === 0 ? (
+              <p
+                className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+              >
+                Todavía no hay intentos enviados para rankear.
+              </p>
+            ) : (
+              <div className="space-y-3">
+                <p
+                  className={`text-xs font-semibold uppercase tracking-wide mb-1 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                >
+                  Ranking por puntaje — {ranking.length} candidato
+                  {ranking.length === 1 ? '' : 's'}
+                </p>
+                {ranking.map((intento, index) => {
+                  const percentage = getPercentage(intento) ?? 0;
+                  const passed = percentage >= RANKING_PASS_THRESHOLD;
+                  return (
+                    <div
+                      key={intento.id}
+                      className={`flex items-center gap-3 p-3 rounded-xl ${isDarkMode ? 'bg-slate-800/50' : 'bg-gray-50'}`}
+                    >
+                      <span
+                        className={`text-sm font-bold w-6 text-center shrink-0 ${
+                          index === 0
+                            ? 'text-yellow-500'
+                            : index === 1
+                              ? 'text-slate-400'
+                              : index === 2
+                                ? 'text-amber-600'
+                                : isDarkMode
+                                  ? 'text-slate-500'
+                                  : 'text-gray-400'
+                        }`}
+                      >
+                        {index === 0
+                          ? '🥇'
+                          : index === 1
+                            ? '🥈'
+                            : index === 2
+                              ? '🥉'
+                              : `${index + 1}`}
+                      </span>
+                      <div className="min-w-0 w-36 shrink-0">
+                        <p
+                          className={`text-sm font-medium truncate ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                        >
+                          {getDisplayName(intento)}
+                        </p>
+                      </div>
+                      <div className="flex-1">
+                        <div
+                          className={`h-3 rounded-full overflow-hidden ${isDarkMode ? 'bg-slate-700' : 'bg-gray-200'}`}
+                        >
+                          <div
+                            className={`h-full rounded-full transition-all duration-500 ${passed ? 'bg-green-500' : 'bg-red-500'}`}
+                            style={{ width: `${percentage}%` }}
+                          />
+                        </div>
+                      </div>
+                      <span
+                        className={`text-sm font-bold w-12 text-right shrink-0 ${passed ? 'text-green-500' : 'text-red-500'}`}
+                      >
+                        {percentage}%
+                      </span>
+                      <span
+                        className={`text-xs w-16 text-right shrink-0 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+                      >
+                        {mins(getIntentoTimeSpentSeconds(intento))}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         ) : (
           <div className="space-y-3">
             {intentos.map((intento) => {
@@ -88,12 +224,10 @@ export default function ResultadosPage() {
                 (intento.breakdown as EmpresaScoreResult[] | null) ?? [];
               const answers =
                 (intento.answers as Record<string, unknown> | null) ?? {};
-              const percentage =
-                intento.score !== null && intento.max_score
-                  ? Math.round((intento.score / intento.max_score) * 100)
-                  : null;
+              const percentage = getPercentage(intento);
               const hasAutoScored = breakdown.some((b) => b.autoScored);
               const isExpanded = expandedId === intento.id;
+              const timeSpentSeconds = getIntentoTimeSpentSeconds(intento);
 
               return (
                 <div key={intento.id} className={cardClass}>
@@ -107,15 +241,13 @@ export default function ResultadosPage() {
                       <p
                         className={`text-sm font-medium ${isDarkMode ? 'text-slate-200' : 'text-gray-800'}`}
                       >
-                        {intento.candidate_name ||
-                          intento.candidate_email ||
-                          'Candidato sin nombre'}
+                        {getDisplayName(intento)}
                       </p>
                       <p
                         className={`text-xs mt-0.5 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
                       >
                         {intento.submitted_at
-                          ? `Enviado ${new Date(intento.submitted_at).toLocaleString()}`
+                          ? `Enviado ${new Date(intento.submitted_at).toLocaleString()} · ${mins(timeSpentSeconds)}`
                           : 'En progreso'}
                       </p>
                       {hasAutoScored && (
