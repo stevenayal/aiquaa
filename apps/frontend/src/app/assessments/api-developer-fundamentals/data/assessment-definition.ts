@@ -3,7 +3,7 @@ import type { AssessmentSeedDefinition } from '../../_shared/types';
 export const API_DEVELOPER_FUNDAMENTALS_SLUG = 'api-developer-fundamentals';
 
 // Bumpear cuando cambie la definición (secciones/preguntas) para forzar re-seed.
-export const API_DEVELOPER_FUNDAMENTALS_SEED_VERSION = 1;
+export const API_DEVELOPER_FUNDAMENTALS_SEED_VERSION = 2;
 
 export const apiDeveloperFundamentalsDefinition: AssessmentSeedDefinition = {
   slug: API_DEVELOPER_FUNDAMENTALS_SLUG,
@@ -39,6 +39,9 @@ export const apiDeveloperFundamentalsDefinition: AssessmentSeedDefinition = {
           'Selección única. Elegí la opción que mejor responda cada pregunta.',
         suggestedMinutes: 30,
       },
+      // Las 15 preguntas del banco original (Clase 1 — FAQ APIs), en el mismo
+      // orden. Las preguntas 6–9 repiten con otro enunciado los conceptos de
+      // Client–Server / Stateless / Cacheable / Uniform Interface (refuerzo).
       questions: [
         {
           question_type: 'multiple_choice',
@@ -69,7 +72,7 @@ export const apiDeveloperFundamentalsDefinition: AssessmentSeedDefinition = {
           correct_answer: { value: 'b' },
           explanation:
             'En Client–Server, el cliente y el servidor tienen responsabilidades separadas: el cliente solicita y el servidor procesa.',
-          points: 9,
+          points: 7,
           order_index: 1,
         },
         {
@@ -98,7 +101,7 @@ export const apiDeveloperFundamentalsDefinition: AssessmentSeedDefinition = {
           correct_answer: { value: 'b' },
           explanation:
             'Stateless significa que el servidor no depende de información guardada de requests anteriores para procesar una nueva petición.',
-          points: 9,
+          points: 7,
           order_index: 2,
         },
         {
@@ -128,7 +131,7 @@ export const apiDeveloperFundamentalsDefinition: AssessmentSeedDefinition = {
           correct_answer: { value: 'b' },
           explanation:
             'Cacheable permite que ciertas respuestas puedan reutilizarse cuando corresponda, mejorando rendimiento y reduciendo llamadas innecesarias.',
-          points: 9,
+          points: 7,
           order_index: 3,
         },
         {
@@ -144,7 +147,7 @@ export const apiDeveloperFundamentalsDefinition: AssessmentSeedDefinition = {
           correct_answer: { value: 'b' },
           explanation:
             'En REST, los recursos se exponen mediante URIs, por ejemplo /api/products/{id}.',
-          points: 9,
+          points: 7,
           order_index: 4,
         },
         {
@@ -174,8 +177,112 @@ export const apiDeveloperFundamentalsDefinition: AssessmentSeedDefinition = {
           correct_answer: { value: 'b' },
           explanation:
             'Uniform Interface busca una forma consistente en la forma de interactuar con los recursos usando URIs, métodos HTTP, status codes y representaciones como JSON.',
-          points: 9,
+          points: 7,
           order_index: 5,
+        },
+        {
+          question_type: 'multiple_choice',
+          prompt: 'En REST, ¿qué representa el principio Client–Server?',
+          options: [
+            {
+              label:
+                'El servidor recuerda todas las acciones previas del cliente',
+              value: 'a',
+            },
+            {
+              label:
+                'El cliente realiza solicitudes a través de una API y el servidor procesa y responde',
+              value: 'b',
+            },
+            {
+              label: 'El cliente accede directamente a la base de datos',
+              value: 'c',
+            },
+            {
+              label: 'El servidor solo puede responder archivos HTML',
+              value: 'd',
+            },
+          ],
+          correct_answer: { value: 'b' },
+          explanation:
+            'Client–Server separa al cliente del servidor; el cliente solicita y el servidor procesa.',
+          points: 6,
+          order_index: 6,
+        },
+        {
+          question_type: 'multiple_choice',
+          prompt: '¿Qué significa que una API REST sea stateless?',
+          options: [
+            { label: 'Que no utiliza códigos HTTP', value: 'a' },
+            {
+              label:
+                'Que cada petición debe llevar toda la información necesaria',
+              value: 'b',
+            },
+            {
+              label: 'Que el servidor guarda siempre el historial del usuario',
+              value: 'c',
+            },
+            { label: 'Que solo permite operaciones GET', value: 'd' },
+          ],
+          correct_answer: { value: 'b' },
+          explanation:
+            'Stateless significa que el servidor no recuerda el estado del cliente entre requests.',
+          points: 6,
+          order_index: 7,
+        },
+        {
+          question_type: 'multiple_choice',
+          prompt: '¿Qué indica el concepto cacheable en REST?',
+          options: [
+            {
+              label:
+                'Que todas las respuestas deben guardarse obligatoriamente en base de datos',
+              value: 'a',
+            },
+            {
+              label: 'Que las respuestas indican si pueden cachearse o no',
+              value: 'b',
+            },
+            { label: 'Que solo se permiten respuestas en XML', value: 'c' },
+            {
+              label: 'Que el cliente nunca debe reutilizar respuestas',
+              value: 'd',
+            },
+          ],
+          correct_answer: { value: 'b' },
+          explanation:
+            'Cacheable permite indicar si una respuesta puede ser almacenada temporalmente.',
+          points: 6,
+          order_index: 8,
+        },
+        {
+          question_type: 'multiple_choice',
+          prompt: '¿Qué busca el principio Uniform Interface?',
+          options: [
+            {
+              label: 'Que todos los recursos se consulten usando POST',
+              value: 'a',
+            },
+            {
+              label:
+                'Que haya una misma forma de interactuar con cualquier recurso',
+              value: 'b',
+            },
+            {
+              label: 'Que todas las APIs tengan la misma base de datos',
+              value: 'c',
+            },
+            {
+              label: 'Que todos los endpoints devuelvan siempre 200 OK',
+              value: 'd',
+            },
+          ],
+          correct_answer: { value: 'b' },
+          explanation:
+            'Uniform Interface busca consistencia en la forma de interactuar con los recursos.',
+          points: 6,
+          order_index: 9,
         },
         {
           question_type: 'multiple_choice',
@@ -203,8 +310,8 @@ export const apiDeveloperFundamentalsDefinition: AssessmentSeedDefinition = {
           correct_answer: { value: 'c' },
           explanation:
             'OpenAPI funciona como un contrato de la API. Sirve para que otros desarrolladores, consumidores técnicos o herramientas como Swagger/Postman entiendan qué endpoints existen, qué reciben y qué devuelven.',
-          points: 9,
-          order_index: 6,
+          points: 7,
+          order_index: 10,
         },
         {
           question_type: 'multiple_choice',
@@ -234,8 +341,8 @@ export const apiDeveloperFundamentalsDefinition: AssessmentSeedDefinition = {
           correct_answer: { value: 'b' },
           explanation:
             'El request representa la petición enviada por el cliente. El response representa la respuesta generada por el servidor.',
-          points: 9,
-          order_index: 7,
+          points: 7,
+          order_index: 11,
         },
         {
           question_type: 'multiple_choice',
@@ -250,8 +357,8 @@ export const apiDeveloperFundamentalsDefinition: AssessmentSeedDefinition = {
           correct_answer: { value: 'b' },
           explanation:
             'En REST, los recursos se representan normalmente con sustantivos y URIs claras. /api/products/{id} representa un producto específico. Las acciones como obtener, crear o eliminar deberían expresarse con verbos HTTP, no necesariamente en el nombre del endpoint.',
-          points: 9,
-          order_index: 8,
+          points: 7,
+          order_index: 12,
         },
         {
           question_type: 'multiple_choice',
@@ -279,8 +386,8 @@ export const apiDeveloperFundamentalsDefinition: AssessmentSeedDefinition = {
           correct_answer: { value: 'b' },
           explanation:
             'Un query param aparece después del ?, por ejemplo: /api/products?category=electronics. Sirve para enviar criterios adicionales sin cambiar el recurso principal.',
-          points: 9,
-          order_index: 9,
+          points: 7,
+          order_index: 13,
         },
         {
           question_type: 'multiple_choice',
@@ -307,12 +414,13 @@ export const apiDeveloperFundamentalsDefinition: AssessmentSeedDefinition = {
           correct_answer: { value: 'a' },
           explanation:
             'Un route param forma parte del path. Por ejemplo, en /api/products/{id}, el {id} permite identificar un producto específico.',
-          points: 9,
-          order_index: 10,
+          points: 7,
+          order_index: 14,
         },
         {
-          // Adaptada del banco original (selección múltiple) a selección única:
-          // el motor compartido solo soporta multiple_choice de respuesta única.
+          // Adaptada del banco original (selección múltiple, correctas A,B,D,E)
+          // a selección única: el motor compartido solo soporta multiple_choice
+          // de respuesta única.
           question_type: 'multiple_choice',
           prompt:
             '¿Cuál de los siguientes conjuntos contiene únicamente verbos HTTP válidos para diseñar endpoints REST?',
@@ -325,8 +433,8 @@ export const apiDeveloperFundamentalsDefinition: AssessmentSeedDefinition = {
           correct_answer: { value: 'a' },
           explanation:
             'Los verbos HTTP válidos listados aquí para endpoints REST son GET, POST, PUT y DELETE. CREATE, SEARCH y UPDATE no son verbos HTTP estándar para este uso.',
-          points: 10,
-          order_index: 11,
+          points: 6,
+          order_index: 15,
         },
       ],
     },

@@ -12,11 +12,11 @@ describe('api-developer-fundamentals definition', () => {
     assertAssessmentDefinitionConsistency(apiDeveloperFundamentalsDefinition);
   });
 
-  it('define 1 sección teórica de 11 preguntas sobre 100 puntos', () => {
+  it('define 1 sección teórica de 15 preguntas sobre 100 puntos', () => {
     expect(apiDeveloperFundamentalsDefinition.sections).toHaveLength(1);
     expect(
       apiDeveloperFundamentalsDefinition.sections[0].questions
-    ).toHaveLength(11);
+    ).toHaveLength(15);
     expect(apiDeveloperFundamentalsDefinition.total_score).toBe(100);
     expect(apiDeveloperFundamentalsDefinition.slug).toBe(
       API_DEVELOPER_FUNDAMENTALS_SLUG
