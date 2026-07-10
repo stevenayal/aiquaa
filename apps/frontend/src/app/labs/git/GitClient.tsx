@@ -60,6 +60,7 @@ export default function GitClient() {
       github_profile: result.githubProfile,
       exam_purpose: result.examPurpose,
       company_name: result.companyName,
+      answers: result.answers as any,
       learning_objectives: result.learningObjectiveAnalysis,
       process_code: processCode.trim() || undefined,
     });

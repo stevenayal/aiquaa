@@ -16,6 +16,7 @@ import {
   ensureXpRules,
   grantGamificationXpEvent,
 } from '@/lib/gamification/grant-xp';
+import { notifyEmpresaExamCompleted } from '@/actions/empresa-result-notifications';
 import { selectAttemptForSubmitWithApiTargetFallback } from '../../_lib/apiTargetPersistence';
 
 export const runtime = 'nodejs';
@@ -199,6 +200,15 @@ export async function POST(
         '[api-banking] no se pudo guardar exam_results',
         examResultError.message
       );
+    } else {
+      await notifyEmpresaExamCompleted({
+        processCode: attempt.process_code ?? null,
+        candidateName: attempt.candidate_name,
+        candidateEmail: attempt.candidate_email,
+        examType: 'api-banking',
+        percentage: totalScore,
+        passed,
+      });
     }
 
     try {

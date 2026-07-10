@@ -43,7 +43,23 @@ async function sendInvitacionEmailIfEnabled(
   supabase: Awaited<ReturnType<typeof createClient>>,
   inv: EmpresaInvitacion
 ) {
-  if (!EMAIL_SENDING_ENABLED || !inv.token) return inv;
+  if (!EMAIL_SENDING_ENABLED || !inv.token) {
+    const emailError = !EMAIL_SENDING_ENABLED
+      ? 'EMAIL_SENDING_ENABLED is not true'
+      : 'Invitation token missing';
+    const updateResult = await supabase
+      .from('empresa_invitaciones')
+      .update({
+        email_sent: false,
+        email_error: emailError,
+      })
+      .eq('id', inv.id)
+      .select('*, hiring_processes(position_name, code)')
+      .single();
+    const updated = updateResult?.data;
+
+    return updated ? (updated as EmpresaInvitacion) : inv;
+  }
 
   const { data: empresaRow } = await supabase
     .from('empresas')
@@ -88,7 +104,7 @@ async function sendInvitacionEmailIfEnabled(
     html
   );
 
-  const { data: updated } = await supabase
+  const updateResult = await supabase
     .from('empresa_invitaciones')
     .update({
       email_sent: !emailErr,
@@ -97,6 +113,7 @@ async function sendInvitacionEmailIfEnabled(
     .eq('id', inv.id)
     .select('*, hiring_processes(position_name, code)')
     .single();
+  const updated = updateResult?.data;
 
   return updated ? (updated as EmpresaInvitacion) : inv;
 }
@@ -255,6 +272,46 @@ export async function cancelInvitacionAction(invitacionId: string): Promise<{
 
   if (error) return { error: error.message };
   return { error: null };
+}
+
+export async function resendInvitacionEmailAction(
+  invitacionId: string
+): Promise<{ data: EmpresaInvitacion | null; error: string | null }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: authErr,
+  } = await supabase.auth.getUser();
+  if (authErr || !user) return { data: null, error: 'No autenticado' };
+
+  const membership = await getCallerEmpresaId(supabase, user.id);
+  if (!membership || !['owner', 'admin'].includes(membership.role)) {
+    return { data: null, error: 'Sin permisos' };
+  }
+
+  const { data, error } = await supabase
+    .from('empresa_invitaciones')
+    .select('*, hiring_processes(position_name, code)')
+    .eq('id', invitacionId)
+    .eq('empresa_id', membership.empresa_id)
+    .single();
+
+  if (error || !data) {
+    return { data: null, error: error?.message ?? 'Invitacion no encontrada' };
+  }
+
+  const inv = data as EmpresaInvitacion;
+  if (!['pendiente', 'vista'].includes(inv.status)) {
+    return {
+      data: inv,
+      error: 'Solo se pueden reenviar invitaciones pendientes o vistas',
+    };
+  }
+
+  return {
+    data: await sendInvitacionEmailIfEnabled(supabase, inv),
+    error: null,
+  };
 }
 
 export async function getPendingInvitacionesCountAction(): Promise<number> {

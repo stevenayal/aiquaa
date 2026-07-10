@@ -1,102 +1,130 @@
 #!/usr/bin/env node
 
 /**
- * Script para verificar que las variables de entorno estén configuradas
- * Se ejecuta antes del build para evitar errores en producción
+ * Verifies build-time environment variables without printing secrets.
  */
 
-// Cargar variables de entorno desde .env.local
 const fs = require('fs');
 const path = require('path');
 
 const envPath = path.join(__dirname, '..', '.env.local');
-console.log('🔍 Buscando archivo .env.local en:', envPath);
-console.log('📁 Archivo existe:', fs.existsSync(envPath));
+const requiredEnvVars = ['NEXT_PUBLIC_API_URL', 'NEXT_PUBLIC_BACKEND_URL'];
+const optionalEnvVars = [
+  'NEXT_PUBLIC_GA_MEASUREMENT_ID',
+  'NEXT_PUBLIC_SENTRY_DSN',
+  'REVALIDATE_TOKEN',
+];
+const oauthEnvVars = [
+  'NEXT_PUBLIC_GOOGLE_CLIENT_ID',
+  'NEXT_PUBLIC_GITHUB_CLIENT_ID',
+];
 
-if (fs.existsSync(envPath)) {
+function redactValue(varName, value) {
+  if (!value) return 'NO CONFIGURADA';
+
+  const isSensitive =
+    /SECRET|TOKEN|KEY|PASSWORD|POSTGRES|DATABASE|SUPABASE/i.test(varName) ||
+    value.length > 80;
+
+  if (isSensitive) {
+    return '[redacted]';
+  }
+
+  return value;
+}
+
+function loadLocalEnv() {
+  console.log(
+    'Checking .env.local:',
+    fs.existsSync(envPath) ? 'found' : 'not found'
+  );
+
+  if (!fs.existsSync(envPath)) {
+    return;
+  }
+
   const envContent = fs.readFileSync(envPath, 'utf8');
-  console.log('📄 Contenido del archivo:', envContent);
-  
-  envContent.split('\n').forEach(line => {
-    const [key, ...valueParts] = line.split('=');
-    if (key && valueParts.length > 0) {
-      const value = valueParts.join('=').trim();
-      if (value && !process.env[key]) {
-        process.env[key] = value;
-        console.log(`✅ Cargada variable: ${key}=${value}`);
-      }
+
+  envContent.split(/\r?\n/).forEach((rawLine) => {
+    const line = rawLine.trim();
+
+    if (!line || line.startsWith('#')) {
+      return;
+    }
+
+    const separatorIndex = line.indexOf('=');
+
+    if (separatorIndex === -1) {
+      return;
+    }
+
+    const key = line.slice(0, separatorIndex).trim();
+    const value = line
+      .slice(separatorIndex + 1)
+      .trim()
+      .replace(/^['"]|['"]$/g, '');
+
+    if (key && value && !process.env[key]) {
+      process.env[key] = value;
+      console.log(`Loaded ${key}: ${redactValue(key, value)}`);
     }
   });
 }
 
-const requiredEnvVars = [
-  'NEXT_PUBLIC_API_URL',
-  'NEXT_PUBLIC_BACKEND_URL'
-];
+function printEnvGroup(title, vars, options = {}) {
+  console.log(`\n${title}:`);
 
-const optionalEnvVars = [
-  'NEXT_PUBLIC_GA_MEASUREMENT_ID',
-  'NEXT_PUBLIC_SENTRY_DSN',
-  'REVALIDATE_TOKEN'
-];
+  let hasErrors = false;
 
-const oauthEnvVars = [
-  'NEXT_PUBLIC_GOOGLE_CLIENT_ID',
-  'NEXT_PUBLIC_GITHUB_CLIENT_ID'
-];
+  vars.forEach((varName) => {
+    const value = process.env[varName];
 
-console.log('🔍 Verificando variables de entorno...\n');
+    if (value) {
+      console.log(`  OK ${varName}: ${redactValue(varName, value)}`);
+      return;
+    }
 
-let hasErrors = false;
+    console.log(
+      `  ${options.required ? 'MISSING' : 'WARN'} ${varName}: NO CONFIGURADA`
+    );
+    hasErrors = hasErrors || Boolean(options.required);
+  });
 
-// Verificar variables requeridas
-console.log('📋 Variables requeridas:');
-requiredEnvVars.forEach(varName => {
-  const value = process.env[varName];
-  if (value) {
-    console.log(`  ✅ ${varName}: ${value}`);
-  } else {
-    console.log(`  ❌ ${varName}: NO CONFIGURADA`);
-    hasErrors = true;
+  return hasErrors;
+}
+
+loadLocalEnv();
+
+console.log('\nVerificando variables de entorno...');
+
+const hasRequiredErrors = printEnvGroup(
+  'Variables requeridas',
+  requiredEnvVars,
+  {
+    required: true,
   }
-});
+);
+printEnvGroup('Variables opcionales', optionalEnvVars);
+printEnvGroup('Variables de OAuth', oauthEnvVars);
 
-console.log('\n📋 Variables opcionales:');
-optionalEnvVars.forEach(varName => {
-  const value = process.env[varName];
-  if (value) {
-    console.log(`  ✅ ${varName}: ${value}`);
-  } else {
-    console.log(`  ⚠️  ${varName}: NO CONFIGURADA (opcional)`);
-  }
-});
+console.log('\nEntorno:', process.env.NODE_ENV || 'development');
 
-console.log('\n🔐 Variables de OAuth:');
-oauthEnvVars.forEach(varName => {
-  const value = process.env[varName];
-  if (value) {
-    console.log(`  ✅ ${varName}: ${value}`);
-  } else {
-    console.log(`  ⚠️  ${varName}: NO CONFIGURADA (OAuth no funcionará)`);
-  }
-});
-
-console.log('\n🌍 Entorno:', process.env.NODE_ENV || 'development');
-
-if (hasErrors) {
-  console.log('\n❌ ERROR: Algunas variables de entorno requeridas no están configuradas.');
-  console.log('💡 Solución: Configura las variables en Vercel o en tu archivo .env.local');
-  console.log('📖 Ver VERCEL_DEPLOYMENT.md para más detalles');
+if (hasRequiredErrors) {
+  console.log(
+    '\nERROR: Algunas variables de entorno requeridas no estan configuradas.'
+  );
+  console.log('Solucion: configura las variables en Vercel o en .env.local.');
   process.exit(1);
+}
+
+console.log('\nTodas las variables de entorno requeridas estan configuradas.');
+
+const oauthConfigured = oauthEnvVars.some((varName) => process.env[varName]);
+
+if (oauthConfigured) {
+  console.log('OAuth esta configurado.');
 } else {
-  console.log('\n✅ Todas las variables de entorno requeridas están configuradas.');
-  console.log('🚀 El build debería funcionar correctamente.');
-  
-  // Verificar si OAuth está configurado
-  const oauthConfigured = oauthEnvVars.some(varName => process.env[varName]);
-  if (oauthConfigured) {
-    console.log('🔐 OAuth está configurado y funcionará correctamente.');
-  } else {
-    console.log('⚠️  OAuth no está configurado. Los botones de Google/GitHub no funcionarán.');
-  }
+  console.log(
+    'OAuth no esta configurado. Los botones de Google/GitHub no funcionaran.'
+  );
 }

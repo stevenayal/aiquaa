@@ -9,8 +9,9 @@ export async function sendEmail(
   const from = process.env.RESEND_FROM_EMAIL ?? 'AIQUAA <noreply@aiquaa.com>';
 
   if (!apiKey) {
-    console.warn('[resend] RESEND_API_KEY not set — email not sent');
-    return { error: null };
+    const error = 'RESEND_API_KEY not set';
+    console.warn(`[resend] ${error} - email not sent`);
+    return { error };
   }
 
   const res = await fetch(RESEND_API_URL, {
@@ -24,7 +25,9 @@ export async function sendEmail(
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    return { error: (body as { message?: string }).message ?? `HTTP ${res.status}` };
+    return {
+      error: (body as { message?: string }).message ?? `HTTP ${res.status}`,
+    };
   }
 
   return { error: null };

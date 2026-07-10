@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 /**
  * POST /api/labs/test-app/admin/verify
  *
- * Verifies the admin key server-side (ADMIN_KEY is a server-only env var,
+ * Verifies the admin key server-side (TEST_APP_ADMIN_KEY is a server-only env var,
  * never exposed to the client bundle). On success, sets an httpOnly cookie
  * so the client doesn't need to keep resubmitting the key.
  *
@@ -22,7 +22,8 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const key = typeof body?.key === 'string' ? body.key : '';
-    const adminKey = process.env.ADMIN_KEY || '';
+    const adminKey =
+      process.env.TEST_APP_ADMIN_KEY || process.env.ADMIN_KEY || '';
 
     // Empty ADMIN_KEY means admin is disabled — reject even empty-string match
     if (!adminKey || key !== adminKey) {

@@ -613,26 +613,31 @@ export default function EvaluarPage() {
                               Imágenes evidencia ({bug.images.length})
                             </p>
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-2">
-                              {bug.images.map((image) => (
-                                <a
-                                  key={image.id}
-                                  href={image.base64Data}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="block rounded-lg overflow-hidden border border-slate-600/40"
-                                >
-                                  <img
-                                    src={image.base64Data}
-                                    alt={image.fileName}
-                                    className="w-full h-32 object-cover"
-                                  />
-                                  <p
-                                    className={`text-xs px-1.5 py-1 truncate ${isDarkMode ? 'bg-slate-800 text-slate-400' : 'bg-gray-100 text-gray-600'}`}
+                              {bug.images.map((image) => {
+                                const imageUrl =
+                                  image.signedUrl ?? image.base64Data;
+                                if (!imageUrl) return null;
+                                return (
+                                  <a
+                                    key={image.id}
+                                    href={imageUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block rounded-lg overflow-hidden border border-slate-600/40"
                                   >
-                                    {image.fileName}
-                                  </p>
-                                </a>
-                              ))}
+                                    <img
+                                      src={imageUrl}
+                                      alt={image.fileName}
+                                      className="w-full h-32 object-cover"
+                                    />
+                                    <p
+                                      className={`text-xs px-1.5 py-1 truncate ${isDarkMode ? 'bg-slate-800 text-slate-400' : 'bg-gray-100 text-gray-600'}`}
+                                    >
+                                      {image.fileName}
+                                    </p>
+                                  </a>
+                                );
+                              })}
                             </div>
                           </div>
                         )}
