@@ -6,6 +6,8 @@ import {
   getRankingAchievementsForUser,
   syncRankingAchievementsForUser,
 } from '@/lib/ranking-achievements';
+import { notifyEmpresaExamCompleted } from '@/actions/empresa-result-notifications';
+import { recalculateLegacyExamPayload } from '@/actions/lib/legacy-exam-scoring';
 
 interface SaveExamResultPayload {
   exam_type:
@@ -62,6 +64,7 @@ interface SaveExamResultPayload {
 const NEEDS_MANUAL_CORRECTION_EXAM_TYPES = new Set(['test-app']);
 
 export async function saveExamResultAction(payload: SaveExamResultPayload) {
+  const normalizedPayload = recalculateLegacyExamPayload(payload);
   const supabase = createClient();
   const {
     data: { user },
@@ -76,17 +79,18 @@ export async function saveExamResultAction(payload: SaveExamResultPayload) {
     .single();
 
   const resolvedName =
-    payload.participant_name?.trim() ||
+    normalizedPayload.participant_name?.trim() ||
     profile?.display_name?.trim() ||
     user.user_metadata?.full_name?.trim() ||
     null;
 
-  const resolvedEmail = payload.participant_email?.trim() || user.email || null;
+  const resolvedEmail =
+    normalizedPayload.participant_email?.trim() || user.email || null;
 
   // hiring_processes.code is stored with mixed case; match case-insensitively
   // and use the canonical stored value so it satisfies exam_results'
   // FK to hiring_processes(code) regardless of how the candidate typed it.
-  const rawProcessCode = payload.process_code?.trim() || undefined;
+  const rawProcessCode = normalizedPayload.process_code?.trim() || undefined;
   let resolvedProcessCode: string | undefined;
   if (rawProcessCode) {
     const { data: process } = await supabase
@@ -106,11 +110,13 @@ export async function saveExamResultAction(payload: SaveExamResultPayload) {
 
   const { error } = await supabase.from('exam_results').insert({
     user_id: user.id,
-    ...payload,
+    ...normalizedPayload,
     process_code: resolvedProcessCode,
     participant_name: resolvedName,
     participant_email: resolvedEmail,
-    review_status: NEEDS_MANUAL_CORRECTION_EXAM_TYPES.has(payload.exam_type)
+    review_status: NEEDS_MANUAL_CORRECTION_EXAM_TYPES.has(
+      normalizedPayload.exam_type
+    )
       ? 'pending_correction'
       : undefined,
   });
@@ -143,6 +149,17 @@ export async function saveExamResultAction(payload: SaveExamResultPayload) {
         invErr
       );
     }
+  }
+
+  if (resolvedProcessCode) {
+    await notifyEmpresaExamCompleted({
+      processCode: resolvedProcessCode,
+      candidateName: resolvedName,
+      candidateEmail: resolvedEmail,
+      examType: normalizedPayload.exam_type,
+      percentage: normalizedPayload.percentage,
+      passed: normalizedPayload.passed,
+    });
   }
 
   try {

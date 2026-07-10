@@ -92,21 +92,21 @@ Una vez finalizadas las pruebas, accede al generador de informes:
 
 ## 📋 Rutas Disponibles
 
-| Ruta                             | Descripción                       |
-| -------------------------------- | --------------------------------- |
-| `/labs/test-app`                 | Home (redirige según login)       |
-| `/labs/test-app/login`           | Iniciar sesión                    |
-| `/labs/test-app/register`        | Registrar cuenta nueva            |
-| `/labs/test-app/catalog`         | Catálogo de productos             |
-| `/labs/test-app/product/[id]`    | Detalle de producto               |
-| `/labs/test-app/cart`            | Carrito de compras                |
-| `/labs/test-app/checkout`        | Checkout y pago                   |
-| `/labs/test-app/history`         | Historial de pedidos              |
-| `/labs/test-app/profile`         | Perfil del usuario                |
-| `/labs/test-app/support`         | Crear tickets de soporte          |
-| `/labs/test-app/report`          | Generador de informe técnico      |
-| `/labs/test-app/evidence`        | Exportar audit log                |
-| `/labs/test-app/admin?key=...`   | Panel de administración (oculto)  |
+| Ruta                           | Descripción                      |
+| ------------------------------ | -------------------------------- |
+| `/labs/test-app`               | Home (redirige según login)      |
+| `/labs/test-app/login`         | Iniciar sesión                   |
+| `/labs/test-app/register`      | Registrar cuenta nueva           |
+| `/labs/test-app/catalog`       | Catálogo de productos            |
+| `/labs/test-app/product/[id]`  | Detalle de producto              |
+| `/labs/test-app/cart`          | Carrito de compras               |
+| `/labs/test-app/checkout`      | Checkout y pago                  |
+| `/labs/test-app/history`       | Historial de pedidos             |
+| `/labs/test-app/profile`       | Perfil del usuario               |
+| `/labs/test-app/support`       | Crear tickets de soporte         |
+| `/labs/test-app/report`        | Generador de informe técnico     |
+| `/labs/test-app/evidence`      | Exportar audit log               |
+| `/labs/test-app/admin?key=...` | Panel de administración (oculto) |
 
 ---
 
@@ -117,48 +117,39 @@ La aplicación contiene **10 bugs intencionales**, de los cuales **6-8 estarán 
 ### Bugs Confirmados en el Sistema:
 
 1. **Filtro Inconsistente (Catálogo)**
-
    - Al combinar búsqueda + categoría, el conteo de resultados no coincide con los items mostrados
    - Severidad: **Media**
 
 2. **Ordenamiento Inestable (Catálogo)**
-
    - Al ordenar por precio, productos con el mismo precio saltan de posición al cambiar de página
    - Severidad: **Baja**
 
 3. **Validación de Cantidad Rota (Carrito)**
-
    - Permite ingresar cantidad 0 o mayor al stock si se tipea rápido (onBlur valida tarde)
    - Severidad: **Alta**
 
 4. **Total del Carrito Desfasado (Carrito)**
-
    - Al cambiar cantidades rápido, los impuestos no recalculan hasta recargar página
    - Severidad: **Alta**
 
 5. **Checkout Error 500 Simulado (Checkout)**
-
    - Si el campo "Apartamento/Suite" tiene más de 50 caracteres, muestra error genérico 500 en vez de validación clara
    - Severidad: **Media**
 
 6. **Bug de Zona Horaria (Historial)**
-
    - Guarda timezone "America/Asuncion" en perfil, pero el historial muestra fechas en UTC sin convertir
    - Severidad: **Baja**
 
 7. **Problemas de Accesibilidad (Detalle de Producto)**
-
    - Botón "Agregar al carrito" sin `aria-label` cuando está disabled
    - Label de cantidad sin `htmlFor` apuntando al input
    - Severidad: **Media**
 
 8. **XSS Reflejado Leve (Catálogo)**
-
    - La búsqueda escapa `<script>` pero permite `"><test>` que rompe el placeholder (sin ejecutar JS)
    - Severidad: **Media**
 
 9. **Prioridad de Ticket Mal Asignada (Soporte)**
-
    - Seleccionar prioridad "Alta" puede guardarse como "Media" si se envía de inmediato
    - Severidad: **Baja**
 
@@ -277,7 +268,7 @@ Configura la clave del panel admin (server-only, se verifica en
 
 ```env
 # .env.local
-ADMIN_KEY=aiquaa-test-admin-2024
+TEST_APP_ADMIN_KEY=aiquaa-test-admin-2024
 ```
 
 ---

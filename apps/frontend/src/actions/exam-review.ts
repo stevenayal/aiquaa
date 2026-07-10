@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 type BugReviewItem = {
   approved: boolean;
@@ -17,7 +18,11 @@ type ReviewData = {
 type BugImageEvidence = {
   id: string;
   fileName: string;
-  base64Data: string;
+  base64Data?: string;
+  storageBucket?: string;
+  storagePath?: string;
+  signedUrl?: string;
+  uploadError?: string;
   mimeType: string;
   size: number;
   uploadedAt: string;
@@ -90,7 +95,30 @@ export async function getExamDetailAction(
   if (error) return { data: null, error: error.message };
   if (!data) return { data: null, error: 'Resultado no encontrado' };
 
-  return { data: data as unknown as ExamDetail, error: null };
+  const detail = data as unknown as ExamDetail;
+  const bugs = detail.metadata?.bugs ?? [];
+  const images = bugs.flatMap((bug) => bug.images ?? []);
+  const storageImages = images.filter(
+    (image) => image.storageBucket && image.storagePath
+  );
+
+  if (storageImages.length > 0) {
+    try {
+      const admin = createAdminClient();
+      await Promise.all(
+        storageImages.map(async (image) => {
+          const { data: signed } = await admin.storage
+            .from(image.storageBucket!)
+            .createSignedUrl(image.storagePath!, 60 * 60);
+          image.signedUrl = signed?.signedUrl;
+        })
+      );
+    } catch (storageError) {
+      console.warn('[exam-review] evidence signed URL failed', storageError);
+    }
+  }
+
+  return { data: detail, error: null };
 }
 
 export async function saveExamReviewAction(

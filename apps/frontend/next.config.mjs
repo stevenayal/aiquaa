@@ -58,13 +58,9 @@ const securityHeaders = [
 const nextConfig = {
   transpilePackages: ['@aiquaa/allpairs-core'],
   experimental: {
-    // Default is 1mb; the test-app bug report form attaches base64-encoded
-    // screenshots (up to 5MB each) to the saveExamResultAction payload,
-    // which was tripping the default limit and failing exam submissions
-    // for users who attached evidence images (see issue in QA-CYCLE log).
-    serverActions: {
-      bodySizeLimit: '4mb',
-    },
+    // Evidence images are uploaded to Supabase Storage before submit, so
+    // Server Actions can stay on the Next 13-compatible boolean setting.
+    serverActions: true,
   },
   images: {
     remotePatterns: [

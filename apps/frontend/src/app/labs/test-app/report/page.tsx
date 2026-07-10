@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { getExamUserDefaults } from '@/lib/exam-user-defaults';
+import { createClient } from '@/lib/supabase/client';
 import { getCurrentUser, getSessionStartedAt } from '../lib/storage';
 import { getCandidateId, setCandidateId } from '../lib/prng';
 import type {
@@ -25,6 +26,15 @@ import {
   formatLastSaved,
 } from './utils';
 import { saveExamResultAction } from '@/actions/exams';
+import { stripBase64FromBugs, stripBase64FromImage } from './metadata';
+
+const EVIDENCE_BUCKET = 'test-app-evidence';
+
+function extensionForMimeType(mimeType: string) {
+  if (mimeType === 'image/png') return 'png';
+  if (mimeType === 'image/webp') return 'webp';
+  return 'jpg';
+}
 
 export default function TechnicalReportPage() {
   const { isDarkMode } = useTheme();
@@ -405,6 +415,61 @@ export default function TechnicalReportPage() {
     score: {} as any,
   });
 
+  const uploadEvidenceImages = async (bugsToUpload: BugReport[]) => {
+    if (!user) {
+      return bugsToUpload.map((bug) => ({
+        ...bug,
+        images: (bug.images ?? []).map((image) => ({
+          ...stripBase64FromImage(image),
+          uploadError: 'No autenticado',
+        })),
+      }));
+    }
+
+    const supabase = createClient();
+    const uploadedBugs: BugReport[] = [];
+
+    for (const bug of bugsToUpload) {
+      const uploadedImages = [];
+
+      for (const image of bug.images ?? []) {
+        try {
+          const response = await fetch(image.base64Data);
+          const blob = await response.blob();
+          const extension = extensionForMimeType(image.mimeType);
+          const path = `${user.id}/${bug.id}/${image.id}.${extension}`;
+          const { error } = await supabase.storage
+            .from(EVIDENCE_BUCKET)
+            .upload(path, blob, {
+              contentType: image.mimeType,
+              upsert: true,
+            });
+
+          if (error) throw error;
+
+          uploadedImages.push({
+            ...stripBase64FromImage(image),
+            storageBucket: EVIDENCE_BUCKET,
+            storagePath: path,
+          });
+        } catch (error) {
+          uploadedImages.push({
+            ...stripBase64FromImage(image),
+            uploadError:
+              error instanceof Error ? error.message : 'No se pudo subir',
+          });
+        }
+      }
+
+      uploadedBugs.push({
+        ...bug,
+        images: uploadedImages as unknown as ImageEvidence[],
+      });
+    }
+
+    return stripBase64FromBugs(uploadedBugs);
+  };
+
   const handleSaveToDb = async () => {
     setIsSaving(true);
     setSaveError('');
@@ -418,6 +483,7 @@ export default function TechnicalReportPage() {
     const timeSpentSeconds = sessionStart
       ? Math.max(60, Math.round((Date.now() - sessionStart.getTime()) / 1000))
       : testSession.duration * 60; // fallback if session start was never recorded
+    const bugsForMetadata = await uploadEvidenceImages(bugs);
     const { error } = await saveExamResultAction({
       exam_type: 'test-app',
       exam_mode: 'exam',
@@ -435,7 +501,7 @@ export default function TechnicalReportPage() {
       github_profile: candidateInfo.githubProfile || undefined,
       process_code: processCode.trim().toUpperCase() || undefined,
       metadata: {
-        bugs,
+        bugs: bugsForMetadata,
         exploredSections: testSession.exploredSections,
         bugCount: bugs.length,
         severityCounts: {

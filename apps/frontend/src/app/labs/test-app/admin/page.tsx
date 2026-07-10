@@ -124,7 +124,7 @@ export default function AdminPage() {
             Se requiere clave de administrador para acceder.
           </p>
           <p className="text-sm text-gray-500">
-            Accede con: /labs/test-app/admin?key=&lt;ADMIN_KEY&gt;
+            Accede con: /labs/test-app/admin?key=&lt;TEST_APP_ADMIN_KEY&gt;
           </p>
         </div>
       </TestAppLayout>
