@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import LogoMark from '@/components/LogoMark';
+import HomePromoCarousel from '@/components/HomePromoCarousel';
 import ISTQBHighlight from '@/components/ISTQBHighlight';
 import { SuruFloating } from '@/components/Suru';
 import { LABS_TOOL_COUNT } from '@/lib/labsCatalog';
@@ -14,7 +15,9 @@ export default function HomePage() {
   const { isDarkMode } = useTheme();
   const { t } = useLanguage();
   const [memberCount, setMemberCount] = useState<string>('80+');
-  const [memberLabel, setMemberLabel] = useState<string>('usuarios registrados');
+  const [memberLabel, setMemberLabel] = useState<string>(
+    'usuarios registrados'
+  );
   // Sección de planes oculta hasta que el plan Pro esté disponible.
   const SHOW_PRICING = false;
 
@@ -233,6 +236,8 @@ export default function HomePage() {
         />
       </section>
 
+      <HomePromoCarousel />
+
       <ISTQBHighlight />
 
       {/* Featured Tools */}
@@ -343,72 +348,146 @@ export default function HomePage() {
 
       {/* Planes / Pricing */}
       {SHOW_PRICING && (
-      <section
-        className={`py-16 md:py-20 transition-colors duration-300 ${
-          isDarkMode
-            ? 'bg-slate-800'
-            : 'bg-gradient-to-br from-indigo-50 via-white to-purple-50'
-        }`}
-      >
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2
-              className={`text-3xl md:text-4xl font-bold mb-4 ${
-                isDarkMode ? 'text-white' : 'text-slate-900'
-              }`}
-            >
-              Elegí tu plan
-            </h2>
-            <p
-              className={`text-lg max-w-2xl mx-auto ${
-                isDarkMode ? 'text-slate-300' : 'text-slate-600'
-              }`}
-            >
-              Empezá gratis, crecé a tu ritmo
-            </p>
-          </div>
+        <section
+          className={`py-16 md:py-20 transition-colors duration-300 ${
+            isDarkMode
+              ? 'bg-slate-800'
+              : 'bg-gradient-to-br from-indigo-50 via-white to-purple-50'
+          }`}
+        >
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2
+                className={`text-3xl md:text-4xl font-bold mb-4 ${
+                  isDarkMode ? 'text-white' : 'text-slate-900'
+                }`}
+              >
+                Elegí tu plan
+              </h2>
+              <p
+                className={`text-lg max-w-2xl mx-auto ${
+                  isDarkMode ? 'text-slate-300' : 'text-slate-600'
+                }`}
+              >
+                Empezá gratis, crecé a tu ritmo
+              </p>
+            </div>
 
-          <div className="grid md:grid-cols-3 gap-8 items-stretch">
-            {/* Free */}
-            <div
-              className={`relative rounded-2xl border-2 border-indigo-500 shadow-xl flex flex-col ${
-                isDarkMode ? 'bg-slate-900' : 'bg-white'
-              }`}
-            >
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                <span className="bg-indigo-600 text-white text-xs font-bold px-4 py-1 rounded-full shadow">
-                  ACTUAL
-                </span>
-              </div>
-              <div className="p-8 flex flex-col flex-1">
-                <div className="mb-6">
-                  <h3
-                    className={`text-xl font-bold mb-1 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}
-                  >
-                    Free
-                  </h3>
-                  <p
-                    className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}
-                  >
-                    Siempre gratis
-                  </p>
-                  <div
-                    className={`mt-4 text-4xl font-extrabold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}
-                  >
-                    $0
-                    <span
-                      className={`text-base font-normal ml-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}
+            <div className="grid md:grid-cols-3 gap-8 items-stretch">
+              {/* Free */}
+              <div
+                className={`relative rounded-2xl border-2 border-indigo-500 shadow-xl flex flex-col ${
+                  isDarkMode ? 'bg-slate-900' : 'bg-white'
+                }`}
+              >
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                  <span className="bg-indigo-600 text-white text-xs font-bold px-4 py-1 rounded-full shadow">
+                    ACTUAL
+                  </span>
+                </div>
+                <div className="p-8 flex flex-col flex-1">
+                  <div className="mb-6">
+                    <h3
+                      className={`text-xl font-bold mb-1 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}
                     >
-                      /mes
-                    </span>
+                      Free
+                    </h3>
+                    <p
+                      className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}
+                    >
+                      Siempre gratis
+                    </p>
+                    <div
+                      className={`mt-4 text-4xl font-extrabold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}
+                    >
+                      $0
+                      <span
+                        className={`text-base font-normal ml-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}
+                      >
+                        /mes
+                      </span>
+                    </div>
+                  </div>
+                  <ul className="space-y-3 flex-1">
+                    {['Labs completo', 'Simulador ISTQB', 'Comunidad'].map(
+                      (item) => (
+                        <li key={item} className="flex items-center gap-3">
+                          <svg
+                            className="w-5 h-5 text-indigo-500 flex-shrink-0"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                          <span
+                            className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}
+                          >
+                            {item}
+                          </span>
+                        </li>
+                      )
+                    )}
+                  </ul>
+                  <div className="mt-8">
+                    <Link
+                      href="/labs"
+                      className="block w-full text-center px-6 py-3 rounded-xl font-bold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-lg hover:scale-105 transition-all duration-200"
+                    >
+                      Empezar gratis
+                    </Link>
                   </div>
                 </div>
-                <ul className="space-y-3 flex-1">
-                  {['Labs completo', 'Simulador ISTQB', 'Comunidad'].map(
-                    (item) => (
+              </div>
+
+              {/* Pro */}
+              <div
+                className={`relative rounded-2xl border-2 flex flex-col opacity-80 ${
+                  isDarkMode
+                    ? 'bg-slate-900 border-slate-700'
+                    : 'bg-white border-slate-200'
+                }`}
+              >
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                  <span className="bg-amber-500 text-white text-xs font-bold px-4 py-1 rounded-full shadow">
+                    PRÓXIMAMENTE
+                  </span>
+                </div>
+                <div className="p-8 flex flex-col flex-1">
+                  <div className="mb-6">
+                    <h3
+                      className={`text-xl font-bold mb-1 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}
+                    >
+                      Pro
+                    </h3>
+                    <p
+                      className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}
+                    >
+                      Para profesionales
+                    </p>
+                    <div
+                      className={`mt-4 text-4xl font-extrabold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}
+                    >
+                      ~$9
+                      <span
+                        className={`text-base font-normal ml-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}
+                      >
+                        /mes
+                      </span>
+                    </div>
+                  </div>
+                  <ul className="space-y-3 flex-1">
+                    {[
+                      'Cursos con certificado',
+                      'Rutas de aprendizaje IA',
+                      'Soporte prioritario',
+                    ].map((item) => (
                       <li key={item} className="flex items-center gap-3">
                         <svg
-                          className="w-5 h-5 text-indigo-500 flex-shrink-0"
+                          className="w-5 h-5 text-amber-500 flex-shrink-0"
                           fill="currentColor"
                           viewBox="0 0 20 20"
                         >
@@ -424,152 +503,78 @@ export default function HomePage() {
                           {item}
                         </span>
                       </li>
-                    )
-                  )}
-                </ul>
-                <div className="mt-8">
-                  <Link
-                    href="/labs"
-                    className="block w-full text-center px-6 py-3 rounded-xl font-bold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-lg hover:scale-105 transition-all duration-200"
-                  >
-                    Empezar gratis
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            {/* Pro */}
-            <div
-              className={`relative rounded-2xl border-2 flex flex-col opacity-80 ${
-                isDarkMode
-                  ? 'bg-slate-900 border-slate-700'
-                  : 'bg-white border-slate-200'
-              }`}
-            >
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                <span className="bg-amber-500 text-white text-xs font-bold px-4 py-1 rounded-full shadow">
-                  PRÓXIMAMENTE
-                </span>
-              </div>
-              <div className="p-8 flex flex-col flex-1">
-                <div className="mb-6">
-                  <h3
-                    className={`text-xl font-bold mb-1 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}
-                  >
-                    Pro
-                  </h3>
-                  <p
-                    className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}
-                  >
-                    Para profesionales
-                  </p>
-                  <div
-                    className={`mt-4 text-4xl font-extrabold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}
-                  >
-                    ~$9
-                    <span
-                      className={`text-base font-normal ml-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}
+                    ))}
+                  </ul>
+                  <div className="mt-8">
+                    <button
+                      disabled
+                      className={`block w-full text-center px-6 py-3 rounded-xl font-bold cursor-not-allowed ${
+                        isDarkMode
+                          ? 'bg-slate-700 text-slate-400'
+                          : 'bg-slate-100 text-slate-400'
+                      }`}
                     >
-                      /mes
-                    </span>
+                      Próximamente
+                    </button>
                   </div>
-                </div>
-                <ul className="space-y-3 flex-1">
-                  {[
-                    'Cursos con certificado',
-                    'Rutas de aprendizaje IA',
-                    'Soporte prioritario',
-                  ].map((item) => (
-                    <li key={item} className="flex items-center gap-3">
-                      <svg
-                        className="w-5 h-5 text-amber-500 flex-shrink-0"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                      <span
-                        className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}
-                      >
-                        {item}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-                <div className="mt-8">
-                  <button
-                    disabled
-                    className={`block w-full text-center px-6 py-3 rounded-xl font-bold cursor-not-allowed ${
-                      isDarkMode
-                        ? 'bg-slate-700 text-slate-400'
-                        : 'bg-slate-100 text-slate-400'
-                    }`}
-                  >
-                    Próximamente
-                  </button>
                 </div>
               </div>
-            </div>
 
-            {/* Empresas */}
-            <div
-              className={`relative rounded-2xl border-2 flex flex-col ${
-                isDarkMode
-                  ? 'bg-gradient-to-br from-slate-900 to-indigo-950 border-indigo-800'
-                  : 'bg-gradient-to-br from-slate-900 to-indigo-900 border-indigo-700'
-              }`}
-            >
-              <div className="p-8 flex flex-col flex-1">
-                <div className="mb-6">
-                  <h3 className="text-xl font-bold mb-1 text-white">
-                    Empresas
-                  </h3>
-                  <p className="text-sm text-indigo-300">
-                    A medida para tu equipo
-                  </p>
-                  <div className="mt-4 text-4xl font-extrabold text-white">
-                    Custom
+              {/* Empresas */}
+              <div
+                className={`relative rounded-2xl border-2 flex flex-col ${
+                  isDarkMode
+                    ? 'bg-gradient-to-br from-slate-900 to-indigo-950 border-indigo-800'
+                    : 'bg-gradient-to-br from-slate-900 to-indigo-900 border-indigo-700'
+                }`}
+              >
+                <div className="p-8 flex flex-col flex-1">
+                  <div className="mb-6">
+                    <h3 className="text-xl font-bold mb-1 text-white">
+                      Empresas
+                    </h3>
+                    <p className="text-sm text-indigo-300">
+                      A medida para tu equipo
+                    </p>
+                    <div className="mt-4 text-4xl font-extrabold text-white">
+                      Custom
+                    </div>
                   </div>
-                </div>
-                <ul className="space-y-3 flex-1">
-                  {[
-                    'Capacitación de equipos QA',
-                    'Onboarding corporativo',
-                    'Contactanos',
-                  ].map((item) => (
-                    <li key={item} className="flex items-center gap-3">
-                      <svg
-                        className="w-5 h-5 text-indigo-400 flex-shrink-0"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                      <span className="text-sm text-indigo-100">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-                <div className="mt-8">
-                  <a
-                    href="mailto:admin@aiquaa.com"
-                    className="block w-full text-center px-6 py-3 rounded-xl font-bold text-indigo-900 bg-white hover:bg-indigo-50 hover:scale-105 transition-all duration-200 shadow-lg"
-                  >
-                    Contactanos
-                  </a>
+                  <ul className="space-y-3 flex-1">
+                    {[
+                      'Capacitación de equipos QA',
+                      'Onboarding corporativo',
+                      'Contactanos',
+                    ].map((item) => (
+                      <li key={item} className="flex items-center gap-3">
+                        <svg
+                          className="w-5 h-5 text-indigo-400 flex-shrink-0"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        <span className="text-sm text-indigo-100">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-8">
+                    <a
+                      href="mailto:admin@aiquaa.com"
+                      className="block w-full text-center px-6 py-3 rounded-xl font-bold text-indigo-900 bg-white hover:bg-indigo-50 hover:scale-105 transition-all duration-200 shadow-lg"
+                    >
+                      Contactanos
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
       )}
 
       {/* Final CTA */}
