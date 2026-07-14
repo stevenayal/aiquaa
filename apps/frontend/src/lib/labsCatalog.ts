@@ -60,6 +60,16 @@ export const toolCategories: LabCategory[] = [
         implementedDate: 'Jun 2026',
       },
       {
+        id: 'playwright-practico',
+        name: 'Prueba Práctica de Playwright',
+        description:
+          'Automatizá 4 escenarios E2E contra la Test App (login, catálogo, carrito, checkout) y entregalos por PR — verificación automática vía GitHub API',
+        icon: '🎭',
+        color: 'from-emerald-600 to-teal-700',
+        href: '/labs/playwright-practico',
+        implementedDate: 'Jul 2026',
+      },
+      {
         id: 'performance',
         name: 'Examen de Performance Testing',
         description:

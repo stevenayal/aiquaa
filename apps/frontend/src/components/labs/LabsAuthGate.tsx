@@ -17,6 +17,7 @@ const PROTECTED_LABS_ROUTES = [
   '/labs/istqb',
   '/labs/git',
   '/labs/git-practico',
+  '/labs/playwright-practico',
   '/labs/api-testing-fundamentals',
   '/labs/allpairs',
   '/labs/data-generator',
