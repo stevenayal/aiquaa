@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { PROCESS_ASSESSMENT_SLUGS } from './lib/assessment-slugs';
 
 export interface HiringProcess {
   id: string;
@@ -357,13 +358,6 @@ function getAttemptTimeSpentSeconds(row: {
 
   return Math.max(0, Math.round((submitted - started) / 1000));
 }
-
-const PROCESS_ASSESSMENT_SLUGS = [
-  'database-fundamentals',
-  'database-practice',
-  'infrastructure-fundamentals',
-  'api-developer-fundamentals',
-];
 
 async function fetchAssessmentAttemptsForProcessCodes(
   supabase: ReturnType<typeof createClient>,

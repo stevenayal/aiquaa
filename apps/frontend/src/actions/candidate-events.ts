@@ -1,12 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
-
-const ASSESSMENT_SLUGS = [
-  'database-fundamentals',
-  'database-practice',
-  'infrastructure-fundamentals',
-];
+import { PROCESS_ASSESSMENT_SLUGS } from './lib/assessment-slugs';
 
 export interface MyEventResult {
   examType: string;
@@ -58,16 +53,15 @@ export async function getMyEventProgressAction(): Promise<{
         .not('process_code', 'is', null),
       supabase
         .from('assessment_attempts')
-        .select(
-          'percentage, passed, metadata, assessments!inner(slug)'
-        )
+        .select('percentage, passed, metadata, assessments!inner(slug)')
         .eq('user_id', user.id)
         .eq('status', 'graded')
-        .in('assessments.slug', ASSESSMENT_SLUGS),
+        .in('assessments.slug', PROCESS_ASSESSMENT_SLUGS),
     ]);
 
   if (examResultsError) return { error: examResultsError.message, data: null };
-  if (assessmentRes.error) return { error: assessmentRes.error.message, data: null };
+  if (assessmentRes.error)
+    return { error: assessmentRes.error.message, data: null };
 
   type MyResultRow = {
     examType: string;
@@ -108,9 +102,7 @@ export async function getMyEventProgressAction(): Promise<{
   if (touchedError) return { error: touchedError.message, data: null };
 
   const groupIds = [
-    ...new Set(
-      (touchedProcesses ?? []).map((p) => p.group_id as string)
-    ),
+    ...new Set((touchedProcesses ?? []).map((p) => p.group_id as string)),
   ];
   if (groupIds.length === 0) return { data: [], error: null };
 
