@@ -3,17 +3,13 @@
 -- least one exam in — mirrors candidates_select_own_event_groups
 -- (20260703_050000), which only granted read on the *group* itself.
 --
--- Without this, getMyEventProgressAction's queries against
--- hiring_processes (to build the "required exam types" union and the set of
--- process codes belonging to the event) only had the
--- hiring_processes_empresa_access policy available, which is scoped to
--- empresa owners/members — so a plain candidate session could see none, or
--- only some, of the event's other processes/exam_types. That desynced the
--- student-facing progress card from the empresa "Eventos" view, which reads
--- the same tables under an empresa member's broader RLS visibility: a
--- candidate could see fewer required exam types and have already-graded
--- results excluded because the process they belong to fell outside what
--- their own query could see.
+-- SUPERSEDED by 20260714234547_candidate_read_own_event_processes_fixed.sql:
+-- this version's USING clause does its exam_results / assessment_attempts
+-- checks directly, which triggers "infinite recursion detected in policy
+-- for relation exam_results" the moment it's evaluated, because those
+-- tables' own RLS policies reference hiring_processes back. It was live in
+-- production for a few minutes before being replaced — kept here only so
+-- the migration history matches what was actually applied.
 
 DROP POLICY IF EXISTS "candidates_select_own_event_processes" ON public.hiring_processes;
 
