@@ -15,6 +15,10 @@ const EXAM_OPTIONS = [
   { value: 'istqb', label: 'ISTQB Foundation Level' },
   { value: 'git', label: 'Git' },
   { value: 'git-practico', label: 'Git — Prueba práctica (GitHub)' },
+  {
+    value: 'playwright-practico',
+    label: 'Playwright — Prueba práctica (E2E)',
+  },
   { value: 'performance', label: 'Rendimiento / Performance' },
   { value: 'api-testing-fundamentals', label: 'API Testing Fundamentals' },
   { value: 'api-banking', label: 'API Testing - Challenge practico' },

@@ -48,7 +48,8 @@ interface ExamResultRow {
     | 'database-fundamentals'
     | 'database-practice'
     | 'infrastructure-fundamentals'
-    | 'api-developer-fundamentals';
+    | 'api-developer-fundamentals'
+    | 'playwright-practico';
   exam_mode: 'exam' | 'training';
   score: number;
   total_questions: number;

@@ -116,6 +116,7 @@ const EXAM_LABELS: Record<string, string> = {
   istqb: 'ISTQB CTFL',
   git: 'Git',
   'git-practico': 'Git — Prueba práctica',
+  'playwright-practico': 'Playwright — Prueba práctica',
   performance: 'Performance',
   'test-app': 'Test App — Bug Hunt',
   'api-testing-fundamentals': 'API Testing Fundamentals',

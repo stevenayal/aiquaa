@@ -83,6 +83,7 @@ export default function DashboardPage() {
     'database-practice',
     'infrastructure-fundamentals',
     'api-developer-fundamentals',
+    'playwright-practico',
   ];
   const recommended = allTypes.find((t) => !passedTypes.has(t)) ?? null;
   const allPassed = allTypes.every((t) => passedTypes.has(t));

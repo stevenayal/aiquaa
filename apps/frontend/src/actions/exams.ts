@@ -21,7 +21,8 @@ interface SaveExamResultPayload {
     | 'database-fundamentals'
     | 'database-practice'
     | 'infrastructure-fundamentals'
-    | 'api-developer-fundamentals';
+    | 'api-developer-fundamentals'
+    | 'playwright-practico';
   exam_mode: 'exam' | 'training';
   participant_name?: string;
   participant_email?: string;
@@ -61,7 +62,10 @@ interface SaveExamResultPayload {
 // Exámenes cuyo score automático es heurístico (conteo/keywords, no validación
 // real del contenido) y por eso arrancan marcados como pendientes de
 // corrección manual hasta que un evaluador los revise.
-const NEEDS_MANUAL_CORRECTION_EXAM_TYPES = new Set(['test-app']);
+const NEEDS_MANUAL_CORRECTION_EXAM_TYPES = new Set([
+  'test-app',
+  'playwright-practico',
+]);
 
 export async function saveExamResultAction(payload: SaveExamResultPayload) {
   const normalizedPayload = recalculateLegacyExamPayload(payload);

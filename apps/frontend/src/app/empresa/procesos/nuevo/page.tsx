@@ -30,6 +30,12 @@ const EXAM_OPTIONS = [
       'Flujo real en un repo: crear issue, rama, subir carpeta y abrir un PR que cierre el issue — verificación automática vía GitHub API',
   },
   {
+    id: 'playwright-practico',
+    label: 'Playwright — Prueba práctica (E2E)',
+    description:
+      'Automatización real: specs de Playwright para login, catálogo, carrito y checkout de la Test App, entregados por PR — verificación automática vía GitHub API',
+  },
+  {
     id: 'performance',
     label: 'Performance Testing — Pruebas de carga',
     description:
