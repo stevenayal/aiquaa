@@ -70,6 +70,17 @@ export const toolCategories: LabCategory[] = [
         implementedDate: 'Jul 2026',
       },
       {
+        id: 'playwright-fundamentals',
+        name: 'Playwright — Fundamentos',
+        description:
+          'Prueba técnica teórica sobre Test CLI, locators web-first, assertions con auto-retry y fixtures/hooks/debugging, con snippets reales de código — auto-corregido, 100 pts',
+        icon: '🎬',
+        color: 'from-fuchsia-500 to-purple-700',
+        href: '/assessments/playwright-fundamentals',
+        featured: true,
+        implementedDate: 'Jul 2026',
+      },
+      {
         id: 'performance',
         name: 'Examen de Performance Testing',
         description:
