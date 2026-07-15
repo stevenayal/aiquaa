@@ -93,10 +93,9 @@ const translations: Record<Language, Record<string, string>> = {
     'labs.action': 'Hacer click para usar',
 
     // Home page - Hero Section
-    'home.hero.title':
-      'Impulsa tu carrera de QA con el ecosistema que te prepara para el mundo real',
+    'home.hero.title': 'El ecosistema QA que te prepara para el mundo real',
     'home.hero.subtitle':
-      'Practicá con simuladores, laboratorios y evaluaciones técnicas, o encontrá talento QA ya formado por AIQUAA si sos una empresa que confía en nuestra comunidad.',
+      'Practica con simuladores, laboratorios y evaluaciones técnicas, prepárate para certificaciones y demuestra tus habilidades. Las empresas pueden descubrir talento QA evaluado por AIQUAA.',
     'home.hero.cta.primary': 'Únete Gratis',
     'home.hero.cta.secondary': 'Explorar Herramientas',
     'home.hero.trust.free': '100% Gratis',
@@ -493,10 +492,9 @@ const translations: Record<Language, Record<string, string>> = {
     'labs.action': 'Click to use',
 
     // Home page - Hero Section
-    'home.hero.title':
-      'Boost your QA career with the ecosystem that prepares you for the real world',
+    'home.hero.title': 'The QA ecosystem that prepares you for the real world',
     'home.hero.subtitle':
-      "Practice with simulators, labs and technical assessments, or find QA talent already trained by AIQUAA if you're a company that trusts our community.",
+      'Practice with simulators, labs and technical assessments, get ready for certifications and prove your skills. Companies can discover QA talent assessed by AIQUAA.',
     'home.hero.cta.primary': 'Join Free',
     'home.hero.cta.secondary': 'Explore Tools',
     'home.hero.trust.free': '100% Free',
