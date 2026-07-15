@@ -36,19 +36,19 @@ export default function LogoMark({
           <g transform="rotate(60 120 80)">
             <ellipse cx="120" cy="80" rx="70" ry="28" />
           </g>
+          <circle cx="55" cy="62" r="5" fill={color} stroke="none" />
+          <circle cx="185" cy="62" r="5" fill={color} stroke="none" />
         </g>
         <g className={animated ? 'lm-orbit lm-orbit-3' : undefined}>
           <g transform="rotate(120 120 80)">
             <ellipse cx="120" cy="80" rx="70" ry="28" />
           </g>
+          <circle cx="68" cy="118" r="5" fill={color} stroke="none" />
+          <circle cx="172" cy="118" r="5" fill={color} stroke="none" />
         </g>
       </g>
       <g fill={color}>
         <circle cx="120" cy="80" r="10" />
-        <circle cx="55" cy="62" r="5" />
-        <circle cx="185" cy="62" r="5" />
-        <circle cx="68" cy="118" r="5" />
-        <circle cx="172" cy="118" r="5" />
       </g>
       {wordmark && (
         <>
