@@ -58,7 +58,9 @@ type ExamSlug =
   | 'database-fundamentals'
   | 'database-practice'
   | 'infrastructure-fundamentals'
-  | 'api-developer-fundamentals';
+  | 'api-developer-fundamentals'
+  | 'playwright-fundamentals'
+  | 'playwright-practico';
 
 const EXAM_SLUGS: ExamSlug[] = [
   'git',
@@ -71,6 +73,8 @@ const EXAM_SLUGS: ExamSlug[] = [
   'database-practice',
   'infrastructure-fundamentals',
   'api-developer-fundamentals',
+  'playwright-fundamentals',
+  'playwright-practico',
 ];
 
 interface Category {
@@ -140,6 +144,14 @@ const CATEGORIES: Category[] = [
     teorico: 'api-developer-fundamentals',
   },
   {
+    key: 'playwright',
+    label: 'Playwright',
+    emoji: '🎭',
+    color: 'from-fuchsia-500 to-purple-600',
+    teorico: 'playwright-fundamentals',
+    practico: 'playwright-practico',
+  },
+  {
     key: 'comunidad',
     label: 'Comunidad',
     emoji: '🚀',
@@ -161,6 +173,8 @@ const EXAM_TAB_URLS: Record<string, string> = {
   'database-practice': '/assessments/database-practice',
   'infrastructure-fundamentals': '/assessments/infrastructure-fundamentals',
   'api-developer-fundamentals': '/assessments/api-developer-fundamentals',
+  'playwright-fundamentals': '/assessments/playwright-fundamentals',
+  'playwright-practico': '/labs/playwright-practico',
 };
 
 const MEDAL = ['🥇', '🥈', '🥉'];

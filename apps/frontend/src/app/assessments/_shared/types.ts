@@ -166,6 +166,14 @@ export interface SqlQueryScenario {
   note?: string;
 }
 
+export interface PlaywrightCodeScenario {
+  title?: string;
+  code: string;
+  language?: string;
+  expectedOutput?: string;
+  note?: string;
+}
+
 export interface ScoringRule {
   type: AssessmentScoringMode;
   checks: string[];

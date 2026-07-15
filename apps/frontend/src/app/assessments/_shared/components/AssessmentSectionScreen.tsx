@@ -13,6 +13,7 @@ import ApiDocCard from './ApiDocCard';
 import AssessmentProgress from './AssessmentProgress';
 import AssessmentTimer from './AssessmentTimer';
 import MultipleChoiceQuestion from './MultipleChoiceQuestion';
+import PlaywrightCodeBlock from './PlaywrightCodeBlock';
 import RequestResponseBlock from './RequestResponseBlock';
 import SectionNavigator from './SectionNavigator';
 import SectionSummaryCard from './SectionSummaryCard';
@@ -23,6 +24,7 @@ import TrueFalseQuestion from './TrueFalseQuestion';
 import type {
   ApiDocScenario,
   AssessmentSectionPayload,
+  PlaywrightCodeScenario,
   SqlQueryScenario,
   SqlSchemaScenario,
 } from '../types';
@@ -269,6 +271,9 @@ export default function AssessmentSectionScreen({
             const sqlScenario = question.metadata?.sqlScenario as
               | SqlQueryScenario
               | undefined;
+            const codeScenario = question.metadata?.codeScenario as
+              | PlaywrightCodeScenario
+              | undefined;
 
             return (
               <div
@@ -303,6 +308,12 @@ export default function AssessmentSectionScreen({
                 {sqlScenario ? (
                   <div className="mt-5">
                     <SqlScenarioBlock scenario={sqlScenario} />
+                  </div>
+                ) : null}
+
+                {codeScenario ? (
+                  <div className="mt-5">
+                    <PlaywrightCodeBlock scenario={codeScenario} />
                   </div>
                 ) : null}
 

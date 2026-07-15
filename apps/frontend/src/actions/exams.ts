@@ -22,7 +22,8 @@ interface SaveExamResultPayload {
     | 'database-practice'
     | 'infrastructure-fundamentals'
     | 'api-developer-fundamentals'
-    | 'playwright-practico';
+    | 'playwright-practico'
+    | 'playwright-fundamentals';
   exam_mode: 'exam' | 'training';
   participant_name?: string;
   participant_email?: string;
@@ -188,7 +189,9 @@ export async function getLeaderboardAction(
     | 'database-fundamentals'
     | 'database-practice'
     | 'infrastructure-fundamentals'
-    | 'api-developer-fundamentals',
+    | 'api-developer-fundamentals'
+    | 'playwright-practico'
+    | 'playwright-fundamentals',
   limit = 20
 ) {
   const supabase = createClient();

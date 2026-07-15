@@ -10,12 +10,15 @@ export default function AssessmentWelcome({
   evaluatesCopy = 'Fundamentos de API, criterio QA, diseño de casos, validación de respuestas y bug reporting.',
   scoringCopy = 'Automático en niveles 1, 2 y 4. Heurístico en niveles 3 y 5.',
   resultCopy = 'Score total, score por nivel, fortalezas, debilidades y temas a reforzar.',
+  referenceLinks,
 }: {
   overview: AssessmentOverview;
   startHref?: string;
   evaluatesCopy?: string;
   scoringCopy?: string;
   resultCopy?: string;
+  /** Links a documentación oficial recomendados antes de empezar (opcional). */
+  referenceLinks?: Array<{ label: string; href: string }>;
 }) {
   const { isDarkMode } = useTheme();
 
@@ -92,6 +95,31 @@ export default function AssessmentWelcome({
               <p className="mt-2 text-sm text-slate-200">{resultCopy}</p>
             </div>
           </div>
+
+          {referenceLinks && referenceLinks.length > 0 ? (
+            <div className="mt-8 rounded-3xl border border-slate-800 bg-slate-950/70 p-6">
+              <p className="text-xs uppercase tracking-[0.18em] text-slate-400">
+                Documentación de referencia
+              </p>
+              <p className="mt-2 text-sm text-slate-300">
+                Te recomendamos repasar estos recursos oficiales antes de
+                empezar.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-3">
+                {referenceLinks.map((link) => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-sm font-medium text-cyan-200 transition hover:bg-cyan-400/20"
+                  >
+                    {link.label} ↗
+                  </a>
+                ))}
+              </div>
+            </div>
+          ) : null}
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
