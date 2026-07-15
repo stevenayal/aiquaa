@@ -43,6 +43,15 @@ import {
   buildInfrastructureFundamentalsGamificationEvents,
 } from '../infrastructure-fundamentals/lib/gamification';
 import { ensureInfrastructureFundamentalsSeeded } from '../infrastructure-fundamentals/lib/seed';
+import {
+  PLAYWRIGHT_FUNDAMENTALS_SEED_VERSION,
+  PLAYWRIGHT_FUNDAMENTALS_SLUG,
+} from '../playwright-fundamentals/data/assessment-definition';
+import {
+  PLAYWRIGHT_FUNDAMENTALS_GAMIFICATION_RULES,
+  buildPlaywrightFundamentalsGamificationEvents,
+} from '../playwright-fundamentals/lib/gamification';
+import { ensurePlaywrightFundamentalsSeeded } from '../playwright-fundamentals/lib/seed';
 import type {
   AssessmentGamificationEvent,
   AssessmentGamificationRule,
@@ -53,7 +62,8 @@ export type AssessmentExamType =
   | 'api-testing-fundamentals'
   | 'database-fundamentals'
   | 'database-practice'
-  | 'infrastructure-fundamentals';
+  | 'infrastructure-fundamentals'
+  | 'playwright-fundamentals';
 
 export interface AssessmentGamificationEventInput {
   attemptId: string;
@@ -123,5 +133,14 @@ export const ASSESSMENT_REGISTRY: Record<string, AssessmentRegistryEntry> = {
     gamificationSource: 'INFRASTRUCTURE_FUNDAMENTALS',
     gamificationRules: INFRASTRUCTURE_FUNDAMENTALS_GAMIFICATION_RULES,
     buildGamificationEvents: buildInfrastructureFundamentalsGamificationEvents,
+  },
+  [PLAYWRIGHT_FUNDAMENTALS_SLUG]: {
+    slug: PLAYWRIGHT_FUNDAMENTALS_SLUG,
+    seedVersion: PLAYWRIGHT_FUNDAMENTALS_SEED_VERSION,
+    ensureSeeded: ensurePlaywrightFundamentalsSeeded,
+    examType: 'playwright-fundamentals',
+    gamificationSource: 'PLAYWRIGHT_FUNDAMENTALS',
+    gamificationRules: PLAYWRIGHT_FUNDAMENTALS_GAMIFICATION_RULES,
+    buildGamificationEvents: buildPlaywrightFundamentalsGamificationEvents,
   },
 };

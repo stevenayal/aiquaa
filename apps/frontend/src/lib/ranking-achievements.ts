@@ -48,6 +48,8 @@ const RANKED_EXAM_TYPES: ExamType[] = [
   'database-practice',
   'infrastructure-fundamentals',
   'api-developer-fundamentals',
+  'playwright-practico',
+  'playwright-fundamentals',
 ];
 
 const ASSESSMENT_RANKING_TYPES = new Set<ExamType>([
@@ -55,6 +57,7 @@ const ASSESSMENT_RANKING_TYPES = new Set<ExamType>([
   'database-practice',
   'infrastructure-fundamentals',
   'api-developer-fundamentals',
+  'playwright-fundamentals',
 ]);
 
 function isMissingAchievementsTableError(error: { code?: string } | null) {

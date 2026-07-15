@@ -4,6 +4,7 @@ import { apiTestingFundamentalsDefinition } from './api-testing-fundamentals/dat
 import { databaseFundamentalsDefinition } from './database-fundamentals/data/assessment-definition';
 import { databasePracticeDefinition } from './database-practice/data/assessment-definition';
 import { infrastructureFundamentalsDefinition } from './infrastructure-fundamentals/data/assessment-definition';
+import { playwrightFundamentalsDefinition } from './playwright-fundamentals/data/assessment-definition';
 
 export default function AssessmentsIndexPage() {
   const overview = apiTestingFundamentalsDefinition;
@@ -35,6 +36,13 @@ export default function AssessmentsIndexPage() {
       badgeColor: 'text-amber-300',
       accentColor: 'text-indigo-200',
       buttonClass: 'bg-indigo-500 hover:bg-indigo-400',
+    },
+    {
+      definition: playwrightFundamentalsDefinition,
+      badge: 'Examen teórico · Auto-corregido · Playwright',
+      badgeColor: 'text-amber-300',
+      accentColor: 'text-fuchsia-200',
+      buttonClass: 'bg-fuchsia-500 hover:bg-fuchsia-400',
     },
   ];
 

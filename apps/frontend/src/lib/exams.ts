@@ -14,7 +14,8 @@ export type ExamType =
   | 'database-practice'
   | 'infrastructure-fundamentals'
   | 'api-developer-fundamentals'
-  | 'playwright-practico';
+  | 'playwright-practico'
+  | 'playwright-fundamentals';
 
 export interface ExamMeta {
   emoji: string;
@@ -75,6 +76,11 @@ export const EXAM_META: Record<ExamType, ExamMeta> = {
     label: 'Playwright — Prueba práctica',
     href: '/labs/playwright-practico',
   },
+  'playwright-fundamentals': {
+    emoji: '🎬',
+    label: 'Playwright — Fundamentos',
+    href: '/assessments/playwright-fundamentals',
+  },
 };
 
 export const EXAM_TYPES = Object.keys(EXAM_META) as ExamType[];
@@ -89,6 +95,7 @@ export const POINTS_BASED_TYPES = new Set<ExamType>([
   'infrastructure-fundamentals',
   'api-developer-fundamentals',
   'playwright-practico',
+  'playwright-fundamentals',
 ]);
 
 export interface ExamScoreFields {
