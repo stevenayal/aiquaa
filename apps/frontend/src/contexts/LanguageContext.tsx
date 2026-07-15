@@ -93,15 +93,15 @@ const translations: Record<Language, Record<string, string>> = {
     'labs.action': 'Hacer click para usar',
 
     // Home page - Hero Section
-    'home.hero.title': 'Impulsa tu carrera de QA con IA y comunidad',
+    'home.hero.title': 'El ecosistema QA que te prepara para el mundo real',
     'home.hero.subtitle':
-      'Accede a herramientas gratuitas de testing, prepárate para certificaciones ISTQB y JMeter, y crece junto a la comunidad QA más activa de Paraguay.',
+      'Practica con simuladores, laboratorios y evaluaciones técnicas, prepárate para certificaciones y demuestra tus habilidades. Las empresas pueden descubrir talento QA evaluado por AIQUAA.',
     'home.hero.cta.primary': 'Únete Gratis',
     'home.hero.cta.secondary': 'Explorar Herramientas',
-    'home.hero.trust.free': '100% Gratis',
-    'home.hero.trust.opensource': '✨ Potenciado con IA',
+    'home.hero.trust.free': 'Sin costo para la comunidad',
+    'home.hero.trust.opensource': 'Potenciado con IA',
     'home.hero.trust.spanish': 'En Español',
-    'home.hero.trust.paraguay': 'Hecho en Paraguay 🇵🇾',
+    'home.hero.trust.paraguay': 'Hecho en Paraguay',
     'home.hero.stats.tools': 'herramientas gratuitas',
     'home.hero.stats.resources': 'recursos de estudio',
     'home.hero.stats.community': 'usuarios registrados',
@@ -492,15 +492,15 @@ const translations: Record<Language, Record<string, string>> = {
     'labs.action': 'Click to use',
 
     // Home page - Hero Section
-    'home.hero.title': 'Boost your QA career with AI and community',
+    'home.hero.title': 'The QA ecosystem that prepares you for the real world',
     'home.hero.subtitle':
-      "Access free testing tools, prepare for ISTQB and JMeter certifications, and grow with Paraguay's most active QA community.",
+      'Practice with simulators, labs and technical assessments, get ready for certifications and prove your skills. Companies can discover QA talent assessed by AIQUAA.',
     'home.hero.cta.primary': 'Join Free',
     'home.hero.cta.secondary': 'Explore Tools',
-    'home.hero.trust.free': '100% Free',
-    'home.hero.trust.opensource': '✨ Powered by AI',
+    'home.hero.trust.free': 'Free for the community',
+    'home.hero.trust.opensource': 'Powered by AI',
     'home.hero.trust.spanish': 'In Spanish',
-    'home.hero.trust.paraguay': 'Made in Paraguay 🇵🇾',
+    'home.hero.trust.paraguay': 'Made in Paraguay',
     'home.hero.stats.tools': 'free tools',
     'home.hero.stats.resources': 'study resources',
     'home.hero.stats.community': 'registered users',
