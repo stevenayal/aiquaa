@@ -8,11 +8,12 @@ import { apiTestingFundamentalsDefinition } from '@/app/assessments/api-testing-
 import { databaseFundamentalsDefinition } from '@/app/assessments/database-fundamentals/data/assessment-definition';
 import { databasePracticeDefinition } from '@/app/assessments/database-practice/data/assessment-definition';
 import { infrastructureFundamentalsDefinition } from '@/app/assessments/infrastructure-fundamentals/data/assessment-definition';
+import LineIcon, { LineIconName } from '@/components/icons/LineIcon';
 
 interface PromoSlide {
   id: string;
   badge: string;
-  icon: string;
+  icon: LineIconName;
   title: string;
   description: string;
   meta: string[];
@@ -36,8 +37,8 @@ function assessmentSlide(
 ): PromoSlide {
   return {
     id: definition.slug,
-    badge: '🆕 Nuevo 2026',
-    icon: '🧪',
+    badge: 'Nuevo 2026',
+    icon: 'flask',
     title: definition.title,
     description,
     meta: [
@@ -54,8 +55,8 @@ function assessmentSlide(
 const SLIDES: PromoSlide[] = [
   {
     id: 'ranking',
-    badge: '🏆 Ranking',
-    icon: '🏆',
+    badge: 'Ranking',
+    icon: 'trophy',
     title: 'Ranking AIQUAA',
     description:
       'Competí en el podio de cada categoría, subí de nivel y ganá XP en la comunidad.',
@@ -91,8 +92,8 @@ const SLIDES: PromoSlide[] = [
   ),
   {
     id: 'api-banking',
-    badge: '🆕 Nuevo 2026',
-    icon: '🧪',
+    badge: 'Nuevo 2026',
+    icon: 'bug',
     title: 'API Testing — Challenge práctico',
     description:
       'Elegí entre Rick and Morty, Chuck Norris o NASA. Diseñá casos, documentá hallazgos y generá un reporte profesional.',
@@ -171,11 +172,16 @@ export default function HomePromoCarousel() {
                   className={`block bg-gradient-to-r ${slide.color} p-8 md:p-12 text-white`}
                 >
                   <div className="flex flex-col md:flex-row md:items-center gap-6 px-9 md:px-0">
-                    <div className="text-5xl md:text-6xl shrink-0">
-                      {slide.icon}
+                    <div className="shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-white/15 backdrop-blur-sm grid place-items-center">
+                      <LineIcon
+                        name={slide.icon}
+                        size={36}
+                        strokeWidth={1.4}
+                        className="text-white"
+                      />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs font-bold mb-3">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs font-bold mb-3">
                         {slide.badge}
                       </span>
                       <h3 className="text-2xl md:text-3xl font-bold mb-2">
@@ -211,7 +217,7 @@ export default function HomePromoCarousel() {
             aria-label="Novedad anterior"
             className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center transition-colors"
           >
-            ←
+            <LineIcon name="arrow" size={16} className="rotate-180" />
           </button>
           <button
             type="button"
@@ -219,7 +225,7 @@ export default function HomePromoCarousel() {
             aria-label="Siguiente novedad"
             className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center transition-colors"
           >
-            →
+            <LineIcon name="arrow" size={16} />
           </button>
 
           {/* Dots */}

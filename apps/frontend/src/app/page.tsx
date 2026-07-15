@@ -8,6 +8,7 @@ import LogoMark from '@/components/LogoMark';
 import HomePromoCarousel from '@/components/HomePromoCarousel';
 import ISTQBHighlight from '@/components/ISTQBHighlight';
 import { SuruFloating } from '@/components/Suru';
+import LineIcon, { LineIconName } from '@/components/icons/LineIcon';
 import { LABS_TOOL_COUNT } from '@/lib/labsCatalog';
 import { STUDY_RESOURCE_COUNT } from '@/lib/studyResources';
 
@@ -37,37 +38,62 @@ export default function HomePage() {
       });
   }, [t]);
 
-  const featuredTools = [
+  const featuredTools: {
+    id: string;
+    icon: LineIconName;
+    title: string;
+    description: string;
+    badge: string;
+    iconBg: string;
+    iconBgDark: string;
+    iconColor: string;
+    iconColorDark: string;
+    badgeColor: string;
+    badgeColorDark: string;
+    href: string;
+  }[] = [
     {
       id: 'istqb',
-      icon: '📚',
+      icon: 'cap',
       title: 'Simulador ISTQB',
-      subtitle: 'Certificación CTFL v4.0',
-      description: 'Practica con 40 preguntas del syllabus oficial',
-      color: 'from-amber-500 to-amber-600',
+      description: 'Practicá con 40 preguntas del syllabus oficial CTFL v4.0',
+      badge: 'Más popular',
+      iconBg: 'bg-indigo-50',
+      iconBgDark: 'dark:bg-indigo-500/10',
+      iconColor: 'text-indigo-600',
+      iconColorDark: 'dark:text-indigo-400',
+      badgeColor: 'text-indigo-600',
+      badgeColorDark: 'dark:text-indigo-400',
       href: '/labs/istqb',
-      badge: '🔥 Más Popular',
     },
     {
       id: 'allpairs',
-      icon: '🔀',
+      icon: 'target',
       title: 'All Pairs Generator',
-      subtitle: 'Pairwise Testing',
-      description: 'Reduce casos de prueba combinatorios optimizando cobertura',
-      color: 'from-teal-500 to-teal-600',
+      description: 'Reducí casos de prueba combinatorios optimizando cobertura',
+      badge: 'Destacada',
+      iconBg: 'bg-teal-50',
+      iconBgDark: 'dark:bg-teal-500/10',
+      iconColor: 'text-teal-600',
+      iconColorDark: 'dark:text-teal-400',
+      badgeColor: 'text-teal-600',
+      badgeColorDark: 'dark:text-teal-400',
       href: '/labs/allpairs',
-      badge: '⭐ Destacada',
     },
     {
       id: 'test-app',
-      icon: '🐞',
+      icon: 'bug',
       title: 'AIQUAA Test App',
-      subtitle: 'Bug Hunting',
       description:
         'Aplicación con bugs intencionales para evaluar tus habilidades',
-      color: 'from-red-500 to-rose-600',
+      badge: 'Práctica',
+      iconBg: 'bg-rose-50',
+      iconBgDark: 'dark:bg-rose-500/10',
+      iconColor: 'text-rose-600',
+      iconColorDark: 'dark:text-rose-400',
+      badgeColor: 'text-rose-600',
+      badgeColorDark: 'dark:text-rose-400',
       href: '/labs/test-app',
-      badge: '🎯 Práctica',
     },
   ];
 
@@ -114,7 +140,7 @@ export default function HomePage() {
                       {t('home.hero.cta.primary')}
                     </span>
                     <span className="ml-2 group-hover:translate-x-1 transition-transform">
-                      →
+                      <LineIcon name="arrow" size={17} />
                     </span>
                   </Link>
                   <Link
@@ -125,6 +151,7 @@ export default function HomePage() {
                         : 'text-slate-700 border-slate-300 hover:bg-slate-100 hover:border-slate-400 focus:ring-slate-300/50'
                     }`}
                   >
+                    <LineIcon name="flask" size={17} className="mr-2" />
                     {t('home.hero.cta.secondary')}
                   </Link>
                 </div>
@@ -156,7 +183,11 @@ export default function HomePage() {
                   <div
                     className={`flex items-center gap-2 text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}
                   >
-                    <span>🇵🇾</span>
+                    <LineIcon
+                      name="home"
+                      size={16}
+                      className="text-green-500"
+                    />
                     <span>{t('home.hero.trust.paraguay')}</span>
                   </div>
                 </div>
@@ -210,13 +241,15 @@ export default function HomePage() {
                       wordmark
                     />
 
-                    <div className="absolute -top-2 -right-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg animate-bounce">
+                    <div className="absolute -top-2 -right-2 flex items-center gap-1.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg animate-bounce">
+                      <LineIcon name="cap" size={14} />
                       ISTQB Ready
                     </div>
                     <div
-                      className="absolute -bottom-2 -left-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg animate-bounce"
+                      className="absolute -bottom-2 -left-2 flex items-center gap-1.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg animate-bounce"
                       style={{ animationDelay: '0.5s' }}
                     >
+                      <LineIcon name="target" size={14} />
                       JMeter Pro
                     </div>
                   </div>
@@ -253,7 +286,7 @@ export default function HomePage() {
                 isDarkMode ? 'text-white' : 'text-brand-text'
               }`}
             >
-              🧪 {t('home.tools.title')}
+              {t('home.tools.title')}
             </h2>
             <p
               className={`text-lg max-w-2xl mx-auto ${
@@ -264,55 +297,52 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-6">
             {featuredTools.map((tool) => (
               <Link
                 key={tool.id}
                 href={tool.href}
-                className={`group block rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 ${
-                  isDarkMode ? 'bg-slate-800' : 'bg-white'
+                className={`group block rounded-2xl border p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
+                  isDarkMode
+                    ? 'bg-slate-800 border-slate-700 hover:border-slate-600'
+                    : 'bg-white border-gray-200 hover:border-gray-300'
                 }`}
               >
-                <div
-                  className={`bg-gradient-to-r ${tool.color} p-6 text-white relative`}
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="text-4xl">{tool.icon}</div>
-                    <span className="px-2 py-1 bg-white/20 backdrop-blur-sm rounded text-xs font-medium">
-                      {tool.badge}
-                    </span>
-                  </div>
-                  <h3 className="text-xl font-bold mb-1">{tool.title}</h3>
-                  <p className="text-white/90 text-sm">{tool.subtitle}</p>
-                </div>
-                <div className="p-6">
-                  <p
-                    className={`text-sm mb-4 ${
-                      isDarkMode ? 'text-slate-300' : 'text-gray-600'
-                    }`}
-                  >
-                    {tool.description}
-                  </p>
+                <div className="flex items-start justify-between mb-4">
                   <div
-                    className={`inline-flex items-center gap-2 font-semibold text-sm ${
-                      isDarkMode ? 'text-indigo-400' : 'text-indigo-600'
-                    }`}
+                    className={`w-10 h-10 rounded-lg grid place-items-center ${tool.iconBg} ${tool.iconBgDark} ${tool.iconColor} ${tool.iconColorDark}`}
                   >
-                    Explorar
-                    <svg
-                      className="w-4 h-4 group-hover:translate-x-1 transition-transform"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M17 8l4 4m0 0l-4 4m4-4H3"
-                      />
-                    </svg>
+                    <LineIcon name={tool.icon} size={20} />
                   </div>
+                  <span
+                    className={`text-[11px] font-bold uppercase tracking-wide ${tool.badgeColor} ${tool.badgeColorDark}`}
+                  >
+                    {tool.badge}
+                  </span>
+                </div>
+                <h3
+                  className={`text-lg font-bold mb-1.5 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}
+                >
+                  {tool.title}
+                </h3>
+                <p
+                  className={`text-sm mb-4 leading-relaxed ${
+                    isDarkMode ? 'text-slate-300' : 'text-gray-600'
+                  }`}
+                >
+                  {tool.description}
+                </p>
+                <div
+                  className={`inline-flex items-center gap-1.5 font-semibold text-sm ${
+                    isDarkMode ? 'text-indigo-400' : 'text-indigo-600'
+                  }`}
+                >
+                  Explorar
+                  <LineIcon
+                    name="arrow"
+                    size={15}
+                    className="group-hover:translate-x-1 transition-transform"
+                  />
                 </div>
               </Link>
             ))}
@@ -584,7 +614,13 @@ export default function HomePage() {
         }`}
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="text-5xl mb-6">🚀</div>
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 grid place-items-center mx-auto mb-6">
+            <LineIcon
+              name="arrow"
+              size={28}
+              className="text-white -rotate-45"
+            />
+          </div>
           <h2
             className={`text-3xl md:text-4xl font-bold mb-4 ${
               isDarkMode ? 'text-white' : 'text-brand-text'
@@ -608,7 +644,7 @@ export default function HomePage() {
                   : 'bg-indigo-500 hover:bg-indigo-600 text-white'
               }`}
             >
-              <span>🚀</span>
+              <LineIcon name="rocket" size={20} />
               Registrarse Gratis
             </Link>
             <Link
@@ -619,7 +655,7 @@ export default function HomePage() {
                   : 'bg-white hover:bg-gray-50 text-gray-800 border-2 border-gray-200'
               }`}
             >
-              <span>📖</span>
+              <LineIcon name="book" size={20} />
               Conocer Más
             </Link>
           </div>

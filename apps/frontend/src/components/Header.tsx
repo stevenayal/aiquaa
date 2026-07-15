@@ -9,27 +9,32 @@ import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import LanguageSelector from './LanguageSelector';
 import LogoMark from './LogoMark';
 import Avatar from '@/components/ui/Avatar';
+import LineIcon, { LineIconName } from '@/components/icons/LineIcon';
 
-const navLinks = [
-  { href: '/', label: 'nav.home', emoji: '' },
-  { href: '/blog', label: 'nav.blog', emoji: '📝' },
-  { href: '/labs', label: 'nav.labs', emoji: '🧪' },
-  { href: '/ranking', label: 'nav.ranking', emoji: '🏆' },
-  { href: '/recursos', label: 'nav.resources', emoji: '📚' },
-  { href: '/comunidad', label: 'nav.community', emoji: '💬' },
-  { href: '/about', label: 'nav.about', emoji: '' },
+const navLinks: { href: string; label: string; icon: LineIconName }[] = [
+  { href: '/', label: 'nav.home', icon: 'home' },
+  { href: '/blog', label: 'nav.blog', icon: 'doc' },
+  { href: '/labs', label: 'nav.labs', icon: 'flask' },
+  { href: '/ranking', label: 'nav.ranking', icon: 'trophy' },
+  { href: '/recursos', label: 'nav.resources', icon: 'book' },
+  { href: '/comunidad', label: 'nav.community', icon: 'chat' },
+  { href: '/about', label: 'nav.about', icon: 'info' },
 ];
 
-const empresaNavLinks = [
-  { href: '/empresa', label: 'Panel', emoji: '🏢' },
-  { href: '/empresa/procesos', label: 'Mis procesos', emoji: '📂' },
-  { href: '/empresa/pruebas', label: 'Mis pruebas', emoji: '📝' },
-  { href: '/empresa/buscar-candidatos', label: 'Buscar talento', emoji: '👥' },
-  { href: '/empresa/candidatos', label: 'Evaluados', emoji: '📊' },
-  { href: '/empresa/admin/usuarios', label: 'Usuarios', emoji: '👤' },
-  { href: '/ranking', label: 'Tops', emoji: '🏆' },
-  { href: '/labs', label: 'Herramientas', emoji: '🧪' },
-  { href: '/about', label: 'Nosotros', emoji: '' },
+const empresaNavLinks: { href: string; label: string; icon: LineIconName }[] = [
+  { href: '/empresa', label: 'Panel', icon: 'building' },
+  { href: '/empresa/procesos', label: 'Mis procesos', icon: 'doc' },
+  { href: '/empresa/pruebas', label: 'Mis pruebas', icon: 'flask' },
+  {
+    href: '/empresa/buscar-candidatos',
+    label: 'Buscar talento',
+    icon: 'users',
+  },
+  { href: '/empresa/candidatos', label: 'Evaluados', icon: 'chart' },
+  { href: '/empresa/admin/usuarios', label: 'Usuarios', icon: 'users' },
+  { href: '/ranking', label: 'Tops', icon: 'trophy' },
+  { href: '/labs', label: 'Herramientas', icon: 'flask' },
+  { href: '/about', label: 'Nosotros', icon: 'info' },
 ];
 
 const Header = () => {
@@ -154,7 +159,8 @@ const Header = () => {
                             : 'text-indigo-600 hover:bg-indigo-50'
                         }`}
                       >
-                        🏢 Panel de empresa
+                        <LineIcon name="building" size={15} />
+                        Panel de empresa
                       </Link>
                     )}
                     <Link
@@ -166,7 +172,8 @@ const Header = () => {
                           : 'text-gray-700 hover:bg-gray-50'
                       }`}
                     >
-                      👤 Mi perfil
+                      <LineIcon name="user" size={15} />
+                      Mi perfil
                     </Link>
                     {!isEmpresa && (
                       <Link
@@ -178,7 +185,8 @@ const Header = () => {
                             : 'text-gray-700 hover:bg-gray-50'
                         }`}
                       >
-                        # Logros
+                        <LineIcon name="trophy" size={15} />
+                        Logros
                       </Link>
                     )}
                     <div
@@ -193,7 +201,8 @@ const Header = () => {
                           : 'text-red-600 hover:bg-red-50'
                       }`}
                     >
-                      🚪 Cerrar sesión
+                      <LineIcon name="logout" size={15} />
+                      Cerrar sesión
                     </button>
                   </div>
                 )}
@@ -323,9 +332,9 @@ const Header = () => {
               )}
               <Link
                 href={link.href}
-                className={`${linkClass} flex items-center gap-1`}
+                className={`${linkClass} flex items-center gap-1.5`}
               >
-                {link.emoji && <span>{link.emoji}</span>}
+                <LineIcon name={link.icon} size={15} />
                 {link.label.startsWith('nav.') ? t(link.label) : link.label}
               </Link>
             </span>
@@ -354,7 +363,7 @@ const Header = () => {
                     : 'text-brand-light hover:bg-white/10'
                 }`}
               >
-                {link.emoji && <span>{link.emoji}</span>}
+                <LineIcon name={link.icon} size={16} />
                 {link.label.startsWith('nav.') ? t(link.label) : link.label}
               </Link>
             ))}
@@ -397,7 +406,8 @@ const Header = () => {
                         : 'text-indigo-300 hover:bg-white/10'
                     }`}
                   >
-                    🏢 Panel de empresa
+                    <LineIcon name="building" size={16} />
+                    Panel de empresa
                   </Link>
                 )}
                 <Link
@@ -409,7 +419,8 @@ const Header = () => {
                       : 'text-white/80 hover:bg-white/10'
                   }`}
                 >
-                  👤 Mi perfil
+                  <LineIcon name="user" size={16} />
+                  Mi perfil
                 </Link>
                 {!isEmpresa && (
                   <Link
@@ -421,7 +432,8 @@ const Header = () => {
                         : 'text-white/80 hover:bg-white/10'
                     }`}
                   >
-                    # Logros
+                    <LineIcon name="trophy" size={16} />
+                    Logros
                   </Link>
                 )}
                 <button
@@ -433,7 +445,8 @@ const Header = () => {
                       : 'text-white/80 hover:bg-white/10'
                   }`}
                 >
-                  🚪 Cerrar sesión
+                  <LineIcon name="logout" size={16} />
+                  Cerrar sesión
                 </button>
               </>
             ) : (
@@ -471,7 +484,8 @@ const Header = () => {
                   : 'text-white/80 hover:bg-white/10'
               }`}
             >
-              {isDarkMode ? '☀️ Modo claro' : '🌙 Modo oscuro'}
+              <LineIcon name={isDarkMode ? 'sun' : 'moon'} size={16} />
+              {isDarkMode ? 'Modo claro' : 'Modo oscuro'}
             </button>
           </div>
         </div>
