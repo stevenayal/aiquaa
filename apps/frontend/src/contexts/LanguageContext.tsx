@@ -93,9 +93,10 @@ const translations: Record<Language, Record<string, string>> = {
     'labs.action': 'Hacer click para usar',
 
     // Home page - Hero Section
-    'home.hero.title': 'Impulsa tu carrera de QA con IA y comunidad',
+    'home.hero.title':
+      'Impulsa tu carrera de QA con el ecosistema que te prepara para el mundo real',
     'home.hero.subtitle':
-      'Accede a herramientas gratuitas de testing, prepárate para certificaciones ISTQB y JMeter, y crece junto a la comunidad QA más activa de Paraguay.',
+      'Practicá con simuladores, laboratorios y evaluaciones técnicas, o encontrá talento QA ya formado por AIQUAA si sos una empresa que confía en nuestra comunidad.',
     'home.hero.cta.primary': 'Únete Gratis',
     'home.hero.cta.secondary': 'Explorar Herramientas',
     'home.hero.trust.free': '100% Gratis',
@@ -492,9 +493,10 @@ const translations: Record<Language, Record<string, string>> = {
     'labs.action': 'Click to use',
 
     // Home page - Hero Section
-    'home.hero.title': 'Boost your QA career with AI and community',
+    'home.hero.title':
+      'Boost your QA career with the ecosystem that prepares you for the real world',
     'home.hero.subtitle':
-      "Access free testing tools, prepare for ISTQB and JMeter certifications, and grow with Paraguay's most active QA community.",
+      "Practice with simulators, labs and technical assessments, or find QA talent already trained by AIQUAA if you're a company that trusts our community.",
     'home.hero.cta.primary': 'Join Free',
     'home.hero.cta.secondary': 'Explore Tools',
     'home.hero.trust.free': '100% Free',
