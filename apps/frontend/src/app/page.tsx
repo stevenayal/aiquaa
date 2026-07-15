@@ -238,6 +238,7 @@ export default function HomePage() {
                     <LogoMark
                       size={240}
                       color={isDarkMode ? '#ffffff' : '#0f172a'}
+                      animated
                       wordmark
                     />
 

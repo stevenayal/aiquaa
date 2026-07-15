@@ -85,3 +85,39 @@ body {
     background-size: 40px 40px;
   }
 }
+
+/* LogoMark orbit animation (atom icon) */
+@keyframes lm-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes lm-spin-reverse {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+.lm-orbit {
+  transform-origin: 120px 80px;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+.lm-orbit-1 {
+  animation-name: lm-spin;
+  animation-duration: 14s;
+}
+.lm-orbit-2 {
+  animation-name: lm-spin-reverse;
+  animation-duration: 18s;
+}
+.lm-orbit-3 {
+  animation-name: lm-spin;
+  animation-duration: 22s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lm-orbit-1,
+  .lm-orbit-2,
+  .lm-orbit-3 {
+    animation: none;
+  }
+}

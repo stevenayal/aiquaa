@@ -7,6 +7,7 @@ interface LogoMarkProps {
   color?: string;
   wordmark?: boolean;
   className?: string;
+  animated?: boolean;
 }
 
 export default function LogoMark({
@@ -14,6 +15,7 @@ export default function LogoMark({
   color = 'currentColor',
   wordmark = true,
   className,
+  animated = false,
 }: LogoMarkProps) {
   return (
     <svg
@@ -27,9 +29,19 @@ export default function LogoMark({
       aria-label="AIQUAA"
     >
       <g stroke={color} strokeWidth="6" fill="none" strokeLinecap="round">
-        <ellipse cx="120" cy="80" rx="70" ry="28" />
-        <ellipse cx="120" cy="80" rx="70" ry="28" transform="rotate(60 120 80)" />
-        <ellipse cx="120" cy="80" rx="70" ry="28" transform="rotate(120 120 80)" />
+        <g className={animated ? 'lm-orbit lm-orbit-1' : undefined}>
+          <ellipse cx="120" cy="80" rx="70" ry="28" />
+        </g>
+        <g className={animated ? 'lm-orbit lm-orbit-2' : undefined}>
+          <g transform="rotate(60 120 80)">
+            <ellipse cx="120" cy="80" rx="70" ry="28" />
+          </g>
+        </g>
+        <g className={animated ? 'lm-orbit lm-orbit-3' : undefined}>
+          <g transform="rotate(120 120 80)">
+            <ellipse cx="120" cy="80" rx="70" ry="28" />
+          </g>
+        </g>
       </g>
       <g fill={color}>
         <circle cx="120" cy="80" r="10" />
@@ -41,16 +53,20 @@ export default function LogoMark({
       {wordmark && (
         <>
           <text
-            x="120" y="200"
+            x="120"
+            y="200"
             fontFamily="Sora, system-ui, sans-serif"
             fontSize="56"
             fontWeight="800"
             fill={color}
             textAnchor="middle"
             letterSpacing="-1"
-          >aiquaa</text>
+          >
+            aiquaa
+          </text>
           <text
-            x="120" y="240"
+            x="120"
+            y="240"
             fontFamily="Sora, system-ui, sans-serif"
             fontSize="13"
             fontWeight="600"
@@ -58,7 +74,9 @@ export default function LogoMark({
             textAnchor="middle"
             letterSpacing="3"
             opacity="0.85"
-          >SABER ES CALIDAD</text>
+          >
+            SABER ES CALIDAD
+          </text>
         </>
       )}
     </svg>
