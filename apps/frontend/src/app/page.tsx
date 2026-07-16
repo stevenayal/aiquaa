@@ -224,12 +224,12 @@ export default function HomePage() {
               </div>
 
               {/* Right Column — Circular LogoMark */}
-              <div className="hidden lg:flex justify-center items-center">
+              <div className="flex justify-center items-center mt-12 lg:mt-0">
                 <div className="relative">
                   <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/30 to-purple-500/30 rounded-full blur-3xl" />
 
                   <div
-                    className={`relative w-[340px] h-[340px] rounded-full grid place-items-center backdrop-blur-sm shadow-2xl border ${
+                    className={`relative w-[220px] h-[220px] sm:w-[280px] sm:h-[280px] lg:w-[340px] lg:h-[340px] rounded-full grid place-items-center backdrop-blur-sm shadow-2xl border ${
                       isDarkMode
                         ? 'bg-slate-800/60 border-slate-600/50'
                         : 'bg-white/80 border-indigo-100'
@@ -237,17 +237,18 @@ export default function HomePage() {
                   >
                     <LogoMark
                       size={240}
+                      className="w-[155px] h-[155px] sm:w-[195px] sm:h-[195px] lg:w-[240px] lg:h-[240px]"
                       color={isDarkMode ? '#ffffff' : '#0f172a'}
                       animated
                       wordmark
                     />
 
-                    <div className="absolute -top-2 -right-2 flex items-center gap-1.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg animate-bounce">
+                    <div className="absolute -top-2 -right-2 flex items-center gap-1 sm:gap-1.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-bold shadow-lg animate-bounce">
                       <LineIcon name="cap" size={14} />
                       ISTQB Ready
                     </div>
                     <div
-                      className="absolute -bottom-2 -left-2 flex items-center gap-1.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg animate-bounce"
+                      className="absolute -bottom-2 -left-2 flex items-center gap-1 sm:gap-1.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-bold shadow-lg animate-bounce"
                       style={{ animationDelay: '0.5s' }}
                     >
                       <LineIcon name="target" size={14} />

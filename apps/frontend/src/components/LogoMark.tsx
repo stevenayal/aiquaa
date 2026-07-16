@@ -17,49 +17,48 @@ const ORBIT_PATH_D = 'M 190 80 A 70 28 0 1 1 50 80 A 70 28 0 1 1 190 80';
 // keyTimes 0/0.5 = costados (profundidad media), 0.25 = frente
 // (más grande/opaco), 0.75 = fondo (más chico/tenue) — simula 3D.
 const DEPTH_KEY_TIMES = '0;0.25;0.5;0.75;1';
-const DEPTH_R_VALUES = '5;6.5;5;2.8;5';
-const DEPTH_OPACITY_VALUES = '0.8;1;0.8;0.35;0.8';
+const DEPTH_R_VALUES = '6;8;6;3.5;6';
+const DEPTH_OPACITY_VALUES = '0.85;1;0.85;0.4;0.85';
 
-function OrbitElectrons({
+function OrbitElectron({
   pathId,
   color,
   duration,
+  begin = 0,
 }: {
   pathId: string;
   color: string;
   duration: number;
+  begin?: number;
 }) {
-  const offset = -(duration / 2);
   return (
     <>
       <path id={pathId} d={ORBIT_PATH_D} fill="none" stroke="none" />
-      {[0, offset].map((begin) => (
-        <circle key={begin} r="5" fill={color} stroke="none">
-          <animateMotion
-            dur={`${duration}s`}
-            begin={`${begin}s`}
-            repeatCount="indefinite"
-          >
-            <mpath href={`#${pathId}`} />
-          </animateMotion>
-          <animate
-            attributeName="r"
-            values={DEPTH_R_VALUES}
-            keyTimes={DEPTH_KEY_TIMES}
-            dur={`${duration}s`}
-            begin={`${begin}s`}
-            repeatCount="indefinite"
-          />
-          <animate
-            attributeName="opacity"
-            values={DEPTH_OPACITY_VALUES}
-            keyTimes={DEPTH_KEY_TIMES}
-            dur={`${duration}s`}
-            begin={`${begin}s`}
-            repeatCount="indefinite"
-          />
-        </circle>
-      ))}
+      <circle r="6" fill={color} stroke="#000" strokeWidth="2">
+        <animateMotion
+          dur={`${duration}s`}
+          begin={`${begin}s`}
+          repeatCount="indefinite"
+        >
+          <mpath href={`#${pathId}`} />
+        </animateMotion>
+        <animate
+          attributeName="r"
+          values={DEPTH_R_VALUES}
+          keyTimes={DEPTH_KEY_TIMES}
+          dur={`${duration}s`}
+          begin={`${begin}s`}
+          repeatCount="indefinite"
+        />
+        <animate
+          attributeName="opacity"
+          values={DEPTH_OPACITY_VALUES}
+          keyTimes={DEPTH_KEY_TIMES}
+          dur={`${duration}s`}
+          begin={`${begin}s`}
+          repeatCount="indefinite"
+        />
+      </circle>
     </>
   );
 }
@@ -98,21 +97,41 @@ export default function LogoMark({
       <g stroke={color} strokeWidth="6" fill="none" strokeLinecap="round">
         <g className={animated ? 'lm-orbit lm-orbit-1' : undefined}>
           <ellipse cx="120" cy="80" rx="70" ry="28" />
+          {electronsOrbit ? (
+            <OrbitElectron
+              pathId={`lm-orbit-path-1-${uid}`}
+              color={color}
+              duration={4.5}
+            />
+          ) : (
+            <circle
+              cx="56.6"
+              cy="68.2"
+              r="6"
+              fill={color}
+              stroke="#000"
+              strokeWidth="2"
+            />
+          )}
         </g>
         <g className={animated ? 'lm-orbit lm-orbit-2' : undefined}>
           <g transform="rotate(60 120 80)">
             <ellipse cx="120" cy="80" rx="70" ry="28" />
             {electronsOrbit ? (
-              <OrbitElectrons
+              <OrbitElectron
                 pathId={`lm-orbit-path-2-${uid}`}
                 color={color}
-                duration={5}
+                duration={6}
               />
             ) : (
-              <>
-                <circle cx="71.9" cy="127.3" r="5" fill={color} stroke="none" />
-                <circle cx="136.9" cy="14.7" r="5" fill={color} stroke="none" />
-              </>
+              <circle
+                cx="71.9"
+                cy="127.3"
+                r="6"
+                fill={color}
+                stroke="#000"
+                strokeWidth="2"
+              />
             )}
           </g>
         </g>
@@ -120,16 +139,20 @@ export default function LogoMark({
           <g transform="rotate(120 120 80)">
             <ellipse cx="120" cy="80" rx="70" ry="28" />
             {electronsOrbit ? (
-              <OrbitElectrons
+              <OrbitElectron
                 pathId={`lm-orbit-path-3-${uid}`}
                 color={color}
-                duration={6.5}
+                duration={7.5}
               />
             ) : (
-              <>
-                <circle cx="178.9" cy="106" r="5" fill={color} stroke="none" />
-                <circle cx="126.9" cy="16" r="5" fill={color} stroke="none" />
-              </>
+              <circle
+                cx="178.9"
+                cy="106"
+                r="6"
+                fill={color}
+                stroke="#000"
+                strokeWidth="2"
+              />
             )}
           </g>
         </g>
