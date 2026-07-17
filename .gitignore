@@ -90,7 +90,11 @@ tmp/
 temp/
 
 .vercel
-/.claude
+/graphify-out/
+/.claude/*
+!/.claude/CLAUDE.md
+!/.claude/settings.json
+!/.claude/skills
 AGENTS.md
 aiquaa-pr32-resolve/
 .codex/config.toml
