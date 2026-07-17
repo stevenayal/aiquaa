@@ -35,6 +35,15 @@ import {
 } from '../database-practice/lib/gamification';
 import { ensureDatabasePracticeSeeded } from '../database-practice/lib/seed';
 import {
+  GHERKIN_FUNDAMENTALS_SEED_VERSION,
+  GHERKIN_FUNDAMENTALS_SLUG,
+} from '../gherkin-fundamentals/data/assessment-definition';
+import {
+  GHERKIN_FUNDAMENTALS_GAMIFICATION_RULES,
+  buildGherkinFundamentalsGamificationEvents,
+} from '../gherkin-fundamentals/lib/gamification';
+import { ensureGherkinFundamentalsSeeded } from '../gherkin-fundamentals/lib/seed';
+import {
   INFRASTRUCTURE_FUNDAMENTALS_SEED_VERSION,
   INFRASTRUCTURE_FUNDAMENTALS_SLUG,
 } from '../infrastructure-fundamentals/data/assessment-definition';
@@ -62,6 +71,7 @@ export type AssessmentExamType =
   | 'api-testing-fundamentals'
   | 'database-fundamentals'
   | 'database-practice'
+  | 'gherkin-fundamentals'
   | 'infrastructure-fundamentals'
   | 'playwright-fundamentals';
 
@@ -124,6 +134,15 @@ export const ASSESSMENT_REGISTRY: Record<string, AssessmentRegistryEntry> = {
     gamificationSource: 'DATABASE_PRACTICE',
     gamificationRules: DATABASE_PRACTICE_GAMIFICATION_RULES,
     buildGamificationEvents: buildDatabasePracticeGamificationEvents,
+  },
+  [GHERKIN_FUNDAMENTALS_SLUG]: {
+    slug: GHERKIN_FUNDAMENTALS_SLUG,
+    seedVersion: GHERKIN_FUNDAMENTALS_SEED_VERSION,
+    ensureSeeded: ensureGherkinFundamentalsSeeded,
+    examType: 'gherkin-fundamentals',
+    gamificationSource: 'GHERKIN_FUNDAMENTALS',
+    gamificationRules: GHERKIN_FUNDAMENTALS_GAMIFICATION_RULES,
+    buildGamificationEvents: buildGherkinFundamentalsGamificationEvents,
   },
   [INFRASTRUCTURE_FUNDAMENTALS_SLUG]: {
     slug: INFRASTRUCTURE_FUNDAMENTALS_SLUG,

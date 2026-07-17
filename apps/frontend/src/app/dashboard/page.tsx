@@ -84,6 +84,7 @@ export default function DashboardPage() {
     'infrastructure-fundamentals',
     'api-developer-fundamentals',
     'playwright-practico',
+    'gherkin-fundamentals',
   ];
   const recommended = allTypes.find((t) => !passedTypes.has(t)) ?? null;
   const allPassed = allTypes.every((t) => passedTypes.has(t));

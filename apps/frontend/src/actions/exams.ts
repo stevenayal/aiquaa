@@ -23,7 +23,8 @@ interface SaveExamResultPayload {
     | 'infrastructure-fundamentals'
     | 'api-developer-fundamentals'
     | 'playwright-practico'
-    | 'playwright-fundamentals';
+    | 'playwright-fundamentals'
+    | 'gherkin-fundamentals';
   exam_mode: 'exam' | 'training';
   participant_name?: string;
   participant_email?: string;
@@ -191,7 +192,8 @@ export async function getLeaderboardAction(
     | 'infrastructure-fundamentals'
     | 'api-developer-fundamentals'
     | 'playwright-practico'
-    | 'playwright-fundamentals',
+    | 'playwright-fundamentals'
+    | 'gherkin-fundamentals',
   limit = 20
 ) {
   const supabase = createClient();

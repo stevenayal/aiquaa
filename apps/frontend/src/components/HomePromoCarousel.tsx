@@ -7,6 +7,7 @@ import { apiDeveloperFundamentalsDefinition } from '@/app/assessments/api-develo
 import { apiTestingFundamentalsDefinition } from '@/app/assessments/api-testing-fundamentals/data/assessment-definition';
 import { databaseFundamentalsDefinition } from '@/app/assessments/database-fundamentals/data/assessment-definition';
 import { databasePracticeDefinition } from '@/app/assessments/database-practice/data/assessment-definition';
+import { gherkinFundamentalsDefinition } from '@/app/assessments/gherkin-fundamentals/data/assessment-definition';
 import { infrastructureFundamentalsDefinition } from '@/app/assessments/infrastructure-fundamentals/data/assessment-definition';
 import LineIcon, { LineIconName } from '@/components/icons/LineIcon';
 
@@ -89,6 +90,11 @@ const SLIDES: PromoSlide[] = [
     apiDeveloperFundamentalsDefinition,
     'Fundamentos de APIs REST pensados para quien recién arranca a programar.',
     'from-indigo-500 to-violet-600'
+  ),
+  assessmentSlide(
+    gherkinFundamentalsDefinition,
+    'BDD y Gherkin: de Dado/Cuando/Entonces a escenarios avanzados.',
+    'from-lime-500 to-green-600'
   ),
   {
     id: 'api-banking',

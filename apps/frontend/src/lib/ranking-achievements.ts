@@ -50,6 +50,7 @@ const RANKED_EXAM_TYPES: ExamType[] = [
   'api-developer-fundamentals',
   'playwright-practico',
   'playwright-fundamentals',
+  'gherkin-fundamentals',
 ];
 
 const ASSESSMENT_RANKING_TYPES = new Set<ExamType>([
@@ -58,6 +59,7 @@ const ASSESSMENT_RANKING_TYPES = new Set<ExamType>([
   'infrastructure-fundamentals',
   'api-developer-fundamentals',
   'playwright-fundamentals',
+  'gherkin-fundamentals',
 ]);
 
 function isMissingAchievementsTableError(error: { code?: string } | null) {

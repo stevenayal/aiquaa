@@ -81,6 +81,17 @@ export const toolCategories: LabCategory[] = [
         implementedDate: 'Jul 2026',
       },
       {
+        id: 'gherkin-fundamentals',
+        name: 'Gherkin y BDD — Fundamentos',
+        description:
+          'Prueba técnica teórica sobre BDD (3 amigos, discovery, documentación viva), sintaxis Gherkin Dado/Cuando/Entonces y escenarios avanzados con Scenario Outline y tags — auto-corregido, 100 pts',
+        icon: '🥒',
+        color: 'from-lime-500 to-green-600',
+        href: '/assessments/gherkin-fundamentals',
+        featured: true,
+        implementedDate: 'Jul 2026',
+      },
+      {
         id: 'performance',
         name: 'Examen de Performance Testing',
         description:

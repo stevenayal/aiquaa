@@ -15,6 +15,7 @@ const EXAM_LABELS: Record<string, string> = {
   'database-practice': 'Bases de Datos — Práctica SQL',
   'infrastructure-fundamentals': 'Infraestructura — Fundamentos',
   'api-developer-fundamentals': 'APIs para Desarrolladores — Fundamentos',
+  'gherkin-fundamentals': 'Gherkin y BDD — Fundamentos',
 };
 
 type Props = { params: Promise<{ token: string }> };
