@@ -3,6 +3,7 @@ import { apiDeveloperFundamentalsDefinition } from './api-developer-fundamentals
 import { apiTestingFundamentalsDefinition } from './api-testing-fundamentals/data/assessment-definition';
 import { databaseFundamentalsDefinition } from './database-fundamentals/data/assessment-definition';
 import { databasePracticeDefinition } from './database-practice/data/assessment-definition';
+import { gherkinFundamentalsDefinition } from './gherkin-fundamentals/data/assessment-definition';
 import { infrastructureFundamentalsDefinition } from './infrastructure-fundamentals/data/assessment-definition';
 import { playwrightFundamentalsDefinition } from './playwright-fundamentals/data/assessment-definition';
 
@@ -43,6 +44,13 @@ export default function AssessmentsIndexPage() {
       badgeColor: 'text-amber-300',
       accentColor: 'text-fuchsia-200',
       buttonClass: 'bg-fuchsia-500 hover:bg-fuchsia-400',
+    },
+    {
+      definition: gherkinFundamentalsDefinition,
+      badge: 'Examen teórico · Auto-corregido · BDD',
+      badgeColor: 'text-amber-300',
+      accentColor: 'text-lime-200',
+      buttonClass: 'bg-lime-500 hover:bg-lime-400',
     },
   ];
 

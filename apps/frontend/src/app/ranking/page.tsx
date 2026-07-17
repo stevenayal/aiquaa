@@ -60,7 +60,8 @@ type ExamSlug =
   | 'infrastructure-fundamentals'
   | 'api-developer-fundamentals'
   | 'playwright-fundamentals'
-  | 'playwright-practico';
+  | 'playwright-practico'
+  | 'gherkin-fundamentals';
 
 const EXAM_SLUGS: ExamSlug[] = [
   'git',
@@ -75,6 +76,7 @@ const EXAM_SLUGS: ExamSlug[] = [
   'api-developer-fundamentals',
   'playwright-fundamentals',
   'playwright-practico',
+  'gherkin-fundamentals',
 ];
 
 interface Category {
@@ -152,6 +154,13 @@ const CATEGORIES: Category[] = [
     practico: 'playwright-practico',
   },
   {
+    key: 'bdd',
+    label: 'Gherkin y BDD',
+    emoji: '🥒',
+    color: 'from-lime-500 to-green-600',
+    teorico: 'gherkin-fundamentals',
+  },
+  {
     key: 'comunidad',
     label: 'Comunidad',
     emoji: '🚀',
@@ -175,6 +184,7 @@ const EXAM_TAB_URLS: Record<string, string> = {
   'api-developer-fundamentals': '/assessments/api-developer-fundamentals',
   'playwright-fundamentals': '/assessments/playwright-fundamentals',
   'playwright-practico': '/labs/playwright-practico',
+  'gherkin-fundamentals': '/assessments/gherkin-fundamentals',
 };
 
 const MEDAL = ['🥇', '🥈', '🥉'];
@@ -1044,6 +1054,7 @@ export default function RankingPage() {
     'database-practice': [],
     'infrastructure-fundamentals': [],
     'api-developer-fundamentals': [],
+    'gherkin-fundamentals': [],
   });
   const [examLoading, setExamLoading] = useState<Record<string, boolean>>({
     git: true,
@@ -1056,6 +1067,7 @@ export default function RankingPage() {
     'database-practice': true,
     'infrastructure-fundamentals': true,
     'api-developer-fundamentals': true,
+    'gherkin-fundamentals': true,
   });
   const [showWelcome, setShowWelcome] = useState(false);
 

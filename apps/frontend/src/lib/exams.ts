@@ -15,7 +15,8 @@ export type ExamType =
   | 'infrastructure-fundamentals'
   | 'api-developer-fundamentals'
   | 'playwright-practico'
-  | 'playwright-fundamentals';
+  | 'playwright-fundamentals'
+  | 'gherkin-fundamentals';
 
 export interface ExamMeta {
   emoji: string;
@@ -81,6 +82,11 @@ export const EXAM_META: Record<ExamType, ExamMeta> = {
     label: 'Playwright — Fundamentos',
     href: '/assessments/playwright-fundamentals',
   },
+  'gherkin-fundamentals': {
+    emoji: '🥒',
+    label: 'Gherkin y BDD — Fundamentos',
+    href: '/assessments/gherkin-fundamentals',
+  },
 };
 
 export const EXAM_TYPES = Object.keys(EXAM_META) as ExamType[];
@@ -96,6 +102,7 @@ export const POINTS_BASED_TYPES = new Set<ExamType>([
   'api-developer-fundamentals',
   'playwright-practico',
   'playwright-fundamentals',
+  'gherkin-fundamentals',
 ]);
 
 export interface ExamScoreFields {

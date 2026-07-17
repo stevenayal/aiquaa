@@ -9,4 +9,5 @@ export const PROCESS_ASSESSMENT_SLUGS = [
   'database-practice',
   'infrastructure-fundamentals',
   'api-developer-fundamentals',
+  'gherkin-fundamentals',
 ];
