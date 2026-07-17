@@ -90,6 +90,7 @@ tmp/
 temp/
 
 .vercel
+/graphify-out/
 /.claude/*
 !/.claude/CLAUDE.md
 !/.claude/settings.json
