@@ -184,6 +184,17 @@ export const toolCategories: LabCategory[] = [
         featured: true,
         implementedDate: 'Jul 2026',
       },
+      {
+        id: 'api-dotnet-fundamentals',
+        name: 'API .NET — Fundamentos',
+        description:
+          'Prueba técnica para bootcamp de desarrollo backend: diseño REST y versionado, contrato OpenAPI/Swagger, Clean Architecture y manejo de errores en .NET — auto-corregido, 100 pts',
+        icon: '🟣',
+        color: 'from-violet-500 to-purple-600',
+        href: '/assessments/api-dotnet-fundamentals',
+        featured: true,
+        implementedDate: 'Ago 2026',
+      },
     ],
   },
   {

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { apiDeveloperFundamentalsDefinition } from './api-developer-fundamentals/data/assessment-definition';
+import { apiDotnetFundamentalsDefinition } from './api-dotnet-fundamentals/data/assessment-definition';
 import { apiTestingFundamentalsDefinition } from './api-testing-fundamentals/data/assessment-definition';
 import { databaseFundamentalsDefinition } from './database-fundamentals/data/assessment-definition';
 import { databasePracticeDefinition } from './database-practice/data/assessment-definition';
@@ -37,6 +38,13 @@ export default function AssessmentsIndexPage() {
       badgeColor: 'text-amber-300',
       accentColor: 'text-indigo-200',
       buttonClass: 'bg-indigo-500 hover:bg-indigo-400',
+    },
+    {
+      definition: apiDotnetFundamentalsDefinition,
+      badge: 'Examen teórico · Auto-corregido · .NET',
+      badgeColor: 'text-amber-300',
+      accentColor: 'text-violet-200',
+      buttonClass: 'bg-violet-500 hover:bg-violet-400',
     },
     {
       definition: playwrightFundamentalsDefinition,

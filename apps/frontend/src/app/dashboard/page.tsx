@@ -83,6 +83,7 @@ export default function DashboardPage() {
     'database-practice',
     'infrastructure-fundamentals',
     'api-developer-fundamentals',
+    'api-dotnet-fundamentals',
     'playwright-practico',
     'gherkin-fundamentals',
   ];

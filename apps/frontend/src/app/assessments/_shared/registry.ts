@@ -8,6 +8,15 @@ import {
 } from '../api-developer-fundamentals/lib/gamification';
 import { ensureApiDeveloperFundamentalsSeeded } from '../api-developer-fundamentals/lib/seed';
 import {
+  API_DOTNET_FUNDAMENTALS_SEED_VERSION,
+  API_DOTNET_FUNDAMENTALS_SLUG,
+} from '../api-dotnet-fundamentals/data/assessment-definition';
+import {
+  API_DOTNET_FUNDAMENTALS_GAMIFICATION_RULES,
+  buildApiDotnetFundamentalsGamificationEvents,
+} from '../api-dotnet-fundamentals/lib/gamification';
+import { ensureApiDotnetFundamentalsSeeded } from '../api-dotnet-fundamentals/lib/seed';
+import {
   API_TESTING_FUNDAMENTALS_SLUG,
   API_TESTING_SEED_VERSION,
 } from '../api-testing-fundamentals/data/assessment-definition';
@@ -68,6 +77,7 @@ import type {
 
 export type AssessmentExamType =
   | 'api-developer-fundamentals'
+  | 'api-dotnet-fundamentals'
   | 'api-testing-fundamentals'
   | 'database-fundamentals'
   | 'database-practice'
@@ -107,6 +117,15 @@ export const ASSESSMENT_REGISTRY: Record<string, AssessmentRegistryEntry> = {
     gamificationSource: 'API_DEVELOPER_FUNDAMENTALS',
     gamificationRules: API_DEVELOPER_FUNDAMENTALS_GAMIFICATION_RULES,
     buildGamificationEvents: buildApiDeveloperFundamentalsGamificationEvents,
+  },
+  [API_DOTNET_FUNDAMENTALS_SLUG]: {
+    slug: API_DOTNET_FUNDAMENTALS_SLUG,
+    seedVersion: API_DOTNET_FUNDAMENTALS_SEED_VERSION,
+    ensureSeeded: ensureApiDotnetFundamentalsSeeded,
+    examType: 'api-dotnet-fundamentals',
+    gamificationSource: 'API_DOTNET_FUNDAMENTALS',
+    gamificationRules: API_DOTNET_FUNDAMENTALS_GAMIFICATION_RULES,
+    buildGamificationEvents: buildApiDotnetFundamentalsGamificationEvents,
   },
   [API_TESTING_FUNDAMENTALS_SLUG]: {
     slug: API_TESTING_FUNDAMENTALS_SLUG,

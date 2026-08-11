@@ -14,6 +14,7 @@ export type ExamType =
   | 'database-practice'
   | 'infrastructure-fundamentals'
   | 'api-developer-fundamentals'
+  | 'api-dotnet-fundamentals'
   | 'playwright-practico'
   | 'playwright-fundamentals'
   | 'gherkin-fundamentals';
@@ -72,6 +73,11 @@ export const EXAM_META: Record<ExamType, ExamMeta> = {
     label: 'APIs para Desarrolladores — Fundamentos',
     href: '/assessments/api-developer-fundamentals',
   },
+  'api-dotnet-fundamentals': {
+    emoji: '🟣',
+    label: 'API .NET — Fundamentos',
+    href: '/assessments/api-dotnet-fundamentals',
+  },
   'playwright-practico': {
     emoji: '🎭',
     label: 'Playwright — Prueba práctica',
@@ -100,6 +106,7 @@ export const POINTS_BASED_TYPES = new Set<ExamType>([
   'database-practice',
   'infrastructure-fundamentals',
   'api-developer-fundamentals',
+  'api-dotnet-fundamentals',
   'playwright-practico',
   'playwright-fundamentals',
   'gherkin-fundamentals',
