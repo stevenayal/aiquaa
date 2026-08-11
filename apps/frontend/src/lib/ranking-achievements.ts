@@ -51,6 +51,7 @@ const RANKED_EXAM_TYPES: ExamType[] = [
   'api-dotnet-fundamentals',
   'docker-fundamentals',
   'kubernetes-helm-fundamentals',
+  'observability-fundamentals',
   'playwright-practico',
   'playwright-fundamentals',
   'gherkin-fundamentals',
@@ -64,6 +65,7 @@ const ASSESSMENT_RANKING_TYPES = new Set<ExamType>([
   'api-dotnet-fundamentals',
   'docker-fundamentals',
   'kubernetes-helm-fundamentals',
+  'observability-fundamentals',
   'playwright-fundamentals',
   'gherkin-fundamentals',
 ]);

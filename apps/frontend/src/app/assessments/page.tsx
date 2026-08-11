@@ -8,6 +8,7 @@ import { databasePracticeDefinition } from './database-practice/data/assessment-
 import { gherkinFundamentalsDefinition } from './gherkin-fundamentals/data/assessment-definition';
 import { infrastructureFundamentalsDefinition } from './infrastructure-fundamentals/data/assessment-definition';
 import { kubernetesHelmFundamentalsDefinition } from './kubernetes-helm-fundamentals/data/assessment-definition';
+import { observabilityFundamentalsDefinition } from './observability-fundamentals/data/assessment-definition';
 import { playwrightFundamentalsDefinition } from './playwright-fundamentals/data/assessment-definition';
 
 export default function AssessmentsIndexPage() {
@@ -61,6 +62,13 @@ export default function AssessmentsIndexPage() {
       badgeColor: 'text-amber-300',
       accentColor: 'text-sky-200',
       buttonClass: 'bg-sky-500 hover:bg-sky-400',
+    },
+    {
+      definition: observabilityFundamentalsDefinition,
+      badge: 'Examen teórico · Auto-corregido · Observabilidad',
+      badgeColor: 'text-amber-300',
+      accentColor: 'text-teal-200',
+      buttonClass: 'bg-teal-500 hover:bg-teal-400',
     },
     {
       definition: playwrightFundamentalsDefinition,

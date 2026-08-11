@@ -217,6 +217,17 @@ export const toolCategories: LabCategory[] = [
         featured: true,
         implementedDate: 'Ago 2026',
       },
+      {
+        id: 'observability-fundamentals',
+        name: 'Observabilidad — Fundamentos',
+        description:
+          'Prueba técnica para bootcamp de desarrollo: logging estructurado con Serilog, centralización en Seq, niveles de log y visualización — auto-corregido, 100 pts',
+        icon: '📈',
+        color: 'from-teal-500 to-emerald-600',
+        href: '/assessments/observability-fundamentals',
+        featured: true,
+        implementedDate: 'Ago 2026',
+      },
     ],
   },
   {

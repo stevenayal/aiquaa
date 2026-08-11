@@ -25,6 +25,7 @@ interface SaveExamResultPayload {
     | 'api-dotnet-fundamentals'
     | 'docker-fundamentals'
     | 'kubernetes-helm-fundamentals'
+    | 'observability-fundamentals'
     | 'playwright-practico'
     | 'playwright-fundamentals'
     | 'gherkin-fundamentals';
