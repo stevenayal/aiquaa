@@ -228,6 +228,17 @@ export const toolCategories: LabCategory[] = [
         featured: true,
         implementedDate: 'Ago 2026',
       },
+      {
+        id: 'cicd-fundamentals',
+        name: 'CI/CD — Fundamentos',
+        description:
+          'Prueba técnica para bootcamp de desarrollo: pipelines de integración continua, despliegue continuo automatizado y buenas prácticas de versionado — auto-corregido, 100 pts',
+        icon: '🔁',
+        color: 'from-orange-500 to-red-600',
+        href: '/assessments/cicd-fundamentals',
+        featured: true,
+        implementedDate: 'Ago 2026',
+      },
     ],
   },
   {

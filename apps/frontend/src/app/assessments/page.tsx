@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { apiDeveloperFundamentalsDefinition } from './api-developer-fundamentals/data/assessment-definition';
 import { apiDotnetFundamentalsDefinition } from './api-dotnet-fundamentals/data/assessment-definition';
+import { cicdFundamentalsDefinition } from './cicd-fundamentals/data/assessment-definition';
 import { apiTestingFundamentalsDefinition } from './api-testing-fundamentals/data/assessment-definition';
 import { databaseFundamentalsDefinition } from './database-fundamentals/data/assessment-definition';
 import { dockerFundamentalsDefinition } from './docker-fundamentals/data/assessment-definition';
@@ -69,6 +70,13 @@ export default function AssessmentsIndexPage() {
       badgeColor: 'text-amber-300',
       accentColor: 'text-teal-200',
       buttonClass: 'bg-teal-500 hover:bg-teal-400',
+    },
+    {
+      definition: cicdFundamentalsDefinition,
+      badge: 'Examen teórico · Auto-corregido · CI/CD',
+      badgeColor: 'text-amber-300',
+      accentColor: 'text-orange-200',
+      buttonClass: 'bg-orange-500 hover:bg-orange-400',
     },
     {
       definition: playwrightFundamentalsDefinition,

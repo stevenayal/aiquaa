@@ -87,6 +87,7 @@ export default function DashboardPage() {
     'docker-fundamentals',
     'kubernetes-helm-fundamentals',
     'observability-fundamentals',
+    'cicd-fundamentals',
     'playwright-practico',
     'gherkin-fundamentals',
   ];

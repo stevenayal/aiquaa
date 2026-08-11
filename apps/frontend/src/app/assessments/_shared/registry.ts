@@ -12,6 +12,15 @@ import {
   API_DOTNET_FUNDAMENTALS_SLUG,
 } from '../api-dotnet-fundamentals/data/assessment-definition';
 import {
+  CICD_FUNDAMENTALS_SEED_VERSION,
+  CICD_FUNDAMENTALS_SLUG,
+} from '../cicd-fundamentals/data/assessment-definition';
+import {
+  CICD_FUNDAMENTALS_GAMIFICATION_RULES,
+  buildCicdFundamentalsGamificationEvents,
+} from '../cicd-fundamentals/lib/gamification';
+import { ensureCicdFundamentalsSeeded } from '../cicd-fundamentals/lib/seed';
+import {
   API_DOTNET_FUNDAMENTALS_GAMIFICATION_RULES,
   buildApiDotnetFundamentalsGamificationEvents,
 } from '../api-dotnet-fundamentals/lib/gamification';
@@ -106,6 +115,7 @@ export type AssessmentExamType =
   | 'api-developer-fundamentals'
   | 'api-dotnet-fundamentals'
   | 'api-testing-fundamentals'
+  | 'cicd-fundamentals'
   | 'docker-fundamentals'
   | 'database-fundamentals'
   | 'database-practice'
@@ -156,6 +166,15 @@ export const ASSESSMENT_REGISTRY: Record<string, AssessmentRegistryEntry> = {
     gamificationSource: 'API_DOTNET_FUNDAMENTALS',
     gamificationRules: API_DOTNET_FUNDAMENTALS_GAMIFICATION_RULES,
     buildGamificationEvents: buildApiDotnetFundamentalsGamificationEvents,
+  },
+  [CICD_FUNDAMENTALS_SLUG]: {
+    slug: CICD_FUNDAMENTALS_SLUG,
+    seedVersion: CICD_FUNDAMENTALS_SEED_VERSION,
+    ensureSeeded: ensureCicdFundamentalsSeeded,
+    examType: 'cicd-fundamentals',
+    gamificationSource: 'CICD_FUNDAMENTALS',
+    gamificationRules: CICD_FUNDAMENTALS_GAMIFICATION_RULES,
+    buildGamificationEvents: buildCicdFundamentalsGamificationEvents,
   },
   [API_TESTING_FUNDAMENTALS_SLUG]: {
     slug: API_TESTING_FUNDAMENTALS_SLUG,
