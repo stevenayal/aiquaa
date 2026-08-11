@@ -26,6 +26,15 @@ import {
 } from '../api-testing-fundamentals/lib/gamification';
 import { ensureApiTestingFundamentalsSeeded } from '../api-testing-fundamentals/lib/seed';
 import {
+  DOCKER_FUNDAMENTALS_SEED_VERSION,
+  DOCKER_FUNDAMENTALS_SLUG,
+} from '../docker-fundamentals/data/assessment-definition';
+import {
+  DOCKER_FUNDAMENTALS_GAMIFICATION_RULES,
+  buildDockerFundamentalsGamificationEvents,
+} from '../docker-fundamentals/lib/gamification';
+import { ensureDockerFundamentalsSeeded } from '../docker-fundamentals/lib/seed';
+import {
   DATABASE_FUNDAMENTALS_SEED_VERSION,
   DATABASE_FUNDAMENTALS_SLUG,
 } from '../database-fundamentals/data/assessment-definition';
@@ -79,6 +88,7 @@ export type AssessmentExamType =
   | 'api-developer-fundamentals'
   | 'api-dotnet-fundamentals'
   | 'api-testing-fundamentals'
+  | 'docker-fundamentals'
   | 'database-fundamentals'
   | 'database-practice'
   | 'gherkin-fundamentals'
@@ -135,6 +145,15 @@ export const ASSESSMENT_REGISTRY: Record<string, AssessmentRegistryEntry> = {
     gamificationSource: 'API_TESTING_FUNDAMENTALS',
     gamificationRules: API_TESTING_GAMIFICATION_RULES,
     buildGamificationEvents: buildApiTestingGamificationEvents,
+  },
+  [DOCKER_FUNDAMENTALS_SLUG]: {
+    slug: DOCKER_FUNDAMENTALS_SLUG,
+    seedVersion: DOCKER_FUNDAMENTALS_SEED_VERSION,
+    ensureSeeded: ensureDockerFundamentalsSeeded,
+    examType: 'docker-fundamentals',
+    gamificationSource: 'DOCKER_FUNDAMENTALS',
+    gamificationRules: DOCKER_FUNDAMENTALS_GAMIFICATION_RULES,
+    buildGamificationEvents: buildDockerFundamentalsGamificationEvents,
   },
   [DATABASE_FUNDAMENTALS_SLUG]: {
     slug: DATABASE_FUNDAMENTALS_SLUG,

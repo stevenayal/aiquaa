@@ -23,6 +23,7 @@ interface SaveExamResultPayload {
     | 'infrastructure-fundamentals'
     | 'api-developer-fundamentals'
     | 'api-dotnet-fundamentals'
+    | 'docker-fundamentals'
     | 'playwright-practico'
     | 'playwright-fundamentals'
     | 'gherkin-fundamentals';

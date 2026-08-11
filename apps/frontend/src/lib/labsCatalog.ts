@@ -195,6 +195,17 @@ export const toolCategories: LabCategory[] = [
         featured: true,
         implementedDate: 'Ago 2026',
       },
+      {
+        id: 'docker-fundamentals',
+        name: 'Docker — Fundamentos',
+        description:
+          'Prueba técnica para bootcamp de desarrollo: Dockerfiles multistage e imágenes livianas, variables de entorno sin hardcode y ejecución/reproducibilidad local — auto-corregido, 100 pts',
+        icon: '🐋',
+        color: 'from-blue-500 to-cyan-600',
+        href: '/assessments/docker-fundamentals',
+        featured: true,
+        implementedDate: 'Ago 2026',
+      },
     ],
   },
   {

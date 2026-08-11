@@ -84,6 +84,7 @@ export default function DashboardPage() {
     'infrastructure-fundamentals',
     'api-developer-fundamentals',
     'api-dotnet-fundamentals',
+    'docker-fundamentals',
     'playwright-practico',
     'gherkin-fundamentals',
   ];
