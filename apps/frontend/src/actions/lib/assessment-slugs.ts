@@ -10,4 +10,9 @@ export const PROCESS_ASSESSMENT_SLUGS = [
   'infrastructure-fundamentals',
   'api-developer-fundamentals',
   'gherkin-fundamentals',
+  'api-dotnet-fundamentals',
+  'docker-fundamentals',
+  'kubernetes-helm-fundamentals',
+  'observability-fundamentals',
+  'cicd-fundamentals',
 ];
