@@ -206,6 +206,17 @@ export const toolCategories: LabCategory[] = [
         featured: true,
         implementedDate: 'Ago 2026',
       },
+      {
+        id: 'kubernetes-helm-fundamentals',
+        name: 'Kubernetes + Helm — Fundamentos',
+        description:
+          'Prueba técnica para bootcamp de desarrollo: manifiestos Deployment/Service, ConfigMaps y Secrets, charts de Helm y despliegue funcional en Minikube — auto-corregido, 100 pts',
+        icon: '☸️',
+        color: 'from-sky-500 to-blue-700',
+        href: '/assessments/kubernetes-helm-fundamentals',
+        featured: true,
+        implementedDate: 'Ago 2026',
+      },
     ],
   },
   {

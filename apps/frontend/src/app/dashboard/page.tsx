@@ -85,6 +85,7 @@ export default function DashboardPage() {
     'api-developer-fundamentals',
     'api-dotnet-fundamentals',
     'docker-fundamentals',
+    'kubernetes-helm-fundamentals',
     'playwright-practico',
     'gherkin-fundamentals',
   ];

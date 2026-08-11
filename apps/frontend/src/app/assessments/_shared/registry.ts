@@ -71,6 +71,15 @@ import {
 } from '../infrastructure-fundamentals/lib/gamification';
 import { ensureInfrastructureFundamentalsSeeded } from '../infrastructure-fundamentals/lib/seed';
 import {
+  KUBERNETES_HELM_FUNDAMENTALS_SEED_VERSION,
+  KUBERNETES_HELM_FUNDAMENTALS_SLUG,
+} from '../kubernetes-helm-fundamentals/data/assessment-definition';
+import {
+  KUBERNETES_HELM_FUNDAMENTALS_GAMIFICATION_RULES,
+  buildKubernetesHelmFundamentalsGamificationEvents,
+} from '../kubernetes-helm-fundamentals/lib/gamification';
+import { ensureKubernetesHelmFundamentalsSeeded } from '../kubernetes-helm-fundamentals/lib/seed';
+import {
   PLAYWRIGHT_FUNDAMENTALS_SEED_VERSION,
   PLAYWRIGHT_FUNDAMENTALS_SLUG,
 } from '../playwright-fundamentals/data/assessment-definition';
@@ -93,6 +102,7 @@ export type AssessmentExamType =
   | 'database-practice'
   | 'gherkin-fundamentals'
   | 'infrastructure-fundamentals'
+  | 'kubernetes-helm-fundamentals'
   | 'playwright-fundamentals';
 
 export interface AssessmentGamificationEventInput {
@@ -190,6 +200,15 @@ export const ASSESSMENT_REGISTRY: Record<string, AssessmentRegistryEntry> = {
     gamificationSource: 'INFRASTRUCTURE_FUNDAMENTALS',
     gamificationRules: INFRASTRUCTURE_FUNDAMENTALS_GAMIFICATION_RULES,
     buildGamificationEvents: buildInfrastructureFundamentalsGamificationEvents,
+  },
+  [KUBERNETES_HELM_FUNDAMENTALS_SLUG]: {
+    slug: KUBERNETES_HELM_FUNDAMENTALS_SLUG,
+    seedVersion: KUBERNETES_HELM_FUNDAMENTALS_SEED_VERSION,
+    ensureSeeded: ensureKubernetesHelmFundamentalsSeeded,
+    examType: 'kubernetes-helm-fundamentals',
+    gamificationSource: 'KUBERNETES_HELM_FUNDAMENTALS',
+    gamificationRules: KUBERNETES_HELM_FUNDAMENTALS_GAMIFICATION_RULES,
+    buildGamificationEvents: buildKubernetesHelmFundamentalsGamificationEvents,
   },
   [PLAYWRIGHT_FUNDAMENTALS_SLUG]: {
     slug: PLAYWRIGHT_FUNDAMENTALS_SLUG,

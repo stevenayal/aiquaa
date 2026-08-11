@@ -7,6 +7,7 @@ import { dockerFundamentalsDefinition } from './docker-fundamentals/data/assessm
 import { databasePracticeDefinition } from './database-practice/data/assessment-definition';
 import { gherkinFundamentalsDefinition } from './gherkin-fundamentals/data/assessment-definition';
 import { infrastructureFundamentalsDefinition } from './infrastructure-fundamentals/data/assessment-definition';
+import { kubernetesHelmFundamentalsDefinition } from './kubernetes-helm-fundamentals/data/assessment-definition';
 import { playwrightFundamentalsDefinition } from './playwright-fundamentals/data/assessment-definition';
 
 export default function AssessmentsIndexPage() {
@@ -53,6 +54,13 @@ export default function AssessmentsIndexPage() {
       badgeColor: 'text-amber-300',
       accentColor: 'text-blue-200',
       buttonClass: 'bg-blue-500 hover:bg-blue-400',
+    },
+    {
+      definition: kubernetesHelmFundamentalsDefinition,
+      badge: 'Examen teórico · Auto-corregido · Kubernetes',
+      badgeColor: 'text-amber-300',
+      accentColor: 'text-sky-200',
+      buttonClass: 'bg-sky-500 hover:bg-sky-400',
     },
     {
       definition: playwrightFundamentalsDefinition,
