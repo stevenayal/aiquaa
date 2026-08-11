@@ -78,6 +78,36 @@ const EXAM_OPTIONS = [
       'Contenedores Docker, conceptos de Kubernetes y arquitectura de clúster — auto-corregido, 3 niveles',
   },
   {
+    id: 'api-dotnet-fundamentals',
+    label: 'API .NET — Fundamentos (Examen teórico)',
+    description:
+      'Diseño REST y versionado, contrato OpenAPI/Swagger, Clean Architecture y manejo de errores en .NET — auto-corregido, 4 secciones',
+  },
+  {
+    id: 'docker-fundamentals',
+    label: 'Docker — Fundamentos (Examen teórico)',
+    description:
+      'Dockerfiles multistage e imágenes livianas, variables de entorno sin hardcode y ejecución/reproducibilidad local — auto-corregido, 3 secciones',
+  },
+  {
+    id: 'kubernetes-helm-fundamentals',
+    label: 'Kubernetes + Helm — Fundamentos (Examen teórico)',
+    description:
+      'Manifiestos Deployment/Service, ConfigMaps y Secrets, charts de Helm y despliegue funcional en Minikube — auto-corregido, 4 secciones',
+  },
+  {
+    id: 'observability-fundamentals',
+    label: 'Observabilidad — Fundamentos (Examen teórico)',
+    description:
+      'Logging estructurado con Serilog, centralización en Seq, niveles de log y visualización — auto-corregido, 4 secciones',
+  },
+  {
+    id: 'cicd-fundamentals',
+    label: 'CI/CD — Fundamentos (Examen teórico)',
+    description:
+      'Pipelines de integración continua, despliegue continuo automatizado y buenas prácticas de versionado — auto-corregido, 3 secciones',
+  },
+  {
     id: 'test-app',
     label: 'Test App — Exploratory Testing & Bug Hunt',
     description:
