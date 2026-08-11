@@ -1,10 +1,15 @@
 import Link from 'next/link';
 import { apiDeveloperFundamentalsDefinition } from './api-developer-fundamentals/data/assessment-definition';
+import { apiDotnetFundamentalsDefinition } from './api-dotnet-fundamentals/data/assessment-definition';
+import { cicdFundamentalsDefinition } from './cicd-fundamentals/data/assessment-definition';
 import { apiTestingFundamentalsDefinition } from './api-testing-fundamentals/data/assessment-definition';
 import { databaseFundamentalsDefinition } from './database-fundamentals/data/assessment-definition';
+import { dockerFundamentalsDefinition } from './docker-fundamentals/data/assessment-definition';
 import { databasePracticeDefinition } from './database-practice/data/assessment-definition';
 import { gherkinFundamentalsDefinition } from './gherkin-fundamentals/data/assessment-definition';
 import { infrastructureFundamentalsDefinition } from './infrastructure-fundamentals/data/assessment-definition';
+import { kubernetesHelmFundamentalsDefinition } from './kubernetes-helm-fundamentals/data/assessment-definition';
+import { observabilityFundamentalsDefinition } from './observability-fundamentals/data/assessment-definition';
 import { playwrightFundamentalsDefinition } from './playwright-fundamentals/data/assessment-definition';
 
 export default function AssessmentsIndexPage() {
@@ -37,6 +42,41 @@ export default function AssessmentsIndexPage() {
       badgeColor: 'text-amber-300',
       accentColor: 'text-indigo-200',
       buttonClass: 'bg-indigo-500 hover:bg-indigo-400',
+    },
+    {
+      definition: apiDotnetFundamentalsDefinition,
+      badge: 'Examen teórico · Auto-corregido · .NET',
+      badgeColor: 'text-amber-300',
+      accentColor: 'text-violet-200',
+      buttonClass: 'bg-violet-500 hover:bg-violet-400',
+    },
+    {
+      definition: dockerFundamentalsDefinition,
+      badge: 'Examen teórico · Auto-corregido · Docker',
+      badgeColor: 'text-amber-300',
+      accentColor: 'text-blue-200',
+      buttonClass: 'bg-blue-500 hover:bg-blue-400',
+    },
+    {
+      definition: kubernetesHelmFundamentalsDefinition,
+      badge: 'Examen teórico · Auto-corregido · Kubernetes',
+      badgeColor: 'text-amber-300',
+      accentColor: 'text-sky-200',
+      buttonClass: 'bg-sky-500 hover:bg-sky-400',
+    },
+    {
+      definition: observabilityFundamentalsDefinition,
+      badge: 'Examen teórico · Auto-corregido · Observabilidad',
+      badgeColor: 'text-amber-300',
+      accentColor: 'text-teal-200',
+      buttonClass: 'bg-teal-500 hover:bg-teal-400',
+    },
+    {
+      definition: cicdFundamentalsDefinition,
+      badge: 'Examen teórico · Auto-corregido · CI/CD',
+      badgeColor: 'text-amber-300',
+      accentColor: 'text-orange-200',
+      buttonClass: 'bg-orange-500 hover:bg-orange-400',
     },
     {
       definition: playwrightFundamentalsDefinition,

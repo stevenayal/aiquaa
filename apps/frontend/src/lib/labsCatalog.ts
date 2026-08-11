@@ -184,6 +184,61 @@ export const toolCategories: LabCategory[] = [
         featured: true,
         implementedDate: 'Jul 2026',
       },
+      {
+        id: 'api-dotnet-fundamentals',
+        name: 'API .NET — Fundamentos',
+        description:
+          'Prueba técnica para bootcamp de desarrollo backend: diseño REST y versionado, contrato OpenAPI/Swagger, Clean Architecture y manejo de errores en .NET — auto-corregido, 100 pts',
+        icon: '🟣',
+        color: 'from-violet-500 to-purple-600',
+        href: '/assessments/api-dotnet-fundamentals',
+        featured: true,
+        implementedDate: 'Ago 2026',
+      },
+      {
+        id: 'docker-fundamentals',
+        name: 'Docker — Fundamentos',
+        description:
+          'Prueba técnica para bootcamp de desarrollo: Dockerfiles multistage e imágenes livianas, variables de entorno sin hardcode y ejecución/reproducibilidad local — auto-corregido, 100 pts',
+        icon: '🐋',
+        color: 'from-blue-500 to-cyan-600',
+        href: '/assessments/docker-fundamentals',
+        featured: true,
+        implementedDate: 'Ago 2026',
+      },
+      {
+        id: 'kubernetes-helm-fundamentals',
+        name: 'Kubernetes + Helm — Fundamentos',
+        description:
+          'Prueba técnica para bootcamp de desarrollo: manifiestos Deployment/Service, ConfigMaps y Secrets, charts de Helm y despliegue funcional en Minikube — auto-corregido, 100 pts',
+        icon: '☸️',
+        color: 'from-sky-500 to-blue-700',
+        href: '/assessments/kubernetes-helm-fundamentals',
+        featured: true,
+        implementedDate: 'Ago 2026',
+      },
+      {
+        id: 'observability-fundamentals',
+        name: 'Observabilidad — Fundamentos',
+        description:
+          'Prueba técnica para bootcamp de desarrollo: logging estructurado con Serilog, centralización en Seq, niveles de log y visualización — auto-corregido, 100 pts',
+        icon: '📈',
+        color: 'from-teal-500 to-emerald-600',
+        href: '/assessments/observability-fundamentals',
+        featured: true,
+        implementedDate: 'Ago 2026',
+      },
+      {
+        id: 'cicd-fundamentals',
+        name: 'CI/CD — Fundamentos',
+        description:
+          'Prueba técnica para bootcamp de desarrollo: pipelines de integración continua, despliegue continuo automatizado y buenas prácticas de versionado — auto-corregido, 100 pts',
+        icon: '🔁',
+        color: 'from-orange-500 to-red-600',
+        href: '/assessments/cicd-fundamentals',
+        featured: true,
+        implementedDate: 'Ago 2026',
+      },
     ],
   },
   {

@@ -8,6 +8,24 @@ import {
 } from '../api-developer-fundamentals/lib/gamification';
 import { ensureApiDeveloperFundamentalsSeeded } from '../api-developer-fundamentals/lib/seed';
 import {
+  API_DOTNET_FUNDAMENTALS_SEED_VERSION,
+  API_DOTNET_FUNDAMENTALS_SLUG,
+} from '../api-dotnet-fundamentals/data/assessment-definition';
+import {
+  CICD_FUNDAMENTALS_SEED_VERSION,
+  CICD_FUNDAMENTALS_SLUG,
+} from '../cicd-fundamentals/data/assessment-definition';
+import {
+  CICD_FUNDAMENTALS_GAMIFICATION_RULES,
+  buildCicdFundamentalsGamificationEvents,
+} from '../cicd-fundamentals/lib/gamification';
+import { ensureCicdFundamentalsSeeded } from '../cicd-fundamentals/lib/seed';
+import {
+  API_DOTNET_FUNDAMENTALS_GAMIFICATION_RULES,
+  buildApiDotnetFundamentalsGamificationEvents,
+} from '../api-dotnet-fundamentals/lib/gamification';
+import { ensureApiDotnetFundamentalsSeeded } from '../api-dotnet-fundamentals/lib/seed';
+import {
   API_TESTING_FUNDAMENTALS_SLUG,
   API_TESTING_SEED_VERSION,
 } from '../api-testing-fundamentals/data/assessment-definition';
@@ -16,6 +34,15 @@ import {
   buildApiTestingGamificationEvents,
 } from '../api-testing-fundamentals/lib/gamification';
 import { ensureApiTestingFundamentalsSeeded } from '../api-testing-fundamentals/lib/seed';
+import {
+  DOCKER_FUNDAMENTALS_SEED_VERSION,
+  DOCKER_FUNDAMENTALS_SLUG,
+} from '../docker-fundamentals/data/assessment-definition';
+import {
+  DOCKER_FUNDAMENTALS_GAMIFICATION_RULES,
+  buildDockerFundamentalsGamificationEvents,
+} from '../docker-fundamentals/lib/gamification';
+import { ensureDockerFundamentalsSeeded } from '../docker-fundamentals/lib/seed';
 import {
   DATABASE_FUNDAMENTALS_SEED_VERSION,
   DATABASE_FUNDAMENTALS_SLUG,
@@ -53,6 +80,24 @@ import {
 } from '../infrastructure-fundamentals/lib/gamification';
 import { ensureInfrastructureFundamentalsSeeded } from '../infrastructure-fundamentals/lib/seed';
 import {
+  KUBERNETES_HELM_FUNDAMENTALS_SEED_VERSION,
+  KUBERNETES_HELM_FUNDAMENTALS_SLUG,
+} from '../kubernetes-helm-fundamentals/data/assessment-definition';
+import {
+  KUBERNETES_HELM_FUNDAMENTALS_GAMIFICATION_RULES,
+  buildKubernetesHelmFundamentalsGamificationEvents,
+} from '../kubernetes-helm-fundamentals/lib/gamification';
+import { ensureKubernetesHelmFundamentalsSeeded } from '../kubernetes-helm-fundamentals/lib/seed';
+import {
+  OBSERVABILITY_FUNDAMENTALS_SEED_VERSION,
+  OBSERVABILITY_FUNDAMENTALS_SLUG,
+} from '../observability-fundamentals/data/assessment-definition';
+import {
+  OBSERVABILITY_FUNDAMENTALS_GAMIFICATION_RULES,
+  buildObservabilityFundamentalsGamificationEvents,
+} from '../observability-fundamentals/lib/gamification';
+import { ensureObservabilityFundamentalsSeeded } from '../observability-fundamentals/lib/seed';
+import {
   PLAYWRIGHT_FUNDAMENTALS_SEED_VERSION,
   PLAYWRIGHT_FUNDAMENTALS_SLUG,
 } from '../playwright-fundamentals/data/assessment-definition';
@@ -68,11 +113,16 @@ import type {
 
 export type AssessmentExamType =
   | 'api-developer-fundamentals'
+  | 'api-dotnet-fundamentals'
   | 'api-testing-fundamentals'
+  | 'cicd-fundamentals'
+  | 'docker-fundamentals'
   | 'database-fundamentals'
   | 'database-practice'
   | 'gherkin-fundamentals'
   | 'infrastructure-fundamentals'
+  | 'kubernetes-helm-fundamentals'
+  | 'observability-fundamentals'
   | 'playwright-fundamentals';
 
 export interface AssessmentGamificationEventInput {
@@ -108,6 +158,24 @@ export const ASSESSMENT_REGISTRY: Record<string, AssessmentRegistryEntry> = {
     gamificationRules: API_DEVELOPER_FUNDAMENTALS_GAMIFICATION_RULES,
     buildGamificationEvents: buildApiDeveloperFundamentalsGamificationEvents,
   },
+  [API_DOTNET_FUNDAMENTALS_SLUG]: {
+    slug: API_DOTNET_FUNDAMENTALS_SLUG,
+    seedVersion: API_DOTNET_FUNDAMENTALS_SEED_VERSION,
+    ensureSeeded: ensureApiDotnetFundamentalsSeeded,
+    examType: 'api-dotnet-fundamentals',
+    gamificationSource: 'API_DOTNET_FUNDAMENTALS',
+    gamificationRules: API_DOTNET_FUNDAMENTALS_GAMIFICATION_RULES,
+    buildGamificationEvents: buildApiDotnetFundamentalsGamificationEvents,
+  },
+  [CICD_FUNDAMENTALS_SLUG]: {
+    slug: CICD_FUNDAMENTALS_SLUG,
+    seedVersion: CICD_FUNDAMENTALS_SEED_VERSION,
+    ensureSeeded: ensureCicdFundamentalsSeeded,
+    examType: 'cicd-fundamentals',
+    gamificationSource: 'CICD_FUNDAMENTALS',
+    gamificationRules: CICD_FUNDAMENTALS_GAMIFICATION_RULES,
+    buildGamificationEvents: buildCicdFundamentalsGamificationEvents,
+  },
   [API_TESTING_FUNDAMENTALS_SLUG]: {
     slug: API_TESTING_FUNDAMENTALS_SLUG,
     seedVersion: API_TESTING_SEED_VERSION,
@@ -116,6 +184,15 @@ export const ASSESSMENT_REGISTRY: Record<string, AssessmentRegistryEntry> = {
     gamificationSource: 'API_TESTING_FUNDAMENTALS',
     gamificationRules: API_TESTING_GAMIFICATION_RULES,
     buildGamificationEvents: buildApiTestingGamificationEvents,
+  },
+  [DOCKER_FUNDAMENTALS_SLUG]: {
+    slug: DOCKER_FUNDAMENTALS_SLUG,
+    seedVersion: DOCKER_FUNDAMENTALS_SEED_VERSION,
+    ensureSeeded: ensureDockerFundamentalsSeeded,
+    examType: 'docker-fundamentals',
+    gamificationSource: 'DOCKER_FUNDAMENTALS',
+    gamificationRules: DOCKER_FUNDAMENTALS_GAMIFICATION_RULES,
+    buildGamificationEvents: buildDockerFundamentalsGamificationEvents,
   },
   [DATABASE_FUNDAMENTALS_SLUG]: {
     slug: DATABASE_FUNDAMENTALS_SLUG,
@@ -152,6 +229,24 @@ export const ASSESSMENT_REGISTRY: Record<string, AssessmentRegistryEntry> = {
     gamificationSource: 'INFRASTRUCTURE_FUNDAMENTALS',
     gamificationRules: INFRASTRUCTURE_FUNDAMENTALS_GAMIFICATION_RULES,
     buildGamificationEvents: buildInfrastructureFundamentalsGamificationEvents,
+  },
+  [KUBERNETES_HELM_FUNDAMENTALS_SLUG]: {
+    slug: KUBERNETES_HELM_FUNDAMENTALS_SLUG,
+    seedVersion: KUBERNETES_HELM_FUNDAMENTALS_SEED_VERSION,
+    ensureSeeded: ensureKubernetesHelmFundamentalsSeeded,
+    examType: 'kubernetes-helm-fundamentals',
+    gamificationSource: 'KUBERNETES_HELM_FUNDAMENTALS',
+    gamificationRules: KUBERNETES_HELM_FUNDAMENTALS_GAMIFICATION_RULES,
+    buildGamificationEvents: buildKubernetesHelmFundamentalsGamificationEvents,
+  },
+  [OBSERVABILITY_FUNDAMENTALS_SLUG]: {
+    slug: OBSERVABILITY_FUNDAMENTALS_SLUG,
+    seedVersion: OBSERVABILITY_FUNDAMENTALS_SEED_VERSION,
+    ensureSeeded: ensureObservabilityFundamentalsSeeded,
+    examType: 'observability-fundamentals',
+    gamificationSource: 'OBSERVABILITY_FUNDAMENTALS',
+    gamificationRules: OBSERVABILITY_FUNDAMENTALS_GAMIFICATION_RULES,
+    buildGamificationEvents: buildObservabilityFundamentalsGamificationEvents,
   },
   [PLAYWRIGHT_FUNDAMENTALS_SLUG]: {
     slug: PLAYWRIGHT_FUNDAMENTALS_SLUG,

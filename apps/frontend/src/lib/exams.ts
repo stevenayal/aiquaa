@@ -14,6 +14,11 @@ export type ExamType =
   | 'database-practice'
   | 'infrastructure-fundamentals'
   | 'api-developer-fundamentals'
+  | 'api-dotnet-fundamentals'
+  | 'docker-fundamentals'
+  | 'kubernetes-helm-fundamentals'
+  | 'observability-fundamentals'
+  | 'cicd-fundamentals'
   | 'playwright-practico'
   | 'playwright-fundamentals'
   | 'gherkin-fundamentals';
@@ -72,6 +77,31 @@ export const EXAM_META: Record<ExamType, ExamMeta> = {
     label: 'APIs para Desarrolladores — Fundamentos',
     href: '/assessments/api-developer-fundamentals',
   },
+  'api-dotnet-fundamentals': {
+    emoji: '🟣',
+    label: 'API .NET — Fundamentos',
+    href: '/assessments/api-dotnet-fundamentals',
+  },
+  'docker-fundamentals': {
+    emoji: '🐋',
+    label: 'Docker — Fundamentos',
+    href: '/assessments/docker-fundamentals',
+  },
+  'kubernetes-helm-fundamentals': {
+    emoji: '☸️',
+    label: 'Kubernetes + Helm — Fundamentos',
+    href: '/assessments/kubernetes-helm-fundamentals',
+  },
+  'observability-fundamentals': {
+    emoji: '📈',
+    label: 'Observabilidad — Fundamentos',
+    href: '/assessments/observability-fundamentals',
+  },
+  'cicd-fundamentals': {
+    emoji: '🔁',
+    label: 'CI/CD — Fundamentos',
+    href: '/assessments/cicd-fundamentals',
+  },
   'playwright-practico': {
     emoji: '🎭',
     label: 'Playwright — Prueba práctica',
@@ -100,6 +130,11 @@ export const POINTS_BASED_TYPES = new Set<ExamType>([
   'database-practice',
   'infrastructure-fundamentals',
   'api-developer-fundamentals',
+  'api-dotnet-fundamentals',
+  'docker-fundamentals',
+  'kubernetes-helm-fundamentals',
+  'observability-fundamentals',
+  'cicd-fundamentals',
   'playwright-practico',
   'playwright-fundamentals',
   'gherkin-fundamentals',

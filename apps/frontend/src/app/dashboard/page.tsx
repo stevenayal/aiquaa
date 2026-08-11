@@ -83,6 +83,11 @@ export default function DashboardPage() {
     'database-practice',
     'infrastructure-fundamentals',
     'api-developer-fundamentals',
+    'api-dotnet-fundamentals',
+    'docker-fundamentals',
+    'kubernetes-helm-fundamentals',
+    'observability-fundamentals',
+    'cicd-fundamentals',
     'playwright-practico',
     'gherkin-fundamentals',
   ];
