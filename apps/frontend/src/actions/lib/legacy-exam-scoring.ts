@@ -2,10 +2,8 @@ import {
   generateExamResult as generateGitExamResult,
   loadExamData as loadGitExamData,
 } from '@/app/labs/git/utils';
-import {
-  generateExamResult as generateIstqbExamResult,
-  loadExamData as loadIstqbExamData,
-} from '@/app/labs/istqb/utils';
+import { generateExamResult as generateIstqbExamResult } from '@/app/labs/istqb/utils';
+import { loadExamData as loadIstqbExamData } from '@/app/labs/istqb/exam-data.server';
 import {
   generateExamResult as generatePerformanceExamResult,
   loadExamData as loadPerformanceExamData,

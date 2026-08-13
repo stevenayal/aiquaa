@@ -2,12 +2,13 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Alert } from '@/components/common';
 import ExamSimulator from './components/ExamSimulator';
-import { loadExamData } from './utils';
+import type { ExamInfo } from './types';
+import { getExamConfigAction } from '@/actions/istqb-exam';
 import { SuruFloating } from '@/components/Suru';
 import ExamAuthGate from '@/components/labs/ExamAuthGate';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
@@ -37,10 +38,37 @@ export default function ISTQBClient() {
 
   const examId = `${language}-model-${model.toLowerCase()}`;
   const finalExamId = examId === 'es-model-a' ? 'es-model-a' : examId;
-  const examData = useMemo(() => loadExamData(finalExamId), [finalExamId]);
-  const availableQuestions = examData.questions.length;
-  const isModelIncomplete =
-    availableQuestions < examData.examInfo.totalQuestions;
+
+  // La configuración (metadata, sin preguntas) se obtiene vía server action:
+  // el banco de preguntas completo (con `correctAnswer`) nunca debe llegar
+  // al cliente antes de que el usuario responda (#225).
+  const [examInfo, setExamInfo] = useState<ExamInfo | null>(null);
+  const [availableQuestions, setAvailableQuestions] = useState(0);
+  const [configError, setConfigError] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    setExamInfo(null);
+    setConfigError(false);
+
+    getExamConfigAction(finalExamId)
+      .then((config) => {
+        if (!active) return;
+        setExamInfo(config.examInfo);
+        setAvailableQuestions(config.availableQuestions);
+      })
+      .catch(() => {
+        if (active) setConfigError(true);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [finalExamId]);
+
+  const isModelIncomplete = examInfo
+    ? availableQuestions < examInfo.totalQuestions
+    : false;
 
   const t = {
     es: {
@@ -82,7 +110,7 @@ export default function ISTQBClient() {
       ],
       startExam: 'Iniciar Modo Examen',
       comingSoon: 'Próximamente',
-      incompleteModelWarning: `Este modelo solo tiene ${availableQuestions} pregunta(s) disponible(s) de ${examData.examInfo.totalQuestions}. Selecciona Modelo A en Español para el banco completo.`,
+      incompleteModelWarning: `Este modelo solo tiene ${availableQuestions} pregunta(s) disponible(s) de ${examInfo?.totalQuestions ?? 0}. Selecciona Modelo A en Español para el banco completo.`,
       trainingModeTitle: 'Modo Entrenamiento',
       trainingModeSubtitle: 'Practica con feedback inmediato en cada pregunta',
       trainingModeFeatures: [
@@ -132,7 +160,7 @@ export default function ISTQBClient() {
       ],
       startExam: 'Start Exam Mode',
       comingSoon: 'Coming Soon',
-      incompleteModelWarning: `This model only has ${availableQuestions} question(s) available out of ${examData.examInfo.totalQuestions}. Select Model A in Spanish for the full question bank.`,
+      incompleteModelWarning: `This model only has ${availableQuestions} question(s) available out of ${examInfo?.totalQuestions ?? 0}. Select Model A in Spanish for the full question bank.`,
       trainingModeTitle: 'Training Mode',
       trainingModeSubtitle: 'Practice with immediate feedback on each question',
       trainingModeFeatures: [
@@ -152,6 +180,7 @@ export default function ISTQBClient() {
       setError(text.enterNameError);
       return;
     }
+    if (!examInfo) return;
 
     setError('');
     setExamMode(mode);
@@ -166,17 +195,43 @@ export default function ISTQBClient() {
     setError('');
   };
 
-  if (hasStarted && examMode) {
+  if (hasStarted && examMode && examInfo) {
     return (
       <ExamSimulator
         participantName={participantName}
         mode={examMode}
-        examData={examData}
+        examId={finalExamId}
+        examInfo={examInfo}
         onReset={handleReset}
         model={model}
         processCode={processCode}
         language={language}
       />
+    );
+  }
+
+  if (configError) {
+    return (
+      <div className="flex items-center justify-center min-h-screen px-4">
+        <Alert
+          type="error"
+          message={
+            language === 'es'
+              ? 'No pudimos cargar la configuración del examen. Intenta recargar la página.'
+              : 'We could not load the exam configuration. Please reload the page.'
+          }
+        />
+      </div>
+    );
+  }
+
+  if (!examInfo) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-lg">
+          {language === 'es' ? 'Cargando...' : 'Loading...'}
+        </p>
+      </div>
     );
   }
 
@@ -209,7 +264,7 @@ export default function ISTQBClient() {
               <p
                 className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`}
               >
-                {examData.examInfo.title} - {examData.examInfo.version}
+                {examInfo.title} - {examInfo.version}
               </p>
             </div>
             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
@@ -305,7 +360,7 @@ export default function ISTQBClient() {
                       {text.totalQuestions}
                     </p>
                     <p className="text-2xl font-bold">
-                      {examData.examInfo.totalQuestions}
+                      {examInfo.totalQuestions}
                     </p>
                   </div>
                 </div>
@@ -317,7 +372,7 @@ export default function ISTQBClient() {
                       {text.timeLimit}
                     </p>
                     <p className="text-2xl font-bold">
-                      {examData.examInfo.timeLimit} {text.minutes}
+                      {examInfo.timeLimit} {text.minutes}
                     </p>
                   </div>
                 </div>
@@ -329,7 +384,7 @@ export default function ISTQBClient() {
                       {text.pointsPerQuestion}
                     </p>
                     <p className="text-2xl font-bold">
-                      {examData.examInfo.pointsPerQuestion}
+                      {examInfo.pointsPerQuestion}
                     </p>
                   </div>
                 </div>
@@ -341,8 +396,7 @@ export default function ISTQBClient() {
                       {text.passingScore}
                     </p>
                     <p className="text-2xl font-bold">
-                      {examData.examInfo.passingScore}/
-                      {examData.examInfo.totalQuestions}
+                      {examInfo.passingScore}/{examInfo.totalQuestions}
                     </p>
                   </div>
                 </div>

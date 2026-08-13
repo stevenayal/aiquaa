@@ -2,15 +2,32 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
-import type { ExamData, ExamQuestion } from '../types';
-import { prepareExamQuestions, formatTime, generateExamResult } from '../utils';
+import type {
+  ExamInfo,
+  ExamResult,
+  PublicExamQuestion,
+  Explanation,
+} from '../types';
+import { formatTime } from '../utils';
+import {
+  startExamAction,
+  checkAnswerAction,
+  submitExamAction,
+} from '@/actions/istqb-exam';
 import QuestionCard from './QuestionCard';
 import ResultsScreen from './ResultsScreen';
+
+export interface QuestionFeedback {
+  isCorrect: boolean;
+  correctAnswer: string[];
+  explanations: Record<string, Explanation>;
+}
 
 interface ExamSimulatorProps {
   participantName: string;
   mode: 'exam' | 'training';
-  examData: ExamData;
+  examId: string;
+  examInfo: ExamInfo;
   onReset: () => void;
   model?: string;
   processCode?: string;
@@ -20,25 +37,31 @@ interface ExamSimulatorProps {
 export default function ExamSimulator({
   participantName,
   mode,
-  examData,
+  examId,
+  examInfo,
   onReset,
   model,
   processCode,
   language,
 }: ExamSimulatorProps) {
   const { isDarkMode } = useTheme();
-  const [questions, setQuestions] = useState<ExamQuestion[]>([]);
+  const [questions, setQuestions] = useState<PublicExamQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Map<number, string[]>>(new Map());
+  const [feedbackMap, setFeedbackMap] = useState<Map<number, QuestionFeedback>>(
+    new Map()
+  );
   const [markedForReview, setMarkedForReview] = useState<Set<number>>(
     new Set()
   );
   const [timeRemaining, setTimeRemaining] = useState(
-    mode === 'exam' ? examData.examInfo.timeLimit * 60 : 0
+    mode === 'exam' ? examInfo.timeLimit * 60 : 0
   );
   const [isRunning, setIsRunning] = useState(mode === 'exam');
   const [showSubmitDialog, setShowSubmitDialog] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [finalResult, setFinalResult] = useState<ExamResult | null>(null);
+  const [gradingError, setGradingError] = useState(false);
   const [startTime] = useState(Date.now());
   const questionsInitialized = useRef(false);
   // eslint-disable-next-line no-unused-vars
@@ -153,8 +176,37 @@ export default function ExamSimulator({
         newAnswers.set(questionId, selectedAnswers);
         return newAnswers;
       });
+
+      if (mode !== 'training') return;
+
+      const question = questions.find((q) => q.id === questionId);
+      if (!question) return;
+
+      const isComplete =
+        question.type === 'multiple'
+          ? selectedAnswers.length === question.answerCount
+          : selectedAnswers.length > 0;
+
+      if (!isComplete) {
+        setFeedbackMap((prev) => {
+          if (!prev.has(questionId)) return prev;
+          const next = new Map(prev);
+          next.delete(questionId);
+          return next;
+        });
+        return;
+      }
+
+      checkAnswerAction({
+        examId,
+        questionId,
+        userAnswer: selectedAnswers,
+      }).then((feedback) => {
+        if (!feedback) return;
+        setFeedbackMap((prev) => new Map(prev).set(questionId, feedback));
+      });
     },
-    []
+    [mode, questions, examId]
   );
 
   const toggleMarkForReview = useCallback(() => {
@@ -189,13 +241,53 @@ export default function ExamSimulator({
   useEffect(() => {
     if (questionsInitialized.current) return;
     questionsInitialized.current = true;
-    const preparedQuestions = prepareExamQuestions(
-      examData.questions,
-      examData.examInfo.totalQuestions,
-      true
-    );
-    setQuestions(preparedQuestions);
-  }, [examData]);
+    startExamAction({
+      examId,
+      count: examInfo.totalQuestions,
+      shuffleOptions: true,
+    })
+      .then((res) => setQuestions(res.questions))
+      .catch(() => setQuestions([]));
+  }, [examId, examInfo.totalQuestions]);
+
+  useEffect(() => {
+    if (!hasSubmitted || questions.length === 0) return;
+    let active = true;
+
+    const submissionTimeSpent =
+      mode === 'exam'
+        ? examInfo.timeLimit * 60 - timeRemaining
+        : Math.floor((Date.now() - startTime) / 1000);
+
+    const answersRecord: Record<number, string[]> = {};
+    answers.forEach((value, key) => {
+      answersRecord[key] = value;
+    });
+    const durationsRecord: Record<number, number> = {};
+    questionDurationsRef.current.forEach((value, key) => {
+      durationsRecord[key] = value;
+    });
+
+    submitExamAction({
+      examId,
+      participantName,
+      questionIds: questions.map((q) => q.id),
+      answers: answersRecord,
+      questionDurations: durationsRecord,
+      timeSpent: submissionTimeSpent,
+    })
+      .then((result) => {
+        if (active) setFinalResult(result);
+      })
+      .catch(() => {
+        if (active) setGradingError(true);
+      });
+
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasSubmitted]);
 
   useEffect(() => {
     if (mode !== 'exam' || !isRunning) return;
@@ -241,24 +333,30 @@ export default function ExamSimulator({
     );
   }
 
-  if (hasSubmitted) {
-    const timeSpent =
-      mode === 'exam'
-        ? examData.examInfo.timeLimit * 60 - timeRemaining
-        : Math.floor((Date.now() - startTime) / 1000);
-
-    const result = generateExamResult(
-      participantName,
-      questions,
-      answers,
-      timeSpent,
-      examData.examInfo.passingScore,
-      questionDurationsRef.current
+  if (hasSubmitted && gradingError) {
+    return (
+      <div className="flex items-center justify-center min-h-screen px-4">
+        <p className="text-lg text-red-600 dark:text-red-400">
+          {language === 'es'
+            ? 'No pudimos calificar el examen. Por favor, recarga la página e intenta de nuevo.'
+            : 'We could not grade the exam. Please reload the page and try again.'}
+        </p>
+      </div>
     );
+  }
 
+  if (hasSubmitted && !finalResult) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-lg">{text.loading}</p>
+      </div>
+    );
+  }
+
+  if (hasSubmitted && finalResult) {
     return (
       <ResultsScreen
-        result={result}
+        result={finalResult}
         onReset={onReset}
         mode={mode}
         model={model}
@@ -381,6 +479,7 @@ export default function ExamSimulator({
           onAnswerChange={handleAnswerChange}
           isMarked={isMarked}
           showFeedback={mode === 'training'}
+          feedback={feedbackMap.get(currentQuestion.id) ?? null}
           language={language}
         />
 
