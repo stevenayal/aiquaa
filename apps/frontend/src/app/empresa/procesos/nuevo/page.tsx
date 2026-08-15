@@ -108,6 +108,12 @@ const EXAM_OPTIONS = [
       'Pipelines de integración continua, despliegue continuo automatizado y buenas prácticas de versionado — auto-corregido, 3 secciones',
   },
   {
+    id: 'gherkin-fundamentals',
+    label: 'Gherkin y BDD — Fundamentos (Examen teórico)',
+    description:
+      'Fundamentos de BDD, sintaxis Gherkin (Given/When/Then) y escenarios avanzados aplicados a testing — auto-corregido, 3 niveles',
+  },
+  {
     id: 'test-app',
     label: 'Test App — Exploratory Testing & Bug Hunt',
     description:
