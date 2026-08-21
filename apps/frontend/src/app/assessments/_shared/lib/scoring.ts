@@ -121,6 +121,94 @@ function compareSimpleAnswer(
   };
 }
 
+/** Respuesta del candidato para `multiple_select`: `{ values: string[] }`. */
+function parseValuesAnswer(answer: unknown): string[] {
+  const raw = Array.isArray(answer)
+    ? answer
+    : answer && typeof answer === 'object' && 'values' in answer
+      ? ((answer as { values?: unknown }).values ?? [])
+      : [];
+  if (!Array.isArray(raw)) return [];
+  return Array.from(
+    new Set(
+      raw
+        .filter((item): item is string => typeof item === 'string')
+        .map((item) => item.trim())
+        .filter(Boolean)
+    )
+  );
+}
+
+// Crédito parcial con penalización por opción de más: cada distractor marcado
+// cancela un acierto. Marcar las 4 opciones de una pregunta con 3 correctas da
+// 0, no puntaje casi completo.
+function scoreMultipleSelect(
+  question: AssessmentQuestion,
+  answer: unknown
+): ScoreResult {
+  const correct = Array.isArray(
+    (question.correct_answer as { values?: unknown } | undefined)?.values
+  )
+    ? ((question.correct_answer as { values: string[] }).values ?? [])
+    : [];
+
+  if (correct.length === 0) {
+    return {
+      score: 0,
+      isCorrect: false,
+      feedback: 'La pregunta no tiene respuestas correctas configuradas.',
+    };
+  }
+
+  const picked = parseValuesAnswer(answer);
+
+  if (picked.length === 0) {
+    return {
+      score: 0,
+      isCorrect: false,
+      feedback: 'No seleccionaste ninguna opción.',
+    };
+  }
+
+  const hits = picked.filter((value) => correct.includes(value)).length;
+  const extras = picked.length - hits;
+  const net = Math.max(0, hits - extras);
+  const score = Math.round((question.points * net) / correct.length);
+  const isCorrect = hits === correct.length && extras === 0;
+
+  if (isCorrect) {
+    return {
+      score: question.points,
+      isCorrect: true,
+      feedback: 'Seleccionaste exactamente las opciones correctas.',
+    };
+  }
+
+  if (extras > 0 && hits < correct.length) {
+    return {
+      score,
+      isCorrect: false,
+      feedback:
+        'Faltan opciones correctas y además marcaste alguna que no corresponde.',
+    };
+  }
+
+  if (extras > 0) {
+    return {
+      score,
+      isCorrect: false,
+      feedback:
+        'Identificaste las opciones correctas, pero marcaste además alguna que no corresponde.',
+    };
+  }
+
+  return {
+    score,
+    isCorrect: false,
+    feedback: 'La selección es parcial: faltan opciones correctas.',
+  };
+}
+
 function scoreShortText(
   question: AssessmentQuestion,
   answer: unknown
@@ -215,6 +303,8 @@ export function scoreAssessmentQuestion(
     case 'true_false':
     case 'doc_analysis':
       return compareSimpleAnswer(question, answer);
+    case 'multiple_select':
+      return scoreMultipleSelect(question, answer);
     case 'short_text':
       return scoreShortText(question, answer);
     case 'response_analysis':

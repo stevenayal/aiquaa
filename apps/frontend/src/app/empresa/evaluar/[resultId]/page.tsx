@@ -128,7 +128,8 @@ export default function EvaluarPage() {
       setExam(data);
 
       const initialReviews: BugReviewMap = {};
-      const bugs = data.metadata?.bugs ?? [];
+      const bugs =
+        data.metadata && 'bugs' in data.metadata ? data.metadata.bugs : [];
       const savedReview = data.review_data;
       bugs.forEach((bug) => {
         const saved = savedReview?.bugs?.[bug.id];
@@ -146,7 +147,8 @@ export default function EvaluarPage() {
     load();
   }, [resultId]);
 
-  const bugs = exam?.metadata?.bugs ?? [];
+  const bugs =
+    exam?.metadata && 'bugs' in exam.metadata ? exam.metadata.bugs : [];
   const autoScore = exam?.score ?? 0;
 
   const approvedCount = Object.values(bugReviews).filter(

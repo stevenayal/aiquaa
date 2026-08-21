@@ -114,6 +114,66 @@ const EXAM_OPTIONS = [
       'Fundamentos de BDD, sintaxis Gherkin (Given/When/Then) y escenarios avanzados aplicados a testing — auto-corregido, 3 niveles',
   },
   {
+    id: 'clase3-data-persistencia',
+    label: 'Clase 3 — Data Persistencia (Examen teórico)',
+    description:
+      'Persistencia, ADO.NET vs Entity Framework Core, migraciones, PostgreSQL/Npgsql, DTOs y FluentValidation — auto-corregido, 10 preguntas, 100 pts',
+  },
+  {
+    id: 'clase5-kubernetes',
+    label: 'Clase 5 — Kubernetes (Examen teórico)',
+    description:
+      'Pilares de la orquestación, arquitectura del clúster, Pods, Deployment/ReplicaSet, StatefulSet y Services — auto-corregido, 10 preguntas, 100 pts',
+  },
+  {
+    id: 'clase6-config-kubernetes',
+    label: 'Clase 6 — Configuración en Kubernetes (Examen teórico)',
+    description:
+      'Inmutabilidad de la imagen, ConfigMaps, Secrets y Base64, inyección con envFrom, Helm y CI/CD de configuración — auto-corregido, 10 preguntas, 100 pts',
+  },
+  {
+    id: 'clase7-8-seq-logging',
+    label: 'Clases 7 y 8 — SEQ Structured Logging (Examen teórico)',
+    description:
+      'Límites de kubectl logs, logs estructurados, Serilog y sus sinks, niveles de severidad y Seq en Kubernetes — auto-corregido, 10 preguntas, 100 pts',
+  },
+  {
+    id: 'clase9-cicd-github-actions',
+    label: 'Clase 9 — CI/CD con GitHub Actions (Examen teórico)',
+    description:
+      'Delivery vs Deployment, etapas del pipeline, Jobs/Steps/Triggers/Runners, workflows y separación Variables/Secrets — auto-corregido, 10 preguntas, 100 pts',
+  },
+  {
+    id: 'dev-persistencia',
+    label: 'Clase 3 — Persistencia con EF Core (Prueba de desarrollo)',
+    description:
+      'API .NET con EF Core, PostgreSQL, migraciones, DTOs y FluentValidation — entrega por link de repositorio, corrección manual del evaluador sobre 100 pts',
+  },
+  {
+    id: 'dev-kubernetes',
+    label: 'Clase 5 — Despliegue en Kubernetes (Prueba de desarrollo)',
+    description:
+      'Manifiestos de Deployment, Service y StatefulSet en Minikube, con evidencia de autorecuperación y escalado — entrega por link de repositorio, corrección manual sobre 100 pts',
+  },
+  {
+    id: 'dev-config-kubernetes',
+    label: 'Clase 6 — ConfigMaps, Secrets y Helm (Prueba de desarrollo)',
+    description:
+      'Configuración externalizada con ConfigMap y Secret, inyección con envFrom y chart de Helm con values por entorno — entrega por link de repositorio, corrección manual sobre 100 pts',
+  },
+  {
+    id: 'dev-seq-logging',
+    label: 'Clases 7 y 8 — Serilog y Seq (Prueba de desarrollo)',
+    description:
+      'Logging estructurado con Serilog, sinks a consola y Seq, niveles de severidad y Seq desplegado en el clúster — entrega por link de repositorio, corrección manual sobre 100 pts',
+  },
+  {
+    id: 'dev-cicd-actions',
+    label: 'Clase 9 — Pipeline con GitHub Actions (Prueba de desarrollo)',
+    description:
+      'Workflow con triggers push/pull_request/workflow_dispatch, orden restore→build→test, publicación de imagen y separación Variables/Secrets — entrega por link de repositorio, corrección manual sobre 100 pts',
+  },
+  {
     id: 'test-app',
     label: 'Test App — Exploratory Testing & Bug Hunt',
     description:

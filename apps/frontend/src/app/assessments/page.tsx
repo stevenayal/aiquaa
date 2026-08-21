@@ -11,10 +11,50 @@ import { infrastructureFundamentalsDefinition } from './infrastructure-fundament
 import { kubernetesHelmFundamentalsDefinition } from './kubernetes-helm-fundamentals/data/assessment-definition';
 import { observabilityFundamentalsDefinition } from './observability-fundamentals/data/assessment-definition';
 import { playwrightFundamentalsDefinition } from './playwright-fundamentals/data/assessment-definition';
+import { clase3DataPersistenciaDefinition } from './clase3-data-persistencia/data/assessment-definition';
+import { clase5KubernetesDefinition } from './clase5-kubernetes/data/assessment-definition';
+import { clase6ConfigKubernetesDefinition } from './clase6-config-kubernetes/data/assessment-definition';
+import { clase78SeqLoggingDefinition } from './clase7-8-seq-logging/data/assessment-definition';
+import { clase9CicdGithubActionsDefinition } from './clase9-cicd-github-actions/data/assessment-definition';
 
 export default function AssessmentsIndexPage() {
   const overview = apiTestingFundamentalsDefinition;
   const assessmentCards = [
+    {
+      definition: clase3DataPersistenciaDefinition,
+      badge: 'Examen teórico · Auto-corregido',
+      badgeColor: 'text-amber-300',
+      accentColor: 'text-violet-200',
+      buttonClass: 'bg-violet-500 hover:bg-violet-400',
+    },
+    {
+      definition: clase5KubernetesDefinition,
+      badge: 'Examen teórico · Auto-corregido',
+      badgeColor: 'text-amber-300',
+      accentColor: 'text-blue-200',
+      buttonClass: 'bg-blue-500 hover:bg-blue-400',
+    },
+    {
+      definition: clase6ConfigKubernetesDefinition,
+      badge: 'Examen teórico · Auto-corregido',
+      badgeColor: 'text-amber-300',
+      accentColor: 'text-teal-200',
+      buttonClass: 'bg-teal-500 hover:bg-teal-400',
+    },
+    {
+      definition: clase78SeqLoggingDefinition,
+      badge: 'Examen teórico · Auto-corregido',
+      badgeColor: 'text-amber-300',
+      accentColor: 'text-emerald-200',
+      buttonClass: 'bg-emerald-500 hover:bg-emerald-400',
+    },
+    {
+      definition: clase9CicdGithubActionsDefinition,
+      badge: 'Examen teórico · Auto-corregido',
+      badgeColor: 'text-amber-300',
+      accentColor: 'text-orange-200',
+      buttonClass: 'bg-orange-500 hover:bg-orange-400',
+    },
     {
       definition: databaseFundamentalsDefinition,
       badge: 'Examen teórico · Auto-corregido',

@@ -239,6 +239,106 @@ export const toolCategories: LabCategory[] = [
         featured: true,
         implementedDate: 'Ago 2026',
       },
+      {
+        id: 'clase3-data-persistencia',
+        name: 'Clase 3 — Data Persistencia',
+        description:
+          'Evaluación de la Clase 3 del bootcamp: persistencia, ADO.NET vs EF Core, migraciones, PostgreSQL/Npgsql, DTOs y FluentValidation — auto-corregido, 100 pts',
+        icon: '🗃️',
+        color: 'from-violet-500 to-purple-700',
+        href: '/assessments/clase3-data-persistencia',
+        implementedDate: 'Ago 2026',
+      },
+      {
+        id: 'clase5-kubernetes',
+        name: 'Clase 5 — Kubernetes',
+        description:
+          'Evaluación de la Clase 5 del bootcamp: orquestación, arquitectura del clúster, Pods, controladores y Services — auto-corregido, 100 pts',
+        icon: '☸️',
+        color: 'from-blue-500 to-indigo-700',
+        href: '/assessments/clase5-kubernetes',
+        implementedDate: 'Ago 2026',
+      },
+      {
+        id: 'clase6-config-kubernetes',
+        name: 'Clase 6 — Configuración en Kubernetes',
+        description:
+          'Evaluación de la Clase 6 del bootcamp: inmutabilidad, ConfigMaps, Secrets, envFrom, Helm y CI/CD de configuración — auto-corregido, 100 pts',
+        icon: '🔐',
+        color: 'from-teal-500 to-cyan-700',
+        href: '/assessments/clase6-config-kubernetes',
+        implementedDate: 'Ago 2026',
+      },
+      {
+        id: 'clase7-8-seq-logging',
+        name: 'Clases 7 y 8 — SEQ Structured Logging',
+        description:
+          'Evaluación de las Clases 7 y 8 del bootcamp: logs estructurados, Serilog, sinks, severidad y Seq centralizado — auto-corregido, 100 pts',
+        icon: '📊',
+        color: 'from-emerald-500 to-green-700',
+        href: '/assessments/clase7-8-seq-logging',
+        implementedDate: 'Ago 2026',
+      },
+      {
+        id: 'clase9-cicd-github-actions',
+        name: 'Clase 9 — CI/CD con GitHub Actions',
+        description:
+          'Evaluación de la Clase 9 del bootcamp: pipeline CI/CD, Delivery vs Deployment, workflows de GitHub Actions y Secrets — auto-corregido, 100 pts',
+        icon: '🔁',
+        color: 'from-orange-500 to-amber-700',
+        href: '/assessments/clase9-cicd-github-actions',
+        implementedDate: 'Ago 2026',
+      },
+      {
+        id: 'dev-persistencia',
+        name: 'Clase 3 — Desarrollo: Persistencia con EF Core',
+        description:
+          'Construí una API .NET con EF Core, PostgreSQL, migraciones, DTOs y FluentValidation. Entregás el link del repo y un evaluador lo corrige sobre 100 pts',
+        icon: '🗃️',
+        color: 'from-violet-600 to-fuchsia-700',
+        href: '/labs/desarrollo/dev-persistencia',
+        implementedDate: 'Ago 2026',
+      },
+      {
+        id: 'dev-kubernetes',
+        name: 'Clase 5 — Desarrollo: Despliegue en Kubernetes',
+        description:
+          'Desplegá una API en Minikube con Deployment, Service y StatefulSet, y demostrá autorecuperación y escalado. Entrega por link de repo, corrección manual',
+        icon: '☸️',
+        color: 'from-blue-600 to-sky-700',
+        href: '/labs/desarrollo/dev-kubernetes',
+        implementedDate: 'Ago 2026',
+      },
+      {
+        id: 'dev-config-kubernetes',
+        name: 'Clase 6 — Desarrollo: ConfigMaps, Secrets y Helm',
+        description:
+          'Externalizá la configuración con ConfigMaps y Secrets, inyectala con envFrom y empaquetá todo en un chart de Helm. Entrega por link de repo, corrección manual',
+        icon: '🔐',
+        color: 'from-teal-600 to-cyan-700',
+        href: '/labs/desarrollo/dev-config-kubernetes',
+        implementedDate: 'Ago 2026',
+      },
+      {
+        id: 'dev-seq-logging',
+        name: 'Clases 7 y 8 — Desarrollo: Serilog y Seq',
+        description:
+          'Instrumentá una API con Serilog, centralizá los logs en Seq dentro del clúster y demostrá búsquedas por propiedad. Entrega por link de repo, corrección manual',
+        icon: '📊',
+        color: 'from-emerald-600 to-teal-700',
+        href: '/labs/desarrollo/dev-seq-logging',
+        implementedDate: 'Ago 2026',
+      },
+      {
+        id: 'dev-cicd-actions',
+        name: 'Clase 9 — Desarrollo: Pipeline con GitHub Actions',
+        description:
+          'Armá un pipeline de GitHub Actions con validación, empaquetado y separación Variables/Secrets. Entrega por link de repo, corrección manual sobre 100 pts',
+        icon: '🔁',
+        color: 'from-orange-600 to-red-700',
+        href: '/labs/desarrollo/dev-cicd-actions',
+        implementedDate: 'Ago 2026',
+      },
     ],
   },
   {

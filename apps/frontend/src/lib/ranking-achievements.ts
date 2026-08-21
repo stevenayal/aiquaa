@@ -56,6 +56,11 @@ const RANKED_EXAM_TYPES: ExamType[] = [
   'playwright-practico',
   'playwright-fundamentals',
   'gherkin-fundamentals',
+  'clase3-data-persistencia',
+  'clase5-kubernetes',
+  'clase6-config-kubernetes',
+  'clase7-8-seq-logging',
+  'clase9-cicd-github-actions',
 ];
 
 const ASSESSMENT_RANKING_TYPES = new Set<ExamType>([
@@ -70,6 +75,11 @@ const ASSESSMENT_RANKING_TYPES = new Set<ExamType>([
   'cicd-fundamentals',
   'playwright-fundamentals',
   'gherkin-fundamentals',
+  'clase3-data-persistencia',
+  'clase5-kubernetes',
+  'clase6-config-kubernetes',
+  'clase7-8-seq-logging',
+  'clase9-cicd-github-actions',
 ]);
 
 function isMissingAchievementsTableError(error: { code?: string } | null) {
