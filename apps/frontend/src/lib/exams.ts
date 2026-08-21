@@ -27,11 +27,7 @@ export type ExamType =
   | 'clase6-config-kubernetes'
   | 'clase7-8-seq-logging'
   | 'clase9-cicd-github-actions'
-  | 'dev-persistencia'
-  | 'dev-kubernetes'
-  | 'dev-config-kubernetes'
-  | 'dev-seq-logging'
-  | 'dev-cicd-actions';
+  | 'dev-proyecto-final';
 
 export interface ExamMeta {
   emoji: string;
@@ -152,30 +148,10 @@ export const EXAM_META: Record<ExamType, ExamMeta> = {
     label: 'Clase 9 — CI/CD con GitHub Actions',
     href: '/assessments/clase9-cicd-github-actions',
   },
-  'dev-persistencia': {
-    emoji: '🗃️',
-    label: 'Clase 3 — Desarrollo: Persistencia con EF Core',
-    href: '/labs/desarrollo/dev-persistencia',
-  },
-  'dev-kubernetes': {
-    emoji: '☸️',
-    label: 'Clase 5 — Desarrollo: Despliegue en Kubernetes',
-    href: '/labs/desarrollo/dev-kubernetes',
-  },
-  'dev-config-kubernetes': {
-    emoji: '🔐',
-    label: 'Clase 6 — Desarrollo: ConfigMaps, Secrets y Helm',
-    href: '/labs/desarrollo/dev-config-kubernetes',
-  },
-  'dev-seq-logging': {
-    emoji: '📊',
-    label: 'Clases 7 y 8 — Desarrollo: Serilog y Seq',
-    href: '/labs/desarrollo/dev-seq-logging',
-  },
-  'dev-cicd-actions': {
-    emoji: '🔁',
-    label: 'Clase 9 — Desarrollo: Pipeline con GitHub Actions',
-    href: '/labs/desarrollo/dev-cicd-actions',
+  'dev-proyecto-final': {
+    emoji: '🏆',
+    label: 'Proyecto final — Desarrollo integrador',
+    href: '/labs/desarrollo/dev-proyecto-final',
   },
 };
 
@@ -203,11 +179,7 @@ export const POINTS_BASED_TYPES = new Set<ExamType>([
   'clase6-config-kubernetes',
   'clase7-8-seq-logging',
   'clase9-cicd-github-actions',
-  'dev-persistencia',
-  'dev-kubernetes',
-  'dev-config-kubernetes',
-  'dev-seq-logging',
-  'dev-cicd-actions',
+  'dev-proyecto-final',
 ]);
 
 export interface ExamScoreFields {

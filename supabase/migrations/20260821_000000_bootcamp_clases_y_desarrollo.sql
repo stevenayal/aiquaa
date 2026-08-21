@@ -1,7 +1,7 @@
--- Habilita las 10 pruebas técnicas nuevas del bootcamp:
+-- Habilita las 6 pruebas técnicas nuevas del bootcamp:
 --   * 5 evaluaciones teóricas (una por clase), auto-corregidas.
---   * 5 pruebas de desarrollo con entrega por link de repositorio y
---     corrección manual del evaluador.
+--   * 1 proyecto final de desarrollo, integrador de las 5 clases, con
+--     entrega por link de repositorio y corrección manual del evaluador.
 --
 -- Incluye además dos correcciones de arrastre:
 --   1. El nuevo tipo de pregunta `multiple_select` (las evaluaciones traen una
@@ -68,12 +68,8 @@ ALTER TABLE public.exam_results
         'clase6-config-kubernetes'::text,
         'clase7-8-seq-logging'::text,
         'clase9-cicd-github-actions'::text,
-        -- Pruebas de desarrollo (entrega por repositorio, corrección manual)
-        'dev-persistencia'::text,
-        'dev-kubernetes'::text,
-        'dev-config-kubernetes'::text,
-        'dev-seq-logging'::text,
-        'dev-cicd-actions'::text
+        -- Proyecto final de desarrollo (entrega por repositorio, corrección manual)
+        'dev-proyecto-final'::text
       ]
     )
   );

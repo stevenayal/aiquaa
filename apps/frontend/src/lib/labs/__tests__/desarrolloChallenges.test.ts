@@ -13,9 +13,9 @@ const challenges = DESARROLLO_CHALLENGE_IDS.map(
 );
 
 describe('catálogo de pruebas de desarrollo', () => {
-  it('define una prueba por clase del bootcamp', () => {
-    expect(DESARROLLO_CHALLENGE_IDS).toHaveLength(5);
-    expect(new Set(DESARROLLO_CHALLENGE_IDS).size).toBe(5);
+  it('define un único proyecto final de desarrollo', () => {
+    expect(DESARROLLO_CHALLENGE_IDS).toHaveLength(1);
+    expect(DESARROLLO_CHALLENGE_IDS[0]).toBe('dev-proyecto-final');
   });
 
   it('mantiene id y examType alineados con la clave del record', () => {
@@ -45,18 +45,26 @@ describe('catálogo de pruebas de desarrollo', () => {
     expect(reviewHrefFor(null, 'abc')).toBeNull();
   });
 
-  it('trae consigna, entregables y criterios en cada prueba', () => {
-    challenges.forEach((challenge) => {
-      expect(challenge.consigna.length).toBeGreaterThanOrEqual(5);
-      expect(challenge.entregables.length).toBeGreaterThanOrEqual(3);
-      expect(challenge.criteriosDeEvaluacion.length).toBeGreaterThanOrEqual(5);
-      expect(challenge.objetivo).toBeTruthy();
-      expect(challenge.estructuraEsperada).toBeTruthy();
-    });
+  it('trae consigna, entregables y criterios cubriendo las 5 clases', () => {
+    const challenge = DESARROLLO_CHALLENGES['dev-proyecto-final'];
+    expect(challenge.consigna.length).toBeGreaterThanOrEqual(6);
+    expect(challenge.entregables.length).toBeGreaterThanOrEqual(4);
+    expect(challenge.criteriosDeEvaluacion.length).toBeGreaterThanOrEqual(5);
+    expect(challenge.objetivo).toBeTruthy();
+    expect(challenge.estructuraEsperada).toBeTruthy();
+
+    const consignaText = challenge.consigna.join(' ');
+    expect(consignaText).toMatch(/EF Core|Entity Framework/i);
+    expect(consignaText).toMatch(/Kubernetes|Deployment|StatefulSet/i);
+    expect(consignaText).toMatch(/ConfigMap|Secret|Helm/i);
+    expect(consignaText).toMatch(/Serilog|Seq/i);
+    expect(consignaText).toMatch(/GitHub Actions|workflow/i);
   });
 
   it('resuelve por id y devuelve undefined para uno desconocido', () => {
-    expect(getDesarrolloChallenge('dev-kubernetes')?.clase).toBe('Clase 5');
+    expect(getDesarrolloChallenge('dev-proyecto-final')?.title).toContain(
+      'Proyecto final'
+    );
     expect(getDesarrolloChallenge('no-existe')).toBeUndefined();
   });
 });

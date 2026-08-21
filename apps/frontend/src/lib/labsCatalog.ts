@@ -290,53 +290,13 @@ export const toolCategories: LabCategory[] = [
         implementedDate: 'Ago 2026',
       },
       {
-        id: 'dev-persistencia',
-        name: 'Clase 3 — Desarrollo: Persistencia con EF Core',
+        id: 'dev-proyecto-final',
+        name: 'Proyecto final: API + Kubernetes + CI/CD',
         description:
-          'Construí una API .NET con EF Core, PostgreSQL, migraciones, DTOs y FluentValidation. Entregás el link del repo y un evaluador lo corrige sobre 100 pts',
-        icon: '🗃️',
+          'Integrá las 5 clases en un solo repo: API .NET con EF Core/PostgreSQL, despliegue en Kubernetes, ConfigMaps/Secrets/Helm, Serilog/Seq y un pipeline de GitHub Actions. Entregás el link del repo y un evaluador lo corrige sobre 100 pts',
+        icon: '🏆',
         color: 'from-violet-600 to-fuchsia-700',
-        href: '/labs/desarrollo/dev-persistencia',
-        implementedDate: 'Ago 2026',
-      },
-      {
-        id: 'dev-kubernetes',
-        name: 'Clase 5 — Desarrollo: Despliegue en Kubernetes',
-        description:
-          'Desplegá una API en Minikube con Deployment, Service y StatefulSet, y demostrá autorecuperación y escalado. Entrega por link de repo, corrección manual',
-        icon: '☸️',
-        color: 'from-blue-600 to-sky-700',
-        href: '/labs/desarrollo/dev-kubernetes',
-        implementedDate: 'Ago 2026',
-      },
-      {
-        id: 'dev-config-kubernetes',
-        name: 'Clase 6 — Desarrollo: ConfigMaps, Secrets y Helm',
-        description:
-          'Externalizá la configuración con ConfigMaps y Secrets, inyectala con envFrom y empaquetá todo en un chart de Helm. Entrega por link de repo, corrección manual',
-        icon: '🔐',
-        color: 'from-teal-600 to-cyan-700',
-        href: '/labs/desarrollo/dev-config-kubernetes',
-        implementedDate: 'Ago 2026',
-      },
-      {
-        id: 'dev-seq-logging',
-        name: 'Clases 7 y 8 — Desarrollo: Serilog y Seq',
-        description:
-          'Instrumentá una API con Serilog, centralizá los logs en Seq dentro del clúster y demostrá búsquedas por propiedad. Entrega por link de repo, corrección manual',
-        icon: '📊',
-        color: 'from-emerald-600 to-teal-700',
-        href: '/labs/desarrollo/dev-seq-logging',
-        implementedDate: 'Ago 2026',
-      },
-      {
-        id: 'dev-cicd-actions',
-        name: 'Clase 9 — Desarrollo: Pipeline con GitHub Actions',
-        description:
-          'Armá un pipeline de GitHub Actions con validación, empaquetado y separación Variables/Secrets. Entrega por link de repo, corrección manual sobre 100 pts',
-        icon: '🔁',
-        color: 'from-orange-600 to-red-700',
-        href: '/labs/desarrollo/dev-cicd-actions',
+        href: '/labs/desarrollo/dev-proyecto-final',
         implementedDate: 'Ago 2026',
       },
     ],

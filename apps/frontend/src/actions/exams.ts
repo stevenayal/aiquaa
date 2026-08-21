@@ -35,11 +35,7 @@ interface SaveExamResultPayload {
     | 'clase6-config-kubernetes'
     | 'clase7-8-seq-logging'
     | 'clase9-cicd-github-actions'
-    | 'dev-persistencia'
-    | 'dev-kubernetes'
-    | 'dev-config-kubernetes'
-    | 'dev-seq-logging'
-    | 'dev-cicd-actions';
+    | 'dev-proyecto-final';
   exam_mode: 'exam' | 'training';
   participant_name?: string;
   participant_email?: string;
@@ -82,13 +78,9 @@ interface SaveExamResultPayload {
 const NEEDS_MANUAL_CORRECTION_EXAM_TYPES = new Set([
   'test-app',
   'playwright-practico',
-  // Pruebas de desarrollo: se entregan con el link del repositorio y no
-  // tienen score automático — el evaluador carga el puntaje global.
-  'dev-persistencia',
-  'dev-kubernetes',
-  'dev-config-kubernetes',
-  'dev-seq-logging',
-  'dev-cicd-actions',
+  // Proyecto final de desarrollo: se entrega con el link del repositorio y
+  // no tiene score automático — el evaluador carga el puntaje global.
+  'dev-proyecto-final',
 ]);
 
 export async function saveExamResultAction(payload: SaveExamResultPayload) {

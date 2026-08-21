@@ -144,34 +144,10 @@ const EXAM_OPTIONS = [
       'Delivery vs Deployment, etapas del pipeline, Jobs/Steps/Triggers/Runners, workflows y separación Variables/Secrets — auto-corregido, 10 preguntas, 100 pts',
   },
   {
-    id: 'dev-persistencia',
-    label: 'Clase 3 — Persistencia con EF Core (Prueba de desarrollo)',
+    id: 'dev-proyecto-final',
+    label: 'Proyecto final: API + Kubernetes + CI/CD (Prueba de desarrollo)',
     description:
-      'API .NET con EF Core, PostgreSQL, migraciones, DTOs y FluentValidation — entrega por link de repositorio, corrección manual del evaluador sobre 100 pts',
-  },
-  {
-    id: 'dev-kubernetes',
-    label: 'Clase 5 — Despliegue en Kubernetes (Prueba de desarrollo)',
-    description:
-      'Manifiestos de Deployment, Service y StatefulSet en Minikube, con evidencia de autorecuperación y escalado — entrega por link de repositorio, corrección manual sobre 100 pts',
-  },
-  {
-    id: 'dev-config-kubernetes',
-    label: 'Clase 6 — ConfigMaps, Secrets y Helm (Prueba de desarrollo)',
-    description:
-      'Configuración externalizada con ConfigMap y Secret, inyección con envFrom y chart de Helm con values por entorno — entrega por link de repositorio, corrección manual sobre 100 pts',
-  },
-  {
-    id: 'dev-seq-logging',
-    label: 'Clases 7 y 8 — Serilog y Seq (Prueba de desarrollo)',
-    description:
-      'Logging estructurado con Serilog, sinks a consola y Seq, niveles de severidad y Seq desplegado en el clúster — entrega por link de repositorio, corrección manual sobre 100 pts',
-  },
-  {
-    id: 'dev-cicd-actions',
-    label: 'Clase 9 — Pipeline con GitHub Actions (Prueba de desarrollo)',
-    description:
-      'Workflow con triggers push/pull_request/workflow_dispatch, orden restore→build→test, publicación de imagen y separación Variables/Secrets — entrega por link de repositorio, corrección manual sobre 100 pts',
+      'Integra las 5 clases en un solo repo: API .NET con EF Core/PostgreSQL, despliegue en Kubernetes, configuración con ConfigMaps/Secrets/Helm, logging con Serilog/Seq y pipeline de GitHub Actions — entrega por link de repositorio, corrección manual del evaluador sobre 100 pts',
   },
   {
     id: 'test-app',

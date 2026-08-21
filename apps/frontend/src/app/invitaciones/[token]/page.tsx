@@ -28,11 +28,7 @@ const EXAM_LABELS: Record<string, string> = {
   'clase6-config-kubernetes': 'Clase 6 — Configuración en Kubernetes',
   'clase7-8-seq-logging': 'Clases 7 y 8 — SEQ Structured Logging',
   'clase9-cicd-github-actions': 'Clase 9 — CI/CD con GitHub Actions',
-  'dev-persistencia': 'Clase 3 — Desarrollo: Persistencia con EF Core',
-  'dev-kubernetes': 'Clase 5 — Desarrollo: Despliegue en Kubernetes',
-  'dev-config-kubernetes': 'Clase 6 — Desarrollo: ConfigMaps, Secrets y Helm',
-  'dev-seq-logging': 'Clases 7 y 8 — Desarrollo: Serilog y Seq',
-  'dev-cicd-actions': 'Clase 9 — Desarrollo: Pipeline con GitHub Actions',
+  'dev-proyecto-final': 'Proyecto final — Desarrollo integrador',
 };
 
 type Props = { params: Promise<{ token: string }> };
