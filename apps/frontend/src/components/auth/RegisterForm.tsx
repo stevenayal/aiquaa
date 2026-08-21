@@ -1,7 +1,11 @@
 'use client';
 
-import React, { useRef, useState, useTransition } from 'react';
-import { registerAction, resendConfirmationAction, checkEmailTakenAction } from '@/actions/auth';
+import React, { useRef, useState } from 'react';
+import {
+  registerAction,
+  resendConfirmationAction,
+  checkEmailTakenAction,
+} from '@/actions/auth';
 import AuthForm from './AuthForm';
 import EmailVerificationModal from './EmailVerificationModal';
 import { Audience } from './AudienceToggle';
@@ -12,7 +16,7 @@ interface RegisterFormProps {
 }
 
 export default function RegisterForm({ lockedAudience }: RegisterFormProps) {
-  const [isPending, startTransition] = useTransition();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
@@ -66,7 +70,8 @@ export default function RegisterForm({ lockedAudience }: RegisterFormProps) {
       data.set('role', formData.role);
     }
 
-    startTransition(async () => {
+    setIsSubmitting(true);
+    try {
       const result = await registerAction(data);
       if (result?.error) {
         if (result.error.includes('already registered')) {
@@ -82,7 +87,9 @@ export default function RegisterForm({ lockedAudience }: RegisterFormProps) {
       } else if (result?.success) {
         setShowVerifyModal(true);
       }
-    });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleEmailBlur = async () => {
@@ -148,39 +155,39 @@ export default function RegisterForm({ lockedAudience }: RegisterFormProps) {
 
   return (
     <>
-    {showVerifyModal && (
-      <EmailVerificationModal
-        email={formData.email}
-        context="post-register"
-        onClose={() => setShowVerifyModal(false)}
-        onResend={handleResend}
+      {showVerifyModal && (
+        <EmailVerificationModal
+          email={formData.email}
+          context="post-register"
+          onClose={() => setShowVerifyModal(false)}
+          onResend={handleResend}
+        />
+      )}
+      <AuthForm
+        mode="register"
+        onSubmit={handleSubmit}
+        isLoading={isSubmitting}
+        errors={errors}
+        formData={formData}
+        onFieldChange={handleChange}
+        onPasswordChange={handlePasswordChange}
+        onRoleChange={handleRoleChange}
+        onAudienceChange={lockedAudience ? undefined : handleAudienceChange}
+        onClearErrors={() => {
+          setErrors({});
+          setShowAlert(false);
+        }}
+        socialLoginError={socialLoginError}
+        onSocialError={() => {}}
+        showAlert={showAlert}
+        alertMessage={alertMessage}
+        alertType={alertType}
+        showResend={false}
+        onEmailBlur={handleEmailBlur}
+        emailChecking={emailChecking}
+        passwordRef={passwordRef}
+        confirmPasswordRef={confirmPasswordRef}
       />
-    )}
-    <AuthForm
-      mode="register"
-      onSubmit={handleSubmit}
-      isLoading={isPending}
-      errors={errors}
-      formData={formData}
-      onFieldChange={handleChange}
-      onPasswordChange={handlePasswordChange}
-      onRoleChange={handleRoleChange}
-      onAudienceChange={lockedAudience ? undefined : handleAudienceChange}
-      onClearErrors={() => {
-        setErrors({});
-        setShowAlert(false);
-      }}
-      socialLoginError={socialLoginError}
-      onSocialError={() => {}}
-      showAlert={showAlert}
-      alertMessage={alertMessage}
-      alertType={alertType}
-      showResend={false}
-      onEmailBlur={handleEmailBlur}
-      emailChecking={emailChecking}
-      passwordRef={passwordRef}
-      confirmPasswordRef={confirmPasswordRef}
-    />
     </>
   );
 }

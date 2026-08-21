@@ -9,6 +9,7 @@ import { LanguageProvider } from '@/contexts/LanguageContext';
 vi.mock('@/actions/auth', () => ({
   registerAction: vi.fn(),
   resendConfirmationAction: vi.fn(),
+  checkEmailTakenAction: vi.fn().mockResolvedValue({ taken: false }),
 }));
 
 // Mock del SessionProvider de next-auth
@@ -416,6 +417,14 @@ describe('RegisterForm', () => {
 
     it('deshabilita botón durante el envío', async () => {
       const user = userEvent.setup();
+      // registerAction se resuelve en el siguiente tick (no de forma síncrona)
+      // para poder observar el estado "disabled" intermedio del botón.
+      vi.mocked(registerAction).mockImplementation(
+        () =>
+          new Promise((resolve) =>
+            setTimeout(() => resolve({ success: true }), 10)
+          )
+      );
 
       renderWithProviders(<RegisterForm />);
 

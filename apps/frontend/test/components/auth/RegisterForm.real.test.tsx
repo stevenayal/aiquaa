@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import RegisterForm from '@/components/auth/RegisterForm';
 
@@ -25,10 +31,17 @@ vi.mock('@/components/auth/AuthForm', () => ({
     errors,
     formData,
     onFieldChange,
+    onPasswordChange,
+    onRoleChange,
+    passwordRef,
+    confirmPasswordRef,
     showAlert,
     alertMessage,
   }: any) => (
     <form onSubmit={onSubmit}>
+      <button type="button" onClick={() => onRoleChange?.('estudiante')}>
+        Estudiante
+      </button>
       <input
         aria-label="Nombre completo"
         name="name"
@@ -47,15 +60,17 @@ vi.mock('@/components/auth/AuthForm', () => ({
         aria-label="Contraseña"
         name="password"
         placeholder="Contraseña"
-        value={formData.password || ''}
-        onChange={onFieldChange}
+        ref={passwordRef}
+        defaultValue=""
+        onChange={onPasswordChange ?? onFieldChange}
       />
       <input
         aria-label="Confirmar contraseña"
         name="confirmPassword"
         placeholder="Confirmar contraseña"
-        value={formData.confirmPassword || ''}
-        onChange={onFieldChange}
+        ref={confirmPasswordRef}
+        defaultValue=""
+        onChange={onPasswordChange ?? onFieldChange}
       />
       <button type="submit">Crear cuenta</button>
       {errors.name && <p>{errors.name}</p>}
@@ -89,7 +104,9 @@ describe('RegisterForm real flow', () => {
     expect(await screen.findByText('Nombre obligatorio')).toBeInTheDocument();
     expect(screen.getByText('Correo obligatorio')).toBeInTheDocument();
     expect(screen.getByText('Contraseña obligatoria')).toBeInTheDocument();
-    expect(screen.getByText('Confirmar contraseña obligatorio')).toBeInTheDocument();
+    expect(
+      screen.getByText('Confirmar contraseña obligatorio')
+    ).toBeInTheDocument();
     expect(mockRegister).not.toHaveBeenCalled();
   });
 
@@ -97,13 +114,21 @@ describe('RegisterForm real flow', () => {
     const user = userEvent.setup();
     render(<RegisterForm />);
 
-    await user.type(screen.getByPlaceholderText('Nombre completo'), 'QA Aiquaa');
+    await user.type(
+      screen.getByPlaceholderText('Nombre completo'),
+      'QA Aiquaa'
+    );
     await user.type(screen.getByPlaceholderText('Email'), 'qa@aiquaa.com');
     await user.type(screen.getByPlaceholderText('Contraseña'), 'Password123');
-    await user.type(screen.getByPlaceholderText('Confirmar contraseña'), 'Password456');
+    await user.type(
+      screen.getByPlaceholderText('Confirmar contraseña'),
+      'Password456'
+    );
     await user.click(getSubmitButton());
 
-    expect(await screen.findByText('Las contraseñas no coinciden')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Las contraseñas no coinciden')
+    ).toBeInTheDocument();
     expect(mockRegister).not.toHaveBeenCalled();
   });
 
@@ -116,10 +141,16 @@ describe('RegisterForm real flow', () => {
 
     render(<RegisterForm />);
 
-    await user.type(screen.getByPlaceholderText('Nombre completo'), 'QA Aiquaa');
+    await user.type(
+      screen.getByPlaceholderText('Nombre completo'),
+      'QA Aiquaa'
+    );
     await user.type(screen.getByPlaceholderText('Email'), 'qa@aiquaa.com');
     await user.type(screen.getByPlaceholderText('Contraseña'), 'Password123');
-    await user.type(screen.getByPlaceholderText('Confirmar contraseña'), 'Password123');
+    await user.type(
+      screen.getByPlaceholderText('Confirmar contraseña'),
+      'Password123'
+    );
     await user.click(getSubmitButton());
 
     await waitFor(() => {
@@ -132,7 +163,9 @@ describe('RegisterForm real flow', () => {
     });
 
     expect(
-      await screen.findByText('Este email ya está registrado. Intenta iniciar sesión o usa otro email.')
+      await screen.findByText(
+        'Este email ya está registrado. Intenta iniciar sesión o usa otro email.'
+      )
     ).toBeInTheDocument();
   });
 
@@ -171,7 +204,9 @@ describe('RegisterForm real flow', () => {
       confirmPassword: 'Password123',
     });
     expect(
-      screen.getByText('Registro exitoso. Revisa tu email para verificar tu cuenta.')
+      screen.getByText(
+        'Registro exitoso. Revisa tu email para verificar tu cuenta.'
+      )
     ).toBeInTheDocument();
     expect(setTimeoutSpy).toHaveBeenCalledOnce();
     expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 2000);
