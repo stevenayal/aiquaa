@@ -218,6 +218,17 @@ export const toolCategories: LabCategory[] = [
         implementedDate: 'Ago 2026',
       },
       {
+        id: 'kubernetes-orchestration-fundamentals',
+        name: 'Kubernetes — Fundamentos de Orquestación',
+        description:
+          'Prueba técnica para el grupo de desarrollo: propósito y pilares de la orquestación, arquitectura Scheduler/Kubelet, Pods, paradigma declarativo, Deployment/ReplicaSet, StatefulSet y ecosistema — auto-corregido, 100 pts',
+        icon: '⚙️',
+        color: 'from-cyan-500 to-sky-700',
+        href: '/assessments/kubernetes-orchestration-fundamentals',
+        featured: true,
+        implementedDate: 'Ago 2026',
+      },
+      {
         id: 'observability-fundamentals',
         name: 'Observabilidad — Fundamentos',
         description:

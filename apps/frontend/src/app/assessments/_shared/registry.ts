@@ -89,6 +89,15 @@ import {
 } from '../kubernetes-helm-fundamentals/lib/gamification';
 import { ensureKubernetesHelmFundamentalsSeeded } from '../kubernetes-helm-fundamentals/lib/seed';
 import {
+  KUBERNETES_ORCHESTRATION_FUNDAMENTALS_SEED_VERSION,
+  KUBERNETES_ORCHESTRATION_FUNDAMENTALS_SLUG,
+} from '../kubernetes-orchestration-fundamentals/data/assessment-definition';
+import {
+  KUBERNETES_ORCHESTRATION_FUNDAMENTALS_GAMIFICATION_RULES,
+  buildKubernetesOrchestrationFundamentalsGamificationEvents,
+} from '../kubernetes-orchestration-fundamentals/lib/gamification';
+import { ensureKubernetesOrchestrationFundamentalsSeeded } from '../kubernetes-orchestration-fundamentals/lib/seed';
+import {
   OBSERVABILITY_FUNDAMENTALS_SEED_VERSION,
   OBSERVABILITY_FUNDAMENTALS_SLUG,
 } from '../observability-fundamentals/data/assessment-definition';
@@ -122,6 +131,7 @@ export type AssessmentExamType =
   | 'gherkin-fundamentals'
   | 'infrastructure-fundamentals'
   | 'kubernetes-helm-fundamentals'
+  | 'kubernetes-orchestration-fundamentals'
   | 'observability-fundamentals'
   | 'playwright-fundamentals';
 
@@ -238,6 +248,16 @@ export const ASSESSMENT_REGISTRY: Record<string, AssessmentRegistryEntry> = {
     gamificationSource: 'KUBERNETES_HELM_FUNDAMENTALS',
     gamificationRules: KUBERNETES_HELM_FUNDAMENTALS_GAMIFICATION_RULES,
     buildGamificationEvents: buildKubernetesHelmFundamentalsGamificationEvents,
+  },
+  [KUBERNETES_ORCHESTRATION_FUNDAMENTALS_SLUG]: {
+    slug: KUBERNETES_ORCHESTRATION_FUNDAMENTALS_SLUG,
+    seedVersion: KUBERNETES_ORCHESTRATION_FUNDAMENTALS_SEED_VERSION,
+    ensureSeeded: ensureKubernetesOrchestrationFundamentalsSeeded,
+    examType: 'kubernetes-orchestration-fundamentals',
+    gamificationSource: 'KUBERNETES_ORCHESTRATION_FUNDAMENTALS',
+    gamificationRules: KUBERNETES_ORCHESTRATION_FUNDAMENTALS_GAMIFICATION_RULES,
+    buildGamificationEvents:
+      buildKubernetesOrchestrationFundamentalsGamificationEvents,
   },
   [OBSERVABILITY_FUNDAMENTALS_SLUG]: {
     slug: OBSERVABILITY_FUNDAMENTALS_SLUG,

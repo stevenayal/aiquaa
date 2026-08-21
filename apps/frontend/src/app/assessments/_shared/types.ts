@@ -13,6 +13,7 @@ export interface CandidateBand {
 
 export type AssessmentQuestionType =
   | 'multiple_choice'
+  | 'multi_select'
   | 'true_false'
   | 'short_text'
   | 'doc_analysis'

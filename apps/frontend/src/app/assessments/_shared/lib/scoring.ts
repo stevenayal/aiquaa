@@ -158,6 +158,35 @@ function scoreShortText(
   };
 }
 
+function scoreMultiSelect(
+  question: AssessmentQuestion,
+  answer: unknown
+): ScoreResult {
+  const correctAnswer = (question.correct_answer ?? {}) as
+    | { values?: string[] }
+    | undefined;
+  const correctValues = new Set(correctAnswer?.values ?? []);
+
+  const answeredValues = Array.isArray(
+    (answer as { values?: unknown } | undefined)?.values
+  )
+    ? ((answer as { values?: unknown }).values as unknown[]).map(String)
+    : [];
+  const answeredSet = new Set(answeredValues);
+
+  const isCorrect =
+    answeredSet.size === correctValues.size &&
+    [...correctValues].every((value) => answeredSet.has(value));
+
+  return {
+    score: isCorrect ? question.points : 0,
+    isCorrect,
+    feedback: isCorrect
+      ? 'Marcaste exactamente el conjunto de opciones correctas.'
+      : 'El conjunto marcado no coincide exactamente con las opciones correctas: revisá si te faltó alguna o marcaste una de más.',
+  };
+}
+
 function scoreResponseAnalysis(
   question: AssessmentQuestion,
   answer: unknown
@@ -215,6 +244,8 @@ export function scoreAssessmentQuestion(
     case 'true_false':
     case 'doc_analysis':
       return compareSimpleAnswer(question, answer);
+    case 'multi_select':
+      return scoreMultiSelect(question, answer);
     case 'short_text':
       return scoreShortText(question, answer);
     case 'response_analysis':

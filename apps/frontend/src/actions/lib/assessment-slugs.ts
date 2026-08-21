@@ -13,6 +13,7 @@ export const PROCESS_ASSESSMENT_SLUGS = [
   'api-dotnet-fundamentals',
   'docker-fundamentals',
   'kubernetes-helm-fundamentals',
+  'kubernetes-orchestration-fundamentals',
   'observability-fundamentals',
   'cicd-fundamentals',
 ];
