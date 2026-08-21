@@ -15,4 +15,9 @@ export const PROCESS_ASSESSMENT_SLUGS = [
   'kubernetes-helm-fundamentals',
   'observability-fundamentals',
   'cicd-fundamentals',
+  'clase3-data-persistencia',
+  'clase5-kubernetes',
+  'clase6-config-kubernetes',
+  'clase7-8-seq-logging',
+  'clase9-cicd-github-actions',
 ];

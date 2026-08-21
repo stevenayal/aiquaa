@@ -106,12 +106,62 @@ import {
   buildPlaywrightFundamentalsGamificationEvents,
 } from '../playwright-fundamentals/lib/gamification';
 import { ensurePlaywrightFundamentalsSeeded } from '../playwright-fundamentals/lib/seed';
+import {
+  CLASE3_DATA_PERSISTENCIA_SEED_VERSION,
+  CLASE3_DATA_PERSISTENCIA_SLUG,
+} from '../clase3-data-persistencia/data/assessment-definition';
+import {
+  CLASE3_DATA_PERSISTENCIA_GAMIFICATION_RULES,
+  buildClase3DataPersistenciaGamificationEvents,
+} from '../clase3-data-persistencia/lib/gamification';
+import { ensureClase3DataPersistenciaSeeded } from '../clase3-data-persistencia/lib/seed';
+import {
+  CLASE5_KUBERNETES_SEED_VERSION,
+  CLASE5_KUBERNETES_SLUG,
+} from '../clase5-kubernetes/data/assessment-definition';
+import {
+  CLASE5_KUBERNETES_GAMIFICATION_RULES,
+  buildClase5KubernetesGamificationEvents,
+} from '../clase5-kubernetes/lib/gamification';
+import { ensureClase5KubernetesSeeded } from '../clase5-kubernetes/lib/seed';
+import {
+  CLASE6_CONFIG_KUBERNETES_SEED_VERSION,
+  CLASE6_CONFIG_KUBERNETES_SLUG,
+} from '../clase6-config-kubernetes/data/assessment-definition';
+import {
+  CLASE6_CONFIG_KUBERNETES_GAMIFICATION_RULES,
+  buildClase6ConfigKubernetesGamificationEvents,
+} from '../clase6-config-kubernetes/lib/gamification';
+import { ensureClase6ConfigKubernetesSeeded } from '../clase6-config-kubernetes/lib/seed';
+import {
+  CLASE7_8_SEQ_LOGGING_SEED_VERSION,
+  CLASE7_8_SEQ_LOGGING_SLUG,
+} from '../clase7-8-seq-logging/data/assessment-definition';
+import {
+  CLASE7_8_SEQ_LOGGING_GAMIFICATION_RULES,
+  buildClase78SeqLoggingGamificationEvents,
+} from '../clase7-8-seq-logging/lib/gamification';
+import { ensureClase78SeqLoggingSeeded } from '../clase7-8-seq-logging/lib/seed';
+import {
+  CLASE9_CICD_GITHUB_ACTIONS_SEED_VERSION,
+  CLASE9_CICD_GITHUB_ACTIONS_SLUG,
+} from '../clase9-cicd-github-actions/data/assessment-definition';
+import {
+  CLASE9_CICD_GITHUB_ACTIONS_GAMIFICATION_RULES,
+  buildClase9CicdGithubActionsGamificationEvents,
+} from '../clase9-cicd-github-actions/lib/gamification';
+import { ensureClase9CicdGithubActionsSeeded } from '../clase9-cicd-github-actions/lib/seed';
 import type {
   AssessmentGamificationEvent,
   AssessmentGamificationRule,
 } from './lib/gamification';
 
 export type AssessmentExamType =
+  | 'clase3-data-persistencia'
+  | 'clase5-kubernetes'
+  | 'clase6-config-kubernetes'
+  | 'clase7-8-seq-logging'
+  | 'clase9-cicd-github-actions'
   | 'api-developer-fundamentals'
   | 'api-dotnet-fundamentals'
   | 'api-testing-fundamentals'
@@ -149,6 +199,51 @@ export interface AssessmentRegistryEntry {
 export const DEFAULT_ASSESSMENT_SLUG = API_TESTING_FUNDAMENTALS_SLUG;
 
 export const ASSESSMENT_REGISTRY: Record<string, AssessmentRegistryEntry> = {
+  [CLASE3_DATA_PERSISTENCIA_SLUG]: {
+    slug: CLASE3_DATA_PERSISTENCIA_SLUG,
+    seedVersion: CLASE3_DATA_PERSISTENCIA_SEED_VERSION,
+    ensureSeeded: ensureClase3DataPersistenciaSeeded,
+    examType: 'clase3-data-persistencia',
+    gamificationSource: 'CLASE3_DATA_PERSISTENCIA',
+    gamificationRules: CLASE3_DATA_PERSISTENCIA_GAMIFICATION_RULES,
+    buildGamificationEvents: buildClase3DataPersistenciaGamificationEvents,
+  },
+  [CLASE5_KUBERNETES_SLUG]: {
+    slug: CLASE5_KUBERNETES_SLUG,
+    seedVersion: CLASE5_KUBERNETES_SEED_VERSION,
+    ensureSeeded: ensureClase5KubernetesSeeded,
+    examType: 'clase5-kubernetes',
+    gamificationSource: 'CLASE5_KUBERNETES',
+    gamificationRules: CLASE5_KUBERNETES_GAMIFICATION_RULES,
+    buildGamificationEvents: buildClase5KubernetesGamificationEvents,
+  },
+  [CLASE6_CONFIG_KUBERNETES_SLUG]: {
+    slug: CLASE6_CONFIG_KUBERNETES_SLUG,
+    seedVersion: CLASE6_CONFIG_KUBERNETES_SEED_VERSION,
+    ensureSeeded: ensureClase6ConfigKubernetesSeeded,
+    examType: 'clase6-config-kubernetes',
+    gamificationSource: 'CLASE6_CONFIG_KUBERNETES',
+    gamificationRules: CLASE6_CONFIG_KUBERNETES_GAMIFICATION_RULES,
+    buildGamificationEvents: buildClase6ConfigKubernetesGamificationEvents,
+  },
+  [CLASE7_8_SEQ_LOGGING_SLUG]: {
+    slug: CLASE7_8_SEQ_LOGGING_SLUG,
+    seedVersion: CLASE7_8_SEQ_LOGGING_SEED_VERSION,
+    ensureSeeded: ensureClase78SeqLoggingSeeded,
+    examType: 'clase7-8-seq-logging',
+    gamificationSource: 'CLASE7_8_SEQ_LOGGING',
+    gamificationRules: CLASE7_8_SEQ_LOGGING_GAMIFICATION_RULES,
+    buildGamificationEvents: buildClase78SeqLoggingGamificationEvents,
+  },
+  [CLASE9_CICD_GITHUB_ACTIONS_SLUG]: {
+    slug: CLASE9_CICD_GITHUB_ACTIONS_SLUG,
+    seedVersion: CLASE9_CICD_GITHUB_ACTIONS_SEED_VERSION,
+    ensureSeeded: ensureClase9CicdGithubActionsSeeded,
+    examType: 'clase9-cicd-github-actions',
+    gamificationSource: 'CLASE9_CICD_GITHUB_ACTIONS',
+    gamificationRules: CLASE9_CICD_GITHUB_ACTIONS_GAMIFICATION_RULES,
+    buildGamificationEvents: buildClase9CicdGithubActionsGamificationEvents,
+  },
   [API_DEVELOPER_FUNDAMENTALS_SLUG]: {
     slug: API_DEVELOPER_FUNDAMENTALS_SLUG,
     seedVersion: API_DEVELOPER_FUNDAMENTALS_SEED_VERSION,

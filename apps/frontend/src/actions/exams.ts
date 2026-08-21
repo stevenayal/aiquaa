@@ -29,7 +29,13 @@ interface SaveExamResultPayload {
     | 'cicd-fundamentals'
     | 'playwright-practico'
     | 'playwright-fundamentals'
-    | 'gherkin-fundamentals';
+    | 'gherkin-fundamentals'
+    | 'clase3-data-persistencia'
+    | 'clase5-kubernetes'
+    | 'clase6-config-kubernetes'
+    | 'clase7-8-seq-logging'
+    | 'clase9-cicd-github-actions'
+    | 'dev-proyecto-final';
   exam_mode: 'exam' | 'training';
   participant_name?: string;
   participant_email?: string;
@@ -72,6 +78,9 @@ interface SaveExamResultPayload {
 const NEEDS_MANUAL_CORRECTION_EXAM_TYPES = new Set([
   'test-app',
   'playwright-practico',
+  // Proyecto final de desarrollo: se entrega con el link del repositorio y
+  // no tiene score automático — el evaluador carga el puntaje global.
+  'dev-proyecto-final',
 ]);
 
 export async function saveExamResultAction(payload: SaveExamResultPayload) {
@@ -198,7 +207,12 @@ export async function getLeaderboardAction(
     | 'api-developer-fundamentals'
     | 'playwright-practico'
     | 'playwright-fundamentals'
-    | 'gherkin-fundamentals',
+    | 'gherkin-fundamentals'
+    | 'clase3-data-persistencia'
+    | 'clase5-kubernetes'
+    | 'clase6-config-kubernetes'
+    | 'clase7-8-seq-logging'
+    | 'clase9-cicd-github-actions',
   limit = 20
 ) {
   const supabase = createClient();

@@ -10,7 +10,9 @@ type BugReviewItem = {
 };
 
 type ReviewData = {
-  bugs: Record<string, BugReviewItem>;
+  // Sólo aplica al bug hunt de test-app; las pruebas de desarrollo se corrigen
+  // con un puntaje global y no tienen items individuales.
+  bugs?: Record<string, BugReviewItem>;
   overallNotes: string;
   adjustedScore: number | null;
 };
@@ -45,30 +47,41 @@ export type ExamDetail = {
   review_status: string;
   reviewed_at: string | null;
   reviewed_by: string | null;
-  metadata: {
-    bugs: Array<{
-      id: string;
-      title: string;
-      description: string;
-      stepsToReproduce: string[];
-      expectedResult: string;
-      actualResult: string;
-      severity: 'Critical' | 'High' | 'Medium' | 'Low';
-      category: string;
-      evidence: string;
-      images?: BugImageEvidence[];
-      foundAt: string;
-    }>;
-    exploredSections: string[];
-    bugCount: number;
-    severityCounts: {
-      critical: number;
-      high: number;
-      medium: number;
-      low: number;
-    };
-  } | null;
+  metadata: BugHuntMetadata | DesarrolloMetadata | null;
   review_data: ReviewData | null;
+};
+
+/** Entrega de una prueba de desarrollo: el candidato manda el link del repo. */
+export type DesarrolloMetadata = {
+  challengeId: string;
+  repoUrl: string;
+  githubUser?: string;
+  notes?: string;
+  submittedAt?: string;
+};
+
+type BugHuntMetadata = {
+  bugs: Array<{
+    id: string;
+    title: string;
+    description: string;
+    stepsToReproduce: string[];
+    expectedResult: string;
+    actualResult: string;
+    severity: 'Critical' | 'High' | 'Medium' | 'Low';
+    category: string;
+    evidence: string;
+    images?: BugImageEvidence[];
+    foundAt: string;
+  }>;
+  exploredSections: string[];
+  bugCount: number;
+  severityCounts: {
+    critical: number;
+    high: number;
+    medium: number;
+    low: number;
+  };
 };
 
 export async function getExamDetailAction(
@@ -96,7 +109,8 @@ export async function getExamDetailAction(
   if (!data) return { data: null, error: 'Resultado no encontrado' };
 
   const detail = data as unknown as ExamDetail;
-  const bugs = detail.metadata?.bugs ?? [];
+  const bugs =
+    detail.metadata && 'bugs' in detail.metadata ? detail.metadata.bugs : [];
   const images = bugs.flatMap((bug) => bug.images ?? []);
   const storageImages = images.filter(
     (image) => image.storageBucket && image.storagePath

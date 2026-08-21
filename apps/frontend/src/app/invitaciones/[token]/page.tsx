@@ -16,6 +16,19 @@ const EXAM_LABELS: Record<string, string> = {
   'infrastructure-fundamentals': 'Infraestructura — Fundamentos',
   'api-developer-fundamentals': 'APIs para Desarrolladores — Fundamentos',
   'gherkin-fundamentals': 'Gherkin y BDD — Fundamentos',
+  'api-dotnet-fundamentals': 'API .NET — Fundamentos',
+  'docker-fundamentals': 'Docker — Fundamentos',
+  'kubernetes-helm-fundamentals': 'Kubernetes + Helm — Fundamentos',
+  'observability-fundamentals': 'Observabilidad — Fundamentos',
+  'cicd-fundamentals': 'CI/CD — Fundamentos',
+  'playwright-fundamentals': 'Playwright — Fundamentos',
+  'test-app': 'Test App — Bug Hunt',
+  'clase3-data-persistencia': 'Clase 3 — Data Persistencia',
+  'clase5-kubernetes': 'Clase 5 — Kubernetes',
+  'clase6-config-kubernetes': 'Clase 6 — Configuración en Kubernetes',
+  'clase7-8-seq-logging': 'Clases 7 y 8 — SEQ Structured Logging',
+  'clase9-cicd-github-actions': 'Clase 9 — CI/CD con GitHub Actions',
+  'dev-proyecto-final': 'Proyecto final — Desarrollo integrador',
 };
 
 type Props = { params: Promise<{ token: string }> };

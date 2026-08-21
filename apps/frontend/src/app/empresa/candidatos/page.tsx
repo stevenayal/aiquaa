@@ -25,6 +25,7 @@ import {
   type TalentCandidate,
 } from './candidateDirectory';
 import { createInvitacionAction } from '@/actions/empresa-invitaciones';
+import { reviewHrefFor } from '@/lib/exam-review-routes';
 
 type SectionScore = {
   section: string;
@@ -1485,9 +1486,9 @@ export default function CandidatosPage() {
                                       Contactar
                                     </a>
                                   )}
-                                  {r.exam_type === 'test-app' && (
+                                  {reviewHrefFor(r.exam_type, r.id) && (
                                     <Link
-                                      href={`/empresa/evaluar/${r.id}`}
+                                      href={reviewHrefFor(r.exam_type, r.id)!}
                                       className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors ${
                                         r.review_status === 'reviewed'
                                           ? isDarkMode

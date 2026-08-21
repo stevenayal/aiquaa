@@ -35,6 +35,24 @@ export function assertAssessmentDefinitionConsistency(
         ).toBe(true);
       }
 
+      if (question.question_type === 'multiple_select') {
+        const correctValues = (
+          question.correct_answer as { values?: string[] } | undefined
+        )?.values;
+        expect(Array.isArray(correctValues)).toBe(true);
+        expect(correctValues!.length).toBeGreaterThanOrEqual(2);
+        expect(new Set(correctValues).size).toBe(correctValues!.length);
+        correctValues!.forEach((value) => {
+          expect(
+            question.options?.some((option) => option.value === value)
+          ).toBe(true);
+        });
+        // Si todas las opciones fueran correctas la pregunta no discrimina.
+        expect(correctValues!.length).toBeLessThan(
+          question.options?.length ?? 0
+        );
+      }
+
       if (question.question_type === 'true_false') {
         const correctValue = (
           question.correct_answer as { value?: unknown } | undefined

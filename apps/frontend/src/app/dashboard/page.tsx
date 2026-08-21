@@ -90,6 +90,11 @@ export default function DashboardPage() {
     'cicd-fundamentals',
     'playwright-practico',
     'gherkin-fundamentals',
+    'clase3-data-persistencia',
+    'clase5-kubernetes',
+    'clase6-config-kubernetes',
+    'clase7-8-seq-logging',
+    'clase9-cicd-github-actions',
   ];
   const recommended = allTypes.find((t) => !passedTypes.has(t)) ?? null;
   const allPassed = allTypes.every((t) => passedTypes.has(t));

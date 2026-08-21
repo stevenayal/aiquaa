@@ -21,7 +21,13 @@ export type ExamType =
   | 'cicd-fundamentals'
   | 'playwright-practico'
   | 'playwright-fundamentals'
-  | 'gherkin-fundamentals';
+  | 'gherkin-fundamentals'
+  | 'clase3-data-persistencia'
+  | 'clase5-kubernetes'
+  | 'clase6-config-kubernetes'
+  | 'clase7-8-seq-logging'
+  | 'clase9-cicd-github-actions'
+  | 'dev-proyecto-final';
 
 export interface ExamMeta {
   emoji: string;
@@ -117,6 +123,36 @@ export const EXAM_META: Record<ExamType, ExamMeta> = {
     label: 'Gherkin y BDD — Fundamentos',
     href: '/assessments/gherkin-fundamentals',
   },
+  'clase3-data-persistencia': {
+    emoji: '🗃️',
+    label: 'Clase 3 — Data Persistencia',
+    href: '/assessments/clase3-data-persistencia',
+  },
+  'clase5-kubernetes': {
+    emoji: '☸️',
+    label: 'Clase 5 — Kubernetes',
+    href: '/assessments/clase5-kubernetes',
+  },
+  'clase6-config-kubernetes': {
+    emoji: '🔐',
+    label: 'Clase 6 — Configuración en Kubernetes',
+    href: '/assessments/clase6-config-kubernetes',
+  },
+  'clase7-8-seq-logging': {
+    emoji: '📊',
+    label: 'Clases 7 y 8 — SEQ Structured Logging',
+    href: '/assessments/clase7-8-seq-logging',
+  },
+  'clase9-cicd-github-actions': {
+    emoji: '🔁',
+    label: 'Clase 9 — CI/CD con GitHub Actions',
+    href: '/assessments/clase9-cicd-github-actions',
+  },
+  'dev-proyecto-final': {
+    emoji: '🏆',
+    label: 'Proyecto final — Desarrollo integrador',
+    href: '/labs/desarrollo/dev-proyecto-final',
+  },
 };
 
 export const EXAM_TYPES = Object.keys(EXAM_META) as ExamType[];
@@ -138,6 +174,12 @@ export const POINTS_BASED_TYPES = new Set<ExamType>([
   'playwright-practico',
   'playwright-fundamentals',
   'gherkin-fundamentals',
+  'clase3-data-persistencia',
+  'clase5-kubernetes',
+  'clase6-config-kubernetes',
+  'clase7-8-seq-logging',
+  'clase9-cicd-github-actions',
+  'dev-proyecto-final',
 ]);
 
 export interface ExamScoreFields {

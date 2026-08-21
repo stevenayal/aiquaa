@@ -14,6 +14,7 @@ import {
   type Prospect,
   type ProspectStatus,
 } from '@/actions/prospects';
+import { reviewHrefFor } from '@/lib/exam-review-routes';
 
 type HiringProcess = {
   id: string;
@@ -910,9 +911,9 @@ export default function ProcesoDetailPage() {
                         >
                           {mins(r.time_spent)}
                         </span>
-                        {r.exam_type === 'test-app' && (
+                        {reviewHrefFor(r.exam_type, r.id) && (
                           <Link
-                            href={`/empresa/evaluar/${r.id}`}
+                            href={reviewHrefFor(r.exam_type, r.id)!}
                             className={`text-xs px-2 py-1 rounded-lg font-semibold transition-colors shrink-0 ${
                               r.review_status === 'reviewed'
                                 ? isDarkMode
@@ -1026,9 +1027,9 @@ export default function ProcesoDetailPage() {
                             {new Date(r.created_at).toLocaleDateString('es-PY')}
                           </td>
                           <td className="px-5 py-3">
-                            {r.exam_type === 'test-app' && (
+                            {reviewHrefFor(r.exam_type, r.id) && (
                               <Link
-                                href={`/empresa/evaluar/${r.id}`}
+                                href={reviewHrefFor(r.exam_type, r.id)!}
                                 className={`text-xs px-2.5 py-1 rounded-lg font-semibold transition-colors ${
                                   r.review_status === 'reviewed'
                                     ? isDarkMode

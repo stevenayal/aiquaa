@@ -239,6 +239,66 @@ export const toolCategories: LabCategory[] = [
         featured: true,
         implementedDate: 'Ago 2026',
       },
+      {
+        id: 'clase3-data-persistencia',
+        name: 'Clase 3 — Data Persistencia',
+        description:
+          'Evaluación de la Clase 3 del bootcamp: persistencia, ADO.NET vs EF Core, migraciones, PostgreSQL/Npgsql, DTOs y FluentValidation — auto-corregido, 100 pts',
+        icon: '🗃️',
+        color: 'from-violet-500 to-purple-700',
+        href: '/assessments/clase3-data-persistencia',
+        implementedDate: 'Ago 2026',
+      },
+      {
+        id: 'clase5-kubernetes',
+        name: 'Clase 5 — Kubernetes',
+        description:
+          'Evaluación de la Clase 5 del bootcamp: orquestación, arquitectura del clúster, Pods, controladores y Services — auto-corregido, 100 pts',
+        icon: '☸️',
+        color: 'from-blue-500 to-indigo-700',
+        href: '/assessments/clase5-kubernetes',
+        implementedDate: 'Ago 2026',
+      },
+      {
+        id: 'clase6-config-kubernetes',
+        name: 'Clase 6 — Configuración en Kubernetes',
+        description:
+          'Evaluación de la Clase 6 del bootcamp: inmutabilidad, ConfigMaps, Secrets, envFrom, Helm y CI/CD de configuración — auto-corregido, 100 pts',
+        icon: '🔐',
+        color: 'from-teal-500 to-cyan-700',
+        href: '/assessments/clase6-config-kubernetes',
+        implementedDate: 'Ago 2026',
+      },
+      {
+        id: 'clase7-8-seq-logging',
+        name: 'Clases 7 y 8 — SEQ Structured Logging',
+        description:
+          'Evaluación de las Clases 7 y 8 del bootcamp: logs estructurados, Serilog, sinks, severidad y Seq centralizado — auto-corregido, 100 pts',
+        icon: '📊',
+        color: 'from-emerald-500 to-green-700',
+        href: '/assessments/clase7-8-seq-logging',
+        implementedDate: 'Ago 2026',
+      },
+      {
+        id: 'clase9-cicd-github-actions',
+        name: 'Clase 9 — CI/CD con GitHub Actions',
+        description:
+          'Evaluación de la Clase 9 del bootcamp: pipeline CI/CD, Delivery vs Deployment, workflows de GitHub Actions y Secrets — auto-corregido, 100 pts',
+        icon: '🔁',
+        color: 'from-orange-500 to-amber-700',
+        href: '/assessments/clase9-cicd-github-actions',
+        implementedDate: 'Ago 2026',
+      },
+      {
+        id: 'dev-proyecto-final',
+        name: 'Proyecto final: API + Kubernetes + CI/CD',
+        description:
+          'Integrá las 5 clases en un solo repo: API .NET con EF Core/PostgreSQL, despliegue en Kubernetes, ConfigMaps/Secrets/Helm, Serilog/Seq y un pipeline de GitHub Actions. Entregás el link del repo y un evaluador lo corrige sobre 100 pts',
+        icon: '🏆',
+        color: 'from-violet-600 to-fuchsia-700',
+        href: '/labs/desarrollo/dev-proyecto-final',
+        implementedDate: 'Ago 2026',
+      },
     ],
   },
   {
