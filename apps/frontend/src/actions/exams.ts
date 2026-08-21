@@ -25,7 +25,6 @@ interface SaveExamResultPayload {
     | 'api-dotnet-fundamentals'
     | 'docker-fundamentals'
     | 'kubernetes-helm-fundamentals'
-    | 'kubernetes-orchestration-fundamentals'
     | 'observability-fundamentals'
     | 'cicd-fundamentals'
     | 'playwright-practico'

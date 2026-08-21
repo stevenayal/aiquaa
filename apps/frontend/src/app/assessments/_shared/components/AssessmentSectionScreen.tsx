@@ -13,7 +13,6 @@ import ApiDocCard from './ApiDocCard';
 import AssessmentProgress from './AssessmentProgress';
 import AssessmentTimer from './AssessmentTimer';
 import MultipleChoiceQuestion from './MultipleChoiceQuestion';
-import MultiSelectQuestion from './MultiSelectQuestion';
 import PlaywrightCodeBlock from './PlaywrightCodeBlock';
 import RequestResponseBlock from './RequestResponseBlock';
 import SectionNavigator from './SectionNavigator';
@@ -329,19 +328,6 @@ export default function AssessmentSectionScreen({
                         (answer as { value?: string } | undefined)?.value ?? ''
                       )}
                       onChange={(value) => updateAnswer(question.id, { value })}
-                    />
-                  ) : null}
-
-                  {question.question_type === 'multi_select' ? (
-                    <MultiSelectQuestion
-                      question={question}
-                      value={
-                        (answer as { values?: string[] } | undefined)?.values ??
-                        []
-                      }
-                      onChange={(values) =>
-                        updateAnswer(question.id, { values })
-                      }
                     />
                   ) : null}
 

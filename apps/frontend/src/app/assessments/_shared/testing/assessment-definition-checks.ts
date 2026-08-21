@@ -35,18 +35,6 @@ export function assertAssessmentDefinitionConsistency(
         ).toBe(true);
       }
 
-      if (question.question_type === 'multi_select') {
-        const correctValues =
-          (question.correct_answer as { values?: string[] } | undefined)
-            ?.values ?? [];
-        expect(correctValues.length).toBeGreaterThan(1);
-        correctValues.forEach((correctValue) => {
-          expect(
-            question.options?.some((option) => option.value === correctValue)
-          ).toBe(true);
-        });
-      }
-
       if (question.question_type === 'true_false') {
         const correctValue = (
           question.correct_answer as { value?: unknown } | undefined

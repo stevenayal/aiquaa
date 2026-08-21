@@ -96,12 +96,6 @@ const EXAM_OPTIONS = [
       'Manifiestos Deployment/Service, ConfigMaps y Secrets, charts de Helm y despliegue funcional en Minikube — auto-corregido, 4 secciones',
   },
   {
-    id: 'kubernetes-orchestration-fundamentals',
-    label: 'Kubernetes — Fundamentos de Orquestación (Examen teórico)',
-    description:
-      'Pilares de orquestación, arquitectura Scheduler/Kubelet, Pods, paradigma declarativo, Deployment/ReplicaSet, StatefulSet y ecosistema — auto-corregido, 3 secciones',
-  },
-  {
     id: 'observability-fundamentals',
     label: 'Observabilidad — Fundamentos (Examen teórico)',
     description:
