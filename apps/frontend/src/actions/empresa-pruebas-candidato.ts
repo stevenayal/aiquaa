@@ -94,7 +94,11 @@ function stripAnswerKey(row: PreguntaRow): PublicPregunta {
     position: row.position,
     question_type: row.question_type,
     prompt: row.prompt,
-    options: row.question_type === 'multiple_choice' ? row.options : undefined,
+    options:
+      row.question_type === 'multiple_choice' ||
+      row.question_type === 'multi_select'
+        ? row.options
+        : undefined,
   };
 }
 

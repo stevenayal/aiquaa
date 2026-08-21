@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server';
 
 export type EmpresaPruebaQuestionType =
   | 'multiple_choice'
+  | 'multi_select'
   | 'true_false'
   | 'short_text';
 
@@ -319,6 +320,17 @@ function validatePreguntaShape(payload: {
     )
       return 'multiple_choice requiere correct_answer.value (string)';
   }
+  if (payload.question_type === 'multi_select') {
+    if (!Array.isArray(payload.options) || payload.options.length < 2)
+      return 'multi_select requiere al menos 2 opciones';
+    const values = (payload.correct_answer as { values?: unknown } | undefined)
+      ?.values;
+    if (!Array.isArray(values) || values.length === 0)
+      return 'multi_select requiere correct_answer.values (array no vacío)';
+    const optionSet = new Set(payload.options as string[]);
+    if (!values.every((v) => typeof v === 'string' && optionSet.has(v)))
+      return 'multi_select: cada valor de correct_answer.values debe existir en options';
+  }
   if (payload.question_type === 'true_false') {
     if (
       !payload.correct_answer ||
@@ -369,7 +381,10 @@ export async function upsertPreguntaAction(payload: {
     question_type: payload.question_type,
     prompt: payload.prompt.trim(),
     options:
-      payload.question_type === 'multiple_choice' ? payload.options : null,
+      payload.question_type === 'multiple_choice' ||
+      payload.question_type === 'multi_select'
+        ? payload.options
+        : null,
     correct_answer: payload.correct_answer,
     expected_keywords:
       payload.question_type === 'short_text' ? payload.expected_keywords : null,
@@ -388,6 +403,87 @@ export async function upsertPreguntaAction(payload: {
 
   if (error) return { data: null, error: error.message };
   return { data: data as EmpresaPreguntaRow, error: null };
+}
+
+export interface BulkPreguntaInput {
+  question_type: EmpresaPruebaQuestionType;
+  prompt: string;
+  options?: unknown;
+  correct_answer: unknown;
+  expected_keywords?: string[];
+  points?: number;
+}
+
+/**
+ * Crea varias preguntas de una sola vez (ej. importar el JSON generado a partir
+ * de un excel de clase). Valida todas antes de insertar cualquiera — si una
+ * falla, no se inserta ninguna. Las nuevas preguntas se agregan al final de las
+ * ya existentes (position = cantidad actual + índice en el array).
+ */
+export async function bulkUpsertPreguntasAction(
+  pruebaId: string,
+  preguntas: BulkPreguntaInput[]
+): Promise<{ data: EmpresaPreguntaRow[] | null; error: string | null }> {
+  const supabase = await createClient();
+  const ctx = await requireAuthenticatedMember(supabase);
+  if (!ctx.ok) return { data: null, error: ctx.error };
+  if (!isAdminRole(ctx.membership.role))
+    return { data: null, error: 'Sin permisos suficientes' };
+
+  const prueba = await getPruebaForEmpresa(
+    supabase,
+    pruebaId,
+    ctx.membership.empresa_id
+  );
+  if (!prueba) return { data: null, error: 'Prueba no encontrada' };
+
+  if (preguntas.length === 0)
+    return { data: null, error: 'No hay preguntas para importar' };
+
+  for (let index = 0; index < preguntas.length; index += 1) {
+    const pregunta = preguntas[index];
+    if (!pregunta.prompt?.trim())
+      return {
+        data: null,
+        error: `Pregunta ${index + 1}: el enunciado es requerido`,
+      };
+    const shapeError = validatePreguntaShape(pregunta);
+    if (shapeError)
+      return { data: null, error: `Pregunta ${index + 1}: ${shapeError}` };
+  }
+
+  const { count: existingCount, error: countError } = await supabase
+    .from('empresa_preguntas')
+    .select('id', { count: 'exact', head: true })
+    .eq('prueba_id', pruebaId);
+
+  if (countError) return { data: null, error: countError.message };
+
+  const rows = preguntas.map((pregunta, index) => ({
+    prueba_id: pruebaId,
+    position: (existingCount ?? 0) + index,
+    question_type: pregunta.question_type,
+    prompt: pregunta.prompt.trim(),
+    options:
+      pregunta.question_type === 'multiple_choice' ||
+      pregunta.question_type === 'multi_select'
+        ? pregunta.options
+        : null,
+    correct_answer: pregunta.correct_answer,
+    expected_keywords:
+      pregunta.question_type === 'short_text'
+        ? pregunta.expected_keywords
+        : null,
+    points: pregunta.points ?? 1,
+  }));
+
+  const { data, error } = await supabase
+    .from('empresa_preguntas')
+    .insert(rows)
+    .select('*');
+
+  if (error) return { data: null, error: error.message };
+  return { data: data as EmpresaPreguntaRow[], error: null };
 }
 
 export async function deletePreguntaAction(

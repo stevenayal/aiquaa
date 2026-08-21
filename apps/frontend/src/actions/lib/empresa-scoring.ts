@@ -4,6 +4,7 @@
 
 export type EmpresaQuestionType =
   | 'multiple_choice'
+  | 'multi_select'
   | 'true_false'
   | 'short_text';
 
@@ -60,6 +61,33 @@ function scoreMultipleChoice(
   const actual = parseStringAnswer(answer);
   const isCorrect =
     normalizeText(actual) === normalizeText(expected) && actual !== '';
+  return {
+    questionId: pregunta.id,
+    score: isCorrect ? pregunta.points : 0,
+    maxScore: pregunta.points,
+    isCorrect,
+    autoScored: false,
+  };
+}
+
+function scoreMultiSelect(
+  pregunta: EmpresaPregunta,
+  answer: unknown
+): EmpresaScoreResult {
+  const correctValues = new Set(
+    (pregunta.correct_answer as { values?: string[] } | null)?.values ?? []
+  );
+  const answeredValues = Array.isArray(
+    (answer as { values?: unknown } | undefined)?.values
+  )
+    ? ((answer as { values?: unknown }).values as unknown[]).map(String)
+    : [];
+  const answeredSet = new Set(answeredValues);
+
+  const isCorrect =
+    answeredSet.size === correctValues.size &&
+    [...correctValues].every((value) => answeredSet.has(value));
+
   return {
     questionId: pregunta.id,
     score: isCorrect ? pregunta.points : 0,
@@ -127,6 +155,8 @@ export function scoreEmpresaPregunta(
   switch (pregunta.question_type) {
     case 'multiple_choice':
       return scoreMultipleChoice(pregunta, answer);
+    case 'multi_select':
+      return scoreMultiSelect(pregunta, answer);
     case 'true_false':
       return scoreTrueFalse(pregunta, answer);
     case 'short_text':

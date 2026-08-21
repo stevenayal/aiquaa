@@ -310,6 +310,55 @@ export default function TomarPruebaPage() {
                 </div>
               )}
 
+              {pregunta.question_type === 'multi_select' && (
+                <div className="space-y-2">
+                  <p
+                    className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+                  >
+                    Marcá todas las opciones correctas
+                  </p>
+                  {((pregunta.options as string[]) ?? []).map((option) => {
+                    const current =
+                      (
+                        answers[pregunta.id] as
+                          | { values?: string[] }
+                          | undefined
+                      )?.values ?? [];
+                    const checked = current.includes(option);
+                    return (
+                      <label
+                        key={option}
+                        className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer text-sm ${
+                          isDarkMode ? 'border-slate-600' : 'border-gray-200'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() =>
+                            setAnswers({
+                              ...answers,
+                              [pregunta.id]: {
+                                values: checked
+                                  ? current.filter((v) => v !== option)
+                                  : [...current, option],
+                              },
+                            })
+                          }
+                        />
+                        <span
+                          className={
+                            isDarkMode ? 'text-slate-300' : 'text-gray-700'
+                          }
+                        >
+                          {option}
+                        </span>
+                      </label>
+                    );
+                  })}
+                </div>
+              )}
+
               {pregunta.question_type === 'true_false' && (
                 <div className="flex gap-3">
                   {[true, false].map((value) => (

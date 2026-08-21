@@ -1,0 +1,135 @@
+[
+  {
+    "question_type": "multiple_choice",
+    "prompt": "¿Cómo define el material el aislamiento proporcionado por un contenedor?",
+    "options": [
+      "Como una unidad de ejecución completamente aislada del sistema host.",
+      "Como una copia completa del hardware físico del servidor.",
+      "Como una aplicación que depende de ajustes manuales en cada host.",
+      "Como un proceso que solo puede ejecutarse dentro de una máquina virtual."
+    ],
+    "correct_answer": {
+      "value": "Como una unidad de ejecución completamente aislada del sistema host."
+    },
+    "points": 8
+  },
+  {
+    "question_type": "multi_select",
+    "prompt": "¿Cuáles de las siguientes características se presentan como beneficios de los contenedores?",
+    "options": [
+      "Incluyen la aplicación web y todas sus dependencias exactas.",
+      "Son reproducibles en cualquier entorno de despliegue.",
+      "Son extremadamente livianos y portables entre servidores.",
+      "Requieren ajustes manuales específicos en cada máquina para funcionar."
+    ],
+    "correct_answer": {
+      "values": [
+        "Incluyen la aplicación web y todas sus dependencias exactas.",
+        "Son reproducibles en cualquier entorno de despliegue.",
+        "Son extremadamente livianos y portables entre servidores."
+      ]
+    },
+    "points": 8
+  },
+  {
+    "question_type": "multiple_choice",
+    "prompt": "¿Qué perfil de arranque atribuye el material a una máquina virtual?",
+    "options": [
+      "Casi instantáneo, con inicio en segundos.",
+      "Lento, con tiempo de inicio en minutos.",
+      "Idéntico al de un contenedor porque ambos comparten el kernel del host.",
+      "Sin proceso de arranque, porque solo contiene la aplicación."
+    ],
+    "correct_answer": { "value": "Lento, con tiempo de inicio en minutos." },
+    "points": 8
+  },
+  {
+    "question_type": "multiple_choice",
+    "prompt": "¿Cuál comparación asigna correctamente la arquitectura, el arranque y el uso ideal de cada alternativa?",
+    "options": [
+      "Máquina virtual: sistema operativo independiente, inicio en minutos y aislamiento total con alto consumo; contenedor: comparte el kernel, inicia en segundos y favorece microservicios eficientes.",
+      "Máquina virtual: comparte el kernel e inicia en segundos; contenedor: incorpora un sistema operativo completo y tarda minutos.",
+      "Máquina virtual: ideal para microservicios por su bajo consumo; contenedor: ideal para aislar hardware con alto consumo.",
+      "Ambas alternativas incorporan un sistema operativo completo y presentan el mismo tiempo de arranque."
+    ],
+    "correct_answer": {
+      "value": "Máquina virtual: sistema operativo independiente, inicio en minutos y aislamiento total con alto consumo; contenedor: comparte el kernel, inicia en segundos y favorece microservicios eficientes."
+    },
+    "points": 18
+  },
+  {
+    "question_type": "multiple_choice",
+    "prompt": "¿Qué relación establece el material entre una imagen y un contenedor?",
+    "options": [
+      "La imagen es almacenamiento persistente y el contenedor es un canal de comunicación.",
+      "La imagen es una plantilla inmutable y el contenedor es una instancia en ejecución de esa imagen.",
+      "La imagen es una instancia en ejecución y el contenedor es una plantilla inmutable.",
+      "La imagen y el contenedor son dos nombres para el mismo archivo declarativo."
+    ],
+    "correct_answer": {
+      "value": "La imagen es una plantilla inmutable y el contenedor es una instancia en ejecución de esa imagen."
+    },
+    "points": 8
+  },
+  {
+    "question_type": "multiple_choice",
+    "prompt": "¿Cuál asociación coincide con las definiciones del cuadrante fundamental de Docker?",
+    "options": [
+      "Volumen: instancia en ejecución; red: plantilla inmutable.",
+      "Volumen: canal de comunicación; red: almacenamiento persistente.",
+      "Volumen: imagen base; red: comando de inicio.",
+      "Volumen: almacenamiento persistente de datos; red: canal de comunicación entre contenedores."
+    ],
+    "correct_answer": {
+      "value": "Volumen: almacenamiento persistente de datos; red: canal de comunicación entre contenedores."
+    },
+    "points": 8
+  },
+  {
+    "question_type": "multiple_choice",
+    "prompt": "¿Qué función cumple el Dockerfile dentro del flujo de construcción presentado?",
+    "options": [
+      "Define paso a paso cómo construir la imagen para obtener un resultado reproducible.",
+      "Reemplaza el código fuente y contiene únicamente los datos persistentes.",
+      "Solo documenta el puerto de acceso, sin intervenir en la construcción.",
+      "Modifica la aplicación de manera diferente en desarrollo, testing y producción."
+    ],
+    "correct_answer": {
+      "value": "Define paso a paso cómo construir la imagen para obtener un resultado reproducible."
+    },
+    "points": 8
+  },
+  {
+    "question_type": "multiple_choice",
+    "prompt": "¿Qué instrucción del Dockerfile define el comando de inicio de la aplicación?",
+    "options": ["COPY", "EXPOSE", "ENTRYPOINT", "WORKDIR"],
+    "correct_answer": { "value": "ENTRYPOINT" },
+    "points": 8
+  },
+  {
+    "question_type": "multiple_choice",
+    "prompt": "¿Cuál es el comando de construcción de imagen mostrado en el material?",
+    "options": [
+      "docker run -d -p 5000:80 myapi:1.0",
+      "docker build -t myapi:1.0 .",
+      "ENTRYPOINT myapi:1.0",
+      "EXPOSE 5000:80"
+    ],
+    "correct_answer": { "value": "docker build -t myapi:1.0 ." },
+    "points": 8
+  },
+  {
+    "question_type": "multiple_choice",
+    "prompt": "En el comando docker run -d -p 5000:80 myapi:1.0, ¿qué interpretación es correcta?",
+    "options": [
+      "Ejecuta en segundo plano una instancia de myapi:1.0 y dirige el puerto 5000 del host al puerto 80 del contenedor.",
+      "Construye una imagen nueva y dirige el puerto 80 del host al puerto 5000 del contenedor.",
+      "Ejecuta en primer plano y utiliza 5000:80 como versión de la imagen.",
+      "Inicia una máquina virtual completa y expone únicamente el puerto 80 del host."
+    ],
+    "correct_answer": {
+      "value": "Ejecuta en segundo plano una instancia de myapi:1.0 y dirige el puerto 5000 del host al puerto 80 del contenedor."
+    },
+    "points": 18
+  }
+]
