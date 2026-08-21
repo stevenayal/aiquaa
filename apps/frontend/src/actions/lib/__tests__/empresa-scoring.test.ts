@@ -15,6 +15,16 @@ function mc(overrides: Partial<EmpresaPregunta> = {}): EmpresaPregunta {
   };
 }
 
+function ms(overrides: Partial<EmpresaPregunta> = {}): EmpresaPregunta {
+  return {
+    id: 'q4',
+    question_type: 'multi_select',
+    correct_answer: { values: ['A', 'B', 'C'] },
+    points: 8,
+    ...overrides,
+  };
+}
+
 function tf(overrides: Partial<EmpresaPregunta> = {}): EmpresaPregunta {
   return {
     id: 'q2',
@@ -58,6 +68,37 @@ describe('scoreEmpresaPregunta — multiple_choice', () => {
 
   it('awards zero on empty answer', () => {
     const result = scoreEmpresaPregunta(mc(), { value: '' });
+    expect(result.isCorrect).toBe(false);
+  });
+});
+
+describe('scoreEmpresaPregunta — multi_select', () => {
+  it('awards full points on exact set match', () => {
+    const result = scoreEmpresaPregunta(ms(), { values: ['A', 'B', 'C'] });
+    expect(result).toMatchObject({
+      score: 8,
+      isCorrect: true,
+      autoScored: false,
+    });
+  });
+
+  it('is order-insensitive', () => {
+    const result = scoreEmpresaPregunta(ms(), { values: ['C', 'A', 'B'] });
+    expect(result.isCorrect).toBe(true);
+  });
+
+  it('awards zero on a partial (missing) selection', () => {
+    const result = scoreEmpresaPregunta(ms(), { values: ['A', 'B'] });
+    expect(result).toMatchObject({ score: 0, isCorrect: false });
+  });
+
+  it('awards zero when an extra incorrect option is included', () => {
+    const result = scoreEmpresaPregunta(ms(), { values: ['A', 'B', 'C', 'D'] });
+    expect(result).toMatchObject({ score: 0, isCorrect: false });
+  });
+
+  it('awards zero on empty answer', () => {
+    const result = scoreEmpresaPregunta(ms(), { values: [] });
     expect(result.isCorrect).toBe(false);
   });
 });

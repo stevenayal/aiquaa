@@ -8,6 +8,7 @@ import {
   getPruebaAction,
   listPreguntasAction,
   upsertPreguntaAction,
+  bulkUpsertPreguntasAction,
   deletePreguntaAction,
   reorderPreguntasAction,
   type EmpresaPrueba,
@@ -17,6 +18,7 @@ import {
 
 const QUESTION_TYPE_LABELS: Record<EmpresaPruebaQuestionType, string> = {
   multiple_choice: 'Opción múltiple',
+  multi_select: 'Selección múltiple (varias respuestas)',
   true_false: 'Verdadero / Falso',
   short_text: 'Respuesta corta',
 };
@@ -28,6 +30,7 @@ function emptyForm() {
     prompt: '',
     options: ['', ''],
     correctOptionIndex: 0,
+    correctOptionIndexes: [] as number[],
     correctBool: true,
     keywords: '',
     points: 1,
@@ -45,6 +48,10 @@ export default function EditorPreguntasPage() {
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm());
   const [saving, setSaving] = useState(false);
+  const [showImport, setShowImport] = useState(false);
+  const [importText, setImportText] = useState('');
+  const [importError, setImportError] = useState<string | null>(null);
+  const [importing, setImporting] = useState(false);
 
   const load = () => {
     setLoading(true);
@@ -85,6 +92,27 @@ export default function EditorPreguntasPage() {
         prompt: pregunta.prompt,
         options: options.length >= 2 ? options : [...options, ''],
         correctOptionIndex: Math.max(0, options.indexOf(correctValue)),
+        correctOptionIndexes: [],
+        correctBool: true,
+        keywords: '',
+        points: pregunta.points,
+      });
+    } else if (pregunta.question_type === 'multi_select') {
+      const options = (
+        (pregunta.options as string[] | null) ?? ['', '']
+      ).slice();
+      const correctValues =
+        (pregunta.correct_answer as { values?: string[] } | null)?.values ?? [];
+      setForm({
+        id: pregunta.id,
+        question_type: 'multi_select',
+        prompt: pregunta.prompt,
+        options: options.length >= 2 ? options : [...options, ''],
+        correctOptionIndex: 0,
+        correctOptionIndexes: options.reduce<number[]>((acc, opt, i) => {
+          if (correctValues.includes(opt)) acc.push(i);
+          return acc;
+        }, []),
         correctBool: true,
         keywords: '',
         points: pregunta.points,
@@ -96,6 +124,7 @@ export default function EditorPreguntasPage() {
         prompt: pregunta.prompt,
         options: ['', ''],
         correctOptionIndex: 0,
+        correctOptionIndexes: [],
         correctBool: Boolean(
           (pregunta.correct_answer as { value?: boolean } | null)?.value
         ),
@@ -109,6 +138,7 @@ export default function EditorPreguntasPage() {
         prompt: pregunta.prompt,
         options: ['', ''],
         correctOptionIndex: 0,
+        correctOptionIndexes: [],
         correctBool: true,
         keywords: (pregunta.expected_keywords ?? []).join(', '),
         points: pregunta.points,
@@ -137,6 +167,21 @@ export default function EditorPreguntasPage() {
       correct_answer = {
         value: cleanOptions[form.correctOptionIndex] ?? cleanOptions[0],
       };
+    } else if (form.question_type === 'multi_select') {
+      const cleanOptions = form.options.map((o) => o.trim()).filter(Boolean);
+      if (cleanOptions.length < 2) {
+        setError('Agregá al menos 2 opciones.');
+        return;
+      }
+      const correctValues = form.correctOptionIndexes
+        .map((i) => form.options[i]?.trim())
+        .filter((v): v is string => Boolean(v));
+      if (correctValues.length === 0) {
+        setError('Marcá al menos una opción correcta.');
+        return;
+      }
+      options = cleanOptions;
+      correct_answer = { values: correctValues };
     } else if (form.question_type === 'true_false') {
       correct_answer = { value: form.correctBool };
     } else {
@@ -176,6 +221,39 @@ export default function EditorPreguntasPage() {
     }
 
     setForm(emptyForm());
+    load();
+  };
+
+  const handleImport = async () => {
+    setImportError(null);
+
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(importText);
+    } catch {
+      setImportError('JSON inválido — revisá el formato.');
+      return;
+    }
+
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      setImportError('Debe ser un array con al menos 1 pregunta.');
+      return;
+    }
+
+    setImporting(true);
+    const { error } = await bulkUpsertPreguntasAction(
+      pruebaId,
+      parsed as Parameters<typeof bulkUpsertPreguntasAction>[1]
+    );
+    setImporting(false);
+
+    if (error) {
+      setImportError(error);
+      return;
+    }
+
+    setImportText('');
+    setShowImport(false);
     load();
   };
 
@@ -244,7 +322,57 @@ export default function EditorPreguntasPage() {
           >
             {preguntas.length} pregunta{preguntas.length === 1 ? '' : 's'}
           </p>
+          <button
+            type="button"
+            onClick={() => {
+              setShowImport((v) => !v);
+              setImportError(null);
+            }}
+            className={`text-xs mt-2 ${isDarkMode ? 'text-indigo-400' : 'text-indigo-600'} hover:underline`}
+          >
+            {showImport
+              ? '– Ocultar importador'
+              : '+ Importar preguntas (JSON)'}
+          </button>
         </div>
+
+        {showImport && (
+          <div className={`${cardClass} mb-8 space-y-3`}>
+            <h2
+              className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+            >
+              Importar preguntas (JSON)
+            </h2>
+            <p
+              className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+            >
+              Pegá un array JSON de preguntas — se agregan al final de las
+              existentes. Ninguna se crea si alguna falla la validación.
+            </p>
+            <textarea
+              className={`${inputClass} font-mono text-xs resize-y`}
+              rows={10}
+              placeholder='[{"question_type":"multiple_choice","prompt":"...","options":["A","B","C","D"],"correct_answer":{"value":"A"},"points":8}]'
+              value={importText}
+              onChange={(e) => setImportText(e.target.value)}
+            />
+            {importError && (
+              <div className="rounded-lg border border-red-300 bg-red-50 text-red-700 px-4 py-3 text-sm">
+                {importError}
+              </div>
+            )}
+            <div className="flex gap-3">
+              <button
+                type="button"
+                disabled={importing || !importText.trim()}
+                onClick={handleImport}
+                className="px-5 py-2.5 rounded-lg text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+              >
+                {importing ? 'Importando...' : 'Importar'}
+              </button>
+            </div>
+          </div>
+        )}
 
         {error && (
           <div className="rounded-lg border border-red-300 bg-red-50 text-red-700 px-4 py-3 text-sm mb-4">
@@ -323,6 +451,9 @@ export default function EditorPreguntasPage() {
               }
             >
               <option value="multiple_choice">Opción múltiple</option>
+              <option value="multi_select">
+                Selección múltiple (varias respuestas)
+              </option>
               <option value="true_false">Verdadero / Falso</option>
               <option value="short_text">Respuesta corta</option>
             </select>
@@ -370,6 +501,72 @@ export default function EditorPreguntasPage() {
                           setForm({
                             ...form,
                             options: form.options.filter((_, i) => i !== index),
+                          })
+                        }
+                        className="text-red-500 text-xs shrink-0"
+                      >
+                        Quitar
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() =>
+                  setForm({ ...form, options: [...form.options, ''] })
+                }
+                className={`text-xs mt-2 ${isDarkMode ? 'text-indigo-400' : 'text-indigo-600'}`}
+              >
+                + Agregar opción
+              </button>
+            </div>
+          )}
+
+          {form.question_type === 'multi_select' && (
+            <div>
+              <label className={labelClass}>
+                Opciones (tildá todas las correctas)
+              </label>
+              <div className="space-y-2">
+                {form.options.map((option, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={form.correctOptionIndexes.includes(index)}
+                      onChange={() =>
+                        setForm({
+                          ...form,
+                          correctOptionIndexes:
+                            form.correctOptionIndexes.includes(index)
+                              ? form.correctOptionIndexes.filter(
+                                  (i) => i !== index
+                                )
+                              : [...form.correctOptionIndexes, index],
+                        })
+                      }
+                    />
+                    <input
+                      type="text"
+                      className={inputClass}
+                      placeholder={`Opción ${index + 1}`}
+                      value={option}
+                      onChange={(e) => {
+                        const options = form.options.slice();
+                        options[index] = e.target.value;
+                        setForm({ ...form, options });
+                      }}
+                    />
+                    {form.options.length > 2 && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setForm({
+                            ...form,
+                            options: form.options.filter((_, i) => i !== index),
+                            correctOptionIndexes: form.correctOptionIndexes
+                              .filter((i) => i !== index)
+                              .map((i) => (i > index ? i - 1 : i)),
                           })
                         }
                         className="text-red-500 text-xs shrink-0"
