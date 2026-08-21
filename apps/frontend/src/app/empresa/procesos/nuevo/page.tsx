@@ -12,6 +12,42 @@ import {
 
 const EXAM_OPTIONS = [
   {
+    id: 'clase3-data-persistencia',
+    label: 'Clase 3 — Data Persistencia (Examen teórico)',
+    description:
+      'Persistencia, ADO.NET vs Entity Framework Core, migraciones, PostgreSQL/Npgsql, DTOs y FluentValidation — auto-corregido, 10 preguntas, 100 pts',
+  },
+  {
+    id: 'clase5-kubernetes',
+    label: 'Clase 5 — Kubernetes (Examen teórico)',
+    description:
+      'Pilares de la orquestación, arquitectura del clúster, Pods, Deployment/ReplicaSet, StatefulSet y Services — auto-corregido, 10 preguntas, 100 pts',
+  },
+  {
+    id: 'clase6-config-kubernetes',
+    label: 'Clase 6 — Configuración en Kubernetes (Examen teórico)',
+    description:
+      'Inmutabilidad de la imagen, ConfigMaps, Secrets y Base64, inyección con envFrom, Helm y CI/CD de configuración — auto-corregido, 10 preguntas, 100 pts',
+  },
+  {
+    id: 'clase7-8-seq-logging',
+    label: 'Clases 7 y 8 — SEQ Structured Logging (Examen teórico)',
+    description:
+      'Límites de kubectl logs, logs estructurados, Serilog y sus sinks, niveles de severidad y Seq en Kubernetes — auto-corregido, 10 preguntas, 100 pts',
+  },
+  {
+    id: 'clase9-cicd-github-actions',
+    label: 'Clase 9 — CI/CD con GitHub Actions (Examen teórico)',
+    description:
+      'Delivery vs Deployment, etapas del pipeline, Jobs/Steps/Triggers/Runners, workflows y separación Variables/Secrets — auto-corregido, 10 preguntas, 100 pts',
+  },
+  {
+    id: 'dev-proyecto-final',
+    label: 'Proyecto final: API + Kubernetes + CI/CD (Prueba de desarrollo)',
+    description:
+      'Integra las 5 clases en un solo repo: API .NET con EF Core/PostgreSQL, despliegue en Kubernetes, configuración con ConfigMaps/Secrets/Helm, logging con Serilog/Seq y pipeline de GitHub Actions — entrega por link de repositorio, corrección manual del evaluador sobre 100 pts',
+  },
+  {
     id: 'istqb',
     label: 'ISTQB CTFL — Fundamentos de QA',
     description:
@@ -90,64 +126,10 @@ const EXAM_OPTIONS = [
       'Dockerfiles multistage e imágenes livianas, variables de entorno sin hardcode y ejecución/reproducibilidad local — auto-corregido, 3 secciones',
   },
   {
-    id: 'kubernetes-helm-fundamentals',
-    label: 'Kubernetes + Helm — Fundamentos (Examen teórico)',
-    description:
-      'Manifiestos Deployment/Service, ConfigMaps y Secrets, charts de Helm y despliegue funcional en Minikube — auto-corregido, 4 secciones',
-  },
-  {
-    id: 'observability-fundamentals',
-    label: 'Observabilidad — Fundamentos (Examen teórico)',
-    description:
-      'Logging estructurado con Serilog, centralización en Seq, niveles de log y visualización — auto-corregido, 4 secciones',
-  },
-  {
-    id: 'cicd-fundamentals',
-    label: 'CI/CD — Fundamentos (Examen teórico)',
-    description:
-      'Pipelines de integración continua, despliegue continuo automatizado y buenas prácticas de versionado — auto-corregido, 3 secciones',
-  },
-  {
     id: 'gherkin-fundamentals',
     label: 'Gherkin y BDD — Fundamentos (Examen teórico)',
     description:
       'Fundamentos de BDD, sintaxis Gherkin (Given/When/Then) y escenarios avanzados aplicados a testing — auto-corregido, 3 niveles',
-  },
-  {
-    id: 'clase3-data-persistencia',
-    label: 'Clase 3 — Data Persistencia (Examen teórico)',
-    description:
-      'Persistencia, ADO.NET vs Entity Framework Core, migraciones, PostgreSQL/Npgsql, DTOs y FluentValidation — auto-corregido, 10 preguntas, 100 pts',
-  },
-  {
-    id: 'clase5-kubernetes',
-    label: 'Clase 5 — Kubernetes (Examen teórico)',
-    description:
-      'Pilares de la orquestación, arquitectura del clúster, Pods, Deployment/ReplicaSet, StatefulSet y Services — auto-corregido, 10 preguntas, 100 pts',
-  },
-  {
-    id: 'clase6-config-kubernetes',
-    label: 'Clase 6 — Configuración en Kubernetes (Examen teórico)',
-    description:
-      'Inmutabilidad de la imagen, ConfigMaps, Secrets y Base64, inyección con envFrom, Helm y CI/CD de configuración — auto-corregido, 10 preguntas, 100 pts',
-  },
-  {
-    id: 'clase7-8-seq-logging',
-    label: 'Clases 7 y 8 — SEQ Structured Logging (Examen teórico)',
-    description:
-      'Límites de kubectl logs, logs estructurados, Serilog y sus sinks, niveles de severidad y Seq en Kubernetes — auto-corregido, 10 preguntas, 100 pts',
-  },
-  {
-    id: 'clase9-cicd-github-actions',
-    label: 'Clase 9 — CI/CD con GitHub Actions (Examen teórico)',
-    description:
-      'Delivery vs Deployment, etapas del pipeline, Jobs/Steps/Triggers/Runners, workflows y separación Variables/Secrets — auto-corregido, 10 preguntas, 100 pts',
-  },
-  {
-    id: 'dev-proyecto-final',
-    label: 'Proyecto final: API + Kubernetes + CI/CD (Prueba de desarrollo)',
-    description:
-      'Integra las 5 clases en un solo repo: API .NET con EF Core/PostgreSQL, despliegue en Kubernetes, configuración con ConfigMaps/Secrets/Helm, logging con Serilog/Seq y pipeline de GitHub Actions — entrega por link de repositorio, corrección manual del evaluador sobre 100 pts',
   },
   {
     id: 'test-app',
