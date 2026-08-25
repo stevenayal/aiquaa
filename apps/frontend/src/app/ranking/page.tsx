@@ -61,9 +61,6 @@ type ExamSlug =
   | 'api-developer-fundamentals'
   | 'api-dotnet-fundamentals'
   | 'docker-fundamentals'
-  | 'kubernetes-helm-fundamentals'
-  | 'observability-fundamentals'
-  | 'cicd-fundamentals'
   | 'playwright-fundamentals'
   | 'playwright-practico'
   | 'gherkin-fundamentals'
@@ -86,9 +83,6 @@ const EXAM_SLUGS: ExamSlug[] = [
   'api-developer-fundamentals',
   'api-dotnet-fundamentals',
   'docker-fundamentals',
-  'kubernetes-helm-fundamentals',
-  'observability-fundamentals',
-  'cicd-fundamentals',
   'playwright-fundamentals',
   'playwright-practico',
   'gherkin-fundamentals',
@@ -195,27 +189,6 @@ const CATEGORIES: Category[] = [
     teorico: 'docker-fundamentals',
   },
   {
-    key: 'kubernetes-helm',
-    label: 'Kubernetes + Helm',
-    emoji: '☸️',
-    color: 'from-sky-500 to-blue-700',
-    teorico: 'kubernetes-helm-fundamentals',
-  },
-  {
-    key: 'observabilidad',
-    label: 'Observabilidad',
-    emoji: '📈',
-    color: 'from-teal-500 to-cyan-700',
-    teorico: 'observability-fundamentals',
-  },
-  {
-    key: 'cicd',
-    label: 'CI/CD',
-    emoji: '🔁',
-    color: 'from-orange-500 to-red-600',
-    teorico: 'cicd-fundamentals',
-  },
-  {
     key: 'clase3',
     label: 'Clase 3 — Data Persistencia',
     emoji: '🗃️',
@@ -274,9 +247,6 @@ const EXAM_TAB_URLS: Record<string, string> = {
   'api-developer-fundamentals': '/assessments/api-developer-fundamentals',
   'api-dotnet-fundamentals': '/assessments/api-dotnet-fundamentals',
   'docker-fundamentals': '/assessments/docker-fundamentals',
-  'kubernetes-helm-fundamentals': '/assessments/kubernetes-helm-fundamentals',
-  'observability-fundamentals': '/assessments/observability-fundamentals',
-  'cicd-fundamentals': '/assessments/cicd-fundamentals',
   'playwright-fundamentals': '/assessments/playwright-fundamentals',
   'playwright-practico': '/labs/playwright-practico',
   'gherkin-fundamentals': '/assessments/gherkin-fundamentals',
@@ -1156,9 +1126,6 @@ export default function RankingPage() {
     'api-developer-fundamentals': [],
     'api-dotnet-fundamentals': [],
     'docker-fundamentals': [],
-    'kubernetes-helm-fundamentals': [],
-    'observability-fundamentals': [],
-    'cicd-fundamentals': [],
     'gherkin-fundamentals': [],
     'clase3-data-persistencia': [],
     'clase5-kubernetes': [],
@@ -1179,9 +1146,6 @@ export default function RankingPage() {
     'api-developer-fundamentals': true,
     'api-dotnet-fundamentals': true,
     'docker-fundamentals': true,
-    'kubernetes-helm-fundamentals': true,
-    'observability-fundamentals': true,
-    'cicd-fundamentals': true,
     'gherkin-fundamentals': true,
     'clase3-data-persistencia': true,
     'clase5-kubernetes': true,
