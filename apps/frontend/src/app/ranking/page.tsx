@@ -59,9 +59,16 @@ type ExamSlug =
   | 'database-practice'
   | 'infrastructure-fundamentals'
   | 'api-developer-fundamentals'
+  | 'api-dotnet-fundamentals'
+  | 'docker-fundamentals'
   | 'playwright-fundamentals'
   | 'playwright-practico'
-  | 'gherkin-fundamentals';
+  | 'gherkin-fundamentals'
+  | 'clase3-data-persistencia'
+  | 'clase5-kubernetes'
+  | 'clase6-config-kubernetes'
+  | 'clase7-8-seq-logging'
+  | 'clase9-cicd-github-actions';
 
 const EXAM_SLUGS: ExamSlug[] = [
   'git',
@@ -74,9 +81,16 @@ const EXAM_SLUGS: ExamSlug[] = [
   'database-practice',
   'infrastructure-fundamentals',
   'api-developer-fundamentals',
+  'api-dotnet-fundamentals',
+  'docker-fundamentals',
   'playwright-fundamentals',
   'playwright-practico',
   'gherkin-fundamentals',
+  'clase3-data-persistencia',
+  'clase5-kubernetes',
+  'clase6-config-kubernetes',
+  'clase7-8-seq-logging',
+  'clase9-cicd-github-actions',
 ];
 
 interface Category {
@@ -161,6 +175,55 @@ const CATEGORIES: Category[] = [
     teorico: 'gherkin-fundamentals',
   },
   {
+    key: 'api-dotnet',
+    label: 'API .NET',
+    emoji: '🟣',
+    color: 'from-violet-500 to-purple-600',
+    teorico: 'api-dotnet-fundamentals',
+  },
+  {
+    key: 'docker',
+    label: 'Docker',
+    emoji: '🐋',
+    color: 'from-blue-500 to-cyan-600',
+    teorico: 'docker-fundamentals',
+  },
+  {
+    key: 'clase3',
+    label: 'Clase 3 — Data Persistencia',
+    emoji: '🗃️',
+    color: 'from-violet-500 to-purple-700',
+    teorico: 'clase3-data-persistencia',
+  },
+  {
+    key: 'clase5',
+    label: 'Clase 5 — Kubernetes',
+    emoji: '☸️',
+    color: 'from-blue-500 to-indigo-700',
+    teorico: 'clase5-kubernetes',
+  },
+  {
+    key: 'clase6',
+    label: 'Clase 6 — Config. Kubernetes',
+    emoji: '🔐',
+    color: 'from-teal-500 to-cyan-700',
+    teorico: 'clase6-config-kubernetes',
+  },
+  {
+    key: 'clase7-8',
+    label: 'Clases 7 y 8 — SEQ Logging',
+    emoji: '📊',
+    color: 'from-emerald-500 to-teal-700',
+    teorico: 'clase7-8-seq-logging',
+  },
+  {
+    key: 'clase9',
+    label: 'Clase 9 — CI/CD GitHub Actions',
+    emoji: '🔁',
+    color: 'from-orange-500 to-amber-700',
+    teorico: 'clase9-cicd-github-actions',
+  },
+  {
     key: 'comunidad',
     label: 'Comunidad',
     emoji: '🚀',
@@ -182,9 +245,16 @@ const EXAM_TAB_URLS: Record<string, string> = {
   'database-practice': '/assessments/database-practice',
   'infrastructure-fundamentals': '/assessments/infrastructure-fundamentals',
   'api-developer-fundamentals': '/assessments/api-developer-fundamentals',
+  'api-dotnet-fundamentals': '/assessments/api-dotnet-fundamentals',
+  'docker-fundamentals': '/assessments/docker-fundamentals',
   'playwright-fundamentals': '/assessments/playwright-fundamentals',
   'playwright-practico': '/labs/playwright-practico',
   'gherkin-fundamentals': '/assessments/gherkin-fundamentals',
+  'clase3-data-persistencia': '/assessments/clase3-data-persistencia',
+  'clase5-kubernetes': '/assessments/clase5-kubernetes',
+  'clase6-config-kubernetes': '/assessments/clase6-config-kubernetes',
+  'clase7-8-seq-logging': '/assessments/clase7-8-seq-logging',
+  'clase9-cicd-github-actions': '/assessments/clase9-cicd-github-actions',
 };
 
 const MEDAL = ['🥇', '🥈', '🥉'];
@@ -1054,7 +1124,14 @@ export default function RankingPage() {
     'database-practice': [],
     'infrastructure-fundamentals': [],
     'api-developer-fundamentals': [],
+    'api-dotnet-fundamentals': [],
+    'docker-fundamentals': [],
     'gherkin-fundamentals': [],
+    'clase3-data-persistencia': [],
+    'clase5-kubernetes': [],
+    'clase6-config-kubernetes': [],
+    'clase7-8-seq-logging': [],
+    'clase9-cicd-github-actions': [],
   });
   const [examLoading, setExamLoading] = useState<Record<string, boolean>>({
     git: true,
@@ -1067,7 +1144,14 @@ export default function RankingPage() {
     'database-practice': true,
     'infrastructure-fundamentals': true,
     'api-developer-fundamentals': true,
+    'api-dotnet-fundamentals': true,
+    'docker-fundamentals': true,
     'gherkin-fundamentals': true,
+    'clase3-data-persistencia': true,
+    'clase5-kubernetes': true,
+    'clase6-config-kubernetes': true,
+    'clase7-8-seq-logging': true,
+    'clase9-cicd-github-actions': true,
   });
   const [showWelcome, setShowWelcome] = useState(false);
 
