@@ -34,6 +34,16 @@ export interface ExamData {
   questions: ExamQuestion[];
 }
 
+// Forma pública de una pregunta: sin `correctAnswer` ni `explanations`.
+// Es lo único que debe viajar al cliente antes de que el usuario responda
+// (ver #225 — las respuestas correctas no deben ir en el bundle del cliente).
+export type PublicExamQuestion = Omit<
+  ExamQuestion,
+  'correctAnswer' | 'explanations'
+> & {
+  answerCount: number;
+};
+
 export interface UserAnswer {
   questionId: number;
   selectedAnswers: string[];
