@@ -274,79 +274,100 @@ async function getAssessmentExamCandidate(
 
 async function collectAchievementCandidates(userId: string) {
   const admin = createAdminClient();
+
+  const [xpCandidate, ...examCandidates] = await Promise.all([
+    getXpGlobalCandidate(admin, userId),
+    ...RANKED_EXAM_TYPES.map((examType) =>
+      ASSESSMENT_RANKING_TYPES.has(examType)
+        ? getAssessmentExamCandidate(admin, userId, examType)
+        : getLegacyExamCandidate(admin, userId, examType)
+    ),
+  ]);
+
   const candidates: AchievementCandidate[] = [];
-  const xpCandidate = await getXpGlobalCandidate(admin, userId);
   if (xpCandidate) candidates.push(xpCandidate);
-
-  for (const examType of RANKED_EXAM_TYPES) {
-    const candidate = ASSESSMENT_RANKING_TYPES.has(examType)
-      ? await getAssessmentExamCandidate(admin, userId, examType)
-      : await getLegacyExamCandidate(admin, userId, examType);
-
+  for (const candidate of examCandidates) {
     if (candidate) candidates.push(candidate);
   }
 
   return candidates;
 }
 
+const MISSING_TABLE = Symbol('missing_table');
+
+async function syncOneCandidate(
+  admin: ReturnType<typeof createAdminClient>,
+  userId: string,
+  candidate: AchievementCandidate
+): Promise<RankingAchievement | null | typeof MISSING_TABLE> {
+  const { data: existing, error: existingError } = await admin
+    .from('ranking_achievements')
+    .select('id, user_id, ranking_type, ranking_slug, position, notified_at')
+    .eq('user_id', userId)
+    .eq('ranking_type', candidate.rankingType)
+    .eq('ranking_slug', candidate.rankingSlug)
+    .maybeSingle<ExistingAchievementRow>();
+
+  if (isMissingAchievementsTableError(existingError)) return MISSING_TABLE;
+  if (existingError) return null;
+
+  if (!existing) {
+    const { data, error } = await admin
+      .from('ranking_achievements')
+      .insert({
+        user_id: userId,
+        ranking_type: candidate.rankingType,
+        ranking_slug: candidate.rankingSlug,
+        ranking_label: candidate.rankingLabel,
+        position: candidate.position,
+        score: candidate.score,
+        score_label: candidate.scoreLabel,
+        achieved_at: candidate.achievedAt,
+        metadata: candidate.metadata,
+      })
+      .select('*')
+      .single();
+
+    return !error && data ? toAchievement(data) : null;
+  }
+
+  if (candidate.position < existing.position) {
+    const { data, error } = await admin
+      .from('ranking_achievements')
+      .update({
+        ranking_label: candidate.rankingLabel,
+        position: candidate.position,
+        score: candidate.score,
+        score_label: candidate.scoreLabel,
+        achieved_at: candidate.achievedAt,
+        notified_at: null,
+        metadata: candidate.metadata,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', existing.id)
+      .select('*')
+      .single();
+
+    return !error && data ? toAchievement(data) : null;
+  }
+
+  return null;
+}
+
 export async function syncRankingAchievementsForUser(userId: string) {
   const admin = createAdminClient();
   const candidates = await collectAchievementCandidates(userId);
-  const changed: RankingAchievement[] = [];
 
-  for (const candidate of candidates) {
-    const { data: existing, error: existingError } = await admin
-      .from('ranking_achievements')
-      .select('id, user_id, ranking_type, ranking_slug, position, notified_at')
-      .eq('user_id', userId)
-      .eq('ranking_type', candidate.rankingType)
-      .eq('ranking_slug', candidate.rankingSlug)
-      .maybeSingle<ExistingAchievementRow>();
+  const results = await Promise.all(
+    candidates.map((candidate) => syncOneCandidate(admin, userId, candidate))
+  );
 
-    if (isMissingAchievementsTableError(existingError)) return changed;
-    if (existingError) continue;
+  if (results.includes(MISSING_TABLE)) return [];
 
-    if (!existing) {
-      const { data, error } = await admin
-        .from('ranking_achievements')
-        .insert({
-          user_id: userId,
-          ranking_type: candidate.rankingType,
-          ranking_slug: candidate.rankingSlug,
-          ranking_label: candidate.rankingLabel,
-          position: candidate.position,
-          score: candidate.score,
-          score_label: candidate.scoreLabel,
-          achieved_at: candidate.achievedAt,
-          metadata: candidate.metadata,
-        })
-        .select('*')
-        .single();
-
-      if (!error && data) changed.push(toAchievement(data));
-      continue;
-    }
-
-    if (candidate.position < existing.position) {
-      const { data, error } = await admin
-        .from('ranking_achievements')
-        .update({
-          ranking_label: candidate.rankingLabel,
-          position: candidate.position,
-          score: candidate.score,
-          score_label: candidate.scoreLabel,
-          achieved_at: candidate.achievedAt,
-          notified_at: null,
-          metadata: candidate.metadata,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', existing.id)
-        .select('*')
-        .single();
-
-      if (!error && data) changed.push(toAchievement(data));
-    }
-  }
+  const changed = results.filter(
+    (result): result is RankingAchievement =>
+      result !== null && result !== MISSING_TABLE
+  );
 
   return changed;
 }
