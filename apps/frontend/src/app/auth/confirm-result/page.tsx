@@ -40,7 +40,7 @@ export default async function ConfirmResultPage({
           </p>
 
           <Link
-            href={next ?? '/ranking'}
+            href={next ?? '/dashboard'}
             className="inline-block w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-medium"
           >
             Ingresar a la app →
