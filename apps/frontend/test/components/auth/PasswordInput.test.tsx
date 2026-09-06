@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import PasswordInput from '@/components/auth/PasswordInput';
 
@@ -43,19 +43,28 @@ describe('PasswordInput', () => {
       expect(input).toHaveClass('custom-class', 'border-red-500');
     });
 
-    it('muestra el valor proporcionado', () => {
+    // PasswordInput es deliberadamente NO controlado: no expone prop `value` y la
+    // contraseña nunca sube al estado del padre ("never flows to parent state").
+    // El test le pasaba value="test123" y esperaba verlo renderizado, o sea una
+    // API que el componente no tiene. Se verifica lo que si es real: lo tipeado.
+    it('refleja el valor tipeado por el usuario', async () => {
+      const user = userEvent.setup();
       render(
         <PasswordInput
           id="password"
           name="password"
-          value="test123"
           placeholder="Contraseña"
           onChange={mockOnChange}
         />
       );
 
-      const input = screen.getByPlaceholderText('Contraseña') as HTMLInputElement;
+      const input = screen.getByPlaceholderText(
+        'Contraseña'
+      ) as HTMLInputElement;
+      await user.type(input, 'test123');
+
       expect(input.value).toBe('test123');
+      expect(mockOnChange).toHaveBeenCalled();
     });
   });
 
@@ -72,7 +81,9 @@ describe('PasswordInput', () => {
         />
       );
 
-      const toggleButton = screen.getByRole('button', { name: /mostrar contraseña/i });
+      const toggleButton = screen.getByRole('button', {
+        name: /mostrar contraseña/i,
+      });
       expect(toggleButton).toBeInTheDocument();
     });
 
@@ -88,7 +99,9 @@ describe('PasswordInput', () => {
         />
       );
 
-      const toggleButton = screen.queryByRole('button', { name: /mostrar contraseña/i });
+      const toggleButton = screen.queryByRole('button', {
+        name: /mostrar contraseña/i,
+      });
       expect(toggleButton).not.toBeInTheDocument();
     });
 
@@ -105,15 +118,21 @@ describe('PasswordInput', () => {
         />
       );
 
-      const input = screen.getByPlaceholderText('Contraseña') as HTMLInputElement;
-      const toggleButton = screen.getByRole('button', { name: /mostrar contraseña/i });
+      const input = screen.getByPlaceholderText(
+        'Contraseña'
+      ) as HTMLInputElement;
+      const toggleButton = screen.getByRole('button', {
+        name: /mostrar contraseña/i,
+      });
 
       expect(input.type).toBe('password');
 
       await user.click(toggleButton);
 
       expect(input.type).toBe('text');
-      expect(screen.getByRole('button', { name: /ocultar contraseña/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /ocultar contraseña/i })
+      ).toBeInTheDocument();
     });
 
     it('cambia tipo de input de text a password al hacer segundo click', async () => {
@@ -129,19 +148,27 @@ describe('PasswordInput', () => {
         />
       );
 
-      const input = screen.getByPlaceholderText('Contraseña') as HTMLInputElement;
-      const toggleButton = screen.getByRole('button', { name: /mostrar contraseña/i });
+      const input = screen.getByPlaceholderText(
+        'Contraseña'
+      ) as HTMLInputElement;
+      const toggleButton = screen.getByRole('button', {
+        name: /mostrar contraseña/i,
+      });
 
       // Primer click - mostrar
       await user.click(toggleButton);
       expect(input.type).toBe('text');
 
       // Segundo click - ocultar
-      const hideButton = screen.getByRole('button', { name: /ocultar contraseña/i });
+      const hideButton = screen.getByRole('button', {
+        name: /ocultar contraseña/i,
+      });
       await user.click(hideButton);
 
       expect(input.type).toBe('password');
-      expect(screen.getByRole('button', { name: /mostrar contraseña/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /mostrar contraseña/i })
+      ).toBeInTheDocument();
     });
 
     it('alterna entre iconos de ojo abierto y cerrado', async () => {
@@ -157,13 +184,17 @@ describe('PasswordInput', () => {
         />
       );
 
-      const toggleButton = screen.getByRole('button', { name: /mostrar contraseña/i });
+      const toggleButton = screen.getByRole('button', {
+        name: /mostrar contraseña/i,
+      });
 
       // Inicialmente muestra icono de ojo abierto (para mostrar)
       await user.click(toggleButton);
 
       // Después de click muestra icono de ojo cerrado (para ocultar)
-      expect(screen.getByRole('button', { name: /ocultar contraseña/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /ocultar contraseña/i })
+      ).toBeInTheDocument();
     });
   });
 
@@ -297,24 +328,32 @@ describe('PasswordInput', () => {
         />
       );
 
-      const input = screen.getByPlaceholderText('Contraseña') as HTMLInputElement;
+      const input = screen.getByPlaceholderText(
+        'Contraseña'
+      ) as HTMLInputElement;
       expect(input.value).toBe('');
     });
 
     it('maneja contraseñas muy largas', () => {
+      // Mismo motivo que arriba: sin prop `value`, se escribe en el DOM y se
+      // comprueba que el input no trunca. 1000 caracteres via userEvent.type
+      // seria lento sin aportar nada, asi que se setea el value directo.
       const longPassword = 'a'.repeat(1000);
 
       render(
         <PasswordInput
           id="password"
           name="password"
-          value={longPassword}
           placeholder="Contraseña"
           onChange={mockOnChange}
         />
       );
 
-      const input = screen.getByPlaceholderText('Contraseña') as HTMLInputElement;
+      const input = screen.getByPlaceholderText(
+        'Contraseña'
+      ) as HTMLInputElement;
+      fireEvent.change(input, { target: { value: longPassword } });
+
       expect(input.value).toBe(longPassword);
     });
 
@@ -330,10 +369,14 @@ describe('PasswordInput', () => {
         />
       );
 
-      const toggleButton = screen.getByRole('button', { name: /mostrar contraseña/i });
+      const toggleButton = screen.getByRole('button', {
+        name: /mostrar contraseña/i,
+      });
       await user.click(toggleButton);
 
-      const input = screen.getByPlaceholderText('Contraseña') as HTMLInputElement;
+      const input = screen.getByPlaceholderText(
+        'Contraseña'
+      ) as HTMLInputElement;
       expect(input.type).toBe('text');
 
       // Simular cambio de valor desde el padre
