@@ -17,6 +17,8 @@ import MultipleSelectQuestion from './MultipleSelectQuestion';
 import PlaywrightCodeBlock from './PlaywrightCodeBlock';
 import RequestResponseBlock from './RequestResponseBlock';
 import SectionNavigator from './SectionNavigator';
+import SubmitSectionDialog from './SubmitSectionDialog';
+import { isAnswerEmpty } from '../lib/answers';
 import SectionSummaryCard from './SectionSummaryCard';
 import ShortAnswerQuestion from './ShortAnswerQuestion';
 import SqlScenarioBlock from './SqlScenarioBlock';
@@ -45,6 +47,7 @@ export default function AssessmentSectionScreen({
   const sectionSlug = params.sectionId;
   const [payload, setPayload] = useState<AssessmentSectionPayload | null>(null);
   const [answers, setAnswers] = useState<AnswerMap>({});
+  const [showSubmitDialog, setShowSubmitDialog] = useState(false);
   const [loading, setLoading] = useState(true);
   const [savingMessage, setSavingMessage] = useState('Autosave activo');
   const [error, setError] = useState('');
@@ -149,6 +152,7 @@ export default function AssessmentSectionScreen({
 
     setSubmitError('');
     setIsSubmitting(true);
+    setShowSubmitDialog(false);
 
     try {
       const { nextSectionSlug } = await submitAssessmentSectionAction({
@@ -193,6 +197,9 @@ export default function AssessmentSectionScreen({
     payload.sections.findIndex((item) => item.slug === payload.section.slug) +
     1;
   const previousSection = payload.sections[currentIndex - 2];
+  const unansweredCount = payload.questions.filter((question) =>
+    isAnswerEmpty(answers[question.id])
+  ).length;
   const sectionScore = payload.scores.find(
     (score) => score.section_id === payload.section.id
   );
@@ -221,7 +228,9 @@ export default function AssessmentSectionScreen({
             <h1 className="mt-2 text-3xl font-bold">
               {payload.section.description}
             </h1>
-            <p className="mt-3 text-sm text-slate-400">{savingMessage}</p>
+            <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
+              {savingMessage}
+            </p>
           </div>
           <AssessmentTimer suggestedMinutes={suggestedMinutes} />
         </div>
@@ -279,16 +288,16 @@ export default function AssessmentSectionScreen({
             return (
               <div
                 key={question.id}
-                className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6"
+                className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 p-6"
               >
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
                   Pregunta {question.order_index} · {question.points} pts
                 </p>
                 <h2 className="mt-3 text-xl font-semibold">
                   {question.prompt}
                 </h2>
                 {question.description ? (
-                  <p className="mt-2 text-sm text-slate-400">
+                  <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
                     {question.description}
                   </p>
                 ) : null}
@@ -397,7 +406,7 @@ export default function AssessmentSectionScreen({
                                 (answer as { verdict?: string } | undefined)
                                   ?.verdict === 'correct'
                                   ? 'bg-emerald-400 text-slate-950'
-                                  : 'border border-slate-700 text-slate-200 hover:bg-slate-800'
+                                  : 'border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
                               }`}
                             >
                               Respuesta correcta
@@ -418,7 +427,7 @@ export default function AssessmentSectionScreen({
                                 (answer as { verdict?: string } | undefined)
                                   ?.verdict === 'bug'
                                   ? 'bg-amber-300 text-slate-950'
-                                  : 'border border-slate-700 text-slate-200 hover:bg-slate-800'
+                                  : 'border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
                               }`}
                             >
                               Hay bug
@@ -479,10 +488,20 @@ export default function AssessmentSectionScreen({
                 : 'Enviar nivel y continuar'
             }
             isSubmitting={isSubmitting}
-            onSubmit={() => void handleSubmitSection()}
+            onSubmit={() => setShowSubmitDialog(true)}
           />
         </div>
       </div>
+
+      <SubmitSectionDialog
+        open={showSubmitDialog}
+        unansweredCount={unansweredCount}
+        totalQuestions={payload.questions.length}
+        isLastSection={currentIndex === payload.sections.length}
+        isSubmitting={isSubmitting}
+        onConfirm={() => void handleSubmitSection()}
+        onCancel={() => setShowSubmitDialog(false)}
+      />
     </div>
   );
 }

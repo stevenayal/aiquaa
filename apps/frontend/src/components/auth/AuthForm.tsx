@@ -253,7 +253,14 @@ export default function AuthForm({
             </>
           )}
 
-          <form onSubmit={onSubmit} className="space-y-4">
+          {/*
+            noValidate: con type="email" el navegador sumaria su propia
+            validacion, con un globo sin traducir y ajeno al tema. El formulario
+            no usa ningun atributo de validacion nativa (no hay un solo
+            `required`), asi que la validacion propia queda como unica fuente de
+            verdad y los mensajes siguen en español y dentro del diseño.
+          */}
+          <form onSubmit={onSubmit} className="space-y-4" noValidate>
             {!isLogin && (
               <div>
                 <label
@@ -348,10 +355,18 @@ export default function AuthForm({
                 {isEmpresa ? 'Email corporativo' : t('auth.field.email')}
               </label>
               <div className="relative">
+                {/*
+                  type="email" da el teclado con @ en movil y, por la regla de
+                  saneamiento del HTML, recorta espacios al inicio y al final.
+                  autoCapitalize="none" evita que el movil mande "Ana@...".
+                */}
                 <input
                   id="email"
                   name="email"
-                  type="text"
+                  type="email"
+                  inputMode="email"
+                  autoCapitalize="none"
+                  spellCheck={false}
                   autoComplete="email"
                   className={fieldClass(!!errors.email)}
                   placeholder={isEmpresa ? 'tu@empresa.com' : 'tu@email.com'}

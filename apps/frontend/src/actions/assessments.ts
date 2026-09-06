@@ -739,3 +739,71 @@ export async function getAssessmentResultAction(
     feedback,
   };
 }
+
+export interface AssessmentProgress {
+  /** Mejor porcentaje logrado entre los intentos corregidos. */
+  bestPercentage: number;
+  /** Si alguno de los intentos corregidos superó el puntaje de aprobación. */
+  passed: boolean;
+  /** Hay un intento empezado y sin enviar. */
+  inProgress: boolean;
+}
+
+/**
+ * Progreso del usuario en cada assessment, indexado por slug.
+ *
+ * Lo usa el catálogo para mostrar "Aprobado", el mejor puntaje y "Continuar"
+ * donde corresponde: sin esto la grilla no distingue lo que ya rendiste de lo
+ * que todavía no abriste, y hay que entrar a cada evaluación para saberlo.
+ *
+ * Devuelve un mapa vacío para un invitado en vez de lanzar: el catálogo se
+ * navega sin sesión y una excepción acá lo tumbaría entero.
+ */
+export async function getMyAssessmentProgressAction(): Promise<
+  Record<string, AssessmentProgress>
+> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return {};
+
+  const { data, error } = await supabase
+    .from('assessment_attempts')
+    .select('status, percentage, passed, assessments!inner(slug)')
+    .eq('user_id', user.id);
+
+  if (error || !data) return {};
+
+  const progress: Record<string, AssessmentProgress> = {};
+
+  for (const attempt of data) {
+    // El join llega como objeto o como array de uno segun el tipado generado.
+    const related = attempt.assessments as unknown as
+      | { slug: string }
+      | { slug: string }[];
+    const slug = Array.isArray(related) ? related[0]?.slug : related?.slug;
+    if (!slug) continue;
+
+    const current = progress[slug] ?? {
+      bestPercentage: 0,
+      passed: false,
+      inProgress: false,
+    };
+
+    if (attempt.status === 'in_progress') {
+      current.inProgress = true;
+    } else {
+      current.bestPercentage = Math.max(
+        current.bestPercentage,
+        Number(attempt.percentage ?? 0)
+      );
+      current.passed = current.passed || Boolean(attempt.passed);
+    }
+
+    progress[slug] = current;
+  }
+
+  return progress;
+}

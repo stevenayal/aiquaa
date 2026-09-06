@@ -72,6 +72,8 @@ describe('LoginForm', () => {
 
   it('should validate email format', async () => {
     const user = userEvent.setup();
+    const fetchSpy = vi.fn();
+    global.fetch = fetchSpy;
     render(<MockLoginForm />);
 
     const emailInput = screen.getByPlaceholderText('Email');
@@ -82,9 +84,12 @@ describe('LoginForm', () => {
     await user.type(passwordInput, 'password123');
     await user.click(submitButton);
 
-    await waitFor(() => {
-      expect(screen.getByText('Invalid credentials')).toBeInTheDocument();
-    });
+    // El input es type="email" required, asi que la validacion nativa corta el
+    // submit: handleSubmit no llega a ejecutarse. El test esperaba el mensaje
+    // 'Invalid credentials', que solo aparece si la peticion SE HACE y falla,
+    // justo lo contrario de lo que el nombre del test dice cubrir.
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(screen.queryByText('Invalid credentials')).not.toBeInTheDocument();
   });
 
   it('should handle successful login', async () => {
@@ -94,6 +99,12 @@ describe('LoginForm', () => {
     const emailInput = screen.getByPlaceholderText('Email');
     const passwordInput = screen.getByPlaceholderText('Password');
     const submitButton = screen.getByRole('button', { name: 'Login' });
+
+    // fetch queda pendiente a proposito: el estado de carga solo es observable
+    // mientras la peticion esta en vuelo. Con el vi.fn() por defecto de
+    // test/setup.ts la promesa resolvia a undefined, el catch y el finally
+    // corrian enseguida y para cuando llegaba el waitFor loading ya era false.
+    global.fetch = vi.fn(() => new Promise(() => {}));
 
     await user.type(emailInput, 'test@example.com');
     await user.type(passwordInput, 'password123');

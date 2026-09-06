@@ -1,7 +1,11 @@
 'use client';
 
 import React, { useRef, useState, useTransition } from 'react';
-import { registerAction, resendConfirmationAction, checkEmailTakenAction } from '@/actions/auth';
+import {
+  registerAction,
+  resendConfirmationAction,
+  checkEmailTakenAction,
+} from '@/actions/auth';
 import AuthForm from './AuthForm';
 import EmailVerificationModal from './EmailVerificationModal';
 import { Audience } from './AudienceToggle';
@@ -13,6 +17,13 @@ interface RegisterFormProps {
 
 export default function RegisterForm({ lockedAudience }: RegisterFormProps) {
   const [isPending, startTransition] = useTransition();
+  // isPending por si solo no alcanza: en React 18 startTransition con un callback
+  // async da por terminada la transicion en el primer await, asi que isPending
+  // vuelve a false apenas arranca el registro y el boton nunca se deshabilita.
+  // Resultado: el usuario no ve feedback y puede enviar el alta dos veces.
+  // Las transiciones async recien las sigue React 19; hasta entonces el estado
+  // de envio se lleva a mano.
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
@@ -66,21 +77,26 @@ export default function RegisterForm({ lockedAudience }: RegisterFormProps) {
       data.set('role', formData.role);
     }
 
+    setIsSubmitting(true);
     startTransition(async () => {
-      const result = await registerAction(data);
-      if (result?.error) {
-        if (result.error.includes('already registered')) {
-          setErrors((prev) => ({
-            ...prev,
-            email: 'Este email ya está registrado. Iniciá sesión.',
-          }));
-        } else {
-          setAlertMessage(result.error);
-          setAlertType('error');
-          setShowAlert(true);
+      try {
+        const result = await registerAction(data);
+        if (result?.error) {
+          if (result.error.includes('already registered')) {
+            setErrors((prev) => ({
+              ...prev,
+              email: 'Este email ya está registrado. Iniciá sesión.',
+            }));
+          } else {
+            setAlertMessage(result.error);
+            setAlertType('error');
+            setShowAlert(true);
+          }
+        } else if (result?.success) {
+          setShowVerifyModal(true);
         }
-      } else if (result?.success) {
-        setShowVerifyModal(true);
+      } finally {
+        setIsSubmitting(false);
       }
     });
   };
@@ -148,39 +164,39 @@ export default function RegisterForm({ lockedAudience }: RegisterFormProps) {
 
   return (
     <>
-    {showVerifyModal && (
-      <EmailVerificationModal
-        email={formData.email}
-        context="post-register"
-        onClose={() => setShowVerifyModal(false)}
-        onResend={handleResend}
+      {showVerifyModal && (
+        <EmailVerificationModal
+          email={formData.email}
+          context="post-register"
+          onClose={() => setShowVerifyModal(false)}
+          onResend={handleResend}
+        />
+      )}
+      <AuthForm
+        mode="register"
+        onSubmit={handleSubmit}
+        isLoading={isPending || isSubmitting}
+        errors={errors}
+        formData={formData}
+        onFieldChange={handleChange}
+        onPasswordChange={handlePasswordChange}
+        onRoleChange={handleRoleChange}
+        onAudienceChange={lockedAudience ? undefined : handleAudienceChange}
+        onClearErrors={() => {
+          setErrors({});
+          setShowAlert(false);
+        }}
+        socialLoginError={socialLoginError}
+        onSocialError={() => {}}
+        showAlert={showAlert}
+        alertMessage={alertMessage}
+        alertType={alertType}
+        showResend={false}
+        onEmailBlur={handleEmailBlur}
+        emailChecking={emailChecking}
+        passwordRef={passwordRef}
+        confirmPasswordRef={confirmPasswordRef}
       />
-    )}
-    <AuthForm
-      mode="register"
-      onSubmit={handleSubmit}
-      isLoading={isPending}
-      errors={errors}
-      formData={formData}
-      onFieldChange={handleChange}
-      onPasswordChange={handlePasswordChange}
-      onRoleChange={handleRoleChange}
-      onAudienceChange={lockedAudience ? undefined : handleAudienceChange}
-      onClearErrors={() => {
-        setErrors({});
-        setShowAlert(false);
-      }}
-      socialLoginError={socialLoginError}
-      onSocialError={() => {}}
-      showAlert={showAlert}
-      alertMessage={alertMessage}
-      alertType={alertType}
-      showResend={false}
-      onEmailBlur={handleEmailBlur}
-      emailChecking={emailChecking}
-      passwordRef={passwordRef}
-      confirmPasswordRef={confirmPasswordRef}
-    />
     </>
   );
 }

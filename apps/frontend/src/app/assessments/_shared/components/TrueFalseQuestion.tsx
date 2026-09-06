@@ -27,7 +27,7 @@ export default function TrueFalseQuestion({
             className={`rounded-2xl border px-4 py-4 text-left text-sm font-semibold transition ${
               checked
                 ? 'border-cyan-400/40 bg-cyan-400/10 text-cyan-50'
-                : 'border-slate-800 bg-slate-950/70 text-slate-200 hover:bg-slate-900'
+                : 'border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-950/70 text-slate-700 dark:text-slate-200 hover:bg-white dark:bg-slate-900'
             }`}
           >
             {option.label}

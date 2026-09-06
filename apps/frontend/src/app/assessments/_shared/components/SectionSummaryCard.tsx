@@ -21,7 +21,7 @@ export default function SectionSummaryCard({
           <h3 className="text-lg font-semibold text-emerald-50">{title}</h3>
           <p className="mt-2 text-sm text-emerald-100/80">{feedback}</p>
         </div>
-        <div className="rounded-2xl border border-emerald-400/20 bg-slate-950/40 px-4 py-3 text-right">
+        <div className="rounded-2xl border border-emerald-400/20 bg-white/40 dark:bg-slate-950/40 px-4 py-3 text-right">
           <p className="text-xs uppercase tracking-[0.18em] text-emerald-300">
             Score
           </p>

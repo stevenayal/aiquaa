@@ -1,14 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import RegisterForm from '@/components/auth/RegisterForm';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 
 // Mock Server Actions — MSW intercepts fetch, not Next.js server actions
+// checkEmailTakenAction faltaba: RegisterForm la importa, y como este factory
+// reemplaza al modulo entero, el import quedaba undefined y vitest tiraba
+// 'No "checkEmailTakenAction" export is defined on the "@/actions/auth" mock'.
 vi.mock('@/actions/auth', () => ({
   registerAction: vi.fn(),
   resendConfirmationAction: vi.fn(),
+  checkEmailTakenAction: vi.fn().mockResolvedValue({ taken: false }),
 }));
 
 // Mock del SessionProvider de next-auth
@@ -432,15 +436,32 @@ describe('RegisterForm', () => {
       const roleButton = screen.getByRole('button', { name: /estudiante/i });
       await user.click(roleButton);
 
+      // registerAction queda pendiente a proposito: el boton solo esta
+      // deshabilitado mientras la transicion esta en vuelo. Con el vi.fn() por
+      // defecto resolvia a undefined en el acto y para cuando se evaluaba la
+      // asercion el boton ya estaba habilitado otra vez.
+      let resolveRegister: (_value: unknown) => void = () => {};
+      vi.mocked(registerAction).mockImplementation(
+        () =>
+          new Promise((resolve) => {
+            resolveRegister = resolve;
+          }) as ReturnType<typeof registerAction>
+      );
+
       const submitButton = screen.getByRole('button', {
         name: /crear cuenta/i,
       });
       await user.click(submitButton);
 
-      // El botón debe estar deshabilitado inmediatamente después del click
-      expect(submitButton).toBeDisabled();
+      // El botón debe estar deshabilitado mientras se envía
+      await waitFor(() => {
+        expect(submitButton).toBeDisabled();
+      });
 
-      // Esperar a que termine el proceso
+      // Al terminar, vuelve a habilitarse
+      await act(async () => {
+        resolveRegister({ success: true });
+      });
       await waitFor(
         () => {
           expect(submitButton).not.toBeDisabled();
