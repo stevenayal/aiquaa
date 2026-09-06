@@ -2,6 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { isCommunityRole } from '@/lib/auth/roles';
 
 export async function loginAction(formData: FormData) {
   const email = formData.get('email') as string;
@@ -41,9 +42,12 @@ export async function registerAction(formData: FormData) {
           ? { company_name: companyName }
           : {}),
         ...(audience === 'empresa' && ruc ? { ruc: ruc.trim() } : {}),
-        ...(selectedRole && ['comunidad', 'admin'].includes(selectedRole)
-          ? { role: selectedRole }
-          : {}),
+        // El rol se valida contra COMMUNITY_ROLES, la misma lista que muestra
+        // el formulario. Antes se comparaba contra ['comunidad', 'admin'],
+        // valores que el selector nunca ofrece, así que TODO rol elegido se
+        // descartaba: el usuario completaba un campo obligatorio que el
+        // sistema tiraba a la basura y después /perfil le mostraba vacío.
+        ...(isCommunityRole(selectedRole) ? { role: selectedRole } : {}),
       },
       emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL}/auth/confirm`,
     },

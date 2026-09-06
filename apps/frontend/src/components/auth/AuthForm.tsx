@@ -10,16 +10,9 @@ import AudienceToggle, { Audience } from './AudienceToggle';
 import LogoMark from '@/components/LogoMark';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { COMMUNITY_ROLES } from '@/lib/auth/roles';
 
-const ROLES = [
-  { value: 'estudiante', label: 'Estudiante', emoji: '🎓' },
-  { value: 'qa_junior', label: 'Tester QA Junior', emoji: '🌱' },
-  { value: 'qa_senior', label: 'Tester QA Senior', emoji: '⭐' },
-  { value: 'qa_engineer', label: 'QA Engineer', emoji: '⚙️' },
-  { value: 'analista_qa', label: 'Analista QA', emoji: '🔍' },
-  { value: 'developer', label: 'Developer', emoji: '💻' },
-  { value: 'otro', label: 'Otro rol', emoji: '🙋' },
-];
+const ROLES = COMMUNITY_ROLES;
 
 interface AuthFormProps {
   mode: 'login' | 'register';

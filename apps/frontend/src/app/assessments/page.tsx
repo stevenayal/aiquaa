@@ -13,6 +13,9 @@ import { clase5KubernetesDefinition } from './clase5-kubernetes/data/assessment-
 import { clase6ConfigKubernetesDefinition } from './clase6-config-kubernetes/data/assessment-definition';
 import { clase78SeqLoggingDefinition } from './clase7-8-seq-logging/data/assessment-definition';
 import { clase9CicdGithubActionsDefinition } from './clase9-cicd-github-actions/data/assessment-definition';
+import { cicdFundamentalsDefinition } from './cicd-fundamentals/data/assessment-definition';
+import { kubernetesHelmFundamentalsDefinition } from './kubernetes-helm-fundamentals/data/assessment-definition';
+import { observabilityFundamentalsDefinition } from './observability-fundamentals/data/assessment-definition';
 
 export default function AssessmentsIndexPage() {
   const overview = apiTestingFundamentalsDefinition;
@@ -107,6 +110,29 @@ export default function AssessmentsIndexPage() {
       badgeColor: 'text-amber-300',
       accentColor: 'text-lime-200',
       buttonClass: 'bg-lime-500 hover:bg-lime-400',
+    },
+    // Estas tres existían en el registry, en los slugs y con páginas completas,
+    // pero no estaban en ningún catálogo: solo se llegaba tipeando la URL.
+    {
+      definition: cicdFundamentalsDefinition,
+      badge: 'Examen teórico · Auto-corregido · CI/CD',
+      badgeColor: 'text-amber-300',
+      accentColor: 'text-orange-200',
+      buttonClass: 'bg-orange-500 hover:bg-orange-400',
+    },
+    {
+      definition: kubernetesHelmFundamentalsDefinition,
+      badge: 'Examen teórico · Auto-corregido · Kubernetes',
+      badgeColor: 'text-amber-300',
+      accentColor: 'text-blue-200',
+      buttonClass: 'bg-blue-500 hover:bg-blue-400',
+    },
+    {
+      definition: observabilityFundamentalsDefinition,
+      badge: 'Examen teórico · Auto-corregido · Observabilidad',
+      badgeColor: 'text-amber-300',
+      accentColor: 'text-rose-200',
+      buttonClass: 'bg-rose-500 hover:bg-rose-400',
     },
   ];
 
