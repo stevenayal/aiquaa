@@ -39,13 +39,17 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     // Save to localStorage
     if (typeof window !== 'undefined') {
       localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
-      
-      // Apply theme to document
-      if (isDarkMode) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
+
+      // Apply theme to document.
+      // Se aplican AMBAS clases de forma explícita: `dark` activa las utilidades
+      // `dark:` de Tailwind y los tokens de globals.css; `light` marca la
+      // elección explícita del usuario para que el fallback
+      // `@media (prefers-color-scheme: dark)` no la pise cuando el sistema
+      // operativo está en modo oscuro.
+      const root = document.documentElement;
+      root.classList.toggle('dark', isDarkMode);
+      root.classList.toggle('light', !isDarkMode);
+      root.style.colorScheme = isDarkMode ? 'dark' : 'light';
     }
   }, [isDarkMode]);
 

@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createClient } from '@/lib/supabase/server';
+import { COMMUNITY_ROLE_VALUES } from '@/lib/auth/roles';
 
 vi.mock('next/navigation', () => ({ redirect: vi.fn() }));
 vi.mock('@/lib/supabase/server', () => ({ createClient: vi.fn() }));
@@ -40,7 +41,11 @@ const BASE_EMPRESA = {
 };
 
 describe('registerAction — integración Supabase', () => {
-  let registerAction: (fd: FormData) => Promise<{ success?: boolean; message?: string; error?: string } | undefined>;
+  let registerAction: (
+    fd: FormData
+  ) => Promise<
+    { success?: boolean; message?: string; error?: string } | undefined
+  >;
 
   beforeEach(async () => {
     vi.resetModules();
@@ -62,37 +67,31 @@ describe('registerAction — integración Supabase', () => {
       expect(options.data.ruc).toBeUndefined();
     });
 
-    it('incluye role "comunidad" en metadata', async () => {
-      const { signUp } = makeSupabaseMock({ error: null });
-      await registerAction(makeFormData({ ...BASE_CANDIDATO, role: 'comunidad' }));
+    // El rol se valida contra COMMUNITY_ROLES, la misma lista que ofrece el
+    // selector del formulario. Estos tests antes fijaban el filtro previo
+    // ['comunidad', 'admin']: dos valores que el selector nunca ofrece, por lo
+    // que todo rol realmente elegible se descartaba en silencio.
+    it.each(COMMUNITY_ROLE_VALUES)(
+      'persiste el rol elegido: %s',
+      async (role) => {
+        const { signUp } = makeSupabaseMock({ error: null });
+        await registerAction(makeFormData({ ...BASE_CANDIDATO, role }));
 
-      const [{ options }] = signUp.mock.calls[0];
-      expect(options.data.role).toBe('comunidad');
-    });
+        const [{ options }] = signUp.mock.calls[0];
+        expect(options.data.role).toBe(role);
+      }
+    );
 
-    it('incluye role "admin" en metadata', async () => {
-      const { signUp } = makeSupabaseMock({ error: null });
-      await registerAction(makeFormData({ ...BASE_CANDIDATO, role: 'admin' }));
+    it.each(['comunidad', 'admin', 'superuser', ''])(
+      'ignora el valor "%s", que el selector no ofrece',
+      async (role) => {
+        const { signUp } = makeSupabaseMock({ error: null });
+        await registerAction(makeFormData({ ...BASE_CANDIDATO, role }));
 
-      const [{ options }] = signUp.mock.calls[0];
-      expect(options.data.role).toBe('admin');
-    });
-
-    it('NO incluye role para qa_junior (no especial)', async () => {
-      const { signUp } = makeSupabaseMock({ error: null });
-      await registerAction(makeFormData(BASE_CANDIDATO));
-
-      const [{ options }] = signUp.mock.calls[0];
-      expect(options.data.role).toBeUndefined();
-    });
-
-    it('NO incluye role para qa_senior (no especial)', async () => {
-      const { signUp } = makeSupabaseMock({ error: null });
-      await registerAction(makeFormData({ ...BASE_CANDIDATO, role: 'qa_senior' }));
-
-      const [{ options }] = signUp.mock.calls[0];
-      expect(options.data.role).toBeUndefined();
-    });
+        const [{ options }] = signUp.mock.calls[0];
+        expect(options.data.role).toBeUndefined();
+      }
+    );
   });
 
   // ── Empresa ────────────────────────────────────────────────────────────────
@@ -127,7 +126,9 @@ describe('registerAction — integración Supabase', () => {
 
     it('trimea el RUC antes de guardarlo', async () => {
       const { signUp } = makeSupabaseMock({ error: null });
-      await registerAction(makeFormData({ ...BASE_EMPRESA, ruc: '  80000001-1  ' }));
+      await registerAction(
+        makeFormData({ ...BASE_EMPRESA, ruc: '  80000001-1  ' })
+      );
 
       const [{ options }] = signUp.mock.calls[0];
       expect(options.data.ruc).toBe('80000001-1');
@@ -135,7 +136,9 @@ describe('registerAction — integración Supabase', () => {
 
     it('NO incluye role en metadata aunque venga en el form', async () => {
       const { signUp } = makeSupabaseMock({ error: null });
-      await registerAction(makeFormData({ ...BASE_EMPRESA, role: 'comunidad' }));
+      await registerAction(
+        makeFormData({ ...BASE_EMPRESA, role: 'comunidad' })
+      );
 
       const [{ options }] = signUp.mock.calls[0];
       expect(options.data.role).toBeUndefined();
@@ -147,7 +150,9 @@ describe('registerAction — integración Supabase', () => {
   describe('defaults', () => {
     it('usa audience "candidato" cuando no viene en el FormData', async () => {
       const { signUp } = makeSupabaseMock({ error: null });
-      await registerAction(makeFormData({ email: 'x@test.com', password: 'Pass1234', name: 'X' }));
+      await registerAction(
+        makeFormData({ email: 'x@test.com', password: 'Pass1234', name: 'X' })
+      );
 
       const [{ options }] = signUp.mock.calls[0];
       expect(options.data.audience).toBe('candidato');
@@ -174,20 +179,26 @@ describe('registerAction — integración Supabase', () => {
 
     it('retorna { error } con el mensaje de Supabase cuando falla', async () => {
       makeSupabaseMock({ error: { message: 'User already registered' } });
-      const result = await registerAction(makeFormData({ ...BASE_CANDIDATO, email: 'dup@test.com' }));
+      const result = await registerAction(
+        makeFormData({ ...BASE_CANDIDATO, email: 'dup@test.com' })
+      );
 
       expect(result?.error).toBe('User already registered');
     });
 
     it('traduce "Database error saving new user" a español', async () => {
-      makeSupabaseMock({ error: { message: 'Database error saving new user' } });
+      makeSupabaseMock({
+        error: { message: 'Database error saving new user' },
+      });
       const result = await registerAction(makeFormData(BASE_CANDIDATO));
 
       expect(result?.error).toContain('regla interna de la base de datos');
     });
 
     it('traduce el error también en minúsculas', async () => {
-      makeSupabaseMock({ error: { message: 'database error saving new user' } });
+      makeSupabaseMock({
+        error: { message: 'database error saving new user' },
+      });
       const result = await registerAction(makeFormData(BASE_CANDIDATO));
 
       expect(result?.error).toContain('regla interna de la base de datos');

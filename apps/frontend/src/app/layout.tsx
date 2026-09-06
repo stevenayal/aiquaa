@@ -80,7 +80,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es">
+    <html lang="es" suppressHydrationWarning>
+      <head>
+        {/*
+          Anti-FOUC: aplica la clase de tema antes del primer pintado.
+          Sin esto el HTML sale del servidor sin clase, se pinta con los tokens
+          claros y recién en el useEffect de ThemeContext salta al oscuro:
+          un parpadeo visible en cada carga. Ver "Umbral de Doherty" en
+          docs/ux/PLAN-UX-LEYES.md.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var s=localStorage.getItem('darkMode');var d=s===null?true:JSON.parse(s);var r=document.documentElement;r.classList.toggle('dark',d);r.classList.toggle('light',!d);r.style.colorScheme=d?'dark':'light';}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body className={sora.className}>
         <ErrorBoundary>
           <Providers>
