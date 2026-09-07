@@ -24,14 +24,14 @@ export default function MultipleChoiceQuestion({
             className={`flex w-full items-start gap-3 rounded-2xl border px-4 py-3 text-left transition ${
               checked
                 ? 'border-cyan-400/40 bg-cyan-400/10 text-cyan-50'
-                : 'border-slate-800 bg-slate-950/70 text-slate-200 hover:bg-slate-900'
+                : 'border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-950/70 text-slate-700 dark:text-slate-200 hover:bg-white dark:bg-slate-900'
             }`}
           >
             <span
               className={`mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-xs ${
                 checked
                   ? 'border-cyan-300 bg-cyan-300 text-slate-950'
-                  : 'border-slate-700'
+                  : 'border-slate-300 dark:border-slate-700'
               }`}
             >
               {checked ? '•' : ''}

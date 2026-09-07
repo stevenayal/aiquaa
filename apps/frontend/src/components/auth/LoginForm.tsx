@@ -33,9 +33,15 @@ export default function LoginForm() {
 
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
-    if (!formData.email.trim()) {
+    // Se valida el email YA recortado. La regex ancla en ^ y $ con [^\s@]+, asi
+    // que un valor pegado desde el gestor de contraseñas (" ana@mail.com ")
+    // fallaba aca con "Correo inválido": un email perfectamente valido rechazado
+    // por espacios que el usuario no ve. Ley de Postel: aceptar lo que se
+    // entiende sin ambigüedad y normalizarlo, en vez de culpar al usuario.
+    const email = formData.email.trim();
+    if (!email) {
       newErrors.email = 'Correo obligatorio';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       newErrors.email = 'Correo inválido';
     }
     const password = passwordRef.current?.value ?? '';
@@ -56,7 +62,7 @@ export default function LoginForm() {
     setIsLoading(true);
     const supabase = createClient();
     const { data, error } = await supabase.auth.signInWithPassword({
-      email: formData.email,
+      email: formData.email.trim(),
       password: passwordRef.current?.value ?? '',
     });
     setIsLoading(false);

@@ -9,7 +9,9 @@ export interface RegisterFormInput {
   confirmPassword: string;
 }
 
-export function validateRegisterForm(input: RegisterFormInput): Record<string, string> {
+export function validateRegisterForm(
+  input: RegisterFormInput
+): Record<string, string> {
   const errors: Record<string, string> = {};
   const {
     name,
@@ -25,7 +27,9 @@ export function validateRegisterForm(input: RegisterFormInput): Record<string, s
 
   const trimmedName = name.trim();
   if (!trimmedName) {
-    errors.name = isEmpresa ? 'Nombre de contacto obligatorio' : 'Nombre obligatorio';
+    errors.name = isEmpresa
+      ? 'Nombre de contacto obligatorio'
+      : 'Nombre obligatorio';
   } else if (trimmedName.length < 2 || trimmedName.length > 50) {
     errors.name = 'El nombre debe tener entre 2 y 50 caracteres';
   } else if (!/^[a-zA-ZÀ-ÿñÑ\s'\-]+$/.test(trimmedName)) {
@@ -45,11 +49,18 @@ export function validateRegisterForm(input: RegisterFormInput): Record<string, s
     }
   }
 
-  if (!email.trim()) {
+  // Mismo criterio que el RUC de arriba: se valida el valor ya recortado. Las
+  // dos regex anclan en ^/$, asi que un email pegado con espacios (" ana@mail.com ")
+  // caia en "Correo inválido" aunque RegisterForm despues lo enviara con .trim().
+  // La validacion corre primero, asi que ese trim nunca llegaba a ejecutarse.
+  const emailTrimmed = email.trim();
+  if (!emailTrimmed) {
     errors.email = 'Correo obligatorio';
-  } else if (!/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(email)) {
+  } else if (
+    !/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(emailTrimmed)
+  ) {
     errors.email = 'Correo inválido';
-  } else if (/\.(con|cmo|gmal|gamil|yaho|homail|outlok)$/i.test(email)) {
+  } else if (/\.(con|cmo|gmal|gamil|yaho|homail|outlok)$/i.test(emailTrimmed)) {
     errors.email = 'Parece un error tipográfico en el email';
   }
 

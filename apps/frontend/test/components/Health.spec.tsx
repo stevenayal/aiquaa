@@ -7,14 +7,26 @@ describe('HealthPage', () => {
     render(<HealthPage />);
 
     // Mostrar loading inicialmente
-    expect(screen.getByText('Verificando conexión con el backend...')).toBeInTheDocument();
+    expect(
+      screen.getByText('Verificando conexión con el backend...')
+    ).toBeInTheDocument();
 
     // Esperar a que se cargue el estado
     await waitFor(() => {
       expect(screen.getByText('✅ Conectado')).toBeInTheDocument();
     });
 
-    expect(screen.getByText('Status: ok')).toBeInTheDocument();
+    // El markup es <p><strong>Status:</strong> {status}</p>, asi que el texto
+    // esta partido en dos nodos y getByText('Status: ok') no lo encuentra.
+    // Se busca el <p> cuyo textContent completo coincide.
+    expect(
+      screen.getByText((_content, element) => {
+        if (element?.tagName !== 'P') return false;
+        return (
+          element?.textContent?.replace(/\s+/g, ' ').trim() === 'Status: ok'
+        );
+      })
+    ).toBeInTheDocument();
     expect(screen.getByText(/Time:/)).toBeInTheDocument();
   });
 

@@ -18,12 +18,12 @@ export default function SectionNavigator({
   onSubmit: () => void;
 }) {
   return (
-    <div className="flex flex-col items-start justify-between gap-4 rounded-3xl border border-slate-800 bg-slate-900/70 p-5 sm:flex-row sm:items-center">
+    <div className="flex flex-col items-start justify-between gap-4 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 p-5 sm:flex-row sm:items-center">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
           Navegación
         </p>
-        <p className="mt-2 text-sm text-slate-300">
+        <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
           Estás en el nivel {currentIndex} de {total}. Podés volver al nivel
           anterior para revisar tu respuesta antes de enviar este bloque.
         </p>
@@ -31,7 +31,7 @@ export default function SectionNavigator({
       <div className="flex flex-col gap-3 sm:flex-row">
         <Link
           href={previousHref}
-          className="inline-flex items-center justify-center rounded-2xl border border-slate-700 px-5 py-3 text-sm font-semibold text-slate-200 transition hover:bg-slate-800"
+          className="inline-flex items-center justify-center rounded-2xl border border-slate-300 dark:border-slate-700 px-5 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-slate-100 dark:hover:bg-slate-800"
         >
           Ir al nivel anterior
         </Link>

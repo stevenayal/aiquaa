@@ -21,7 +21,10 @@ export default function StrengthsWeaknessesPanel({
       <h3 className="text-lg font-semibold">{title}</h3>
       <ul className="mt-4 space-y-3 text-sm">
         {items.map((item) => (
-          <li key={item} className="rounded-2xl bg-slate-950/30 px-4 py-3">
+          <li
+            key={item}
+            className="rounded-2xl bg-white/30 dark:bg-slate-950/30 px-4 py-3"
+          >
             {item}
           </li>
         ))}

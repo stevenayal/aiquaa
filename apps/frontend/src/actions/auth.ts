@@ -5,7 +5,11 @@ import { createClient } from '@/lib/supabase/server';
 import { isCommunityRole } from '@/lib/auth/roles';
 
 export async function loginAction(formData: FormData) {
-  const email = formData.get('email') as string;
+  // .trim() por el mismo motivo que en LoginForm: un email pegado desde el
+  // gestor de contraseñas arrastra espacios y Supabase lo rechaza. Hoy esta
+  // accion no se usa desde ningun componente, pero si se conecta no deberia
+  // reintroducir el bug.
+  const email = (formData.get('email') as string)?.trim();
   const password = formData.get('password') as string;
 
   const supabase = await createClient();

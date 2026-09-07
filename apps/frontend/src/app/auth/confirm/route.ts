@@ -1,9 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
+/**
+ * Destino del usuario recien confirmado.
+ *
+ * Antes caia en /ranking?welcome=1: una tabla de posiciones donde todavia tiene
+ * 0 XP y no aparece por ningun lado, con un cartel de bienvenida que se va solo
+ * a los 6 segundos. Nada que hacer ahi (Paradoja del Usuario Activo).
+ *
+ * /dashboard si tiene estados vacios accionables: "Completá tu primer simulador
+ * para empezar a ganar XP", un examen recomendado con su enlace y accesos a
+ * /labs. El ranking sigue a un click desde ahi.
+ */
 function getDefaultRedirect(audience?: string | null): string {
   if (audience === 'empresa') return '/empresa';
-  return '/ranking?welcome=1';
+  return '/dashboard';
 }
 
 export async function GET(request: NextRequest) {

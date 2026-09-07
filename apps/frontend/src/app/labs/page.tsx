@@ -2,6 +2,9 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
+import CatalogFilterBar, {
+  type FilterGroup,
+} from '@/components/ui/CatalogFilterBar';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
@@ -41,6 +44,8 @@ export default function LabsPage() {
   const { t } = useLanguage();
   const { user } = useSupabaseAuth();
   const [examResults, setExamResults] = useState<ExamProgressResult[]>([]);
+  const [query, setQuery] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('todas');
 
   useEffect(() => {
     let active = true;
@@ -98,6 +103,67 @@ export default function LabsPage() {
 
     return progress;
   }, [examResults]);
+
+  /** Sin acentos ni mayúsculas: "automatizacion" tiene que encontrar "Automatización". */
+  const normalize = (value: string) =>
+    value
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+
+  const totalTools = useMemo(
+    () => toolCategories.reduce((acc, cat) => acc + cat.tools.length, 0),
+    []
+  );
+
+  const visibleCategories = useMemo(() => {
+    const q = normalize(query.trim());
+    return (
+      toolCategories
+        .map((category) => ({
+          ...category,
+          tools: category.tools.filter((tool) => {
+            if (categoryFilter !== 'todas' && category.id !== categoryFilter) {
+              return false;
+            }
+            if (!q) return true;
+            return (
+              normalize(tool.name).includes(q) ||
+              normalize(tool.description).includes(q) ||
+              normalize(category.name).includes(q)
+            );
+          }),
+        }))
+        // Una categoría sin resultados no aporta: su encabezado sin tarjetas
+        // debajo se lee como si algo se hubiera roto.
+        .filter((category) => category.tools.length > 0)
+    );
+  }, [query, categoryFilter]);
+
+  const visibleCount = visibleCategories.reduce(
+    (acc, cat) => acc + cat.tools.length,
+    0
+  );
+
+  const isFilteringLabs = query.trim() !== '' || categoryFilter !== 'todas';
+
+  const clearLabsFilters = () => {
+    setQuery('');
+    setCategoryFilter('todas');
+  };
+
+  const labsFilterGroups: FilterGroup[] = [
+    {
+      id: 'categoria',
+      legend: 'Categoría',
+      value: categoryFilter,
+      onChange: setCategoryFilter,
+      options: [
+        { value: 'todas', label: 'Todas' },
+        ...toolCategories.map((c) => ({ value: c.id, label: c.name })),
+      ],
+    },
+  ];
 
   return (
     <div
@@ -170,110 +236,164 @@ export default function LabsPage() {
           </p>
         </div>
 
-        {/* Featured Tools of the Month */}
-        <div
-          className={`mb-12 rounded-lg shadow-lg p-8 ${
-            isDarkMode
-              ? 'bg-gradient-to-r from-purple-900/40 to-blue-900/40 border border-purple-700/50'
-              : 'bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200'
-          }`}
-        >
-          <div className="flex items-center gap-3 mb-6">
-            <span className="text-3xl">🔥</span>
-            <div>
-              <h2
-                className={`text-2xl font-bold ${
-                  isDarkMode ? 'text-white' : 'text-brand-text'
-                }`}
-              >
-                {t('labs.featured.title')}
-              </h2>
-              <p
-                className={`text-sm ${
-                  isDarkMode ? 'text-slate-300' : 'text-brand-muted'
-                }`}
-              >
-                {t('labs.featured.subtitle')}
-              </p>
+        {/* Buscador y filtros */}
+        <section aria-labelledby="labs-filtros" className="mb-10">
+          <h2 id="labs-filtros" className="sr-only">
+            Buscar y filtrar herramientas
+          </h2>
+          <CatalogFilterBar
+            inputId="buscar-lab"
+            searchLabel="Buscar herramienta"
+            searchPlaceholder="ISTQB, JSON, Playwright…"
+            query={query}
+            onQueryChange={setQuery}
+            groups={labsFilterGroups}
+            resultCount={visibleCount}
+            totalCount={totalTools}
+            itemNoun="herramientas"
+            isFiltering={isFilteringLabs}
+            onClear={clearLabsFilters}
+          />
+        </section>
+
+        {/* Featured Tools of the Month.
+            Se ocultan al filtrar: con un filtro activo el usuario ya dijo qué
+            busca, y repetir tarjetas arriba duplica resultados en pantalla. */}
+        {!isFilteringLabs && (
+          <div
+            className={`mb-12 rounded-lg shadow-lg p-8 ${
+              isDarkMode
+                ? 'bg-gradient-to-r from-purple-900/40 to-blue-900/40 border border-purple-700/50'
+                : 'bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200'
+            }`}
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <span className="text-3xl">🔥</span>
+              <div>
+                <h2
+                  className={`text-2xl font-bold ${
+                    isDarkMode ? 'text-white' : 'text-brand-text'
+                  }`}
+                >
+                  {t('labs.featured.title')}
+                </h2>
+                <p
+                  className={`text-sm ${
+                    isDarkMode ? 'text-slate-300' : 'text-brand-muted'
+                  }`}
+                >
+                  {t('labs.featured.subtitle')}
+                </p>
+              </div>
             </div>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {toolCategories
-              .flatMap((cat) => cat.tools)
-              .filter((tool) => tool.featured)
-              .slice(0, 3)
-              .map((tool, index) => {
-                const progress = progressByTool.get(tool.id);
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {toolCategories
+                .flatMap((cat) => cat.tools)
+                .filter((tool) => tool.featured)
+                .slice(0, 3)
+                .map((tool, index) => {
+                  const progress = progressByTool.get(tool.id);
 
-                return (
-                  <Link
-                    key={tool.id}
-                    href={tool.href}
-                    className={`group p-4 rounded-lg transition-all duration-300 hover:scale-105 ${
-                      isDarkMode
-                        ? 'bg-slate-800/80 hover:bg-slate-700/80'
-                        : 'bg-white hover:bg-gray-50'
-                    }`}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div
-                        className={`text-2xl font-bold ${
-                          index === 0
-                            ? 'text-yellow-500'
-                            : index === 1
-                              ? 'text-gray-400'
-                              : 'text-orange-600'
-                        }`}
-                      >
-                        #{index + 1}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-xl">{tool.icon}</span>
-                          <h3
-                            className={`font-bold ${
-                              isDarkMode ? 'text-white' : 'text-brand-text'
-                            }`}
-                          >
-                            {tool.name}
-                          </h3>
-                          {progress?.passed && (
-                            <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold uppercase text-emerald-400">
-                              Aprobado
-                            </span>
-                          )}
-                        </div>
-                        <p
-                          className={`text-xs ${
-                            isDarkMode ? 'text-slate-400' : 'text-brand-muted'
+                  return (
+                    <Link
+                      key={tool.id}
+                      href={tool.href}
+                      className={`group p-4 rounded-lg transition-all duration-300 hover:scale-105 ${
+                        isDarkMode
+                          ? 'bg-slate-800/80 hover:bg-slate-700/80'
+                          : 'bg-white hover:bg-gray-50'
+                      }`}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div
+                          className={`text-2xl font-bold ${
+                            index === 0
+                              ? 'text-yellow-500'
+                              : index === 1
+                                ? 'text-gray-400'
+                                : 'text-orange-600'
                           }`}
                         >
-                          {tool.description}
-                        </p>
-                        {progress && (
+                          #{index + 1}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-xl">{tool.icon}</span>
+                            <h3
+                              className={`font-bold ${
+                                isDarkMode ? 'text-white' : 'text-brand-text'
+                              }`}
+                            >
+                              {tool.name}
+                            </h3>
+                            {progress?.passed && (
+                              <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold uppercase text-emerald-400">
+                                Aprobado
+                              </span>
+                            )}
+                          </div>
                           <p
-                            className={`mt-2 text-xs font-semibold ${
-                              isDarkMode
-                                ? 'text-emerald-300'
-                                : 'text-emerald-700'
+                            className={`text-xs ${
+                              isDarkMode ? 'text-slate-400' : 'text-brand-muted'
                             }`}
                           >
-                            Mejor: {progress.bestScore}/{progress.maxScore} (
-                            {Math.round(progress.bestPercentage)}%)
+                            {tool.description}
                           </p>
-                        )}
+                          {progress && (
+                            <p
+                              className={`mt-2 text-xs font-semibold ${
+                                isDarkMode
+                                  ? 'text-emerald-300'
+                                  : 'text-emerald-700'
+                              }`}
+                            >
+                              Mejor: {progress.bestScore}/{progress.maxScore} (
+                              {Math.round(progress.bestPercentage)}%)
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </Link>
-                );
-              })}
+                    </Link>
+                  );
+                })}
+            </div>
           </div>
-        </div>
+        )}
+
+        {visibleCount === 0 ? (
+          <div
+            className={`rounded-lg border border-dashed p-12 text-center ${
+              isDarkMode ? 'border-slate-700' : 'border-gray-300'
+            }`}
+          >
+            <p
+              className={`text-lg font-semibold ${
+                isDarkMode ? 'text-white' : 'text-brand-text'
+              }`}
+            >
+              No hay herramientas que coincidan
+            </p>
+            <p
+              className={`mt-2 text-sm ${
+                isDarkMode ? 'text-slate-400' : 'text-brand-muted'
+              }`}
+            >
+              Probá con otro término o quitá algún filtro.
+            </p>
+            <button
+              type="button"
+              onClick={clearLabsFilters}
+              className="mt-6 rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700"
+            >
+              Limpiar filtros
+            </button>
+          </div>
+        ) : null}
 
         {/* Tools by Category */}
         <div className="space-y-12">
-          {toolCategories.map((category) => (
+          {visibleCategories.map((category) => (
             <div key={category.id}>
               {/* Category Header */}
               <div className="mb-6">

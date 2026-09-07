@@ -19,7 +19,7 @@ export default function RequestResponseBlock({
   };
 }) {
   return (
-    <div className="rounded-3xl border border-slate-800 bg-slate-950/70 p-5">
+    <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-950/70 p-5">
       <p className="text-sm font-semibold text-slate-100">{scenario.title}</p>
       {scenario.documentationNote ? (
         <div className="mt-3 rounded-2xl border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm text-amber-100">
@@ -28,11 +28,11 @@ export default function RequestResponseBlock({
       ) : null}
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 p-4">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-300">
             Request
           </p>
-          <pre className="mt-3 overflow-x-auto rounded-2xl bg-slate-950 p-4 text-xs text-cyan-100">
+          <pre className="mt-3 overflow-x-auto rounded-2xl bg-slate-50 dark:bg-slate-950 p-4 text-xs text-cyan-100">
             {`${scenario.request.method} ${scenario.request.endpoint}
 ${(scenario.request.headers ?? []).join('\n')}${
               scenario.request.body
@@ -41,11 +41,11 @@ ${(scenario.request.headers ?? []).join('\n')}${
             }`}
           </pre>
         </div>
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 p-4">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">
             Response
           </p>
-          <pre className="mt-3 overflow-x-auto rounded-2xl bg-slate-950 p-4 text-xs text-emerald-100">
+          <pre className="mt-3 overflow-x-auto rounded-2xl bg-slate-50 dark:bg-slate-950 p-4 text-xs text-emerald-100">
             {`Status ${scenario.response.status}${
               scenario.response.body
                 ? `\n\n${JSON.stringify(scenario.response.body, null, 2)}`

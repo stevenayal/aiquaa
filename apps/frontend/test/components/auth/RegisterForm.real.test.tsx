@@ -9,20 +9,28 @@ import {
 import userEvent from '@testing-library/user-event';
 import RegisterForm from '@/components/auth/RegisterForm';
 
-const mockRegister = vi.fn();
+// RegisterForm se registra con la server action registerAction(FormData). Este
+// archivo mockeaba '@/contexts/NextAuthContext', modulo que no existe en el repo
+// (quedo de la migracion NextAuth -> Supabase), asi que el spy nunca se llamaba.
+const mockRegisterAction = vi.fn();
+const mockCheckEmailTaken = vi.fn().mockResolvedValue({ taken: false });
 
-vi.mock('@/contexts/NextAuthContext', () => ({
-  useNextAuth: () => ({
-    register: mockRegister,
-  }),
-}));
-
-vi.mock('next-auth/react', () => ({
-  signIn: vi.fn(),
+vi.mock('@/actions/auth', () => ({
+  registerAction: (...args: unknown[]) => mockRegisterAction(...args),
+  resendConfirmationAction: vi.fn(),
+  checkEmailTakenAction: (...args: unknown[]) => mockCheckEmailTaken(...args),
 }));
 
 vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    back: vi.fn(),
+    prefetch: vi.fn(),
+    refresh: vi.fn(),
+  }),
   useSearchParams: () => null,
+  usePathname: () => '/',
 }));
 
 vi.mock('@/components/auth/AuthForm', () => ({
@@ -68,11 +76,24 @@ vi.mock('@/components/auth/AuthForm', () => ({
         defaultValue={formData.confirmPassword || ''}
         onChange={onPasswordChange}
       />
+      {/*
+        role es obligatorio para audience=candidato (validateRegisterForm). Sin
+        este campo el submit moria en "Seleccioná tu rol para continuar" y nunca
+        se llegaba a llamar a la server action.
+      */}
+      <input
+        aria-label="Rol"
+        name="role"
+        placeholder="Rol"
+        value={formData.role || ''}
+        onChange={onFieldChange}
+      />
       <button type="submit">Crear cuenta</button>
       {errors.name && <p>{errors.name}</p>}
       {errors.email && <p>{errors.email}</p>}
       {errors.password && <p>{errors.password}</p>}
       {errors.confirmPassword && <p>{errors.confirmPassword}</p>}
+      {errors.role && <p>{errors.role}</p>}
       {showAlert && <p>{alertMessage}</p>}
     </form>
   ),
@@ -103,7 +124,7 @@ describe('RegisterForm real flow', () => {
     expect(
       screen.getByText('Confirmar contraseña obligatorio')
     ).toBeInTheDocument();
-    expect(mockRegister).not.toHaveBeenCalled();
+    expect(mockRegisterAction).not.toHaveBeenCalled();
   });
 
   it('muestra error cuando las contraseñas no coinciden', async () => {
@@ -125,14 +146,13 @@ describe('RegisterForm real flow', () => {
     expect(
       await screen.findByText('Las contraseñas no coinciden')
     ).toBeInTheDocument();
-    expect(mockRegister).not.toHaveBeenCalled();
+    expect(mockRegisterAction).not.toHaveBeenCalled();
   });
 
   it('mapea el error de email duplicado del backend', async () => {
     const user = userEvent.setup();
-    mockRegister.mockResolvedValue({
-      success: false,
-      message: 'email already exists',
+    mockRegisterAction.mockResolvedValue({
+      error: 'User already registered',
     });
 
     render(<RegisterForm />);
@@ -147,31 +167,26 @@ describe('RegisterForm real flow', () => {
       screen.getByPlaceholderText('Confirmar contraseña'),
       'Password123'
     );
+    await user.type(screen.getByPlaceholderText('Rol'), 'qa_junior');
     await user.click(getSubmitButton());
 
+    // registerAction recibe un FormData, no un objeto plano.
     await waitFor(() => {
-      expect(mockRegister).toHaveBeenCalledWith({
-        email: 'qa@aiquaa.com',
-        name: 'QA Aiquaa',
-        password: 'Password123',
-        confirmPassword: 'Password123',
-      });
+      expect(mockRegisterAction).toHaveBeenCalled();
     });
+    const sent = mockRegisterAction.mock.calls[0][0] as FormData;
+    expect(sent.get('email')).toBe('qa@aiquaa.com');
+    expect(sent.get('name')).toBe('QA Aiquaa');
+    expect(sent.get('password')).toBe('Password123');
+    expect(sent.get('role')).toBe('qa_junior');
 
     expect(
-      await screen.findByText(
-        'Este email ya está registrado. Intenta iniciar sesión o usa otro email.'
-      )
+      await screen.findByText('Este email ya está registrado. Iniciá sesión.')
     ).toBeInTheDocument();
   });
 
   it('muestra éxito y programa la redirección al login tras registrarse', async () => {
-    const setTimeoutSpy = vi
-      .spyOn(globalThis, 'setTimeout')
-      .mockImplementation(() => 0 as ReturnType<typeof setTimeout>);
-    mockRegister.mockResolvedValue({
-      success: true,
-    });
+    mockRegisterAction.mockResolvedValue({ success: true });
 
     render(<RegisterForm />);
 
@@ -188,23 +203,21 @@ describe('RegisterForm real flow', () => {
       fireEvent.change(screen.getByPlaceholderText('Confirmar contraseña'), {
         target: { value: 'Password123' },
       });
+      fireEvent.change(screen.getByPlaceholderText('Rol'), {
+        target: { value: 'qa_junior' },
+      });
       fireEvent.click(getSubmitButton());
       await Promise.resolve();
       await Promise.resolve();
     });
 
-    expect(mockRegister).toHaveBeenCalledWith({
-      email: 'qa@aiquaa.com',
-      name: 'QA Aiquaa',
-      password: 'Password123',
-      confirmPassword: 'Password123',
+    // Al registrarse bien el componente ya no muestra un cartel ni difiere una
+    // redireccion con setTimeout: abre el modal de verificacion de email.
+    await waitFor(() => {
+      expect(mockRegisterAction).toHaveBeenCalled();
     });
     expect(
-      screen.getByText(
-        'Registro exitoso. Revisa tu email para verificar tu cuenta.'
-      )
+      await screen.findByText('¡Registro exitoso! Verificá tu correo')
     ).toBeInTheDocument();
-    expect(setTimeoutSpy).toHaveBeenCalledOnce();
-    expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 2000);
   });
 });

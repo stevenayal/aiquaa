@@ -47,6 +47,35 @@ if (typeof globalThis.crypto === 'undefined') {
   }
 }
 
+// Polyfill de window.matchMedia.
+//
+// jsdom no lo implementa y devuelve undefined, asi que cualquier componente que
+// consulte `prefers-reduced-motion` explota con "matchMedia is not a function"
+// dentro de un useEffect y tumba el render entero. Afecta a LogoMark y a
+// HomePromoCarousel, que estan montados en buena parte del arbol: sin este stub
+// fallan 31 tests en 15 archivos que no tienen nada que ver con animaciones.
+//
+// Por defecto `matches: false` = "sin preferencia de motion reducido", que es el
+// caso normal y deja las animaciones activas. Un test que necesite el otro caso
+// puede sobrescribir window.matchMedia puntualmente.
+if (typeof window !== 'undefined' && !window.matchMedia) {
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    configurable: true,
+    value: (query: string): MediaQueryList => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      // APIs obsoletas, todavia presentes en la interfaz de TS
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn(() => false),
+    }),
+  });
+}
+
 // Mock de fetch global
 global.fetch = vi.fn();
 
