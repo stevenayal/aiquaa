@@ -759,22 +759,26 @@ export interface AssessmentProgress {
  * Devuelve un mapa vacío para un invitado en vez de lanzar: el catálogo se
  * navega sin sesión y una excepción acá lo tumbaría entero.
  */
-export async function getMyAssessmentProgressAction(): Promise<
-  Record<string, AssessmentProgress>
-> {
+export async function getMyAssessmentProgressAction(): Promise<{
+  hasSession: boolean;
+  progress: Record<string, AssessmentProgress>;
+}> {
   const supabase = createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) return {};
+  // hasSession se devuelve aparte de progress: un usuario logueado que todavia
+  // no rindio nada tiene el mismo mapa vacio que un invitado, y el catalogo
+  // necesita distinguirlos para decidir si muestra el filtro por estado.
+  if (!user) return { hasSession: false, progress: {} };
 
   const { data, error } = await supabase
     .from('assessment_attempts')
     .select('status, percentage, passed, assessments!inner(slug)')
     .eq('user_id', user.id);
 
-  if (error || !data) return {};
+  if (error || !data) return { hasSession: true, progress: {} };
 
   const progress: Record<string, AssessmentProgress> = {};
 
@@ -805,5 +809,5 @@ export async function getMyAssessmentProgressAction(): Promise<
     progress[slug] = current;
   }
 
-  return progress;
+  return { hasSession: true, progress };
 }

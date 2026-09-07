@@ -18,7 +18,7 @@ async function renderPage() {
 describe('/assessments', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockProgress.mockResolvedValue({});
+    mockProgress.mockResolvedValue({ hasSession: false, progress: {} });
   });
 
   it('lista las 17 evaluaciones sin dejar ninguna afuera', async () => {
@@ -43,11 +43,20 @@ describe('/assessments', () => {
     }
   });
 
-  it('muestra una franja de destacados primero', async () => {
+  it('muestra la franja de destacados antes que las categorías', async () => {
     await renderPage();
 
-    const headings = screen.getAllByRole('heading', { level: 2 });
-    expect(headings[0]).toHaveTextContent('Para empezar');
+    const destacados = screen.getByRole('heading', { name: /Para empezar/ });
+    const primeraCategoria = screen.getByRole('heading', {
+      name: assessmentCategories[0].name,
+    });
+
+    // compareDocumentPosition: el orden en el DOM es el orden de lectura, que
+    // es lo que hace que los destacados funcionen (Posición en Serie).
+    expect(
+      destacados.compareDocumentPosition(primeraCategoria) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
   });
 
   it('el enlace de la tarjeta se llama como la evaluación, no como toda la tarjeta', async () => {
@@ -60,7 +69,7 @@ describe('/assessments', () => {
   });
 
   it('sin sesión no muestra ningún badge de progreso', async () => {
-    mockProgress.mockResolvedValue({});
+    mockProgress.mockResolvedValue({ hasSession: false, progress: {} });
     await renderPage();
 
     expect(screen.queryByText(/Aprobado ·/)).not.toBeInTheDocument();
@@ -69,10 +78,13 @@ describe('/assessments', () => {
 
   it('marca "Aprobado" con el mejor puntaje', async () => {
     mockProgress.mockResolvedValue({
-      'docker-fundamentals': {
-        passed: true,
-        bestPercentage: 88,
-        inProgress: false,
+      hasSession: true,
+      progress: {
+        'docker-fundamentals': {
+          passed: true,
+          bestPercentage: 88,
+          inProgress: false,
+        },
       },
     });
     await renderPage();
@@ -82,10 +94,13 @@ describe('/assessments', () => {
 
   it('marca "En curso" y ofrece continuar', async () => {
     mockProgress.mockResolvedValue({
-      'docker-fundamentals': {
-        passed: false,
-        bestPercentage: 0,
-        inProgress: true,
+      hasSession: true,
+      progress: {
+        'docker-fundamentals': {
+          passed: false,
+          bestPercentage: 0,
+          inProgress: true,
+        },
       },
     });
     await renderPage();
@@ -96,10 +111,13 @@ describe('/assessments', () => {
 
   it('muestra el mejor puntaje de un intento no aprobado', async () => {
     mockProgress.mockResolvedValue({
-      'docker-fundamentals': {
-        passed: false,
-        bestPercentage: 45,
-        inProgress: false,
+      hasSession: true,
+      progress: {
+        'docker-fundamentals': {
+          passed: false,
+          bestPercentage: 45,
+          inProgress: false,
+        },
       },
     });
     await renderPage();
