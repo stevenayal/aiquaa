@@ -111,8 +111,18 @@ export async function uploadAvatarAction(formData: FormData) {
   if (!file || file.size === 0) return { error: 'Archivo requerido' };
   if (file.size > 5 * 1024 * 1024)
     return { error: 'El archivo debe pesar menos de 5MB' };
-  if (!file.type.startsWith('image/'))
-    return { error: 'Solo se permiten imágenes' };
+  // Explicit raster-only allowlist (never `startsWith('image/')`): SVG can
+  // embed <script>/onload and would pass a prefix check while bypassing the
+  // client-side allowlist in perfil/page.tsx, since that check is trivially
+  // skippable by posting to this action directly.
+  const ALLOWED_AVATAR_TYPES = [
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+    'image/gif',
+  ];
+  if (!ALLOWED_AVATAR_TYPES.includes(file.type))
+    return { error: 'Solo se permiten imágenes JPG, PNG, WebP o GIF' };
 
   const ext = file.name.split('.').pop() || 'jpg';
   const path = `${user.id}/avatar.${ext}`;
