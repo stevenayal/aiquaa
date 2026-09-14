@@ -301,6 +301,42 @@ export async function updateProcessStatusAction(
   return { success: true };
 }
 
+/**
+ * Reopens a process (whether closed or expired) and pushes its expiration
+ * date forward, since reactivating alone leaves a past expires_at in place
+ * and the process reads as expired again immediately.
+ */
+export async function reopenProcessAction(
+  processId: string,
+  newExpiresAt: string
+): Promise<{ data?: HiringProcess; error?: string }> {
+  const supabase = createClient();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+  if (userError || !user) return { error: 'No autenticado' };
+
+  // Accept a plain yyyy-mm-dd (date input) or a full ISO datetime.
+  const normalized =
+    newExpiresAt.length === 10 ? `${newExpiresAt}T23:59:59` : newExpiresAt;
+  const expiresDate = new Date(normalized);
+  if (Number.isNaN(expiresDate.getTime())) return { error: 'Fecha inválida' };
+  if (expiresDate <= new Date())
+    return { error: 'La nueva fecha debe ser posterior a hoy' };
+
+  // RLS enforces empresa membership access
+  const { data, error } = await supabase
+    .from('hiring_processes')
+    .update({ status: 'active', expires_at: expiresDate.toISOString() })
+    .eq('id', processId)
+    .select()
+    .single();
+
+  if (error) return { error: error.message };
+  return { data };
+}
+
 function monthKey(iso: string) {
   const d = new Date(iso);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
