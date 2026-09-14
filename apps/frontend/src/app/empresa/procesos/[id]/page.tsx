@@ -14,6 +14,7 @@ import {
   type Prospect,
   type ProspectStatus,
 } from '@/actions/prospects';
+import { reopenProcessAction } from '@/actions/employer';
 import { reviewHrefFor } from '@/lib/exam-review-routes';
 
 type HiringProcess = {
@@ -358,6 +359,125 @@ function AddProspectModal({
   );
 }
 
+// ─── Reopen Process Modal ───────────────────────────────────────────────────────
+
+function ReopenProcessModal({
+  processId,
+  isDarkMode,
+  onClose,
+  onReopened,
+}: {
+  processId: string;
+  isDarkMode: boolean;
+  onClose: () => void;
+  onReopened: (expiresAt: string) => void;
+}) {
+  const defaultDate = new Date();
+  defaultDate.setDate(defaultDate.getDate() + 7);
+  const [date, setDate] = useState(defaultDate.toISOString().slice(0, 10));
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const inputClass = `w-full rounded-lg border px-3 py-2 text-sm outline-none transition-colors focus:ring-2 focus:ring-indigo-500 ${
+    isDarkMode
+      ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400'
+      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+  }`;
+  const labelClass = `block text-xs font-semibold mb-1 ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!date) {
+      setError('Elegí una fecha');
+      return;
+    }
+
+    setSaving(true);
+    setError(null);
+
+    const { error: err, data } = await reopenProcessAction(processId, date);
+
+    setSaving(false);
+
+    if (err || !data) {
+      setError(err ?? 'Error al reabrir el proceso');
+      return;
+    }
+    onReopened(data.expires_at ?? date);
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div
+        className={`w-full max-w-sm rounded-2xl shadow-2xl ${
+          isDarkMode ? 'bg-slate-800' : 'bg-white'
+        }`}
+      >
+        <div
+          className={`flex items-center justify-between px-6 py-4 border-b ${isDarkMode ? 'border-slate-700' : 'border-gray-200'}`}
+        >
+          <h2
+            className={`font-semibold text-base ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+          >
+            Reabrir proceso
+          </h2>
+          <button
+            onClick={onClose}
+            className={`text-lg leading-none ${isDarkMode ? 'text-slate-400 hover:text-white' : 'text-gray-400 hover:text-gray-600'}`}
+          >
+            ✕
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
+          <p
+            className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+          >
+            Elegí la nueva fecha límite. El proceso vuelve a estar{' '}
+            <span className="font-medium">activo</span> y los candidatos
+            podrán rendir hasta esa fecha.
+          </p>
+          <div>
+            <label className={labelClass}>Nueva fecha de vencimiento</label>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              min={new Date().toISOString().slice(0, 10)}
+              className={inputClass}
+              autoFocus
+            />
+          </div>
+
+          {error && <p className="text-sm text-red-500">{error}</p>}
+
+          <div className="flex justify-end gap-2 pt-1">
+            <button
+              type="button"
+              onClick={onClose}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                isDarkMode
+                  ? 'text-slate-300 hover:bg-slate-700'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={saving}
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+            >
+              {saving ? 'Reabriendo...' : 'Reabrir proceso'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 // ─── Main Page ─────────────────────────────────────────────────────────────────
 
 export default function ProcesoDetailPage() {
@@ -377,6 +497,7 @@ export default function ProcesoDetailPage() {
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showReopenModal, setShowReopenModal] = useState(false);
   const [search, setSearch] = useState('');
   const [filterExam, setFilterExam] = useState<string>('all');
   const [filterPassed, setFilterPassed] = useState<'all' | 'passed' | 'failed'>(
@@ -677,23 +798,23 @@ export default function ProcesoDetailPage() {
             >
               📧 Invitar candidato
             </Link>
-            {process!.status !== 'draft' && (
-              <button
-                onClick={toggleStatus}
-                disabled={updatingStatus}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 ${
-                  process!.status === 'active'
-                    ? 'bg-red-600 hover:bg-red-700 text-white'
-                    : 'bg-green-600 hover:bg-green-700 text-white'
-                }`}
-              >
-                {updatingStatus
-                  ? '...'
-                  : process!.status === 'active'
-                    ? 'Cerrar proceso'
-                    : 'Reactivar proceso'}
-              </button>
-            )}
+            {process!.status !== 'draft' &&
+              (process!.status === 'active' && !isExpired ? (
+                <button
+                  onClick={toggleStatus}
+                  disabled={updatingStatus}
+                  className="px-4 py-2 rounded-lg text-sm font-medium bg-red-600 hover:bg-red-700 text-white disabled:opacity-50 transition-colors"
+                >
+                  {updatingStatus ? '...' : 'Cerrar proceso'}
+                </button>
+              ) : (
+                <button
+                  onClick={() => setShowReopenModal(true)}
+                  className="px-4 py-2 rounded-lg text-sm font-medium bg-green-600 hover:bg-green-700 text-white transition-colors"
+                >
+                  Reabrir proceso
+                </button>
+              ))}
           </div>
         </div>
 
@@ -1244,6 +1365,19 @@ export default function ProcesoDetailPage() {
           isDarkMode={isDarkMode}
           onClose={() => setShowModal(false)}
           onAdded={(p) => setProspects((prev) => [p, ...prev])}
+        />
+      )}
+
+      {showReopenModal && (
+        <ReopenProcessModal
+          processId={process!.id}
+          isDarkMode={isDarkMode}
+          onClose={() => setShowReopenModal(false)}
+          onReopened={(expiresAt) =>
+            setProcess((p) =>
+              p ? { ...p, status: 'active', expires_at: expiresAt } : p
+            )
+          }
         />
       )}
     </div>
