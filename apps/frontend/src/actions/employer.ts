@@ -24,6 +24,8 @@ export interface ProcessGroup {
   name: string;
   description?: string | null;
   created_at: string;
+  /** Set when the event was "dado de baja" (finished). NULL = vigente. */
+  archived_at?: string | null;
 }
 
 export interface ProcessCandidate {
@@ -144,6 +146,147 @@ export async function deleteProcessGroupAction(
 
   if (error) return { error: error.message };
   return { error: null };
+}
+
+/**
+ * "Da de baja" an event that already finished: marks it archived (hidden from
+ * the active listings, but its processes/results/stats are kept) and, when
+ * requested, closes the processes of the event that are still active.
+ */
+export async function archiveProcessGroupAction(
+  groupId: string,
+  options: { closeActiveProcesses?: boolean } = {}
+): Promise<{ error: string | null; closedProcesses?: number }> {
+  const supabase = createClient();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+  if (userError || !user) return { error: 'No autenticado' };
+
+  let closedProcesses = 0;
+  if (options.closeActiveProcesses) {
+    // RLS enforces empresa membership access
+    const { data: closed, error: closeError } = await supabase
+      .from('hiring_processes')
+      .update({ status: 'closed' })
+      .eq('group_id', groupId)
+      .eq('status', 'active')
+      .select('id');
+    if (closeError) return { error: closeError.message };
+    closedProcesses = closed?.length ?? 0;
+  }
+
+  const { error } = await supabase
+    .from('hiring_process_groups')
+    .update({ archived_at: new Date().toISOString() })
+    .eq('id', groupId);
+
+  if (error) return { error: archiveErrorMessage(error.message) };
+  return { error: null, closedProcesses };
+}
+
+/** Reverts a "dar de baja": the event shows up again. Processes stay as-is. */
+export async function unarchiveProcessGroupAction(
+  groupId: string
+): Promise<{ error: string | null }> {
+  const supabase = createClient();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+  if (userError || !user) return { error: 'No autenticado' };
+
+  const { error } = await supabase
+    .from('hiring_process_groups')
+    .update({ archived_at: null })
+    .eq('id', groupId);
+
+  if (error) return { error: archiveErrorMessage(error.message) };
+  return { error: null };
+}
+
+function archiveErrorMessage(message: string) {
+  // Migration 20260915_000000 not applied yet on this database.
+  if (message.includes('archived_at'))
+    return 'Dar de baja eventos todavía no está habilitado en la base de datos';
+  return message;
+}
+
+export type ProcessListItem = Pick<
+  HiringProcess,
+  | 'id'
+  | 'code'
+  | 'position_name'
+  | 'status'
+  | 'exam_types'
+  | 'created_at'
+  | 'group_id'
+> & {
+  description: string | null;
+  expires_at: string | null;
+};
+
+/**
+ * Everything /empresa/procesos needs in a single round trip.
+ *
+ * hiring_processes RLS also lets any authenticated user read every *active*
+ * process (candidates look processes up by code), so an unfiltered select
+ * returned — and rendered — active processes from other empresas, and made
+ * Postgres evaluate every SELECT policy on each of those rows. Filtering to
+ * the same scope as hiring_processes_empresa_access (own or same empresa)
+ * keeps the list correct and the query cheap.
+ */
+export async function getEmpresaProcessesOverviewAction(): Promise<{
+  data: { processes: ProcessListItem[]; groups: ProcessGroup[] } | null;
+  error: string | null;
+}> {
+  const supabase = createClient();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+  if (userError || !user) return { error: 'No autenticado', data: null };
+
+  const { data: membership } = await supabase
+    .from('empresa_miembros')
+    .select('empresa_id')
+    .eq('user_id', user.id)
+    .eq('status', 'active')
+    .maybeSingle();
+
+  let processesQuery = supabase
+    .from('hiring_processes')
+    .select(
+      'id, code, position_name, description, status, exam_types, expires_at, created_at, group_id'
+    )
+    .order('created_at', { ascending: false });
+
+  processesQuery = membership?.empresa_id
+    ? processesQuery.or(
+        `created_by.eq.${user.id},empresa_id.eq.${membership.empresa_id}`
+      )
+    : processesQuery.eq('created_by', user.id);
+
+  const [processesRes, groupsRes] = await Promise.all([
+    processesQuery,
+    supabase
+      .from('hiring_process_groups')
+      .select('*')
+      .order('created_at', { ascending: true }),
+  ]);
+
+  if (processesRes.error)
+    return { error: processesRes.error.message, data: null };
+  if (groupsRes.error) return { error: groupsRes.error.message, data: null };
+
+  return {
+    data: {
+      processes: (processesRes.data ?? []) as ProcessListItem[],
+      groups: (groupsRes.data ?? []) as ProcessGroup[],
+    },
+    error: null,
+  };
 }
 
 export async function assignProcessToGroupAction(
