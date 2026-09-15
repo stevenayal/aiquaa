@@ -1,7 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import {
+  memo,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { createClient } from '@/lib/supabase/client';
@@ -135,6 +142,211 @@ const SOURCES = [
   { value: 'bolsa', label: 'Bolsa de trabajo' },
   { value: 'otro', label: 'Otro' },
 ];
+
+const SOURCE_LABELS = new Map(SOURCES.map((s) => [s.value, s.label]));
+
+/** Rows rendered per step in the table/ranking; "Mostrar más" adds more. */
+const RESULTS_PAGE_SIZE = 50;
+
+const resultDateFormatter = new Intl.DateTimeFormat('es-PY');
+
+const mins = (s: number) => `${Math.floor(s / 60)}m ${s % 60}s`;
+
+/**
+ * Per-row values derived once when results load, instead of on every render
+ * of every row (review link lookup ran twice per row, date formatting, label
+ * lookups, lowercase copies for the search filter).
+ */
+type ResultRow = ExamResult & {
+  displayName: string;
+  examLabel: string;
+  reviewHref: string | null;
+  dateLabel: string;
+  timeLabel: string;
+  searchText: string;
+};
+
+function toResultRow(r: ExamResult): ResultRow {
+  return {
+    ...r,
+    displayName: getResultDisplayName(r),
+    examLabel: EXAM_LABELS[r.exam_type] ?? r.exam_type,
+    reviewHref: reviewHrefFor(r.exam_type, r.id),
+    dateLabel: resultDateFormatter.format(new Date(r.created_at)),
+    timeLabel: mins(r.time_spent),
+    searchText:
+      `${r.participant_name ?? ''}\n${r.participant_email ?? ''}`.toLowerCase(),
+  };
+}
+
+function reviewBadgeClass(
+  reviewStatus: string | null | undefined,
+  dark: boolean
+) {
+  if (reviewStatus === 'reviewed') {
+    return dark
+      ? 'bg-emerald-900/40 text-emerald-300 hover:bg-emerald-900/60'
+      : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200';
+  }
+  return dark
+    ? 'bg-amber-900/40 text-amber-200 hover:bg-amber-900/60'
+    : 'bg-amber-100 text-amber-700 hover:bg-amber-200';
+}
+
+// ─── Result rows (memoized) ───────────────────────────────────────────────────
+
+const ResultTableRow = memo(function ResultTableRow({
+  r,
+  striped,
+  isDarkMode,
+}: {
+  r: ResultRow;
+  striped: boolean;
+  isDarkMode: boolean;
+}) {
+  return (
+    <tr
+      className={`border-t ${isDarkMode ? 'border-slate-700' : 'border-gray-100'} ${
+        !striped
+          ? isDarkMode
+            ? 'bg-dark-secondary'
+            : 'bg-white'
+          : isDarkMode
+            ? 'bg-slate-800/30'
+            : 'bg-gray-50/50'
+      }`}
+    >
+      <td className="px-5 py-3">
+        <div
+          className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+        >
+          {r.displayName}
+        </div>
+        {r.participant_email && (
+          <div
+            className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+          >
+            {r.participant_email}
+          </div>
+        )}
+      </td>
+      <td className="px-5 py-3">
+        <span
+          className={`font-mono text-xs px-2 py-0.5 rounded ${isDarkMode ? 'bg-slate-700 text-slate-300' : 'bg-gray-100 text-gray-600'}`}
+        >
+          {r.examLabel}
+        </span>
+      </td>
+      <td className="px-5 py-3">
+        <div className="flex items-center gap-2">
+          <span
+            className={`font-bold text-base ${r.passed ? 'text-green-500' : 'text-red-500'}`}
+          >
+            {r.percentage}%
+          </span>
+          <span
+            className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
+              r.passed
+                ? isDarkMode
+                  ? 'bg-green-900/40 text-green-300'
+                  : 'bg-green-50 text-green-700'
+                : isDarkMode
+                  ? 'bg-red-900/40 text-red-300'
+                  : 'bg-red-50 text-red-700'
+            }`}
+          >
+            {r.passed ? '✓' : '✗'}
+          </span>
+        </div>
+      </td>
+      <td
+        className={`px-5 py-3 text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+      >
+        {r.timeLabel}
+      </td>
+      <td
+        className={`px-5 py-3 text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+      >
+        {r.dateLabel}
+      </td>
+      <td className="px-5 py-3">
+        {r.reviewHref && (
+          <Link
+            href={r.reviewHref}
+            prefetch={false}
+            className={`text-xs px-2.5 py-1 rounded-lg font-semibold transition-colors ${reviewBadgeClass(r.review_status, isDarkMode)}`}
+          >
+            {r.review_status === 'reviewed' ? '✅ Revisado' : '⏳ Revisar'}
+          </Link>
+        )}
+      </td>
+    </tr>
+  );
+});
+
+const RankingRow = memo(function RankingRow({
+  r,
+  position,
+  isDarkMode,
+}: {
+  r: ResultRow;
+  position: number;
+  isDarkMode: boolean;
+}) {
+  const i = position;
+  return (
+    <div
+      className={`flex items-center gap-3 p-3 rounded-xl ${isDarkMode ? 'bg-slate-800/50' : 'bg-gray-50'}`}
+    >
+      <span
+        className={`text-sm font-bold w-6 text-center shrink-0 ${i === 0 ? 'text-yellow-500' : i === 1 ? 'text-slate-400' : i === 2 ? 'text-amber-600' : isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+      >
+        {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}`}
+      </span>
+      <div className="min-w-0 w-36 shrink-0">
+        <p
+          className={`text-sm font-medium truncate ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+        >
+          {r.displayName}
+        </p>
+        <p
+          className={`text-xs truncate ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+        >
+          {r.examLabel}
+        </p>
+      </div>
+      <div className="flex-1">
+        <div
+          className={`h-3 rounded-full overflow-hidden ${isDarkMode ? 'bg-slate-700' : 'bg-gray-200'}`}
+        >
+          <div
+            className={`h-full rounded-full transition-all duration-500 ${r.passed ? 'bg-green-500' : 'bg-red-500'}`}
+            style={{ width: `${r.percentage}%` }}
+          />
+        </div>
+      </div>
+      <span
+        className={`text-sm font-bold w-12 text-right shrink-0 ${r.passed ? 'text-green-500' : 'text-red-500'}`}
+      >
+        {r.percentage}%
+      </span>
+      <span
+        className={`text-xs w-14 text-right shrink-0 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+      >
+        {r.timeLabel}
+      </span>
+      {r.reviewHref && (
+        <Link
+          href={r.reviewHref}
+          prefetch={false}
+          className={`text-xs px-2 py-1 rounded-lg font-semibold transition-colors shrink-0 ${reviewBadgeClass(r.review_status, isDarkMode)}`}
+        >
+          {r.review_status === 'reviewed' ? '✅ Revisado' : '⏳ Revisar'}
+        </Link>
+      )}
+    </div>
+  );
+});
 
 // ─── Add Prospect Modal ────────────────────────────────────────────────────────
 
@@ -435,8 +647,8 @@ function ReopenProcessModal({
             className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
           >
             Elegí la nueva fecha límite. El proceso vuelve a estar{' '}
-            <span className="font-medium">activo</span> y los candidatos
-            podrán rendir hasta esa fecha.
+            <span className="font-medium">activo</span> y los candidatos podrán
+            rendir hasta esa fecha.
           </p>
           <div>
             <label className={labelClass}>Nueva fecha de vencimiento</label>
@@ -487,7 +699,7 @@ export default function ProcesoDetailPage() {
   const id = params?.id as string;
 
   const [process, setProcess] = useState<HiringProcess | null>(null);
-  const [results, setResults] = useState<ExamResult[]>([]);
+  const [results, setResults] = useState<ResultRow[]>([]);
   const [prospects, setProspects] = useState<Prospect[]>([]);
   const [activeTab, setActiveTab] = useState<'postulantes' | 'prospectos'>(
     'postulantes'
@@ -504,24 +716,30 @@ export default function ProcesoDetailPage() {
     'all'
   );
   const [viewMode, setViewMode] = useState<'tabla' | 'ranking'>('tabla');
+  const [visibleCount, setVisibleCount] = useState(RESULTS_PAGE_SIZE);
+  // Typing in the search box stays responsive: the (possibly large) table
+  // re-filters with the deferred value, at lower priority than the input.
+  const deferredSearch = useDeferredValue(search);
 
   useEffect(() => {
     const load = async () => {
       const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      // Auth check and process fetch run in parallel — they are independent
+      // and each is a network round trip (RLS still scopes the process).
+      const [
+        {
+          data: { user },
+        },
+        { data: proc, error },
+      ] = await Promise.all([
+        supabase.auth.getUser(),
+        // Allow any active empresa member to view the process
+        supabase.from('hiring_processes').select('*').eq('id', id).single(),
+      ]);
       if (!user) {
         router.replace('/login');
         return;
       }
-
-      // Allow any active empresa member to view the process
-      const { data: proc, error } = await supabase
-        .from('hiring_processes')
-        .select('*')
-        .eq('id', id)
-        .single();
 
       if (error || !proc) {
         setNotFound(true);
@@ -614,7 +832,7 @@ export default function ProcesoDetailPage() {
         created_at: r.created_at,
       }));
 
-      setResults([...examResults, ...mappedAttempts]);
+      setResults([...examResults, ...mappedAttempts].map(toResultRow));
       setProspects(prsp ?? []);
       setLoading(false);
     };
@@ -669,31 +887,48 @@ export default function ProcesoDetailPage() {
       setProspects((prev) => prev.filter((p) => p.id !== prospect_id));
   };
 
-  const rendidosEmails = new Set(
-    results.map((r) => r.participant_email?.toLowerCase()).filter(Boolean)
+  const rendidosEmails = useMemo(
+    () =>
+      new Set(
+        results.map((r) => r.participant_email?.toLowerCase()).filter(Boolean)
+      ),
+    [results]
   );
 
-  const filteredResults = results.filter((r) => {
-    const q = search.toLowerCase();
-    const matchSearch =
-      !q ||
-      (r.participant_name?.toLowerCase().includes(q) ?? false) ||
-      (r.participant_email?.toLowerCase().includes(q) ?? false);
-    const matchExam = filterExam === 'all' || r.exam_type === filterExam;
-    const matchPassed =
-      filterPassed === 'all' ||
-      (filterPassed === 'passed' && r.passed) ||
-      (filterPassed === 'failed' && !r.passed);
-    return matchSearch && matchExam && matchPassed;
-  });
+  const filteredResults = useMemo(() => {
+    const q = deferredSearch.trim().toLowerCase();
+    return results.filter((r) => {
+      const matchSearch = !q || r.searchText.includes(q);
+      const matchExam = filterExam === 'all' || r.exam_type === filterExam;
+      const matchPassed =
+        filterPassed === 'all' ||
+        (filterPassed === 'passed' && r.passed) ||
+        (filterPassed === 'failed' && !r.passed);
+      return matchSearch && matchExam && matchPassed;
+    });
+  }, [results, deferredSearch, filterExam, filterPassed]);
 
-  const passRate = results.length
-    ? Math.round(
-        (results.filter((r) => r.passed).length / results.length) * 100
-      )
-    : null;
+  const rankedResults = useMemo(
+    () => [...filteredResults].sort((a, b) => b.percentage - a.percentage),
+    [filteredResults]
+  );
 
-  const mins = (s: number) => `${Math.floor(s / 60)}m ${s % 60}s`;
+  // Back to the first page whenever the filters or the view change.
+  useEffect(() => {
+    setVisibleCount(RESULTS_PAGE_SIZE);
+  }, [deferredSearch, filterExam, filterPassed, viewMode]);
+
+  const passRate = useMemo(
+    () =>
+      results.length
+        ? Math.round(
+            (results.filter((r) => r.passed).length / results.length) * 100
+          )
+        : null,
+    [results]
+  );
+
+  const remainingResults = Math.max(0, filteredResults.length - visibleCount);
 
   const card = isDarkMode
     ? 'bg-dark-secondary border-slate-700'
@@ -982,76 +1217,14 @@ export default function ProcesoDetailPage() {
                   >
                     Ranking por puntaje — {filteredResults.length} candidatos
                   </p>
-                  {[...filteredResults]
-                    .sort((a, b) => b.percentage - a.percentage)
-                    .map((r, i) => (
-                      <div
-                        key={r.id}
-                        className={`flex items-center gap-3 p-3 rounded-xl ${isDarkMode ? 'bg-slate-800/50' : 'bg-gray-50'}`}
-                      >
-                        <span
-                          className={`text-sm font-bold w-6 text-center shrink-0 ${i === 0 ? 'text-yellow-500' : i === 1 ? 'text-slate-400' : i === 2 ? 'text-amber-600' : isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
-                        >
-                          {i === 0
-                            ? '🥇'
-                            : i === 1
-                              ? '🥈'
-                              : i === 2
-                                ? '🥉'
-                                : `${i + 1}`}
-                        </span>
-                        <div className="min-w-0 w-36 shrink-0">
-                          <p
-                            className={`text-sm font-medium truncate ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
-                          >
-                            {getResultDisplayName(r)}
-                          </p>
-                          <p
-                            className={`text-xs truncate ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-                          >
-                            {EXAM_LABELS[r.exam_type] ?? r.exam_type}
-                          </p>
-                        </div>
-                        <div className="flex-1">
-                          <div
-                            className={`h-3 rounded-full overflow-hidden ${isDarkMode ? 'bg-slate-700' : 'bg-gray-200'}`}
-                          >
-                            <div
-                              className={`h-full rounded-full transition-all duration-500 ${r.passed ? 'bg-green-500' : 'bg-red-500'}`}
-                              style={{ width: `${r.percentage}%` }}
-                            />
-                          </div>
-                        </div>
-                        <span
-                          className={`text-sm font-bold w-12 text-right shrink-0 ${r.passed ? 'text-green-500' : 'text-red-500'}`}
-                        >
-                          {r.percentage}%
-                        </span>
-                        <span
-                          className={`text-xs w-14 text-right shrink-0 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
-                        >
-                          {mins(r.time_spent)}
-                        </span>
-                        {reviewHrefFor(r.exam_type, r.id) && (
-                          <Link
-                            href={reviewHrefFor(r.exam_type, r.id)!}
-                            className={`text-xs px-2 py-1 rounded-lg font-semibold transition-colors shrink-0 ${
-                              r.review_status === 'reviewed'
-                                ? isDarkMode
-                                  ? 'bg-emerald-900/40 text-emerald-300 hover:bg-emerald-900/60'
-                                  : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
-                                : isDarkMode
-                                  ? 'bg-amber-900/40 text-amber-200 hover:bg-amber-900/60'
-                                  : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
-                            }`}
-                          >
-                            {r.review_status === 'reviewed'
-                              ? '✅ Revisado'
-                              : '⏳ Revisar'}
-                          </Link>
-                        )}
-                      </div>
-                    ))}
+                  {rankedResults.slice(0, visibleCount).map((r, i) => (
+                    <RankingRow
+                      key={r.id}
+                      r={r}
+                      position={i}
+                      isDarkMode={isDarkMode}
+                    />
+                  ))}
                 </div>
               ) : (
                 /* ── Table view ── */
@@ -1081,96 +1254,46 @@ export default function ProcesoDetailPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredResults.map((r, i) => (
-                        <tr
+                      {filteredResults.slice(0, visibleCount).map((r, i) => (
+                        <ResultTableRow
                           key={r.id}
-                          className={`border-t ${isDarkMode ? 'border-slate-700' : 'border-gray-100'} ${
-                            i % 2 === 0
-                              ? isDarkMode
-                                ? 'bg-dark-secondary'
-                                : 'bg-white'
-                              : isDarkMode
-                                ? 'bg-slate-800/30'
-                                : 'bg-gray-50/50'
-                          }`}
-                        >
-                          <td className="px-5 py-3">
-                            <div
-                              className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
-                            >
-                              {getResultDisplayName(r)}
-                            </div>
-                            {r.participant_email && (
-                              <div
-                                className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-                              >
-                                {r.participant_email}
-                              </div>
-                            )}
-                          </td>
-                          <td className="px-5 py-3">
-                            <span
-                              className={`font-mono text-xs px-2 py-0.5 rounded ${isDarkMode ? 'bg-slate-700 text-slate-300' : 'bg-gray-100 text-gray-600'}`}
-                            >
-                              {EXAM_LABELS[r.exam_type] ?? r.exam_type}
-                            </span>
-                          </td>
-                          <td className="px-5 py-3">
-                            <div className="flex items-center gap-2">
-                              <span
-                                className={`font-bold text-base ${r.passed ? 'text-green-500' : 'text-red-500'}`}
-                              >
-                                {r.percentage}%
-                              </span>
-                              <span
-                                className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
-                                  r.passed
-                                    ? isDarkMode
-                                      ? 'bg-green-900/40 text-green-300'
-                                      : 'bg-green-50 text-green-700'
-                                    : isDarkMode
-                                      ? 'bg-red-900/40 text-red-300'
-                                      : 'bg-red-50 text-red-700'
-                                }`}
-                              >
-                                {r.passed ? '✓' : '✗'}
-                              </span>
-                            </div>
-                          </td>
-                          <td
-                            className={`px-5 py-3 text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-                          >
-                            {mins(r.time_spent)}
-                          </td>
-                          <td
-                            className={`px-5 py-3 text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-                          >
-                            {new Date(r.created_at).toLocaleDateString('es-PY')}
-                          </td>
-                          <td className="px-5 py-3">
-                            {reviewHrefFor(r.exam_type, r.id) && (
-                              <Link
-                                href={reviewHrefFor(r.exam_type, r.id)!}
-                                className={`text-xs px-2.5 py-1 rounded-lg font-semibold transition-colors ${
-                                  r.review_status === 'reviewed'
-                                    ? isDarkMode
-                                      ? 'bg-emerald-900/40 text-emerald-300 hover:bg-emerald-900/60'
-                                      : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
-                                    : isDarkMode
-                                      ? 'bg-amber-900/40 text-amber-200 hover:bg-amber-900/60'
-                                      : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
-                                }`}
-                              >
-                                {r.review_status === 'reviewed'
-                                  ? '✅ Revisado'
-                                  : '⏳ Revisar'}
-                              </Link>
-                            )}
-                          </td>
-                        </tr>
+                          r={r}
+                          striped={i % 2 !== 0}
+                          isDarkMode={isDarkMode}
+                        />
                       ))}
                     </tbody>
                   </table>
+                </div>
+              )}
+
+              {results.length > 0 && remainingResults > 0 && (
+                <div
+                  className={`flex items-center justify-center gap-3 px-5 py-4 border-t text-sm ${isDarkMode ? 'border-slate-700 text-slate-400' : 'border-gray-100 text-gray-500'}`}
+                >
+                  <span className="text-xs">
+                    Mostrando {visibleCount} de {filteredResults.length}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setVisibleCount((c) => c + RESULTS_PAGE_SIZE)
+                    }
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+                      isDarkMode
+                        ? 'border-slate-600 text-slate-200 hover:bg-slate-700'
+                        : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    Mostrar {Math.min(RESULTS_PAGE_SIZE, remainingResults)} más
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setVisibleCount(filteredResults.length)}
+                    className={`text-xs font-medium ${isDarkMode ? 'text-indigo-300 hover:text-indigo-200' : 'text-indigo-600 hover:text-indigo-700'}`}
+                  >
+                    Mostrar todos
+                  </button>
                 </div>
               )}
             </>
@@ -1288,8 +1411,7 @@ export default function ProcesoDetailPage() {
                             <td
                               className={`px-5 py-3 text-xs capitalize ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
                             >
-                              {SOURCES.find((s) => s.value === p.source)
-                                ?.label ??
+                              {(p.source && SOURCE_LABELS.get(p.source)) ??
                                 p.source ??
                                 '—'}
                             </td>
