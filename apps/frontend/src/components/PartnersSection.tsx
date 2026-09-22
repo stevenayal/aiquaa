@@ -32,19 +32,13 @@ const PARTNERS: Partner[] = [
   },
 ];
 
-interface PartnersSectionProps {
-  className?: string;
-}
-
-export default function PartnersSection({
-  className = '',
-}: PartnersSectionProps) {
+export default function PartnersSection() {
   const { isDarkMode } = useTheme();
   const { t } = useLanguage();
 
   return (
     <div
-      className={`rounded-lg shadow-lg p-8 transition-colors duration-300 ${className} ${
+      className={`mt-16 rounded-lg shadow-lg p-8 transition-colors duration-300 ${
         isDarkMode ? 'bg-slate-800' : 'bg-white'
       }`}
     >
