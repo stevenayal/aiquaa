@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import { listPosts } from '@/lib/devto';
 import { toolCategories } from '@/lib/labsCatalog';
+import { PY_TESTING_FEST_2026 } from '@/lib/events/py-testing-fest-2026';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://aiquaa.com';
@@ -50,6 +51,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${baseUrl}/ranking`,
       lastModified: new Date(),
       changeFrequency: 'daily',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}${PY_TESTING_FEST_2026.href}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
       priority: 0.9,
     },
   ];

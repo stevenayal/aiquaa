@@ -1,8 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
+import { PY_TESTING_FEST_2026 } from '@/lib/events/py-testing-fest-2026';
 import { apiDeveloperFundamentalsDefinition } from '@/app/assessments/api-developer-fundamentals/data/assessment-definition';
 import { apiTestingFundamentalsDefinition } from '@/app/assessments/api-testing-fundamentals/data/assessment-definition';
 import { databaseFundamentalsDefinition } from '@/app/assessments/database-fundamentals/data/assessment-definition';
@@ -21,6 +29,10 @@ interface PromoSlide {
   href: string;
   cta: string;
   color: string;
+  /** Abre el link en una pestaña nueva. */
+  external?: boolean;
+  /** Fecha ISO a partir de la cual el slide deja de mostrarse. */
+  hideAfter?: string;
 }
 
 const AUTOPLAY_MS = 5000;
@@ -54,6 +66,23 @@ function assessmentSlide(
 }
 
 const SLIDES: PromoSlide[] = [
+  {
+    id: PY_TESTING_FEST_2026.slug,
+    badge: 'Evento',
+    icon: 'users',
+    title: PY_TESTING_FEST_2026.title,
+    description:
+      'Seis charlas sobre IA, automatización, performance, seguridad ofensiva y videojuegos. Entrada libre y gratuita.',
+    meta: [
+      PY_TESTING_FEST_2026.dateLabel,
+      PY_TESTING_FEST_2026.venue,
+      'Entrada libre',
+    ],
+    href: PY_TESTING_FEST_2026.href,
+    cta: 'Ver el evento →',
+    color: 'from-sky-500 to-blue-600',
+    hideAfter: PY_TESTING_FEST_2026.hidePromoAfter,
+  },
   {
     id: 'ranking',
     badge: 'Ranking',
@@ -110,18 +139,65 @@ const SLIDES: PromoSlide[] = [
   },
 ];
 
-export default function HomePromoCarousel() {
+/** La fecha de referencia no cambia durante la sesión: nada a lo que suscribirse. */
+const subscribeToNothing = () => () => {};
+
+let renderNow: number | null = null;
+
+/** `useSyncExternalStore` exige un snapshot estable entre llamadas. */
+function getRenderNow(): number {
+  if (renderNow === null) renderNow = Date.now();
+  return renderNow;
+}
+
+interface HomePromoCarouselProps {
+  /** Fecha de referencia para ocultar slides vencidos (inyectable en tests). */
+  now?: number;
+}
+
+export default function HomePromoCarousel({
+  now,
+}: HomePromoCarouselProps = {}) {
   const { isDarkMode } = useTheme();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  // La home se prerenderiza en build: en el servidor no filtramos (snapshot
+  // `null`) y en el cliente usamos la fecha real, para que un slide vencido no
+  // rompa la hidratación.
+  const clientNow = useSyncExternalStore(
+    subscribeToNothing,
+    () => now ?? getRenderNow(),
+    () => null
+  );
 
-  const goTo = useCallback((index: number) => {
-    setActiveIndex(((index % SLIDES.length) + SLIDES.length) % SLIDES.length);
-  }, []);
+  const slides = useMemo(
+    () =>
+      clientNow === null
+        ? SLIDES
+        : SLIDES.filter(
+            (slide) =>
+              !slide.hideAfter ||
+              clientNow < new Date(slide.hideAfter).getTime()
+          ),
+    [clientNow]
+  );
 
-  const goNext = useCallback(() => goTo(activeIndex + 1), [activeIndex, goTo]);
-  const goPrev = useCallback(() => goTo(activeIndex - 1), [activeIndex, goTo]);
+  const safeIndex = slides.length
+    ? Math.min(activeIndex, slides.length - 1)
+    : 0;
+
+  const goTo = useCallback(
+    (index: number) => {
+      const total = slides.length;
+      if (!total) return;
+      setActiveIndex(((index % total) + total) % total);
+    },
+    [slides.length]
+  );
+
+  const goNext = useCallback(() => goTo(safeIndex + 1), [safeIndex, goTo]);
+  const goPrev = useCallback(() => goTo(safeIndex - 1), [safeIndex, goTo]);
 
   useEffect(() => {
     if (isPaused) return;
@@ -132,10 +208,10 @@ export default function HomePromoCarousel() {
       return;
     }
     const id = setInterval(() => {
-      setActiveIndex((i) => (i + 1) % SLIDES.length);
+      setActiveIndex((i) => (i + 1) % slides.length);
     }, AUTOPLAY_MS);
     return () => clearInterval(id);
-  }, [isPaused]);
+  }, [isPaused, slides.length]);
 
   return (
     <section
@@ -162,19 +238,22 @@ export default function HomePromoCarousel() {
         >
           <div
             className="flex transition-transform duration-500 ease-out"
-            style={{ transform: `translateX(-${activeIndex * 100}%)` }}
+            style={{ transform: `translateX(-${safeIndex * 100}%)` }}
           >
-            {SLIDES.map((slide) => (
+            {slides.map((slide) => (
               <div
                 key={slide.id}
                 className="w-full shrink-0"
-                aria-hidden={slide.id !== SLIDES[activeIndex].id}
+                aria-hidden={slide.id !== slides[safeIndex].id}
                 aria-live={
-                  slide.id === SLIDES[activeIndex].id ? 'polite' : undefined
+                  slide.id === slides[safeIndex].id ? 'polite' : undefined
                 }
               >
                 <Link
                   href={slide.href}
+                  {...(slide.external
+                    ? { target: '_blank', rel: 'noopener noreferrer' }
+                    : {})}
                   className={`block bg-gradient-to-r ${slide.color} p-8 md:p-12 text-white`}
                 >
                   <div className="flex flex-col md:flex-row md:items-center gap-6 px-9 md:px-0">
@@ -236,15 +315,15 @@ export default function HomePromoCarousel() {
 
           {/* Dots */}
           <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
-            {SLIDES.map((slide, i) => (
+            {slides.map((slide, i) => (
               <button
                 key={slide.id}
                 type="button"
                 onClick={() => goTo(i)}
                 aria-label={`Ir a novedad ${i + 1}: ${slide.title}`}
-                aria-current={i === activeIndex}
+                aria-current={i === safeIndex}
                 className={`w-2.5 h-2.5 rounded-full transition-all ${
-                  i === activeIndex ? 'bg-white w-6' : 'bg-white/50'
+                  i === safeIndex ? 'bg-white w-6' : 'bg-white/50'
                 }`}
               />
             ))}
