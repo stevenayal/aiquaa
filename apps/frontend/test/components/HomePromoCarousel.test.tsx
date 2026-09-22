@@ -10,6 +10,8 @@ vi.mock('@/contexts/ThemeContext', () => ({
 describe('HomePromoCarousel', () => {
   beforeEach(() => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
+    // Fecha fija anterior al evento: el suite no debe depender del reloj real.
+    vi.setSystemTime(new Date('2026-09-01T12:00:00Z'));
     window.matchMedia = vi.fn().mockReturnValue({ matches: false });
   });
 
@@ -17,12 +19,12 @@ describe('HomePromoCarousel', () => {
     vi.useRealTimers();
   });
 
-  it('renderiza el slide de ranking activo por defecto', () => {
+  it('renderiza el slide del evento activo por defecto', () => {
     render(<HomePromoCarousel />);
 
-    expect(screen.getByText('Ranking AIQUAA')).toBeInTheDocument();
+    expect(screen.getByText('PY Testing Fest 2026')).toBeInTheDocument();
     expect(
-      screen.getByLabelText('Ir a novedad 1: Ranking AIQUAA')
+      screen.getByLabelText('Ir a novedad 1: PY Testing Fest 2026')
     ).toHaveAttribute('aria-current', 'true');
   });
 
@@ -33,6 +35,7 @@ describe('HomePromoCarousel', () => {
       a.getAttribute('href')
     );
 
+    expect(hrefs).toContain('/eventos/py-testing-fest-2026');
     expect(hrefs).toContain('/ranking');
     expect(hrefs).toContain('/assessments/api-testing-fundamentals');
     expect(hrefs).toContain('/assessments/database-fundamentals');
@@ -50,7 +53,7 @@ describe('HomePromoCarousel', () => {
     });
 
     expect(
-      screen.getByLabelText('Ir a novedad 2: API Testing — Fundamentos')
+      screen.getByLabelText('Ir a novedad 2: Ranking AIQUAA')
     ).toHaveAttribute('aria-current', 'true');
   });
 
@@ -65,7 +68,7 @@ describe('HomePromoCarousel', () => {
     });
 
     expect(
-      screen.getByLabelText('Ir a novedad 1: Ranking AIQUAA')
+      screen.getByLabelText('Ir a novedad 1: PY Testing Fest 2026')
     ).toHaveAttribute('aria-current', 'true');
   });
 
@@ -75,12 +78,12 @@ describe('HomePromoCarousel', () => {
 
     await user.click(screen.getByLabelText('Siguiente novedad'));
     expect(
-      screen.getByLabelText('Ir a novedad 2: API Testing — Fundamentos')
+      screen.getByLabelText('Ir a novedad 2: Ranking AIQUAA')
     ).toHaveAttribute('aria-current', 'true');
 
     await user.click(screen.getByLabelText('Novedad anterior'));
     expect(
-      screen.getByLabelText('Ir a novedad 1: Ranking AIQUAA')
+      screen.getByLabelText('Ir a novedad 1: PY Testing Fest 2026')
     ).toHaveAttribute('aria-current', 'true');
   });
 
@@ -93,7 +96,7 @@ describe('HomePromoCarousel', () => {
     await user.keyboard('{ArrowRight}');
 
     expect(
-      screen.getByLabelText('Ir a novedad 2: API Testing — Fundamentos')
+      screen.getByLabelText('Ir a novedad 2: Ranking AIQUAA')
     ).toHaveAttribute('aria-current', 'true');
   });
 
@@ -102,11 +105,30 @@ describe('HomePromoCarousel', () => {
     render(<HomePromoCarousel />);
 
     await user.click(
-      screen.getByLabelText(/Ir a novedad 3: Bases de Datos — Fundamentos/i)
+      screen.getByLabelText(/Ir a novedad 3: API Testing — Fundamentos/i)
     );
 
     expect(
-      screen.getByLabelText(/Ir a novedad 3: Bases de Datos — Fundamentos/i)
+      screen.getByLabelText(/Ir a novedad 3: API Testing — Fundamentos/i)
+    ).toHaveAttribute('aria-current', 'true');
+  });
+
+  it('muestra el slide del evento antes de la fecha del evento', () => {
+    render(
+      <HomePromoCarousel now={new Date('2026-09-26T12:00:00Z').getTime()} />
+    );
+
+    expect(screen.getByText('PY Testing Fest 2026')).toBeInTheDocument();
+  });
+
+  it('oculta el slide del evento una vez pasada la fecha', () => {
+    render(
+      <HomePromoCarousel now={new Date('2026-10-01T12:00:00Z').getTime()} />
+    );
+
+    expect(screen.queryByText('PY Testing Fest 2026')).not.toBeInTheDocument();
+    expect(
+      screen.getByLabelText('Ir a novedad 1: Ranking AIQUAA')
     ).toHaveAttribute('aria-current', 'true');
   });
 });
