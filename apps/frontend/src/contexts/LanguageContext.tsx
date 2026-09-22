@@ -319,6 +319,9 @@ const translations: Record<Language, Record<string, string>> = {
     'about.cofounder.role': 'Co-Fundadora & Analista de Datos',
     'about.cofounder.bio':
       'Analista de Datos con experiencia en inteligencia de negocios, visualización de datos y toma de decisiones basada en métricas. Co-fundadora de AIQUAA, impulsando la dimensión analítica y de datos de la plataforma para fortalecer la comunidad QA de Paraguay.',
+    'about.partners.title': 'Organizaciones que trabajan con nosotros',
+    'about.partners.subtitle':
+      'Instituciones y empresas aliadas que apoyan el crecimiento de la comunidad QA en Paraguay.',
 
     // Footer
     'footer.rights': 'Todos los derechos reservados',
@@ -713,6 +716,9 @@ const translations: Record<Language, Record<string, string>> = {
     'about.cofounder.role': 'Co-Founder & Data Analyst',
     'about.cofounder.bio':
       'Data Analyst with experience in business intelligence, data visualization, and metrics-driven decision making. Co-founder of AIQUAA, driving the analytical and data dimension of the platform to strengthen the QA community in Paraguay.',
+    'about.partners.title': 'Organizations that work with us',
+    'about.partners.subtitle':
+      'Partner institutions and companies that support the growth of the QA community in Paraguay.',
 
     // Footer
     'footer.rights': 'All rights reserved',

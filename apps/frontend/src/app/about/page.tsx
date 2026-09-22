@@ -4,6 +4,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import LogoMark from '@/components/LogoMark';
 import { useLanguage } from '@/contexts/LanguageContext';
 import FAQSection from '@/components/FAQSection';
+import PartnersSection from '@/components/PartnersSection';
 import { SuruFloating } from '@/components/Suru';
 
 export default function AboutPage() {
@@ -373,6 +374,9 @@ export default function AboutPage() {
             </div>
           </div>
         </div>
+
+        {/* Partners Section */}
+        <PartnersSection />
 
         {/* FAQ Section */}
         <FAQSection />
