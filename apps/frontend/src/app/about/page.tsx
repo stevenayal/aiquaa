@@ -376,7 +376,7 @@ export default function AboutPage() {
         </div>
 
         {/* Partners Section */}
-        <PartnersSection />
+        <PartnersSection className="mt-16" />
 
         {/* FAQ Section */}
         <FAQSection />

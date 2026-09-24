@@ -7,6 +7,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import LogoMark from '@/components/LogoMark';
 import HomePromoCarousel from '@/components/HomePromoCarousel';
 import ISTQBHighlight from '@/components/ISTQBHighlight';
+import PartnersSection from '@/components/PartnersSection';
 import { SuruFloating } from '@/components/Suru';
 import LineIcon, { LineIconName } from '@/components/icons/LineIcon';
 import { LABS_TOOL_COUNT } from '@/lib/labsCatalog';
@@ -375,6 +376,17 @@ export default function HomePage() {
               </svg>
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* Partners */}
+      <section
+        className={`py-16 md:py-20 transition-colors duration-300 ${
+          isDarkMode ? 'bg-slate-800' : 'bg-brand-light'
+        }`}
+      >
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <PartnersSection />
         </div>
       </section>
 
