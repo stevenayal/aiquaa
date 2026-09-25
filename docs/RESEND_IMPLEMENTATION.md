@@ -7,6 +7,7 @@ Se ha implementado Resend como servicio de envío de emails para reemplazar Node
 ## 🚀 Características Implementadas
 
 ### 1. Servicio de Email con Resend
+
 - **Archivo**: `apps/backend/src/mailer/resend.service.ts`
 - **Funcionalidades**:
   - Envío de emails de verificación de registro
@@ -16,6 +17,7 @@ Se ha implementado Resend como servicio de envío de emails para reemplazar Node
   - Envío de alertas de seguridad
 
 ### 2. Verificación de Segundo Factor (2FA) por Email
+
 - **Nuevos endpoints**:
   - `POST /auth/2fa/send-code` - Enviar código 2FA
   - `POST /auth/2fa/verify-code` - Verificar código 2FA
@@ -25,6 +27,7 @@ Se ha implementado Resend como servicio de envío de emails para reemplazar Node
   - `GET /auth/2fa/status` - Obtener estado del 2FA
 
 ### 3. Templates de Email Mejorados
+
 - Diseño moderno y responsivo
 - Gradientes y estilos mejorados
 - Mejor experiencia de usuario
@@ -36,7 +39,7 @@ Se ha implementado Resend como servicio de envío de emails para reemplazar Node
 
 ```bash
 # Resend Configuration
-RESEND_API_KEY=re_Vo8z4maQ_8ruYVtSYkU5Ye1ue2CPDPbcT
+RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxxxxx
 RESEND_FROM_EMAIL=onboarding@resend.dev
 EMAIL_FROM="AIQUAA <no-reply@aiquaa.com>"
 ```
@@ -44,6 +47,7 @@ EMAIL_FROM="AIQUAA <no-reply@aiquaa.com>"
 ### Base de Datos
 
 Se agregó un nuevo tipo de verificación en el enum `VerificationType`:
+
 ```prisma
 enum VerificationType {
   VERIFY_EMAIL
@@ -55,6 +59,7 @@ enum VerificationType {
 ## 📋 Flujo de Autenticación con 2FA
 
 ### 1. Login Normal (sin 2FA)
+
 ```
 POST /auth/login
 {
@@ -64,6 +69,7 @@ POST /auth/login
 ```
 
 **Respuesta**:
+
 ```json
 {
   "access_token": "jwt_token",
@@ -73,6 +79,7 @@ POST /auth/login
 ```
 
 ### 2. Login con 2FA Habilitado
+
 ```
 POST /auth/login
 {
@@ -82,6 +89,7 @@ POST /auth/login
 ```
 
 **Respuesta**:
+
 ```json
 {
   "access_token": null,
@@ -93,6 +101,7 @@ POST /auth/login
 ```
 
 ### 3. Completar Login con 2FA
+
 ```
 POST /auth/2fa/complete-login
 {
@@ -102,6 +111,7 @@ POST /auth/2fa/complete-login
 ```
 
 **Respuesta**:
+
 ```json
 {
   "access_token": "jwt_token",
@@ -113,24 +123,28 @@ POST /auth/2fa/complete-login
 ## 🛠️ Gestión de 2FA
 
 ### Habilitar 2FA
+
 ```bash
 POST /auth/2fa/enable
 Authorization: Bearer <token>
 ```
 
 ### Deshabilitar 2FA
+
 ```bash
 POST /auth/2fa/disable
 Authorization: Bearer <token>
 ```
 
 ### Verificar Estado
+
 ```bash
 GET /auth/2fa/status
 Authorization: Bearer <token>
 ```
 
 **Respuesta**:
+
 ```json
 {
   "enabled": true
@@ -140,12 +154,14 @@ Authorization: Bearer <token>
 ## 🧪 Pruebas
 
 ### Script de Prueba de Resend
+
 ```bash
 # Ejecutar desde la raíz del proyecto
 .\test-resend.ps1
 ```
 
 ### Prueba Manual
+
 ```bash
 # Enviar código 2FA
 curl -X POST http://localhost:3001/auth/2fa/send-code \
@@ -192,4 +208,3 @@ curl -X POST http://localhost:3001/auth/2fa/verify-code \
 ## 📞 Soporte
 
 Para cualquier problema o pregunta sobre la implementación de Resend, contactar al equipo de desarrollo de AIQUAA.
-
