@@ -10,7 +10,7 @@ El sistema de envío automático de resultados de exámenes ISTQB por correo ele
 
 ```bash
 # Email Configuration - Resend
-RESEND_API_KEY=re_Vo8z4maQ_8ruYVtSYkU5Ye1ue2CPDPbcT
+RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxxxxx
 RESEND_FROM_EMAIL=onboarding@resend.dev
 ADMIN_EMAIL=admin@aiquaa.com
 ```
@@ -41,6 +41,7 @@ ADMIN_EMAIL=admin@aiquaa.com
 ### Opción 1: Usar Dominio de Prueba (Actual)
 
 La configuración actual usa el dominio de prueba de Resend:
+
 - **Email remitente**: `onboarding@resend.dev`
 - **Limitaciones**: Solo puede enviar a emails verificados en la cuenta de Resend
 - **Ventaja**: No requiere verificar un dominio propio
@@ -78,6 +79,7 @@ node scripts/test-istqb-email.js
 ```
 
 Este script:
+
 - Envía datos de examen de prueba al backend
 - Simula un examen completado por "Juan Pérez (PRUEBA)"
 - El backend guardará el resultado y enviará el email a admin@aiquaa.com
@@ -135,6 +137,7 @@ Al ejecutar cualquier prueba, verifica los logs del backend:
 ```
 
 Si hay errores, aparecerán como:
+
 ```
 [IstqbService] Error enviando email de informe: [mensaje de error]
 ```
@@ -159,15 +162,18 @@ Revisa la bandeja de entrada de **admin@aiquaa.com** para verificar que llegó e
 El email HTML incluye:
 
 ### Header
+
 - Logo AIQUAA con gradiente
 - Título "Simulador ISTQB CTFL v4.0"
 
 ### Sección de Estado
+
 - Badge de APROBADO (verde) o NO APROBADO (rojo)
 - Puntaje total (ej: 32/40)
 - Porcentaje (ej: 80.00%)
 
 ### Información del Participante
+
 - Nombre completo
 - Email (si está disponible)
 - Fecha y hora del examen
@@ -176,13 +182,16 @@ El email HTML incluye:
 - ID del resultado en la base de datos
 
 ### Resumen de Resultados
+
 - 3 tarjetas con iconos:
   - 🏆 Puntaje
   - ✓ Respuestas Correctas
   - ✗ Respuestas Incorrectas
 
 ### Desglose por Learning Objectives
+
 Tabla detallada con:
+
 - Nombre del Learning Objective
 - Resultado (X/Y preguntas)
 - Porcentaje con badge de color:
@@ -191,6 +200,7 @@ Tabla detallada con:
   - Rojo: <50%
 
 ### Top Preguntas Incorrectas
+
 - Muestra las primeras 3 preguntas incorrectas
 - Incluye:
   - Número de pregunta
@@ -203,6 +213,7 @@ Tabla detallada con:
 ### Email no se envía
 
 1. **Verificar API Key**:
+
    ```bash
    cd apps/backend
    cat .env | grep RESEND_API_KEY
@@ -243,11 +254,13 @@ pnpm prisma migrate dev
 ## Archivos Modificados/Creados
 
 ### Modificados
+
 - `apps/backend/.env` - Agregada variable `ADMIN_EMAIL=admin@aiquaa.com`
 - `apps/backend/.env.example` - Actualizadas variables de Resend
 - `apps/backend/src/mailer/resend.service.ts` - Agregado método `sendTestResultsReport` (para futuras pruebas de código)
 
 ### Ya Existentes (No Modificados)
+
 - `apps/backend/src/istqb/istqb.service.ts` - Ya implementado el envío de correos
 - `apps/backend/src/mailer/resend.service.ts` - Ya tiene método `sendIstqbExamReport`
 - `scripts/test-istqb-email.js` - Script de prueba ya existente

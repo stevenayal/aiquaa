@@ -29,6 +29,7 @@ pnpm dev:front
 Abre en tu navegador: http://localhost:3001/api/v1/health
 
 Deberías ver algo como:
+
 ```json
 {
   "status": "ok",
@@ -52,7 +53,9 @@ Deberías ver algo como:
 ### 4. Verificar los Logs
 
 #### Frontend (Consola del Navegador - F12)
+
 Deberías ver:
+
 ```
 Enviando resultado al endpoint: http://localhost:3001/api/v1/labs/git/send-result
 Datos a enviar: { examResult: {...} }
@@ -61,7 +64,9 @@ Correo enviado exitosamente: { message: "Resultado enviado exitosamente a admin@
 ```
 
 #### Backend (Terminal)
+
 Deberías ver:
+
 ```
 [LabsService] Enviando resultado de examen Git a admin@aiquaa.com - Estudiante: Tu Nombre
 [ResendService] Resultado de examen Git enviado a admin@aiquaa.com: re_...
@@ -72,6 +77,7 @@ Deberías ver:
 El correo se envía a: **admin@aiquaa.com**
 
 El email incluye:
+
 - ✅ Nombre del participante
 - ✅ Perfil de GitHub (clickable)
 - ✅ **Motivo del examen** (con badge de color)
@@ -85,27 +91,34 @@ El email incluye:
 ## Problemas Comunes y Soluciones
 
 ### Error: "Failed to fetch"
+
 **Causa**: El backend no está corriendo
 **Solución**: Verifica que `pnpm dev:back` esté ejecutándose
 
 ### Error: "CORS policy"
+
 **Causa**: Configuración de CORS incorrecta
 **Solución**: El CORS ya está configurado para localhost:3001, pero verifica en `apps/backend/src/main.ts`
 
 ### Error: "Error de Resend"
+
 **Causa**: API key de Resend inválida o no configurada
 **Solución**:
+
 1. Verifica que `RESEND_API_KEY` esté en `.env` del backend
-2. La clave actual es: `re_Vo8z4maQ_8ruYVtSYkU5Ye1ue2CPDPbcT`
+2. La clave actual es: `re_xxxxxxxxxxxxxxxxxxxxxxxx`
 3. Si no está configurada, el servicio usa esta clave como fallback
 
 ### El correo no llega
+
 **Posibles causas**:
+
 1. La API key de Resend no es válida
 2. El email `admin@aiquaa.com` no está verificado en Resend
 3. El email está en spam
 
 **Solución**:
+
 1. Ve a https://resend.com/domains
 2. Verifica que el dominio esté configurado
 3. Verifica que `admin@aiquaa.com` esté en la lista de emails permitidos
@@ -144,6 +157,7 @@ curl -X POST http://localhost:3001/api/v1/labs/git/send-result \
 ```
 
 Respuesta esperada:
+
 ```json
 {
   "message": "Resultado enviado exitosamente a admin@aiquaa.com"
@@ -153,14 +167,16 @@ Respuesta esperada:
 ## Verificar Variables de Entorno
 
 ### Backend (.env)
+
 ```bash
 # Verifica que estas variables existan
-RESEND_API_KEY=re_Vo8z4maQ_8ruYVtSYkU5Ye1ue2CPDPbcT
+RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxxxxx
 RESEND_FROM_EMAIL=onboarding@resend.dev
 ADMIN_EMAIL=admin@aiquaa.com
 ```
 
 ### Frontend (.env.local)
+
 ```bash
 NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
