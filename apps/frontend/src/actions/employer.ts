@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { PROCESS_ASSESSMENT_SLUGS } from './lib/assessment-slugs';
+import { dedupeMirroredAttempts } from '@/lib/empresa/candidateResults';
 
 export interface HiringProcess {
   id: string;
@@ -611,7 +612,7 @@ async function fetchEmpresaResultsForProcessCodes(
     supabase
       .from('exam_results')
       .select(
-        'id, user_id, participant_name, participant_email, exam_type, score, percentage, passed, time_spent, created_at, process_code, section_scores, learning_objectives'
+        'id, user_id, participant_name, participant_email, exam_type, score, percentage, passed, time_spent, created_at, process_code, section_scores, learning_objectives, metadata'
       )
       .in('process_code', processCodes),
     fetchAssessmentAttemptsForProcessCodes(supabase, processCodes),
@@ -625,7 +626,20 @@ async function fetchEmpresaResultsForProcessCodes(
     return { data: [], error: assessmentAttemptsRes.error };
   }
 
-  const examResults = (examResultsRes.data ?? []) as EmpresaResultRow[];
+  const examResultsWithMetadata = (examResultsRes.data ?? []) as Array<
+    EmpresaResultRow & { metadata?: unknown }
+  >;
+  // Las pruebas técnicas se guardan en assessment_attempts y además se espejan
+  // en exam_results: sin deduplicar, cada intento contaba dos veces.
+  const attemptResults = dedupeMirroredAttempts(
+    assessmentAttemptsRes.data,
+    examResultsWithMetadata
+  );
+  const examResults: EmpresaResultRow[] = examResultsWithMetadata.map((row) => {
+    const { metadata, ...rest } = row;
+    void metadata;
+    return rest;
+  });
 
   // Some exam_results rows have user_id set but never got participant_name/
   // participant_email filled in at submission time (e.g. OAuth sign-ins).
@@ -663,7 +677,7 @@ async function fetchEmpresaResultsForProcessCodes(
   }
 
   return {
-    data: [...examResults, ...assessmentAttemptsRes.data],
+    data: [...examResults, ...attemptResults],
     error: null,
   };
 }
