@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import {
   memo,
+  useCallback,
   useDeferredValue,
   useEffect,
   useMemo,
@@ -23,6 +24,12 @@ import {
 } from '@/actions/prospects';
 import { reopenProcessAction } from '@/actions/employer';
 import { reviewHrefFor } from '@/lib/exam-review-routes';
+import {
+  buildAttemptNumbers,
+  dedupeMirroredAttempts,
+  groupResultsByCandidate,
+  type CandidateGroup,
+} from '@/lib/empresa/candidateResults';
 
 type HiringProcess = {
   id: string;
@@ -49,6 +56,7 @@ type ExamResult = {
   time_spent: number;
   created_at: string;
   review_status?: string | null;
+  metadata?: unknown;
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -164,9 +172,14 @@ type ResultRow = ExamResult & {
   dateLabel: string;
   timeLabel: string;
   searchText: string;
+  /** "Intento 2 de 3" cuando el candidato repitió ese examen. */
+  attemptLabel: string | null;
 };
 
-function toResultRow(r: ExamResult): ResultRow {
+function toResultRow(
+  r: ExamResult,
+  attempt?: { index: number; total: number }
+): ResultRow {
   return {
     ...r,
     displayName: getResultDisplayName(r),
@@ -176,6 +189,10 @@ function toResultRow(r: ExamResult): ResultRow {
     timeLabel: mins(r.time_spent),
     searchText:
       `${r.participant_name ?? ''}\n${r.participant_email ?? ''}`.toLowerCase(),
+    attemptLabel:
+      attempt && attempt.total > 1
+        ? `Intento ${attempt.index} de ${attempt.total}`
+        : null,
   };
 }
 
@@ -236,6 +253,13 @@ const ResultTableRow = memo(function ResultTableRow({
         >
           {r.examLabel}
         </span>
+        {r.attemptLabel && (
+          <div
+            className={`text-[11px] mt-1 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+          >
+            {r.attemptLabel}
+          </div>
+        )}
       </td>
       <td className="px-5 py-3">
         <div className="flex items-center gap-2">
@@ -284,65 +308,187 @@ const ResultTableRow = memo(function ResultTableRow({
   );
 });
 
-const RankingRow = memo(function RankingRow({
-  r,
+// ─── Candidate view (grouped) ────────────────────────────────────────────────
+
+function scoreColor(passed: boolean) {
+  return passed ? 'text-green-500' : 'text-red-500';
+}
+
+const CandidateRow = memo(function CandidateRow({
+  candidate,
   position,
+  requiredExamTypes,
+  expanded,
+  onToggle,
   isDarkMode,
 }: {
-  r: ResultRow;
-  position: number;
+  candidate: CandidateGroup<ResultRow>;
+  position: number | null;
+  requiredExamTypes: string[];
+  expanded: boolean;
+  // eslint-disable-next-line no-unused-vars
+  onToggle: (key: string) => void;
   isDarkMode: boolean;
 }) {
-  const i = position;
+  const muted = isDarkMode ? 'text-slate-400' : 'text-gray-500';
+  const faint = isDarkMode ? 'text-slate-500' : 'text-gray-400';
+  const requiredCount = requiredExamTypes.length || candidate.exams.length;
+  const needsReview = candidate.exams.some((e) =>
+    e.attempts.some((a) => a.reviewHref && a.review_status !== 'reviewed')
+  );
+
   return (
     <div
-      className={`flex items-center gap-3 p-3 rounded-xl ${isDarkMode ? 'bg-slate-800/50' : 'bg-gray-50'}`}
+      className={`rounded-xl border ${isDarkMode ? 'border-slate-700 bg-slate-800/30' : 'border-gray-200 bg-white'}`}
     >
-      <span
-        className={`text-sm font-bold w-6 text-center shrink-0 ${i === 0 ? 'text-yellow-500' : i === 1 ? 'text-slate-400' : i === 2 ? 'text-amber-600' : isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+      <button
+        type="button"
+        onClick={() => onToggle(candidate.key)}
+        aria-expanded={expanded}
+        className="w-full text-left p-4 flex flex-col gap-3 sm:flex-row sm:items-center"
       >
-        {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}`}
-      </span>
-      <div className="min-w-0 w-36 shrink-0">
-        <p
-          className={`text-sm font-medium truncate ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
-        >
-          {r.displayName}
-        </p>
-        <p
-          className={`text-xs truncate ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-        >
-          {r.examLabel}
-        </p>
-      </div>
-      <div className="flex-1">
-        <div
-          className={`h-3 rounded-full overflow-hidden ${isDarkMode ? 'bg-slate-700' : 'bg-gray-200'}`}
-        >
-          <div
-            className={`h-full rounded-full transition-all duration-500 ${r.passed ? 'bg-green-500' : 'bg-red-500'}`}
-            style={{ width: `${r.percentage}%` }}
-          />
+        <div className="flex items-center gap-3 min-w-0 sm:w-64 shrink-0">
+          {position !== null && (
+            <span
+              className={`text-sm font-bold w-6 text-center shrink-0 ${faint}`}
+            >
+              {position === 0
+                ? '🥇'
+                : position === 1
+                  ? '🥈'
+                  : position === 2
+                    ? '🥉'
+                    : position + 1}
+            </span>
+          )}
+          <div className="min-w-0">
+            <p
+              className={`font-medium truncate ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+            >
+              {candidate.name}
+            </p>
+            {candidate.email && candidate.email !== candidate.name && (
+              <p className={`text-xs truncate ${muted}`}>{candidate.email}</p>
+            )}
+          </div>
         </div>
-      </div>
-      <span
-        className={`text-sm font-bold w-12 text-right shrink-0 ${r.passed ? 'text-green-500' : 'text-red-500'}`}
-      >
-        {r.percentage}%
-      </span>
-      <span
-        className={`text-xs w-14 text-right shrink-0 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
-      >
-        {r.timeLabel}
-      </span>
-      {r.reviewHref && (
-        <Link
-          href={r.reviewHref}
-          prefetch={false}
-          className={`text-xs px-2 py-1 rounded-lg font-semibold transition-colors shrink-0 ${reviewBadgeClass(r.review_status, isDarkMode)}`}
+
+        <div className="flex flex-wrap gap-1.5 flex-1">
+          {candidate.exams.map((exam) => (
+            <span
+              key={exam.examType}
+              title={`${EXAM_LABELS[exam.examType] ?? exam.examType} — mejor intento ${exam.best.percentage}%`}
+              className={`inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded-lg ${
+                exam.best.passed
+                  ? isDarkMode
+                    ? 'bg-green-900/30 text-green-200'
+                    : 'bg-green-50 text-green-800'
+                  : isDarkMode
+                    ? 'bg-red-900/30 text-red-200'
+                    : 'bg-red-50 text-red-800'
+              }`}
+            >
+              <span className="truncate max-w-[11rem]">
+                {EXAM_LABELS[exam.examType] ?? exam.examType}
+              </span>
+              <span className="font-bold">{exam.best.percentage}%</span>
+              {exam.attempts.length > 1 && (
+                <span className="opacity-70">×{exam.attempts.length}</span>
+              )}
+            </span>
+          ))}
+          {candidate.pendingExamTypes.map((type) => (
+            <span
+              key={type}
+              className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-lg border border-dashed ${isDarkMode ? 'border-slate-600 text-slate-500' : 'border-gray-300 text-gray-400'}`}
+            >
+              {EXAM_LABELS[type] ?? type} · pendiente
+            </span>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-4 shrink-0 sm:justify-end">
+          {needsReview && (
+            <span
+              className={`text-xs px-2 py-0.5 rounded-full font-medium ${isDarkMode ? 'bg-amber-900/40 text-amber-200' : 'bg-amber-100 text-amber-700'}`}
+            >
+              ⏳ Revisar
+            </span>
+          )}
+          <div className="text-right">
+            <p
+              className={`text-lg font-bold leading-none ${scoreColor(candidate.examsPassed === requiredCount && candidate.pendingExamTypes.length === 0)}`}
+            >
+              {candidate.processScore}%
+            </p>
+            <p className={`text-[11px] mt-1 ${faint}`}>
+              {candidate.examsPassed}/{requiredCount} aprobados
+            </p>
+          </div>
+          <span className={`text-xs ${faint}`}>{expanded ? '▲' : '▼'}</span>
+        </div>
+      </button>
+
+      {expanded && (
+        <div
+          className={`border-t px-4 py-3 space-y-3 ${isDarkMode ? 'border-slate-700' : 'border-gray-100'}`}
         >
-          {r.review_status === 'reviewed' ? '✅ Revisado' : '⏳ Revisar'}
-        </Link>
+          {candidate.exams.map((exam) => (
+            <div key={exam.examType}>
+              <p
+                className={`text-xs font-semibold mb-1.5 ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}
+              >
+                {EXAM_LABELS[exam.examType] ?? exam.examType}
+                <span className={`font-normal ml-2 ${faint}`}>
+                  {exam.attempts.length === 1
+                    ? '1 intento'
+                    : `${exam.attempts.length} intentos — cuenta el mejor`}
+                </span>
+              </p>
+              <ul className="space-y-1">
+                {exam.attempts.map((a, i) => (
+                  <li
+                    key={a.id}
+                    className={`flex flex-wrap items-center gap-x-4 gap-y-1 text-xs rounded-lg px-3 py-1.5 ${
+                      a.id === exam.best.id
+                        ? isDarkMode
+                          ? 'bg-indigo-900/30'
+                          : 'bg-indigo-50'
+                        : isDarkMode
+                          ? 'bg-slate-800/50'
+                          : 'bg-gray-50'
+                    }`}
+                  >
+                    <span className={`w-16 ${muted}`}>Intento {i + 1}</span>
+                    <span className={`font-bold w-12 ${scoreColor(a.passed)}`}>
+                      {a.percentage}%
+                    </span>
+                    <span className={`w-20 ${muted}`}>{a.dateLabel}</span>
+                    <span className={`w-16 ${muted}`}>{a.timeLabel}</span>
+                    {a.id === exam.best.id && exam.attempts.length > 1 && (
+                      <span
+                        className={`font-medium ${isDarkMode ? 'text-indigo-300' : 'text-indigo-600'}`}
+                      >
+                        ★ Mejor
+                      </span>
+                    )}
+                    {a.reviewHref && (
+                      <Link
+                        href={a.reviewHref}
+                        prefetch={false}
+                        className={`ml-auto px-2 py-0.5 rounded-lg font-semibold transition-colors ${reviewBadgeClass(a.review_status, isDarkMode)}`}
+                      >
+                        {a.review_status === 'reviewed'
+                          ? '✅ Revisado'
+                          : '⏳ Revisar'}
+                      </Link>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
@@ -715,7 +861,12 @@ export default function ProcesoDetailPage() {
   const [filterPassed, setFilterPassed] = useState<'all' | 'passed' | 'failed'>(
     'all'
   );
-  const [viewMode, setViewMode] = useState<'tabla' | 'ranking'>('tabla');
+  const [viewMode, setViewMode] = useState<
+    'candidatos' | 'intentos' | 'ranking'
+  >('candidatos');
+  const [expandedCandidates, setExpandedCandidates] = useState<Set<string>>(
+    () => new Set()
+  );
   const [visibleCount, setVisibleCount] = useState(RESULTS_PAGE_SIZE);
   // Typing in the search box stays responsive: the (possibly large) table
   // re-filters with the deferred value, at lower priority than the input.
@@ -752,7 +903,7 @@ export default function ProcesoDetailPage() {
         supabase
           .from('exam_results')
           .select(
-            'id, user_id, participant_name, participant_email, exam_type, score, percentage, passed, time_spent, created_at, review_status'
+            'id, user_id, participant_name, participant_email, exam_type, score, percentage, passed, time_spent, created_at, review_status, metadata'
           )
           .eq('process_code', proc.code)
           .order('percentage', { ascending: false }),
@@ -771,8 +922,13 @@ export default function ProcesoDetailPage() {
       // Some exam_results rows also have user_id but never got
       // participant_name/email filled in at submission time (e.g. OAuth
       // sign-ins), so include those in the same profile lookup.
-      const attemptRows = assessmentRes.data ?? [];
       const examResultsRaw = (res ?? []) as ExamResult[];
+      // Las pruebas técnicas también se espejan en exam_results: sin esto,
+      // cada intento aparecía dos veces en la lista de postulantes.
+      const attemptRows = dedupeMirroredAttempts(
+        (assessmentRes.data ?? []) as any[],
+        examResultsRaw
+      );
       const userIds = [
         ...new Set([
           ...attemptRows.map((r: any) => r.user_id).filter(Boolean),
@@ -812,6 +968,7 @@ export default function ProcesoDetailPage() {
 
       const mappedAttempts: ExamResult[] = attemptRows.map((r: any) => ({
         id: r.id,
+        user_id: r.user_id ?? null,
         participant_name:
           profileMap[r.user_id]?.display_name ??
           profileMap[r.user_id]?.email ??
@@ -829,10 +986,14 @@ export default function ProcesoDetailPage() {
                   1000
               )
             : 0,
-        created_at: r.created_at,
+        created_at: r.submitted_at ?? r.created_at,
       }));
 
-      setResults([...examResults, ...mappedAttempts].map(toResultRow));
+      const allResults = [...examResults, ...mappedAttempts];
+      const attemptNumbers = buildAttemptNumbers(allResults);
+      setResults(
+        allResults.map((r) => toResultRow(r, attemptNumbers.get(r.id)))
+      );
       setProspects(prsp ?? []);
       setLoading(false);
     };
@@ -908,27 +1069,75 @@ export default function ProcesoDetailPage() {
     });
   }, [results, deferredSearch, filterExam, filterPassed]);
 
-  const rankedResults = useMemo(
-    () => [...filteredResults].sort((a, b) => b.percentage - a.percentage),
-    [filteredResults]
+  const requiredExamTypes = useMemo(() => process?.exam_types ?? [], [process]);
+
+  // Una fila por persona: los postulantes se cuentan por candidato, no por
+  // intento (antes un candidato con 3 exámenes figuraba 3 veces).
+  const candidateGroups = useMemo(
+    () => groupResultsByCandidate(results, requiredExamTypes),
+    [results, requiredExamTypes]
   );
+
+  const filteredCandidates = useMemo(() => {
+    const q = deferredSearch.trim().toLowerCase();
+    return candidateGroups.filter((c) => {
+      const matchSearch =
+        !q ||
+        c.name.toLowerCase().includes(q) ||
+        (c.email?.toLowerCase().includes(q) ?? false);
+      if (!matchSearch) return false;
+      const relevant =
+        filterExam === 'all'
+          ? c.exams
+          : c.exams.filter((e) => e.examType === filterExam);
+      if (relevant.length === 0) return false;
+      if (filterPassed === 'passed')
+        return relevant.every((e) => e.best.passed);
+      if (filterPassed === 'failed')
+        return relevant.some((e) => !e.best.passed);
+      return true;
+    });
+  }, [candidateGroups, deferredSearch, filterExam, filterPassed]);
+
+  // "Por candidato" va alfabético para ubicar a alguien; "Ranking" por puntaje.
+  const visibleCandidates = useMemo(
+    () =>
+      viewMode === 'candidatos'
+        ? [...filteredCandidates].sort((a, b) =>
+            a.name.localeCompare(b.name, 'es', { sensitivity: 'base' })
+          )
+        : filteredCandidates,
+    [filteredCandidates, viewMode]
+  );
+
+  const toggleCandidate = useCallback((key: string) => {
+    setExpandedCandidates((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  }, []);
 
   // Back to the first page whenever the filters or the view change.
   useEffect(() => {
     setVisibleCount(RESULTS_PAGE_SIZE);
   }, [deferredSearch, filterExam, filterPassed, viewMode]);
 
-  const passRate = useMemo(
-    () =>
-      results.length
-        ? Math.round(
-            (results.filter((r) => r.passed).length / results.length) * 100
-          )
-        : null,
-    [results]
-  );
+  // Tasa sobre el mejor intento de cada candidato en cada examen: repetir un
+  // examen ya no infla ni castiga la tasa.
+  const passRate = useMemo(() => {
+    const bests = candidateGroups.flatMap((c) => c.exams.map((e) => e.best));
+    return bests.length
+      ? Math.round((bests.filter((b) => b.passed).length / bests.length) * 100)
+      : null;
+  }, [candidateGroups]);
 
-  const remainingResults = Math.max(0, filteredResults.length - visibleCount);
+  const activeListLength =
+    viewMode === 'intentos'
+      ? filteredResults.length
+      : filteredCandidates.length;
+  const remainingResults = Math.max(0, activeListLength - visibleCount);
 
   const card = isDarkMode
     ? 'bg-dark-secondary border-slate-700'
@@ -1086,10 +1295,13 @@ export default function ProcesoDetailPage() {
                 .map((e) => EXAM_LABELS[e] ?? e)
                 .join(', '),
             },
-            { label: 'Postulantes', value: results.length.toString() },
+            {
+              label: 'Candidatos',
+              value: `${candidateGroups.length} · ${results.length} intentos`,
+            },
             { label: 'Prospectos', value: prospects.length.toString() },
             {
-              label: 'Tasa aprobación',
+              label: 'Aprobación (mejor intento)',
               value: passRate != null ? `${passRate}%` : '—',
             },
           ].map(({ label, value }) => (
@@ -1120,7 +1332,7 @@ export default function ProcesoDetailPage() {
                 }`}
               >
                 {tab === 'postulantes'
-                  ? `Postulantes (${results.length})`
+                  ? `Postulantes (${candidateGroups.length})`
                   : `Prospectos (${prospects.length})`}
               </button>
             ))}
@@ -1165,21 +1377,27 @@ export default function ProcesoDetailPage() {
                   <div
                     className={`flex rounded-lg border overflow-hidden ${isDarkMode ? 'border-slate-600' : 'border-gray-300'}`}
                   >
-                    {(['tabla', 'ranking'] as const).map((mode) => (
-                      <button
-                        key={mode}
-                        onClick={() => setViewMode(mode)}
-                        className={`px-3 py-2 text-xs font-medium transition-colors ${
-                          viewMode === mode
-                            ? 'bg-indigo-600 text-white'
-                            : isDarkMode
-                              ? 'text-slate-300 hover:bg-slate-700'
-                              : 'text-gray-600 hover:bg-gray-50'
-                        }`}
-                      >
-                        {mode === 'tabla' ? '☰ Tabla' : '📊 Ranking'}
-                      </button>
-                    ))}
+                    {(['candidatos', 'ranking', 'intentos'] as const).map(
+                      (mode) => (
+                        <button
+                          key={mode}
+                          onClick={() => setViewMode(mode)}
+                          className={`px-3 py-2 text-xs font-medium transition-colors ${
+                            viewMode === mode
+                              ? 'bg-indigo-600 text-white'
+                              : isDarkMode
+                                ? 'text-slate-300 hover:bg-slate-700'
+                                : 'text-gray-600 hover:bg-gray-50'
+                          }`}
+                        >
+                          {mode === 'candidatos'
+                            ? '👤 Por candidato'
+                            : mode === 'ranking'
+                              ? '📊 Ranking'
+                              : '☰ Intentos'}
+                        </button>
+                      )
+                    )}
                   </div>
                 </div>
               </div>
@@ -1201,7 +1419,7 @@ export default function ProcesoDetailPage() {
                     con tus candidatos
                   </p>
                 </div>
-              ) : filteredResults.length === 0 ? (
+              ) : activeListLength === 0 ? (
                 <div
                   className={`text-center py-12 ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
                 >
@@ -1209,19 +1427,30 @@ export default function ProcesoDetailPage() {
                     Sin resultados para los filtros aplicados
                   </p>
                 </div>
-              ) : viewMode === 'ranking' ? (
-                /* ── Ranking view ── */
+              ) : viewMode !== 'intentos' ? (
+                /* ── Candidate / ranking view ── */
                 <div className="p-5 space-y-3">
                   <p
-                    className={`text-xs font-semibold uppercase tracking-wide mb-4 ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                    className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
                   >
-                    Ranking por puntaje — {filteredResults.length} candidatos
+                    <span className="font-semibold uppercase tracking-wide">
+                      {filteredCandidates.length} candidatos
+                    </span>{' '}
+                    — puntaje del proceso = promedio del mejor intento en cada
+                    examen
+                    {requiredExamTypes.length > 0
+                      ? ' (los pendientes cuentan 0)'
+                      : ''}
+                    . Hacé click en un candidato para ver todos sus intentos.
                   </p>
-                  {rankedResults.slice(0, visibleCount).map((r, i) => (
-                    <RankingRow
-                      key={r.id}
-                      r={r}
-                      position={i}
+                  {visibleCandidates.slice(0, visibleCount).map((c, i) => (
+                    <CandidateRow
+                      key={c.key}
+                      candidate={c}
+                      position={viewMode === 'ranking' ? i : null}
+                      requiredExamTypes={requiredExamTypes}
+                      expanded={expandedCandidates.has(c.key)}
+                      onToggle={toggleCandidate}
                       isDarkMode={isDarkMode}
                     />
                   ))}
@@ -1272,7 +1501,7 @@ export default function ProcesoDetailPage() {
                   className={`flex items-center justify-center gap-3 px-5 py-4 border-t text-sm ${isDarkMode ? 'border-slate-700 text-slate-400' : 'border-gray-100 text-gray-500'}`}
                 >
                   <span className="text-xs">
-                    Mostrando {visibleCount} de {filteredResults.length}
+                    Mostrando {visibleCount} de {activeListLength}
                   </span>
                   <button
                     type="button"
@@ -1289,7 +1518,7 @@ export default function ProcesoDetailPage() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setVisibleCount(filteredResults.length)}
+                    onClick={() => setVisibleCount(activeListLength)}
                     className={`text-xs font-medium ${isDarkMode ? 'text-indigo-300 hover:text-indigo-200' : 'text-indigo-600 hover:text-indigo-700'}`}
                   >
                     Mostrar todos

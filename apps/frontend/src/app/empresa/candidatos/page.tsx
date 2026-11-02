@@ -26,6 +26,10 @@ import {
 } from './candidateDirectory';
 import { createInvitacionAction } from '@/actions/empresa-invitaciones';
 import { reviewHrefFor } from '@/lib/exam-review-routes';
+import {
+  candidateKeyOf,
+  dedupeMirroredAttempts,
+} from '@/lib/empresa/candidateResults';
 
 type SectionScore = {
   section: string;
@@ -49,6 +53,7 @@ type ExamResult = {
   section_scores: SectionScore[] | null;
   learning_objectives: unknown | null;
   review_status?: string | null;
+  metadata?: unknown;
 };
 
 type ViewMode = 'evaluados' | 'talento' | 'favoritos';
@@ -231,7 +236,7 @@ export default function CandidatosPage() {
           supabase
             .from('exam_results')
             .select(
-              'id, participant_name, participant_email, user_id, exam_type, score, percentage, passed, time_spent, created_at, process_code, section_scores, learning_objectives, review_status'
+              'id, participant_name, participant_email, user_id, exam_type, score, percentage, passed, time_spent, created_at, process_code, section_scores, learning_objectives, review_status, metadata'
             )
             .in('process_code', processCodes),
           supabase
@@ -250,7 +255,12 @@ export default function CandidatosPage() {
 
         const examResults = (examResultsRes.data ?? []) as ExamResult[];
 
-        const attemptRows = assessmentAttemptsRes.data ?? [];
+        // Las pruebas técnicas también se espejan en exam_results: se descarta
+        // el attempt para no listar el mismo intento dos veces.
+        const attemptRows = dedupeMirroredAttempts(
+          (assessmentAttemptsRes.data ?? []) as any[],
+          examResults
+        );
         const userIds = [
           ...new Set(attemptRows.map((r: any) => r.user_id).filter(Boolean)),
         ];
@@ -780,6 +790,9 @@ export default function CandidatosPage() {
   };
 
   const passCount = filtered.filter((r) => r.passed).length;
+  // Personas distintas (no intentos): el contador de "Evaluados" sumaba filas.
+  const uniqueCandidateCount = new Set(results.map(candidateKeyOf)).size;
+  const filteredCandidateCount = new Set(filtered.map(candidateKeyOf)).size;
   const avgScore = filtered.length
     ? Math.round(
         filtered.reduce((a, r) => a + r.percentage, 0) / filtered.length
@@ -1014,7 +1027,7 @@ export default function CandidatosPage() {
             {
               key: 'evaluados' as const,
               label: 'Evaluados',
-              count: results.length,
+              count: uniqueCandidateCount,
             },
             {
               key: 'talento' as const,
@@ -1101,8 +1114,14 @@ export default function CandidatosPage() {
         {!loading && results.length > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
-              { label: 'Total resultados', value: results.length.toString() },
-              { label: 'Mostrando', value: filtered.length.toString() },
+              {
+                label: 'Candidatos',
+                value: `${uniqueCandidateCount} · ${results.length} intentos`,
+              },
+              {
+                label: 'Mostrando',
+                value: `${filteredCandidateCount} · ${filtered.length} intentos`,
+              },
               {
                 label: 'Aprobados (vista)',
                 value: filtered.length
