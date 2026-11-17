@@ -162,17 +162,17 @@ body {
 }
 
 /*
- * Diálogo de confirmación nativo (src/components/ui/ConfirmDialog.tsx).
+ * Diálogos nativos (src/components/ui/ConfirmDialog.tsx y Modal.tsx).
  * Guías: modern-web-guidance → dialog, prevent-page-scroll-under-modal-dialog,
  * animate-to-from-top-layer.
  */
 
 /* Evita que el scroll dentro del modal o sobre el backdrop mueva la página.
    No se usa overflow:hidden en <html>/<body> (quita la scrollbar y desplaza el layout). */
-.confirm-dialog:modal {
+.app-dialog:modal {
   overscroll-behavior: contain;
 }
-.confirm-dialog::backdrop {
+.app-dialog::backdrop {
   overflow: hidden;
   overscroll-behavior: contain;
   background-color: rgb(15 23 42 / 0);
@@ -183,7 +183,7 @@ body {
 }
 
 /* Estado cerrado / salida */
-.confirm-dialog {
+.app-dialog {
   opacity: 0;
   transition-property: opacity, transform, display, overlay;
   transition-duration: 0.2s;
@@ -193,40 +193,40 @@ body {
 }
 
 /* Estado abierto + entrada */
-.confirm-dialog[open] {
+.app-dialog[open] {
   opacity: 1;
 }
 @starting-style {
-  .confirm-dialog[open] {
+  .app-dialog[open] {
     opacity: 0;
   }
 }
-.confirm-dialog[open]::backdrop {
+.app-dialog[open]::backdrop {
   background-color: rgb(15 23 42 / 0.6);
 }
 @starting-style {
-  .confirm-dialog[open]::backdrop {
+  .app-dialog[open]::backdrop {
     background-color: rgb(15 23 42 / 0);
   }
 }
 
 /* La escala sólo para quien no pidió movimiento reducido */
 @media (prefers-reduced-motion: no-preference) {
-  .confirm-dialog {
+  .app-dialog {
     transform: scale(0.95);
   }
-  .confirm-dialog[open] {
+  .app-dialog[open] {
     transform: scale(1);
   }
   @starting-style {
-    .confirm-dialog[open] {
+    .app-dialog[open] {
       transform: scale(0.95);
     }
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .confirm-dialog,
-  .confirm-dialog::backdrop {
+  .app-dialog,
+  .app-dialog::backdrop {
     transition-duration: 0.1s;
   }
 }

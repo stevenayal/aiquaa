@@ -22,7 +22,7 @@ import {
  * top layer, `::backdrop`, cierre con Esc / gesto atrás y devolución del foco
  * al botón que lo abrió. Por eso NO se agrega `role="dialog"`, `aria-modal`,
  * focus trap ni manejador de Esc. Los estilos de scroll y animación viven en
- * `globals.css` (`.confirm-dialog`).
+ * `globals.css` (`.app-dialog`).
  */
 
 export interface ConfirmOptions {
@@ -126,7 +126,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
       {children}
       <dialog
         ref={dialogRef}
-        className="confirm-dialog w-[min(28rem,calc(100vw-2rem))] rounded-xl border border-slate-200 bg-white p-0 text-slate-900 shadow-2xl dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+        className="app-dialog w-[min(28rem,calc(100vw-2rem))] rounded-xl border border-slate-200 bg-white p-0 text-slate-900 shadow-2xl dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
         aria-labelledby={titleId}
         aria-describedby={options?.description ? descriptionId : undefined}
         // `closedby` (clic fuera para cerrar) es mejora progresiva: donde no

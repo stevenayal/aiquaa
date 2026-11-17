@@ -13,6 +13,7 @@ import {
   type CandidateAvailability,
   type TalentCandidate,
 } from '@/app/empresa/candidatos/candidateDirectory';
+import { Modal } from '@/components/ui/Modal';
 
 const ISTQB_LEVEL_LABELS: Record<string, string> = {
   ctfl: 'Foundation Level (CTFL)',
@@ -626,74 +627,75 @@ export default function BuscarCandidatosPage() {
       </div>
 
       {inviteCandidate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div
-            className={`w-full max-w-md space-y-4 rounded-lg border p-6 shadow-xl ${card}`}
-          >
-            <div>
-              <h3
-                className={`text-base font-bold ${
-                  isDarkMode ? 'text-white' : 'text-gray-900'
-                }`}
-              >
-                Invitar a {inviteCandidate.name}
-              </h3>
-              <p
-                className={`mt-1 text-sm ${
-                  isDarkMode ? 'text-slate-400' : 'text-gray-500'
-                }`}
-              >
-                AIQUAA enviara la invitacion por email sin revelar el correo en
-                el directorio.
-              </p>
-            </div>
-            <select
-              value={inviteProcessId}
-              onChange={(event) => setInviteProcessId(event.target.value)}
-              className={`${inputClass} w-full`}
+        <Modal
+          onClose={() => setInviteCandidate(null)}
+          labelledBy="invitar-talento-title"
+          className={`max-w-md space-y-4 rounded-lg border p-6 shadow-xl ${card}`}
+        >
+          <div>
+            <h3
+              id="invitar-talento-title"
+              className={`text-base font-bold ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              }`}
             >
-              <option value="">Sin proceso especifico</option>
-              {processes.map((process) => (
-                <option key={process.id} value={process.id}>
-                  {process.position_name} ({process.code})
-                </option>
-              ))}
-            </select>
-            <textarea
-              value={inviteMessage}
-              onChange={(event) => setInviteMessage(event.target.value)}
-              rows={3}
-              maxLength={300}
-              placeholder="Mensaje opcional para el candidato"
-              className={`${inputClass} w-full resize-none`}
-            />
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={sendInvite}
-                disabled={inviteSending}
-                className="flex-1 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
-              >
-                {inviteSending ? 'Enviando...' : 'Enviar invitacion'}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setInviteCandidate(null);
-                  setInviteProcessId('');
-                  setInviteMessage('');
-                }}
-                className={`flex-1 rounded-lg border px-4 py-2 text-sm font-semibold transition-colors ${
-                  isDarkMode
-                    ? 'border-slate-600 text-slate-300 hover:bg-slate-700'
-                    : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                Cancelar
-              </button>
-            </div>
+              Invitar a {inviteCandidate.name}
+            </h3>
+            <p
+              className={`mt-1 text-sm ${
+                isDarkMode ? 'text-slate-400' : 'text-gray-500'
+              }`}
+            >
+              AIQUAA enviara la invitacion por email sin revelar el correo en el
+              directorio.
+            </p>
           </div>
-        </div>
+          <select
+            value={inviteProcessId}
+            onChange={(event) => setInviteProcessId(event.target.value)}
+            className={`${inputClass} w-full`}
+          >
+            <option value="">Sin proceso especifico</option>
+            {processes.map((process) => (
+              <option key={process.id} value={process.id}>
+                {process.position_name} ({process.code})
+              </option>
+            ))}
+          </select>
+          <textarea
+            value={inviteMessage}
+            onChange={(event) => setInviteMessage(event.target.value)}
+            rows={3}
+            maxLength={300}
+            placeholder="Mensaje opcional para el candidato"
+            className={`${inputClass} w-full resize-none`}
+          />
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={sendInvite}
+              disabled={inviteSending}
+              className="flex-1 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
+            >
+              {inviteSending ? 'Enviando...' : 'Enviar invitacion'}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setInviteCandidate(null);
+                setInviteProcessId('');
+                setInviteMessage('');
+              }}
+              className={`flex-1 rounded-lg border px-4 py-2 text-sm font-semibold transition-colors ${
+                isDarkMode
+                  ? 'border-slate-600 text-slate-300 hover:bg-slate-700'
+                  : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              Cancelar
+            </button>
+          </div>
+        </Modal>
       )}
     </div>
   );
