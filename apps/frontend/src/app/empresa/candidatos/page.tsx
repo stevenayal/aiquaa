@@ -30,6 +30,7 @@ import {
   candidateKeyOf,
   dedupeMirroredAttempts,
 } from '@/lib/empresa/candidateResults';
+import { Modal } from '@/components/ui/Modal';
 
 type SectionScore = {
   section: string;
@@ -1853,44 +1854,48 @@ export default function CandidatosPage() {
 
       {/* Invite modal */}
       {inviteModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div
-            className={`w-full max-w-sm rounded-2xl border p-6 space-y-4 shadow-xl ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}`}
+        <Modal
+          onClose={() => {
+            setInviteModalOpen(false);
+            setInviteEmail(null);
+          }}
+          labelledBy="invitar-evaluacion-title"
+          className={`max-w-sm rounded-2xl border p-6 space-y-4 shadow-xl ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}`}
+        >
+          <h3
+            id="invitar-evaluacion-title"
+            className={`font-bold text-base ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
           >
-            <h3
-              className={`font-bold text-base ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+            Invitar a evaluación
+          </h3>
+          <p
+            className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}
+          >
+            Se enviará una invitación por email a{' '}
+            <span className="font-semibold">{inviteEmail}</span> con el link
+            para acceder a la evaluación.
+          </p>
+          <div className="flex gap-2 pt-1">
+            <button
+              type="button"
+              onClick={sendInvite}
+              disabled={inviteSending}
+              className="flex-1 py-2.5 rounded-lg text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition-colors disabled:opacity-50"
             >
-              Invitar a evaluación
-            </h3>
-            <p
-              className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-gray-600'}`}
+              {inviteSending ? 'Enviando...' : 'Enviar invitación'}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setInviteModalOpen(false);
+                setInviteEmail(null);
+              }}
+              className={`flex-1 py-2.5 rounded-lg text-sm font-semibold border transition-colors ${isDarkMode ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
             >
-              Se enviará una invitación por email a{' '}
-              <span className="font-semibold">{inviteEmail}</span> con el link
-              para acceder a la evaluación.
-            </p>
-            <div className="flex gap-2 pt-1">
-              <button
-                type="button"
-                onClick={sendInvite}
-                disabled={inviteSending}
-                className="flex-1 py-2.5 rounded-lg text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition-colors disabled:opacity-50"
-              >
-                {inviteSending ? 'Enviando...' : 'Enviar invitación'}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setInviteModalOpen(false);
-                  setInviteEmail(null);
-                }}
-                className={`flex-1 py-2.5 rounded-lg text-sm font-semibold border transition-colors ${isDarkMode ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
-              >
-                Cancelar
-              </button>
-            </div>
+              Cancelar
+            </button>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   );

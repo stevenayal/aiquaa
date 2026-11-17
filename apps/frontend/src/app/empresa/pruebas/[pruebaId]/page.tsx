@@ -15,6 +15,7 @@ import {
   type EmpresaPreguntaRow,
   type EmpresaPruebaQuestionType,
 } from '@/actions/empresa-pruebas';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 
 const QUESTION_TYPE_LABELS: Record<EmpresaPruebaQuestionType, string> = {
   multiple_choice: 'Opción múltiple',
@@ -38,6 +39,7 @@ function emptyForm() {
 }
 
 export default function EditorPreguntasPage() {
+  const confirmAction = useConfirm();
   const { isDarkMode } = useTheme();
   const params = useParams<{ pruebaId: string }>();
   const pruebaId = params.pruebaId;
@@ -258,7 +260,11 @@ export default function EditorPreguntasPage() {
   };
 
   const handleDelete = async (pregunta: EmpresaPreguntaRow) => {
-    if (!confirm('¿Eliminar esta pregunta?')) return;
+    const ok = await confirmAction({
+      title: '¿Eliminar esta pregunta?',
+      confirmLabel: 'Eliminar',
+    });
+    if (!ok) return;
     const { error } = await deletePreguntaAction(pregunta.id, pruebaId);
     if (error) {
       setError(error);

@@ -9,8 +9,10 @@ import {
   togglePruebaActivaAction,
   type EmpresaPrueba,
 } from '@/actions/empresa-pruebas';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 
 export default function PruebasPage() {
+  const confirmAction = useConfirm();
   const { isDarkMode } = useTheme();
   const [pruebas, setPruebas] = useState<EmpresaPrueba[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,12 +44,12 @@ export default function PruebasPage() {
   };
 
   const handleDelete = async (prueba: EmpresaPrueba) => {
-    if (
-      !confirm(
-        `¿Eliminar la prueba "${prueba.title}"? Esta acción no se puede deshacer.`
-      )
-    )
-      return;
+    const ok = await confirmAction({
+      title: `¿Eliminar la prueba "${prueba.title}"?`,
+      description: 'Esta acción no se puede deshacer.',
+      confirmLabel: 'Eliminar',
+    });
+    if (!ok) return;
     const { error } = await deletePruebaAction(prueba.id);
     if (error) {
       setError(error);

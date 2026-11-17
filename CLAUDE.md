@@ -302,6 +302,11 @@ When modifying API endpoints:
 4. Always use soft delete pattern (`deletedAt` field) for main entities
 5. Add audit logging for sensitive operations
 
+### Frontend UI (modern-web-guidance)
+- Antes de implementar UI (modales, popovers, formularios, accesibilidad, animaciones, dark mode), consultá la skill `.claude/skills/modern-web-guidance/` (guías en `guides/`).
+- Confirmaciones: usar `useConfirm()` de `apps/frontend/src/components/ui/ConfirmDialog.tsx` (basado en `<dialog>` nativo con `showModal()`), **no** `window.confirm()`.
+- Modales: usar `<Modal onClose labelledBy>` de `apps/frontend/src/components/ui/Modal.tsx` (montaje condicional; abre con `showModal()`), no `div.fixed.inset-0`. Botones de cerrar con `aria-label` y `<label htmlFor>` asociado a cada campo. No agregar `role="dialog"`, `aria-modal`, focus traps manuales ni `overflow: hidden` en `<body>` para bloquear el scroll.
+
 ### Logging Best Practices
 - Use structured logging with Pino: `logger.info({ context }, 'message')`
 - Request IDs are automatically added to all logs

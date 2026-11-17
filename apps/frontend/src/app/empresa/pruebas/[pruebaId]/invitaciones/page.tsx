@@ -12,8 +12,10 @@ import {
   type EmpresaPrueba,
   type EmpresaPruebaInvitacion,
 } from '@/actions/empresa-pruebas';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 
 export default function InvitacionesPage() {
+  const confirmAction = useConfirm();
   const { isDarkMode } = useTheme();
   const params = useParams<{ pruebaId: string }>();
   const pruebaId = params.pruebaId;
@@ -75,8 +77,12 @@ export default function InvitacionesPage() {
   };
 
   const handleRevoke = async (invitacion: EmpresaPruebaInvitacion) => {
-    if (!confirm('¿Revocar esta invitación? El link dejará de funcionar.'))
-      return;
+    const ok = await confirmAction({
+      title: '¿Revocar esta invitación?',
+      description: 'El link dejará de funcionar.',
+      confirmLabel: 'Revocar',
+    });
+    if (!ok) return;
     const { error } = await revokePruebaInvitacionAction(
       invitacion.id,
       pruebaId

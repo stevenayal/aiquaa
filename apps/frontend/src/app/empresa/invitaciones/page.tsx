@@ -11,6 +11,8 @@ import {
   resendInvitacionEmailAction,
   type EmpresaInvitacion,
 } from '@/actions/empresa-invitaciones';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
+import { Modal } from '@/components/ui/Modal';
 
 type HiringProcess = {
   id: string;
@@ -97,109 +99,121 @@ function InvitarModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+    <Modal
+      onClose={onClose}
+      labelledBy="invitar-candidato-title"
+      className={`max-w-lg rounded-2xl shadow-2xl ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}
+    >
       <div
-        className={`w-full max-w-lg rounded-2xl shadow-2xl ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}
+        className={`flex items-center justify-between px-6 py-4 border-b ${isDarkMode ? 'border-slate-700' : 'border-gray-200'}`}
       >
-        <div
-          className={`flex items-center justify-between px-6 py-4 border-b ${isDarkMode ? 'border-slate-700' : 'border-gray-200'}`}
+        <h2
+          id="invitar-candidato-title"
+          className={`font-semibold text-base ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
         >
-          <h2
-            className={`font-semibold text-base ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
-          >
-            Invitar candidato
-          </h2>
-          <button
-            onClick={onClose}
-            className={`text-lg ${isDarkMode ? 'text-slate-400 hover:text-white' : 'text-gray-400 hover:text-gray-600'}`}
-          >
-            ✕
-          </button>
+          Invitar candidato
+        </h2>
+        <button
+          type="button"
+          aria-label="Cerrar"
+          onClick={onClose}
+          className={`text-lg ${isDarkMode ? 'text-slate-400 hover:text-white' : 'text-gray-400 hover:text-gray-600'}`}
+        >
+          ✕
+        </button>
+      </div>
+
+      <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
+        <div>
+          <label htmlFor="invitar-email-del-candidato" className={labelClass}>
+            Email del candidato *
+          </label>
+          <input
+            id="invitar-email-del-candidato"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="candidato@ejemplo.com"
+            className={inputClass}
+            autoFocus
+          />
         </div>
 
-        <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
-          <div>
-            <label className={labelClass}>Email del candidato *</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="candidato@ejemplo.com"
-              className={inputClass}
-              autoFocus
-            />
-          </div>
+        <div>
+          <label htmlFor="invitar-nombre-del-candidato" className={labelClass}>
+            Nombre del candidato
+          </label>
+          <input
+            id="invitar-nombre-del-candidato"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Ej: María García"
+            className={inputClass}
+          />
+        </div>
 
-          <div>
-            <label className={labelClass}>Nombre del candidato</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Ej: María García"
-              className={inputClass}
-            />
-          </div>
+        <div>
+          <label htmlFor="invitar-proceso-de-seleccion" className={labelClass}>
+            Proceso de selección (opcional)
+          </label>
+          <select
+            id="invitar-proceso-de-seleccion"
+            value={processId}
+            onChange={(e) => setProcessId(e.target.value)}
+            className={inputClass}
+          >
+            <option value="">Sin proceso asignado</option>
+            {processes
+              .filter((p) => p.status === 'active')
+              .map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.position_name} ({p.code})
+                </option>
+              ))}
+          </select>
+        </div>
 
-          <div>
-            <label className={labelClass}>
-              Proceso de selección (opcional)
-            </label>
-            <select
-              value={processId}
-              onChange={(e) => setProcessId(e.target.value)}
-              className={inputClass}
-            >
-              <option value="">Sin proceso asignado</option>
-              {processes
-                .filter((p) => p.status === 'active')
-                .map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.position_name} ({p.code})
-                  </option>
-                ))}
-            </select>
-          </div>
+        <div>
+          <label htmlFor="invitar-mensaje-personalizado" className={labelClass}>
+            Mensaje personalizado (opcional)
+          </label>
+          <textarea
+            id="invitar-mensaje-personalizado"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            rows={3}
+            placeholder="Hola, te invitamos a rendir nuestra evaluación técnica QA..."
+            className={`${inputClass} resize-none`}
+            maxLength={500}
+          />
+        </div>
 
-          <div>
-            <label className={labelClass}>
-              Mensaje personalizado (opcional)
-            </label>
-            <textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              rows={3}
-              placeholder="Hola, te invitamos a rendir nuestra evaluación técnica QA..."
-              className={`${inputClass} resize-none`}
-              maxLength={500}
-            />
-          </div>
+        {error && <p className="text-sm text-red-500">{error}</p>}
 
-          {error && <p className="text-sm text-red-500">{error}</p>}
-
-          <div className="flex justify-end gap-2 pt-1">
-            <button
-              type="button"
-              onClick={onClose}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isDarkMode ? 'text-slate-300 hover:bg-slate-700' : 'text-gray-600 hover:bg-gray-100'}`}
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              disabled={saving}
-              className="px-4 py-2 rounded-lg text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 transition-colors"
-            >
-              {saving ? 'Enviando...' : 'Enviar invitación'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+        <div className="flex justify-end gap-2 pt-1">
+          <button
+            type="button"
+            onClick={onClose}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isDarkMode ? 'text-slate-300 hover:bg-slate-700' : 'text-gray-600 hover:bg-gray-100'}`}
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            disabled={saving}
+            className="px-4 py-2 rounded-lg text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+          >
+            {saving ? 'Enviando...' : 'Enviar invitación'}
+          </button>
+        </div>
+      </form>
+    </Modal>
   );
 }
 
 export default function InvitacionesPage() {
+  const confirmAction = useConfirm();
   const { isDarkMode } = useTheme();
   const [invitaciones, setInvitaciones] = useState<EmpresaInvitacion[]>([]);
   const [processes, setProcesses] = useState<HiringProcess[]>([]);
@@ -227,7 +241,12 @@ export default function InvitacionesPage() {
   }, []);
 
   const handleCancel = async (id: string) => {
-    if (!confirm('¿Cancelar esta invitación?')) return;
+    const ok = await confirmAction({
+      title: '¿Cancelar esta invitación?',
+      confirmLabel: 'Cancelar invitación',
+      cancelLabel: 'Volver',
+    });
+    if (!ok) return;
     setCancellingId(id);
     const { error } = await cancelInvitacionAction(id);
     if (!error) setInvitaciones((prev) => prev.filter((i) => i.id !== id));

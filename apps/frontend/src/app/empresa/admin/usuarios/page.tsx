@@ -17,6 +17,7 @@ import {
   type EmpresaMemberRole,
   type EmpresaMemberStatus,
 } from '@/actions/empresa-admin';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 
 const ROLE_LABELS: Record<EmpresaMemberRole, string> = {
   owner: 'Propietario',
@@ -39,6 +40,7 @@ const STATUS_COLORS: Record<EmpresaMemberStatus, string> = {
 };
 
 export default function AdminUsuariosPage() {
+  const confirmAction = useConfirm();
   const { user } = useSupabaseAuth();
   const { isDarkMode } = useTheme();
   const [isPending, startTransition] = useTransition();
@@ -164,8 +166,13 @@ export default function AdminUsuariosPage() {
     });
   }
 
-  function handleRemove(memberId: string) {
-    if (!confirm('¿Eliminar a este usuario de la empresa?')) return;
+  async function handleRemove(memberId: string) {
+    const ok = await confirmAction({
+      title: '¿Eliminar a este usuario de la empresa?',
+      description: 'Perderá el acceso al panel de la empresa.',
+      confirmLabel: 'Eliminar',
+    });
+    if (!ok) return;
     startTransition(async () => {
       const result = await removeMemberAction(memberId);
       if (result.error) setErrorMsg(result.error);

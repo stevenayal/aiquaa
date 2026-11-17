@@ -30,6 +30,8 @@ import {
   groupResultsByCandidate,
   type CandidateGroup,
 } from '@/lib/empresa/candidateResults';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
+import { Modal } from '@/components/ui/Modal';
 
 type HiringProcess = {
   id: string;
@@ -576,144 +578,162 @@ function AddProspectModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+    <Modal
+      onClose={onClose}
+      labelledBy="agregar-prospecto-title"
+      className={`max-w-lg rounded-2xl shadow-2xl ${
+        isDarkMode ? 'bg-slate-800' : 'bg-white'
+      }`}
+    >
       <div
-        className={`w-full max-w-lg rounded-2xl shadow-2xl ${
-          isDarkMode ? 'bg-slate-800' : 'bg-white'
-        }`}
+        className={`flex items-center justify-between px-6 py-4 border-b ${isDarkMode ? 'border-slate-700' : 'border-gray-200'}`}
       >
-        <div
-          className={`flex items-center justify-between px-6 py-4 border-b ${isDarkMode ? 'border-slate-700' : 'border-gray-200'}`}
+        <h2
+          id="agregar-prospecto-title"
+          className={`font-semibold text-base ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
         >
-          <h2
-            className={`font-semibold text-base ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
-          >
-            Agregar prospecto
-          </h2>
-          <button
-            onClick={onClose}
-            className={`text-lg leading-none ${isDarkMode ? 'text-slate-400 hover:text-white' : 'text-gray-400 hover:text-gray-600'}`}
-          >
-            ✕
-          </button>
+          Agregar prospecto
+        </h2>
+        <button
+          type="button"
+          aria-label="Cerrar"
+          onClick={onClose}
+          className={`text-lg leading-none ${isDarkMode ? 'text-slate-400 hover:text-white' : 'text-gray-400 hover:text-gray-600'}`}
+        >
+          ✕
+        </button>
+      </div>
+
+      <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
+        <div>
+          <label htmlFor="proceso-modal-nombre" className={labelClass}>
+            Nombre *
+          </label>
+          <input
+            id="proceso-modal-nombre"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Ej: María García"
+            className={inputClass}
+            autoFocus
+          />
         </div>
 
-        <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
+        <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className={labelClass}>Nombre *</label>
+            <label htmlFor="proceso-modal-email" className={labelClass}>
+              Email
+            </label>
             <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Ej: María García"
+              id="proceso-modal-email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="maria@ejemplo.com"
               className={inputClass}
-              autoFocus
             />
           </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className={labelClass}>Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="maria@ejemplo.com"
-                className={inputClass}
-              />
-            </div>
-            <div>
-              <label className={labelClass}>Teléfono</label>
-              <input
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="+595 9xx xxx xxx"
-                className={inputClass}
-              />
-            </div>
-          </div>
-
           <div>
-            <label className={labelClass}>Fuente</label>
-            <select
-              value={source}
-              onChange={(e) => setSource(e.target.value)}
-              className={inputClass}
-            >
-              {SOURCES.map((s) => (
-                <option key={s.value} value={s.value}>
-                  {s.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className={labelClass}>CV (PDF, máx 5 MB)</label>
-            <div
-              onClick={() => fileRef.current?.click()}
-              className={`cursor-pointer rounded-lg border-2 border-dashed px-4 py-3 text-sm text-center transition-colors ${
-                isDarkMode
-                  ? 'border-slate-600 text-slate-400 hover:border-indigo-500'
-                  : 'border-gray-300 text-gray-400 hover:border-indigo-400'
-              }`}
-            >
-              {file ? (
-                <span
-                  className={isDarkMode ? 'text-indigo-300' : 'text-indigo-600'}
-                >
-                  📄 {file.name}
-                </span>
-              ) : (
-                'Hacé click para subir el CV'
-              )}
-            </div>
+            <label htmlFor="proceso-modal-telefono" className={labelClass}>
+              Teléfono
+            </label>
             <input
-              ref={fileRef}
-              type="file"
-              accept=".pdf,.doc,.docx"
-              className="hidden"
-              onChange={handleFileChange}
+              id="proceso-modal-telefono"
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="+595 9xx xxx xxx"
+              className={inputClass}
             />
           </div>
+        </div>
 
-          <div>
-            <label className={labelClass}>Notas</label>
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              rows={2}
-              placeholder="Observaciones, perfil, referencias..."
-              className={`${inputClass} resize-none`}
-            />
+        <div>
+          <label htmlFor="proceso-modal-fuente" className={labelClass}>
+            Fuente
+          </label>
+          <select
+            id="proceso-modal-fuente"
+            value={source}
+            onChange={(e) => setSource(e.target.value)}
+            className={inputClass}
+          >
+            {SOURCES.map((s) => (
+              <option key={s.value} value={s.value}>
+                {s.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className={labelClass}>CV (PDF, máx 5 MB)</label>
+          <div
+            onClick={() => fileRef.current?.click()}
+            className={`cursor-pointer rounded-lg border-2 border-dashed px-4 py-3 text-sm text-center transition-colors ${
+              isDarkMode
+                ? 'border-slate-600 text-slate-400 hover:border-indigo-500'
+                : 'border-gray-300 text-gray-400 hover:border-indigo-400'
+            }`}
+          >
+            {file ? (
+              <span
+                className={isDarkMode ? 'text-indigo-300' : 'text-indigo-600'}
+              >
+                📄 {file.name}
+              </span>
+            ) : (
+              'Hacé click para subir el CV'
+            )}
           </div>
+          <input
+            ref={fileRef}
+            type="file"
+            accept=".pdf,.doc,.docx"
+            className="hidden"
+            onChange={handleFileChange}
+          />
+        </div>
 
-          {error && <p className="text-sm text-red-500">{error}</p>}
+        <div>
+          <label htmlFor="proceso-modal-notas" className={labelClass}>
+            Notas
+          </label>
+          <textarea
+            id="proceso-modal-notas"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            rows={2}
+            placeholder="Observaciones, perfil, referencias..."
+            className={`${inputClass} resize-none`}
+          />
+        </div>
 
-          <div className="flex justify-end gap-2 pt-1">
-            <button
-              type="button"
-              onClick={onClose}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                isDarkMode
-                  ? 'text-slate-300 hover:bg-slate-700'
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              disabled={saving}
-              className="px-4 py-2 rounded-lg text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 transition-colors"
-            >
-              {saving ? 'Guardando...' : 'Guardar prospecto'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+        {error && <p className="text-sm text-red-500">{error}</p>}
+
+        <div className="flex justify-end gap-2 pt-1">
+          <button
+            type="button"
+            onClick={onClose}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              isDarkMode
+                ? 'text-slate-300 hover:bg-slate-700'
+                : 'text-gray-600 hover:bg-gray-100'
+            }`}
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            disabled={saving}
+            className="px-4 py-2 rounded-lg text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+          >
+            {saving ? 'Guardando...' : 'Guardar prospecto'}
+          </button>
+        </div>
+      </form>
+    </Modal>
   );
 }
 
@@ -766,79 +786,89 @@ function ReopenProcessModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+    <Modal
+      onClose={onClose}
+      labelledBy="reabrir-proceso-title"
+      className={`max-w-sm rounded-2xl shadow-2xl ${
+        isDarkMode ? 'bg-slate-800' : 'bg-white'
+      }`}
+    >
       <div
-        className={`w-full max-w-sm rounded-2xl shadow-2xl ${
-          isDarkMode ? 'bg-slate-800' : 'bg-white'
-        }`}
+        className={`flex items-center justify-between px-6 py-4 border-b ${isDarkMode ? 'border-slate-700' : 'border-gray-200'}`}
       >
-        <div
-          className={`flex items-center justify-between px-6 py-4 border-b ${isDarkMode ? 'border-slate-700' : 'border-gray-200'}`}
+        <h2
+          id="reabrir-proceso-title"
+          className={`font-semibold text-base ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
         >
-          <h2
-            className={`font-semibold text-base ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+          Reabrir proceso
+        </h2>
+        <button
+          type="button"
+          aria-label="Cerrar"
+          onClick={onClose}
+          className={`text-lg leading-none ${isDarkMode ? 'text-slate-400 hover:text-white' : 'text-gray-400 hover:text-gray-600'}`}
+        >
+          ✕
+        </button>
+      </div>
+
+      <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
+        <p
+          className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+        >
+          Elegí la nueva fecha límite. El proceso vuelve a estar{' '}
+          <span className="font-medium">activo</span> y los candidatos podrán
+          rendir hasta esa fecha.
+        </p>
+        <div>
+          <label
+            htmlFor="proceso-modal-nueva-fecha-de-vencimiento"
+            className={labelClass}
           >
-            Reabrir proceso
-          </h2>
-          <button
-            onClick={onClose}
-            className={`text-lg leading-none ${isDarkMode ? 'text-slate-400 hover:text-white' : 'text-gray-400 hover:text-gray-600'}`}
-          >
-            ✕
-          </button>
+            Nueva fecha de vencimiento
+          </label>
+          <input
+            id="proceso-modal-nueva-fecha-de-vencimiento"
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            min={new Date().toISOString().slice(0, 10)}
+            className={inputClass}
+            autoFocus
+          />
         </div>
 
-        <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
-          <p
-            className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+        {error && <p className="text-sm text-red-500">{error}</p>}
+
+        <div className="flex justify-end gap-2 pt-1">
+          <button
+            type="button"
+            onClick={onClose}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              isDarkMode
+                ? 'text-slate-300 hover:bg-slate-700'
+                : 'text-gray-600 hover:bg-gray-100'
+            }`}
           >
-            Elegí la nueva fecha límite. El proceso vuelve a estar{' '}
-            <span className="font-medium">activo</span> y los candidatos podrán
-            rendir hasta esa fecha.
-          </p>
-          <div>
-            <label className={labelClass}>Nueva fecha de vencimiento</label>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              min={new Date().toISOString().slice(0, 10)}
-              className={inputClass}
-              autoFocus
-            />
-          </div>
-
-          {error && <p className="text-sm text-red-500">{error}</p>}
-
-          <div className="flex justify-end gap-2 pt-1">
-            <button
-              type="button"
-              onClick={onClose}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                isDarkMode
-                  ? 'text-slate-300 hover:bg-slate-700'
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              disabled={saving}
-              className="px-4 py-2 rounded-lg text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 transition-colors"
-            >
-              {saving ? 'Reabriendo...' : 'Reabrir proceso'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            disabled={saving}
+            className="px-4 py-2 rounded-lg text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+          >
+            {saving ? 'Reabriendo...' : 'Reabrir proceso'}
+          </button>
+        </div>
+      </form>
+    </Modal>
   );
 }
 
 // ─── Main Page ─────────────────────────────────────────────────────────────────
 
 export default function ProcesoDetailPage() {
+  const confirmAction = useConfirm();
   const { isDarkMode } = useTheme();
   const params = useParams();
   const router = useRouter();
@@ -1042,7 +1072,11 @@ export default function ProcesoDetailPage() {
   };
 
   const handleDelete = async (prospect_id: string) => {
-    if (!confirm('¿Eliminar este prospecto?')) return;
+    const ok = await confirmAction({
+      title: '¿Eliminar este prospecto?',
+      confirmLabel: 'Eliminar',
+    });
+    if (!ok) return;
     const { error } = await deleteProspectAction(prospect_id);
     if (!error)
       setProspects((prev) => prev.filter((p) => p.id !== prospect_id));

@@ -160,3 +160,73 @@ body {
     animation: none;
   }
 }
+
+/*
+ * Diálogos nativos (src/components/ui/ConfirmDialog.tsx y Modal.tsx).
+ * Guías: modern-web-guidance → dialog, prevent-page-scroll-under-modal-dialog,
+ * animate-to-from-top-layer.
+ */
+
+/* Evita que el scroll dentro del modal o sobre el backdrop mueva la página.
+   No se usa overflow:hidden en <html>/<body> (quita la scrollbar y desplaza el layout). */
+.app-dialog:modal {
+  overscroll-behavior: contain;
+}
+.app-dialog::backdrop {
+  overflow: hidden;
+  overscroll-behavior: contain;
+  background-color: rgb(15 23 42 / 0);
+  transition-property: background-color, display, overlay;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-out;
+  transition-behavior: allow-discrete;
+}
+
+/* Estado cerrado / salida */
+.app-dialog {
+  opacity: 0;
+  transition-property: opacity, transform, display, overlay;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-out;
+  /* Separado del shorthand para que navegadores viejos no descarten `transition`. */
+  transition-behavior: allow-discrete;
+}
+
+/* Estado abierto + entrada */
+.app-dialog[open] {
+  opacity: 1;
+}
+@starting-style {
+  .app-dialog[open] {
+    opacity: 0;
+  }
+}
+.app-dialog[open]::backdrop {
+  background-color: rgb(15 23 42 / 0.6);
+}
+@starting-style {
+  .app-dialog[open]::backdrop {
+    background-color: rgb(15 23 42 / 0);
+  }
+}
+
+/* La escala sólo para quien no pidió movimiento reducido */
+@media (prefers-reduced-motion: no-preference) {
+  .app-dialog {
+    transform: scale(0.95);
+  }
+  .app-dialog[open] {
+    transform: scale(1);
+  }
+  @starting-style {
+    .app-dialog[open] {
+      transform: scale(0.95);
+    }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-dialog,
+  .app-dialog::backdrop {
+    transition-duration: 0.1s;
+  }
+}

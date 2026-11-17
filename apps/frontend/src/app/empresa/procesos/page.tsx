@@ -22,6 +22,7 @@ import {
   type EventSort,
   type EventSummary,
 } from '@/lib/process-events';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 
 type HiringProcess = ProcessListItem;
 
@@ -163,6 +164,7 @@ const ProcessList = memo(function ProcessList({
 });
 
 export default function ProcesosPage() {
+  const confirmAction = useConfirm();
   const { isDarkMode } = useTheme();
   const [processes, setProcesses] = useState<HiringProcess[]>([]);
   const [groups, setGroups] = useState<ProcessGroup[]>([]);
@@ -268,11 +270,23 @@ export default function ProcesosPage() {
   const handleArchive = useCallback(
     async (group: ProcessGroup, summary: EventSummary | undefined) => {
       const open = summary?.open ?? 0;
-      const message =
+      const plural = open === 1 ? '' : 's';
+      const ok = await confirmAction(
         open > 0
-          ? `"${group.name}" todavía tiene ${open} proceso${open === 1 ? '' : 's'} activo${open === 1 ? '' : 's'}. Al darlo de baja se cerrará${open === 1 ? '' : 'n'} y los candidatos ya no podrán rendir.\n\n¿Dar de baja el evento?`
-          : `¿Dar de baja "${group.name}"? Se oculta de los eventos activos; sus procesos y resultados se conservan y podés reactivarlo cuando quieras.`;
-      if (!confirm(message)) return;
+          ? {
+              title: '¿Dar de baja el evento?',
+              description: `"${group.name}" todavía tiene ${open} proceso${plural} activo${plural}. Al darlo de baja se cerrará${open === 1 ? '' : 'n'} y los candidatos ya no podrán rendir.`,
+              confirmLabel: 'Dar de baja',
+            }
+          : {
+              title: `¿Dar de baja "${group.name}"?`,
+              description:
+                'Se oculta de los eventos activos; sus procesos y resultados se conservan y podés reactivarlo cuando quieras.',
+              confirmLabel: 'Dar de baja',
+              destructive: false,
+            }
+      );
+      if (!ok) return;
 
       setBusyGroupId(group.id);
       setActionError(null);
@@ -300,7 +314,7 @@ export default function ProcesosPage() {
         );
       }
     },
-    []
+    [confirmAction]
   );
 
   const handleUnarchive = useCallback(async (group: ProcessGroup) => {
