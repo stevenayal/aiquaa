@@ -30,6 +30,7 @@ import {
   groupResultsByCandidate,
   type CandidateGroup,
 } from '@/lib/empresa/candidateResults';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 
 type HiringProcess = {
   id: string;
@@ -839,6 +840,7 @@ function ReopenProcessModal({
 // ─── Main Page ─────────────────────────────────────────────────────────────────
 
 export default function ProcesoDetailPage() {
+  const confirmAction = useConfirm();
   const { isDarkMode } = useTheme();
   const params = useParams();
   const router = useRouter();
@@ -1042,7 +1044,11 @@ export default function ProcesoDetailPage() {
   };
 
   const handleDelete = async (prospect_id: string) => {
-    if (!confirm('¿Eliminar este prospecto?')) return;
+    const ok = await confirmAction({
+      title: '¿Eliminar este prospecto?',
+      confirmLabel: 'Eliminar',
+    });
+    if (!ok) return;
     const { error } = await deleteProspectAction(prospect_id);
     if (!error)
       setProspects((prev) => prev.filter((p) => p.id !== prospect_id));

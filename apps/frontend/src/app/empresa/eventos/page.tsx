@@ -25,6 +25,7 @@ import {
   type EventSort,
   type EventSummary,
 } from '@/lib/process-events';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 
 type Process = ProcessListItem;
 
@@ -39,6 +40,7 @@ const PREF_SORT = 'empresa_eventos_sort';
 const PREF_HIDE_CLOSED = 'empresa_eventos_hide_closed';
 
 export default function EventosPage() {
+  const confirmAction = useConfirm();
   const { isDarkMode } = useTheme();
   const [groups, setGroups] = useState<ProcessGroup[]>([]);
   const [processes, setProcesses] = useState<Process[]>([]);
@@ -116,11 +118,22 @@ export default function EventosPage() {
   const handleArchiveGroup = async (group: ProcessGroup) => {
     const open = summaries.get(group.id)?.open ?? 0;
     const plural = open === 1 ? '' : 's';
-    const message =
+    const ok = await confirmAction(
       open > 0
-        ? `"${group.name}" todavía tiene ${open} proceso${plural} activo${plural}. Al darlo de baja se cerrará${open === 1 ? '' : 'n'} y los candidatos ya no podrán rendir.\n\n¿Dar de baja el evento?`
-        : `¿Dar de baja "${group.name}"? Se oculta de los eventos activos; sus procesos y resultados se conservan y podés reactivarlo cuando quieras.`;
-    if (!confirm(message)) return;
+        ? {
+            title: '¿Dar de baja el evento?',
+            description: `"${group.name}" todavía tiene ${open} proceso${plural} activo${plural}. Al darlo de baja se cerrará${open === 1 ? '' : 'n'} y los candidatos ya no podrán rendir.`,
+            confirmLabel: 'Dar de baja',
+          }
+        : {
+            title: `¿Dar de baja "${group.name}"?`,
+            description:
+              'Se oculta de los eventos activos; sus procesos y resultados se conservan y podés reactivarlo cuando quieras.',
+            confirmLabel: 'Dar de baja',
+            destructive: false,
+          }
+    );
+    if (!ok) return;
     setArchivingId(group.id);
     setActionError(null);
     const res = await archiveProcessGroupAction(group.id, {
@@ -167,8 +180,12 @@ export default function EventosPage() {
   };
 
   const handleDeleteGroup = async (groupId: string) => {
-    if (!confirm('¿Eliminar este evento? Los procesos quedarán sin categoría.'))
-      return;
+    const ok = await confirmAction({
+      title: '¿Eliminar este evento?',
+      description: 'Los procesos quedarán sin categoría.',
+      confirmLabel: 'Eliminar',
+    });
+    if (!ok) return;
     setDeletingId(groupId);
     await deleteProcessGroupAction(groupId);
     setDeletingId(null);

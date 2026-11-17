@@ -11,6 +11,7 @@ import {
   resendInvitacionEmailAction,
   type EmpresaInvitacion,
 } from '@/actions/empresa-invitaciones';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 
 type HiringProcess = {
   id: string;
@@ -200,6 +201,7 @@ function InvitarModal({
 }
 
 export default function InvitacionesPage() {
+  const confirmAction = useConfirm();
   const { isDarkMode } = useTheme();
   const [invitaciones, setInvitaciones] = useState<EmpresaInvitacion[]>([]);
   const [processes, setProcesses] = useState<HiringProcess[]>([]);
@@ -227,7 +229,12 @@ export default function InvitacionesPage() {
   }, []);
 
   const handleCancel = async (id: string) => {
-    if (!confirm('¿Cancelar esta invitación?')) return;
+    const ok = await confirmAction({
+      title: '¿Cancelar esta invitación?',
+      confirmLabel: 'Cancelar invitación',
+      cancelLabel: 'Volver',
+    });
+    if (!ok) return;
     setCancellingId(id);
     const { error } = await cancelInvitacionAction(id);
     if (!error) setInvitaciones((prev) => prev.filter((i) => i.id !== id));
